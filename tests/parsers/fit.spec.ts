@@ -1,0 +1,123 @@
+import { describe, it, expect } from 'vitest';
+import {
+  deriveDistanceFromRecords,
+  deriveAvgFromRecords,
+  deriveMaxFromRecords,
+} from '../../src/parsers/fit.ts';
+import type { SessionRecord } from '../../src/types/index.ts';
+
+function makeRecord(overrides: Partial<SessionRecord> = {}): SessionRecord {
+  return { sessionId: 'test', timestamp: 0, ...overrides };
+}
+
+describe('deriveDistanceFromRecords', () => {
+  it('returns 0 for empty array', () => {
+    expect(deriveDistanceFromRecords([])).toBe(0);
+  });
+
+  it('returns last record distance (cumulative)', () => {
+    const records = [
+      makeRecord({ distance: 100 }),
+      makeRecord({ distance: 500 }),
+      makeRecord({ distance: 1200 }),
+    ];
+    expect(deriveDistanceFromRecords(records)).toBe(1200);
+  });
+
+  it('skips trailing records with no distance', () => {
+    const records = [
+      makeRecord({ distance: 100 }),
+      makeRecord({ distance: 800 }),
+      makeRecord({}),
+    ];
+    expect(deriveDistanceFromRecords(records)).toBe(800);
+  });
+
+  it('returns 0 when no records have distance', () => {
+    const records = [makeRecord({}), makeRecord({})];
+    expect(deriveDistanceFromRecords(records)).toBe(0);
+  });
+
+  it('skips records with distance 0', () => {
+    const records = [
+      makeRecord({ distance: 500 }),
+      makeRecord({ distance: 0 }),
+    ];
+    expect(deriveDistanceFromRecords(records)).toBe(500);
+  });
+});
+
+describe('deriveAvgFromRecords', () => {
+  it('returns undefined for empty array', () => {
+    expect(deriveAvgFromRecords([], 'power')).toBeUndefined();
+  });
+
+  it('returns undefined when no records have the field', () => {
+    const records = [makeRecord({}), makeRecord({})];
+    expect(deriveAvgFromRecords(records, 'power')).toBeUndefined();
+  });
+
+  it('returns rounded mean of valid power values', () => {
+    const records = [
+      makeRecord({ power: 200 }),
+      makeRecord({ power: 250 }),
+      makeRecord({ power: 300 }),
+    ];
+    expect(deriveAvgFromRecords(records, 'power')).toBe(250);
+  });
+
+  it('skips zero values', () => {
+    const records = [
+      makeRecord({ power: 0 }),
+      makeRecord({ power: 200 }),
+      makeRecord({ power: 300 }),
+    ];
+    expect(deriveAvgFromRecords(records, 'power')).toBe(250);
+  });
+
+  it('returns rounded mean of valid cadence values', () => {
+    const records = [
+      makeRecord({ cadence: 80 }),
+      makeRecord({ cadence: 85 }),
+      makeRecord({ cadence: 83 }),
+    ];
+    expect(deriveAvgFromRecords(records, 'cadence')).toBe(83);
+  });
+});
+
+describe('deriveMaxFromRecords', () => {
+  it('returns undefined for empty array', () => {
+    expect(deriveMaxFromRecords([], 'power')).toBeUndefined();
+  });
+
+  it('returns undefined when no records have the field', () => {
+    const records = [makeRecord({}), makeRecord({})];
+    expect(deriveMaxFromRecords(records, 'power')).toBeUndefined();
+  });
+
+  it('returns max power', () => {
+    const records = [
+      makeRecord({ power: 200 }),
+      makeRecord({ power: 400 }),
+      makeRecord({ power: 300 }),
+    ];
+    expect(deriveMaxFromRecords(records, 'power')).toBe(400);
+  });
+
+  it('returns max speed', () => {
+    const records = [
+      makeRecord({ speed: 3.0 }),
+      makeRecord({ speed: 4.5 }),
+      makeRecord({ speed: 3.8 }),
+    ];
+    expect(deriveMaxFromRecords(records, 'speed')).toBe(4.5);
+  });
+
+  it('skips zero values', () => {
+    const records = [
+      makeRecord({ power: 0 }),
+      makeRecord({ power: 250 }),
+    ];
+    expect(deriveMaxFromRecords(records, 'power')).toBe(250);
+  });
+});

@@ -1,0 +1,58 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { getDB, resetDBInstance } from '../../src/lib/db.ts';
+
+describe('DB schema', () => {
+  beforeEach(() => {
+    resetDBInstance();
+  });
+
+  it('opens at version 4 with session-records, session-laps, session-gps, and kv stores', async () => {
+    const db = await getDB();
+    expect(db.version).toBe(4);
+    expect(db.objectStoreNames.contains('session-records')).toBe(true);
+    expect(db.objectStoreNames.contains('session-laps')).toBe(true);
+    expect(db.objectStoreNames.contains('session-gps')).toBe(true);
+    expect(db.objectStoreNames.contains('kv')).toBe(true);
+  });
+
+  it('session-records store has sessionId index', async () => {
+    const db = await getDB();
+    const tx = db.transaction('session-records', 'readonly');
+    const indexNames = Array.from(tx.store.indexNames);
+    expect(indexNames).toContain('sessionId');
+  });
+
+  it('session-laps store has sessionId index', async () => {
+    const db = await getDB();
+    const tx = db.transaction('session-laps', 'readonly');
+    const indexNames = Array.from(tx.store.indexNames);
+    expect(indexNames).toContain('sessionId');
+  });
+
+  it('session-gps store has sessionId index', async () => {
+    const db = await getDB();
+    const tx = db.transaction('session-gps', 'readonly');
+    const indexNames = Array.from(tx.store.indexNames);
+    expect(indexNames).toContain('sessionId');
+  });
+
+  it('kv store supports string key/value operations', async () => {
+    const db = await getDB();
+    await db.put('kv', '{"test":true}', 'my-key');
+    const value = await db.get('kv', 'my-key');
+    expect(value).toBe('{"test":true}');
+  });
+
+  it('getDB returns singleton (same promise)', () => {
+    const p1 = getDB();
+    const p2 = getDB();
+    expect(p1).toBe(p2);
+  });
+
+  it('resetDBInstance allows new connection', async () => {
+    const db1 = await getDB();
+    resetDBInstance();
+    const db2 = await getDB();
+    expect(db1).not.toBe(db2);
+  });
+});

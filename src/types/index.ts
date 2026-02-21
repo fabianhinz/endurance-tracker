@@ -1,0 +1,124 @@
+export type Sport = "running" | "cycling" | "swimming";
+export type Gender = "male" | "female" | "other";
+
+export interface UserProfile {
+  id: string;
+  gender: Gender;
+  thresholds: {
+    ftp?: number;
+    maxHr: number;
+    restHr: number;
+  };
+  showMetricHelp: boolean;
+  createdAt: number;
+}
+
+export interface TrainingSession {
+  id: string;
+  name?: string;
+  sport: Sport;
+  date: number;
+  duration: number;
+  distance: number;
+  avgHr?: number;
+  maxHr?: number;
+  avgPower?: number;
+  maxPower?: number;
+  normalizedPower?: number;
+  avgCadence?: number;
+  avgPace?: number;
+  calories?: number;
+  elevationGain?: number;
+  elevationLoss?: number;
+  movingTime?: number;
+  subSport?: string;
+  deviceTss?: number;
+  deviceIf?: number;
+  deviceFtp?: number;
+  maxSpeed?: number;
+  minAltitude?: number;
+  maxAltitude?: number;
+  avgAltitude?: number;
+  tss: number;
+  stressMethod: "tss" | "trimp";
+  sensorWarnings: string[];
+  isPlanned: boolean;
+  hasDetailedRecords: boolean;
+  createdAt: number;
+}
+
+export interface SessionRecord {
+  sessionId: string;
+  timestamp: number;
+  hr?: number;
+  power?: number;
+  cadence?: number;
+  speed?: number;
+  lat?: number;
+  lng?: number;
+  elevation?: number;
+  distance?: number;
+  grade?: number;
+  timerTime?: number;
+}
+
+export interface SessionLap {
+  sessionId: string;
+  lapIndex: number;
+  startTime: number;
+  endTime: number;
+  totalElapsedTime: number;
+  totalTimerTime: number;
+  totalMovingTime?: number;
+  distance: number;
+  avgSpeed: number;
+  maxSpeed?: number;
+  totalAscent?: number;
+  minAltitude?: number;
+  maxAltitude?: number;
+  avgGrade?: number;
+  avgHr?: number;
+  minHr?: number;
+  maxHr?: number;
+  avgCadence?: number;
+  maxCadence?: number;
+  intensity?: string;
+  repetitionNum?: number;
+}
+
+export interface DailyMetrics {
+  date: string;
+  tss: number;
+  ctl: number;
+  atl: number;
+  tsb: number;
+  acwr: number;
+}
+
+export type FormStatus =
+  | "detraining"
+  | "fresh"
+  | "neutral"
+  | "optimal"
+  | "overload";
+
+export type InjuryRisk = "low" | "moderate" | "high";
+
+export interface CoachingRecommendation {
+  status: FormStatus;
+  message: string;
+  tsb: number;
+  acwr: number;
+  injuryRisk: InjuryRisk;
+}
+
+export type PBCategory = "peak-power" | "fastest-distance" | "longest" | "most-elevation";
+
+export interface PersonalBest {
+  sport: Sport;
+  category: PBCategory;
+  window: number;
+  value: number;
+  sessionId: string;
+  date: number;
+}

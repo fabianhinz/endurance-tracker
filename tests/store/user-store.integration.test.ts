@@ -1,0 +1,130 @@
+import { describe, it, expect } from 'vitest';
+import { useUserStore } from '../../src/store/user.ts';
+import { makeUserProfile } from '../factories/profiles.ts';
+import { createDefaultProfile } from '../../src/engine/defaults.ts';
+
+describe('user store', () => {
+  it('setProfile auto-generates id and createdAt', () => {
+    const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
+    useUserStore.getState().setProfile(profileData);
+
+    const profile = useUserStore.getState().profile;
+    expect(profile).not.toBeNull();
+    expect(profile!.id).toBeTruthy();
+    expect(profile!.createdAt).toBeGreaterThan(0);
+    expect(profile!.gender).toBe('male');
+  });
+
+  it('initializeProfile creates default when profile is null', () => {
+    expect(useUserStore.getState().profile).toBeNull();
+
+    useUserStore.getState().initializeProfile();
+
+    const profile = useUserStore.getState().profile;
+    expect(profile).not.toBeNull();
+    expect(profile!.id).toBeTruthy();
+    expect(profile!.gender).toBe('male');
+    expect(profile!.thresholds.maxHr).toBe(203);
+    expect(profile!.thresholds.restHr).toBe(44);
+  });
+
+  it('initializeProfile is a no-op when profile already exists', () => {
+    const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
+    useUserStore.getState().setProfile(profileData);
+    const originalId = useUserStore.getState().profile!.id;
+
+    useUserStore.getState().initializeProfile();
+
+    expect(useUserStore.getState().profile!.id).toBe(originalId);
+    expect(useUserStore.getState().profile!.gender).toBe('male');
+  });
+
+  it('updateProfile partial merge', () => {
+    const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
+    useUserStore.getState().setProfile(profileData);
+    const originalId = useUserStore.getState().profile!.id;
+
+    useUserStore.getState().updateProfile({ gender: 'female' });
+
+    const profile = useUserStore.getState().profile;
+    expect(profile!.gender).toBe('female');
+    expect(profile!.id).toBe(originalId);
+  });
+
+  it('updateThresholds only changes thresholds', () => {
+    const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
+    useUserStore.getState().setProfile(profileData);
+
+    useUserStore.getState().updateThresholds({
+      ftp: 280,
+      maxHr: 195,
+      restHr: 48,
+    });
+
+    const profile = useUserStore.getState().profile;
+    expect(profile!.thresholds.ftp).toBe(280);
+    expect(profile!.thresholds.maxHr).toBe(195);
+    expect(profile!.thresholds.restHr).toBe(48);
+    expect(profile!.gender).toBe('male');
+  });
+
+  it('resetProfile → null', () => {
+    const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
+    useUserStore.getState().setProfile(profileData);
+    expect(useUserStore.getState().profile).not.toBeNull();
+
+    useUserStore.getState().resetProfile();
+    expect(useUserStore.getState().profile).toBeNull();
+  });
+
+  it('persistence: data survives in IndexedDB', async () => {
+    const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
+    useUserStore.getState().setProfile(profileData);
+
+    // Allow async IDB write to complete
+    await new Promise((r) => setTimeout(r, 50));
+
+    const { getDB } = await import('../../src/lib/db.ts');
+    const db = await getDB();
+    const stored = await db.get('kv', 'endurance-tracker-user');
+    expect(stored).toBeDefined();
+    const parsed = JSON.parse(stored!);
+    expect(parsed.state.profile.gender).toBe('male');
+  });
+
+  it('operations on null profile are no-ops', () => {
+    expect(useUserStore.getState().profile).toBeNull();
+
+    // These should not throw
+    useUserStore.getState().updateProfile({ gender: 'female' });
+    useUserStore.getState().updateThresholds({ maxHr: 200, restHr: 55 });
+
+    expect(useUserStore.getState().profile).toBeNull();
+  });
+});
+
+describe('createDefaultProfile', () => {
+  it('returns a complete profile with sensible defaults', () => {
+    const profile = createDefaultProfile('test-id');
+
+    expect(profile.id).toBe('test-id');
+    expect(profile.gender).toBe('male');
+    expect(profile.thresholds.maxHr).toBe(203);
+    expect(profile.thresholds.restHr).toBe(44);
+    expect(profile.showMetricHelp).toBe(true);
+    expect(profile.createdAt).toBeGreaterThan(0);
+  });
+
+  it('does not include removed fields', () => {
+    const profile = createDefaultProfile('test-id');
+    expect('name' in profile).toBe(false);
+    expect('age' in profile).toBe(false);
+    expect('weight' in profile).toBe(false);
+    expect('height' in profile).toBe(false);
+    expect('sports' in profile).toBe(false);
+    expect('trainingDays' in profile).toBe(false);
+    expect('goals' in profile).toBe(false);
+    expect('welcomeDismissed' in profile).toBe(false);
+    expect('onboardingCompleted' in profile).toBe(false);
+  });
+});
