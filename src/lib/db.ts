@@ -4,14 +4,12 @@ import type { SessionGPS } from '../types/gps.ts';
 
 export interface EnduranceTrackerDB extends DBSchema {
   'session-records': {
-    key: number;
-    value: SessionRecord;
-    indexes: { sessionId: string };
+    key: string;
+    value: { sessionId: string; records: SessionRecord[] };
   };
   'session-laps': {
-    key: number;
-    value: SessionLap;
-    indexes: { sessionId: string };
+    key: string;
+    value: { sessionId: string; laps: SessionLap[] };
   };
   'session-gps': {
     key: number;
@@ -25,33 +23,21 @@ export interface EnduranceTrackerDB extends DBSchema {
 }
 
 const DB_NAME = 'endurance-tracker';
-const DB_VERSION = 4;
+const DB_VERSION = 1;
 
 let dbPromise: Promise<IDBPDatabase<EnduranceTrackerDB>> | null = null;
 
 export const getDB = (): Promise<IDBPDatabase<EnduranceTrackerDB>> => {
   if (!dbPromise) {
     dbPromise = openDB<EnduranceTrackerDB>(DB_NAME, DB_VERSION, {
-      upgrade(db, oldVersion) {
-        if (oldVersion < 2) {
-          const store = db.createObjectStore('session-records', {
-            autoIncrement: true,
-          });
-          store.createIndex('sessionId', 'sessionId', { unique: false });
-          db.createObjectStore('kv');
-        }
-        if (oldVersion < 3) {
-          const lapStore = db.createObjectStore('session-laps', {
-            autoIncrement: true,
-          });
-          lapStore.createIndex('sessionId', 'sessionId', { unique: false });
-        }
-        if (oldVersion < 4) {
-          const gpsStore = db.createObjectStore('session-gps', {
-            autoIncrement: true,
-          });
-          gpsStore.createIndex('sessionId', 'sessionId', { unique: false });
-        }
+      upgrade(db) {
+        db.createObjectStore('session-records', { keyPath: 'sessionId' });
+        db.createObjectStore('session-laps', { keyPath: 'sessionId' });
+        db.createObjectStore('kv');
+        const gpsStore = db.createObjectStore('session-gps', {
+          autoIncrement: true,
+        });
+        gpsStore.createIndex('sessionId', 'sessionId', { unique: false });
       },
     });
   }

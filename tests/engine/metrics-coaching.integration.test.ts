@@ -26,6 +26,7 @@ describe('metrics → coaching pipeline', () => {
 
   it('42-day constant TSS=100 → CTL converges (ATL converges faster)', () => {
     const now = Date.now();
+    const lastSessionDate = now - 1 * DAY_MS;
     const sessions = Array.from({ length: 42 }, (_, i) =>
       makeSession({
         id: `day-${i}`,
@@ -34,7 +35,7 @@ describe('metrics → coaching pipeline', () => {
       }),
     );
 
-    const metrics = computeMetrics(sessions);
+    const metrics = computeMetrics(sessions, { endDate: lastSessionDate });
     const last = metrics[metrics.length - 1];
 
     // CTL with alpha = 2/43: after 42 days at TSS=100, CTL ≈ 86

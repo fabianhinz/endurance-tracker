@@ -2,13 +2,29 @@ import type { SessionRecord, SessionLap } from '../types/index.ts';
 import type { SessionGPS } from '../types/gps.ts';
 import { getDB } from './db.ts';
 
+const groupBy = <T>(items: T[], key: (item: T) => string): Map<string, T[]> => {
+  const map = new Map<string, T[]>();
+  for (const item of items) {
+    const k = key(item);
+    const group = map.get(k);
+    if (group) {
+      group.push(item);
+    } else {
+      map.set(k, [item]);
+    }
+  }
+  return map;
+};
+
 export const saveSessionRecords = async (
   records: SessionRecord[],
 ): Promise<void> => {
+  if (records.length === 0) return;
   const db = await getDB();
+  const grouped = groupBy(records, (r) => r.sessionId);
   const tx = db.transaction('session-records', 'readwrite');
-  for (const record of records) {
-    tx.store.add(record);
+  for (const [sessionId, sessionRecords] of grouped) {
+    tx.store.put({ sessionId, records: sessionRecords });
   }
   await tx.done;
 };
@@ -17,19 +33,15 @@ export const getSessionRecords = async (
   sessionId: string,
 ): Promise<SessionRecord[]> => {
   const db = await getDB();
-  return db.getAllFromIndex('session-records', 'sessionId', sessionId);
+  const blob = await db.get('session-records', sessionId);
+  return blob?.records ?? [];
 };
 
 export const deleteSessionRecords = async (
   sessionId: string,
 ): Promise<void> => {
   const db = await getDB();
-  const tx = db.transaction('session-records', 'readwrite');
-  const keys = await tx.store.index('sessionId').getAllKeys(sessionId);
-  for (const key of keys) {
-    tx.store.delete(key);
-  }
-  await tx.done;
+  await db.delete('session-records', sessionId);
 };
 
 export const clearAllRecords = async (): Promise<void> => {
@@ -43,10 +55,12 @@ export const clearAllRecords = async (): Promise<void> => {
 export const saveSessionLaps = async (
   laps: SessionLap[],
 ): Promise<void> => {
+  if (laps.length === 0) return;
   const db = await getDB();
+  const grouped = groupBy(laps, (l) => l.sessionId);
   const tx = db.transaction('session-laps', 'readwrite');
-  for (const lap of laps) {
-    tx.store.add(lap);
+  for (const [sessionId, sessionLaps] of grouped) {
+    tx.store.put({ sessionId, laps: sessionLaps });
   }
   await tx.done;
 };
@@ -55,19 +69,15 @@ export const getSessionLaps = async (
   sessionId: string,
 ): Promise<SessionLap[]> => {
   const db = await getDB();
-  return db.getAllFromIndex('session-laps', 'sessionId', sessionId);
+  const blob = await db.get('session-laps', sessionId);
+  return blob?.laps ?? [];
 };
 
 export const deleteSessionLaps = async (
   sessionId: string,
 ): Promise<void> => {
   const db = await getDB();
-  const tx = db.transaction('session-laps', 'readwrite');
-  const keys = await tx.store.index('sessionId').getAllKeys(sessionId);
-  for (const key of keys) {
-    tx.store.delete(key);
-  }
-  await tx.done;
+  await db.delete('session-laps', sessionId);
 };
 
 export const saveSessionGPS = async (gps: SessionGPS): Promise<void> => {
@@ -108,7 +118,6 @@ export const bulkSaveSessionData = async (
   entries: Array<{
     records: (SessionRecord & { sessionId: string })[];
     laps: (SessionLap & { sessionId: string })[];
-    gps: SessionGPS | null;
   }>,
   options?: { chunkSize?: number; onChunkDone?: (chunkIndex: number) => void },
 ): Promise<void> => {
@@ -118,22 +127,24 @@ export const bulkSaveSessionData = async (
   for (let ci = 0; ci < entries.length; ci += size) {
     const chunk = entries.slice(ci, ci + size);
     const tx = db.transaction(
-      ['session-records', 'session-laps', 'session-gps'],
+      ['session-records', 'session-laps'],
       'readwrite',
     );
     const recordStore = tx.objectStore('session-records');
     const lapStore = tx.objectStore('session-laps');
-    const gpsStore = tx.objectStore('session-gps');
 
     for (const entry of chunk) {
-      for (const record of entry.records) {
-        recordStore.add(record);
+      if (entry.records.length > 0) {
+        const grouped = groupBy(entry.records, (r) => r.sessionId);
+        for (const [sessionId, records] of grouped) {
+          recordStore.put({ sessionId, records });
+        }
       }
-      for (const lap of entry.laps) {
-        lapStore.add(lap);
-      }
-      if (entry.gps) {
-        gpsStore.add(entry.gps);
+      if (entry.laps.length > 0) {
+        const grouped = groupBy(entry.laps, (l) => l.sessionId);
+        for (const [sessionId, laps] of grouped) {
+          lapStore.put({ sessionId, laps });
+        }
       }
     }
 
@@ -147,14 +158,13 @@ export const getRecordsForSessions = async (
 ): Promise<Map<string, SessionRecord[]>> => {
   const db = await getDB();
   const tx = db.transaction('session-records', 'readonly');
-  const index = tx.store.index('sessionId');
-  const queries = sessionIds.map((id) => index.getAll(id));
+  const queries = sessionIds.map((id) => tx.store.get(id));
   const results = await Promise.all(queries);
   await tx.done;
 
   const map = new Map<string, SessionRecord[]>();
   for (let i = 0; i < sessionIds.length; i++) {
-    map.set(sessionIds[i], results[i]);
+    map.set(sessionIds[i], results[i]?.records ?? []);
   }
   return map;
 };

@@ -15,14 +15,6 @@ describe('upload-progress store', () => {
     expect(state.processed).toBe(0);
   });
 
-  it('adjustTotal does not change fileCount', () => {
-    useUploadProgressStore.getState().startUpload(158);
-    useUploadProgressStore.getState().adjustTotal(174);
-    const state = useUploadProgressStore.getState();
-    expect(state.fileCount).toBe(158);
-    expect(state.total).toBe(174);
-  });
-
   it('advance increments processed', () => {
     useUploadProgressStore.getState().startUpload(10);
     useUploadProgressStore.getState().advance();
@@ -37,7 +29,6 @@ describe('upload-progress store', () => {
     expect(state.doneMessage).toBe('5 sessions uploaded');
     expect(state.doneVariant).toBe('success');
     expect(state.uploading).toBe(false);
-    expect(state.backfilling).toBe(false);
   });
 
   it('startUpload clears previous doneMessage', () => {
@@ -58,17 +49,7 @@ describe('upload-progress store', () => {
     expect(state.total).toBe(0);
     expect(state.processed).toBe(0);
     expect(state.uploading).toBe(false);
-    expect(state.backfilling).toBe(false);
     expect(state.doneMessage).toBeNull();
     expect(state.doneVariant).toBeNull();
-  });
-
-  it('startBackfill does not set fileCount', () => {
-    useUploadProgressStore.getState().startUpload(100);
-    useUploadProgressStore.getState().startBackfill(50);
-    const state = useUploadProgressStore.getState();
-    expect(state.fileCount).toBe(100);
-    expect(state.total).toBe(50);
-    expect(state.backfilling).toBe(true);
   });
 });

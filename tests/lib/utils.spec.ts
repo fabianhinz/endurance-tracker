@@ -156,8 +156,13 @@ describe('formatSubSport', () => {
 });
 
 describe('toDateString', () => {
-  it('converts timestamp to YYYY-MM-DD string', () => {
-    const ts = new Date('2024-06-15T12:00:00Z').getTime();
-    expect(toDateString(ts)).toMatch(/^2024-06-15/);
+  it('returns the local date in YYYY-MM-DD format', () => {
+    const d = new Date(2024, 5, 15, 23, 30); // June 15, 11:30 PM local
+    expect(toDateString(d.getTime())).toBe('2024-06-15');
+  });
+
+  it('does not shift to next day for late-night local timestamps', () => {
+    const d = new Date(2024, 11, 31, 23, 59); // Dec 31, 11:59 PM local
+    expect(toDateString(d.getTime())).toBe('2024-12-31');
   });
 });

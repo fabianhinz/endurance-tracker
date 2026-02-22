@@ -35,9 +35,18 @@ export const formatPace = (secPerKm: number): string => {
   return `${min}:${sec.toString().padStart(2, '0')} /km`;
 };
 
+const localDateFmt = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 export const toDateString = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return d.toISOString().split('T')[0];
+  const parts = localDateFmt.formatToParts(timestamp);
+  const y = parts.find((p) => p.type === 'year')!.value;
+  const m = parts.find((p) => p.type === 'month')!.value;
+  const d = parts.find((p) => p.type === 'day')!.value;
+  return `${y}-${m}-${d}`;
 };
 
 export const formatSpeed = (metersPerSec: number): string => {
