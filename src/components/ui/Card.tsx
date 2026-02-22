@@ -7,10 +7,11 @@ export const cardClass = `${glassClass} rounded-2xl shadow-lg flex flex-col`;
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   variant?: "default" | "compact";
+  footer?: React.ReactNode;
 }
 
 export const Card = (props: CardProps) => {
-  const { className, children, variant = "default", ...rest } = props;
+  const { className, children, variant = "default", footer, ...rest } = props;
   return (
     <div
       className={cn(
@@ -21,6 +22,11 @@ export const Card = (props: CardProps) => {
       {...rest}
     >
       {children}
+      {footer && (
+        <div className="border-t border-white/10 mt-4 pt-3">
+          {footer}
+        </div>
+      )}
     </div>
   );
 };
