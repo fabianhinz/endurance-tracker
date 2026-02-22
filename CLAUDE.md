@@ -29,7 +29,7 @@ Client-side only SPA. No server, no APIs, no `fetch`/`axios`.
 
 ## Dev Workflow
 
-> Plan first, then build. Create a new branch for every feature. Once approved by the user merge it into main.
+> Plan first, then build. Create a new branch for every feature or bug fix. Once approved by the user merge it into main.
 
 1. **Plan**: write a plan in `./plans/<feature-name>.md` — context, approach, files to modify, verification steps. Review with the user before writing code.
 2. **Branch**: create a feature branch off `main`.

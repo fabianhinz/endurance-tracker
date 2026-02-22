@@ -111,6 +111,7 @@ export interface CoachingRecommendation {
   tsb: number;
   acwr: number;
   injuryRisk: InjuryRisk;
+  dataMaturityDays: number;
 }
 
 // --- Running Zones & Coaching Plan ---

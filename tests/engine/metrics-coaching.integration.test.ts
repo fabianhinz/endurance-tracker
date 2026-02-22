@@ -89,7 +89,7 @@ describe('metrics → coaching pipeline', () => {
     expect(current).toBeDefined();
     expect(current!.tsb).toBeLessThan(-30);
 
-    const coaching = getCoachingRecommendation(current);
+    const coaching = getCoachingRecommendation(current, 8);
     expect(coaching.status).toBe('overload');
   });
 
@@ -111,7 +111,7 @@ describe('metrics → coaching pipeline', () => {
     expect(current).toBeDefined();
     expect(current!.tsb).toBeGreaterThan(25);
 
-    const coaching = getCoachingRecommendation(current);
+    const coaching = getCoachingRecommendation(current, 74);
     expect(coaching.status).toBe('detraining');
   });
 
@@ -159,7 +159,7 @@ describe('metrics → coaching pipeline', () => {
     const current = getCurrentMetrics([]);
     expect(current).toBeUndefined();
 
-    const coaching = getCoachingRecommendation(undefined);
+    const coaching = getCoachingRecommendation(undefined, 0);
     expect(coaching.status).toBe('neutral');
     expect(coaching.tsb).toBe(0);
     expect(coaching.acwr).toBe(0);
