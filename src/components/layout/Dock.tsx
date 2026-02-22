@@ -10,6 +10,7 @@ import {
   X,
   Activity,
   Clock,
+  HeartPulse,
 } from "lucide-react";
 import { useFileUpload } from "../../features/training/use-file-upload.ts";
 import { cn } from "../../lib/utils.ts";
@@ -32,6 +33,7 @@ import type { Sport } from "../../types/index.ts";
 const tabs = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/training", label: "Training", icon: Zap },
+  { to: "/coach", label: "Coach", icon: HeartPulse },
   { to: "/records", label: "Records", icon: Trophy },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

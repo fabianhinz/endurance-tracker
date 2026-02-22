@@ -59,6 +59,23 @@ export const formatLapTime = (seconds: number): string => {
   return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
+export const parsePaceInput = (input: string): number | undefined => {
+  const match = input.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return undefined;
+  const min = Number(match[1]);
+  const sec = Number(match[2]);
+  if (sec >= 60) return undefined;
+  const totalSec = min * 60 + sec;
+  if (totalSec < 150 || totalSec > 540) return undefined; // 2:30-9:00/km
+  return totalSec;
+};
+
+export const formatPaceInput = (seconds: number): string => {
+  const min = Math.floor(seconds / 60);
+  const sec = Math.round(seconds % 60);
+  return `${min}:${sec.toString().padStart(2, '0')}`;
+};
+
 import type { PersonalBest } from "../types/index.ts";
 
 const POWER_WINDOW_LABELS: Record<number, string> = {

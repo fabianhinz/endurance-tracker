@@ -11,9 +11,9 @@ interface LayoutState {
 export const useLayoutStore = create<LayoutState>()(
   persist(
     (set) => ({
-      dockExpanded: false,
+      dockExpanded: true,
       toggleDock: () => set((state) => ({ dockExpanded: !state.dockExpanded })),
-      compactLayout: false,
+      compactLayout: true,
       toggleCompactLayout: () =>
         set((state) => ({ compactLayout: !state.compactLayout })),
     }),

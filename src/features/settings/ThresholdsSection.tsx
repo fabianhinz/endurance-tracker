@@ -12,6 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from '../../components/ui/Select.tsx';
+import { parsePaceInput, formatPaceInput } from '../../lib/utils.ts';
 
 export const ThresholdsSection = () => {
   const profile = useUserStore((s) => s.profile);
@@ -24,10 +25,14 @@ export const ThresholdsSection = () => {
   const [restHr, setRestHr] = useState(String(thresholds?.restHr ?? ''));
   const [maxHr, setMaxHr] = useState(String(thresholds?.maxHr ?? ''));
   const [ftp, setFtp] = useState(String(thresholds?.ftp ?? ''));
+  const [thresholdPace, setThresholdPace] = useState(
+    thresholds?.thresholdPace ? formatPaceInput(thresholds.thresholdPace) : '',
+  );
 
   const [restHrError, setRestHrError] = useState('');
   const [maxHrError, setMaxHrError] = useState('');
   const [ftpError, setFtpError] = useState('');
+  const [thresholdPaceError, setThresholdPaceError] = useState('');
 
   const save = (field: 'restHr' | 'maxHr' | 'ftp', value: string) => {
     const current = { ...thresholds! };
@@ -77,6 +82,27 @@ export const ThresholdsSection = () => {
     startTransition(() => updateThresholds(current));
   };
 
+  const saveThresholdPace = (value: string) => {
+    const current = { ...thresholds! };
+
+    if (!value) {
+      setThresholdPaceError('');
+      current.thresholdPace = undefined;
+      startTransition(() => updateThresholds(current));
+      return;
+    }
+
+    const parsed = parsePaceInput(value);
+    if (parsed === undefined) {
+      setThresholdPaceError('Format: m:ss (2:30-9:00)');
+      return;
+    }
+
+    setThresholdPaceError('');
+    current.thresholdPace = parsed;
+    startTransition(() => updateThresholds(current));
+  };
+
   return (
     <Card>
       <CardHeader title="Thresholds" />
@@ -122,16 +148,30 @@ export const ThresholdsSection = () => {
             />
           </div>
         </div>
-        <div>
-          <Label htmlFor="thresh-ftp">FTP (watts)</Label>
-          <Input
-            id="thresh-ftp"
-            type="number"
-            value={ftp}
-            onChange={(e) => setFtp(e.target.value)}
-            onBlur={() => save('ftp', ftp)}
-            error={ftpError}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="thresh-ftp">FTP (watts)</Label>
+            <Input
+              id="thresh-ftp"
+              type="number"
+              value={ftp}
+              onChange={(e) => setFtp(e.target.value)}
+              onBlur={() => save('ftp', ftp)}
+              error={ftpError}
+            />
+          </div>
+          <div>
+            <Label htmlFor="thresh-pace">Threshold Pace (min/km)</Label>
+            <Input
+              id="thresh-pace"
+              type="text"
+              placeholder="4:30"
+              value={thresholdPace}
+              onChange={(e) => setThresholdPace(e.target.value)}
+              onBlur={() => saveThresholdPace(thresholdPace)}
+              error={thresholdPaceError}
+            />
+          </div>
         </div>
       </div>
     </Card>

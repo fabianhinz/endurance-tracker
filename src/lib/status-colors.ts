@@ -32,6 +32,14 @@ export const acwrFill = {
   red: tokens.statusDangerStrong,
 };
 
+/** Gauge arc zones for the ACWR dial */
+export const ACWR_ZONES = [
+  { from: 0, to: 0.8, color: tokens.statusNeutral },
+  { from: 0.8, to: 1.3, color: tokens.statusSuccessStrong },
+  { from: 1.3, to: 1.5, color: tokens.statusWarningStrong },
+  { from: 1.5, to: 2.0, color: tokens.statusDangerStrong },
+];
+
 /** Sport identification colors — Tailwind classes */
 export const sportColorClass: Record<string, string> = {
   running: 'bg-sport-running-muted text-sport-running',
