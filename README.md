@@ -2,7 +2,7 @@
 
 *Your training. Your device. Your edge.*
 
-A local-first endurance training tracker built entirely in the browser. Import Garmin .FIT files, track training load with the Banister impulse-response model, detect personal bests, plan tapers, and get coaching recommendations — all without a server.
+A local-first endurance training tracker built entirely in the browser. Import Garmin .FIT files, track training load with the Banister impulse-response model, detect personal bests, visualize GPS traces on a map, analyze sessions with advanced metrics (NP, GAP, efficiency, lap analysis), and get coaching recommendations — all without a server.
 
 ## Tech Stack
 
@@ -49,22 +49,30 @@ src/
 │   ├── coaching.ts      # Training recommendations (TSB/ACWR thresholds)
 │   ├── defaults.ts      # Default profile factory
 │   ├── efficiency.ts    # Aerobic efficiency & decoupling
+│   ├── explanations.ts  # Metric explanation registry
+│   ├── filename.ts      # Filename utilities
+│   ├── gps.ts           # GPS processing
+│   ├── group-steps.ts   # Step grouping logic
+│   ├── laps.ts          # Lap & interval analysis
 │   ├── metrics.ts       # Banister model (CTL/ATL/TSB/ACWR)
 │   ├── normalize.ts     # Normalized power, grade-adjusted pace
+│   ├── prescription.ts  # Weekly plan generation
 │   ├── records.ts       # Personal best detection (rolling windows)
 │   ├── stress.ts        # TSS & TRIMP calculation
-│   ├── taper.ts         # Race taper projection
-│   └── validation.ts    # Sensor data quality checks
+│   ├── validation.ts    # Sensor data quality checks
+│   └── zones.ts         # Training zone definitions
 ├── features/
+│   ├── coach/           # Coaching recommendations & weekly plan
 │   ├── dashboard/       # Dashboard page
-│   ├── planning/        # Race planning & ghost sessions
+│   ├── map/             # GPS trace visualization (MapLibre + Deck.gl)
+│   ├── records/         # Personal best display
 │   ├── settings/        # Profile, thresholds, data management
 │   └── training/        # Session list & detail pages
+├── hooks/               # Shared React hooks
 ├── lib/
 │   ├── db.ts            # Typed IDB schema & singleton connection
 │   ├── idb-storage.ts   # Zustand StateStorage adapter for IndexedDB
-│   ├── indexeddb.ts      # Session records CRUD (time-series data)
-│   ├── migrate-storage.ts # One-time localStorage → IDB migration
+│   ├── indexeddb.ts     # Session records CRUD (time-series data)
 │   ├── use-hydrated.ts  # Async hydration gate hook
 │   └── utils.ts         # cn(), formatters
 ├── parsers/

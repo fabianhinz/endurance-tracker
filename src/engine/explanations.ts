@@ -193,7 +193,7 @@ const acwr: MetricExplanation = {
   range:
     "Below 0.8: undertraining, losing fitness. 0.8-1.3: sweet spot, safe progression. 1.3-1.5: caution, elevated risk. Above 1.5: danger zone, high injury risk.",
   limitations:
-    "ACWR is meaningless in the first few weeks of training (CTL near zero produces huge ratios). It also does not differentiate between types of load (running volume vs. intensity). Thresholds come from team-sport research and may differ slightly for endurance athletes.",
+    "ACWR is meaningless in the first few weeks of training (CTL near zero produces huge ratios). It also does not differentiate between types of load (running volume vs. intensity). Thresholds come from team-sport research and may differ for endurance athletes. Note: ACWR has mathematical coupling — acute load is a subset of the chronic window — which inflates the correlation between the ratio and injury. Recent literature debates whether ACWR thresholds add predictive value beyond absolute load measures alone.",
   sports: ["all"],
   displayContext:
     "Coaching dashboard alongside injury risk status. Use a color-coded gauge (green/yellow/red). Hide or grey out when data history is under 4 weeks.",
@@ -477,15 +477,15 @@ const injuryRisk: MetricExplanation = {
   oneLiner:
     "Uses your training ramp rate to estimate whether you are increasing load safely.",
   fullExplanation:
-    "Injury Risk is derived from your ACWR value. The sweet spot (0.8-1.3) represents a gradual, sustainable progression. Above 1.3, risk rises as your body has not had time to adapt to the increased load. The thresholds are based on Gabbett (2016) research on training load and injury relationships.",
+    "Injury Risk is derived from your ACWR value. The sweet spot (0.8-1.3) represents a gradual, sustainable progression. Above 1.3, risk rises as your body has not had time to adapt to the increased load. These thresholds are widely used guidelines originating from load-injury research, but the evidence is more nuanced than a single study — recent meta-analyses show the relationship between ACWR and injury is moderate and varies across sports and populations.",
   analogy:
     "It is like speeding up on a highway on-ramp. Accelerate gradually and you merge safely. Floor it and you risk losing control. Creep too slowly and you never reach cruising speed.",
   whyItMatters:
     "Most training injuries are load-related, not random. Monitoring injury risk helps athletes avoid the number one controllable risk factor: doing too much too soon.",
   range:
-    "Low (ACWR < 0.8): undertraining. Low (0.8-1.3): sweet spot. Moderate (1.3-1.5): elevated risk, monitor closely. High (> 1.5): danger zone, back off.",
+    "Undertraining (ACWR < 0.8): load is well below your baseline, risking deconditioning. Sweet spot (0.8-1.3): safe, progressive loading. Elevated (1.3-1.5): ramp rate above comfortable adaptation, monitor closely. High risk (> 1.5): load spike significantly outpacing fitness, back off.",
   limitations:
-    "Does not account for training type (high-impact running vs. low-impact cycling), individual injury history, biomechanics, or tissue-specific loading. Thresholds come from team-sport research.",
+    "Does not account for training type (high-impact running vs. low-impact cycling), individual injury history, biomechanics, or tissue-specific loading. Thresholds originate from team-sport research and are population-level averages with substantial individual variation. A recent RCT found no significant injury reduction from ACWR-based load management alone, suggesting these thresholds are best used as one input among many rather than hard rules.",
   sports: ["all"],
   displayContext:
     'Coaching dashboard alongside ACWR. Use color-coded status (green/yellow/red). Frame moderate risk as "worth monitoring."',

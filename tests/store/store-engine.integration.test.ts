@@ -40,7 +40,7 @@ describe('store + engine integration (no React)', () => {
     expect(current!.atl).toBeGreaterThan(0);
 
     // Get coaching recommendation
-    const coaching = getCoachingRecommendation(current);
+    const coaching = getCoachingRecommendation(current, metrics.length);
     expect(coaching.status).toBeTruthy();
     expect(coaching.message).toBeTruthy();
     expect(['detraining', 'fresh', 'neutral', 'optimal', 'overload']).toContain(coaching.status);

@@ -97,7 +97,7 @@ describe('computeMetrics', () => {
 
 describe('getCoachingRecommendation', () => {
   it('returns neutral recommendation for undefined metrics', () => {
-    const rec = getCoachingRecommendation(undefined);
+    const rec = getCoachingRecommendation(undefined, 0);
     expect(rec.status).toBe('neutral');
     expect(rec.tsb).toBe(0);
     expect(rec.acwr).toBe(0);
@@ -112,7 +112,7 @@ describe('getCoachingRecommendation', () => {
       atl: 20,
       tsb: 30,
       acwr: 0.4,
-    });
+    }, 42);
     expect(rec.status).toBe('detraining');
   });
 
@@ -124,7 +124,7 @@ describe('getCoachingRecommendation', () => {
       atl: 50,
       tsb: 10,
       acwr: 0.83,
-    });
+    }, 42);
     expect(rec.status).toBe('fresh');
   });
 
@@ -136,7 +136,7 @@ describe('getCoachingRecommendation', () => {
       atl: 52,
       tsb: -2,
       acwr: 1.04,
-    });
+    }, 42);
     expect(rec.status).toBe('neutral');
   });
 
@@ -148,7 +148,7 @@ describe('getCoachingRecommendation', () => {
       atl: 70,
       tsb: -20,
       acwr: 1.4,
-    });
+    }, 42);
     expect(rec.status).toBe('optimal');
   });
 
@@ -160,7 +160,7 @@ describe('getCoachingRecommendation', () => {
       atl: 80,
       tsb: -40,
       acwr: 2.0,
-    });
+    }, 42);
     expect(rec.status).toBe('overload');
   });
 
@@ -173,7 +173,7 @@ describe('getCoachingRecommendation', () => {
       atl: 55,
       tsb: -5,
       acwr: 1.1,
-    });
+    }, 42);
     expect(low.injuryRisk).toBe('low');
 
     // Moderate ACWR (1.3-1.5) => moderate risk
@@ -184,7 +184,7 @@ describe('getCoachingRecommendation', () => {
       atl: 70,
       tsb: -20,
       acwr: 1.4,
-    });
+    }, 42);
     expect(moderate.injuryRisk).toBe('moderate');
 
     // High ACWR (> 1.5) => high risk
@@ -195,8 +195,20 @@ describe('getCoachingRecommendation', () => {
       atl: 80,
       tsb: -40,
       acwr: 2.0,
-    });
+    }, 42);
     expect(high.injuryRisk).toBe('high');
+  });
+
+  it('stores dataMaturityDays from historyDays argument', () => {
+    const rec = getCoachingRecommendation({
+      date: '2024-01-01',
+      tss: 0,
+      ctl: 50,
+      atl: 50,
+      tsb: 0,
+      acwr: 1.0,
+    }, 15);
+    expect(rec.dataMaturityDays).toBe(15);
   });
 });
 
