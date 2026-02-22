@@ -3,36 +3,36 @@ import { useLayoutStore } from "../../src/store/layout.ts";
 
 describe("useLayoutStore", () => {
   beforeEach(() => {
-    useLayoutStore.setState({ dockExpanded: false, compactLayout: false });
+    useLayoutStore.setState({ dockExpanded: true, compactLayout: true });
   });
 
-  it("defaults dockExpanded to false", () => {
+  it("defaults dockExpanded to true", () => {
+    expect(useLayoutStore.getState().dockExpanded).toBe(true);
+  });
+
+  it("toggleDock flips to false", () => {
+    useLayoutStore.getState().toggleDock();
     expect(useLayoutStore.getState().dockExpanded).toBe(false);
   });
 
-  it("toggleDock flips to true", () => {
+  it("double toggle returns to true", () => {
+    useLayoutStore.getState().toggleDock();
     useLayoutStore.getState().toggleDock();
     expect(useLayoutStore.getState().dockExpanded).toBe(true);
   });
 
-  it("double toggle returns to false", () => {
-    useLayoutStore.getState().toggleDock();
-    useLayoutStore.getState().toggleDock();
-    expect(useLayoutStore.getState().dockExpanded).toBe(false);
-  });
-
-  it("defaults compactLayout to false", () => {
-    expect(useLayoutStore.getState().compactLayout).toBe(false);
-  });
-
-  it("toggleCompactLayout flips to true", () => {
-    useLayoutStore.getState().toggleCompactLayout();
+  it("defaults compactLayout to true", () => {
     expect(useLayoutStore.getState().compactLayout).toBe(true);
   });
 
-  it("double toggleCompactLayout returns to false", () => {
-    useLayoutStore.getState().toggleCompactLayout();
+  it("toggleCompactLayout flips to false", () => {
     useLayoutStore.getState().toggleCompactLayout();
     expect(useLayoutStore.getState().compactLayout).toBe(false);
+  });
+
+  it("double toggleCompactLayout returns to true", () => {
+    useLayoutStore.getState().toggleCompactLayout();
+    useLayoutStore.getState().toggleCompactLayout();
+    expect(useLayoutStore.getState().compactLayout).toBe(true);
   });
 });

@@ -5,7 +5,7 @@ import { Card } from '../../components/ui/Card.tsx';
 import { CardHeader } from '../../components/ui/CardHeader.tsx';
 import { Typography } from '../../components/ui/Typography.tsx';
 import { Button } from '../../components/ui/Button.tsx';
-import { TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent } from '../../components/ui/Tooltip.tsx';
+
 import { CoachStatusCard } from './CoachStatusCard.tsx';
 import { WeeklyPlanTimeline } from './WeeklyPlanTimeline.tsx';
 import { Settings } from 'lucide-react';
@@ -41,30 +41,29 @@ export const CoachPage = () => {
       </div>
       <div className="md:col-span-2">
         <Card>
+          <CardHeader title="Training Zones" />
+          <div className="flex flex-wrap gap-2">
+            {coach.zones.map((zone) => (
+              <span key={zone.name} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 text-xs text-text-secondary">
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ backgroundColor: zone.color }}
+                />
+                {zone.label}
+                <span className="text-text-quaternary">
+                  {formatPace(zone.maxPace)} – {formatPace(zone.minPace)}
+                </span>
+              </span>
+            ))}
+          </div>
+        </Card>
+      </div>
+      <div className="md:col-span-2">
+        <Card>
           <CardHeader
             title="Weekly Plan"
             subtitle={`Week of ${coach.plan!.weekOf} — ${coach.plan!.totalEstimatedTss} TSS`}
           />
-          <TooltipProvider>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {coach.zones.map((zone) => (
-                <TooltipRoot key={zone.name}>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 text-xs text-text-secondary cursor-default">
-                      <span
-                        className="w-2 h-2 rounded-full shrink-0"
-                        style={{ backgroundColor: zone.color }}
-                      />
-                      {zone.label}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {formatPace(zone.maxPace)} – {formatPace(zone.minPace)}
-                  </TooltipContent>
-                </TooltipRoot>
-              ))}
-            </div>
-          </TooltipProvider>
           <WeeklyPlanTimeline plan={coach.plan!} zones={coach.zones} today={coach.today} />
         </Card>
       </div>
