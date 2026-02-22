@@ -15,7 +15,6 @@ const variantBorder: Record<string, string> = {
 
 export const UploadProgress = () => {
   const uploading = useUploadProgressStore((s) => s.uploading);
-  const backfilling = useUploadProgressStore((s) => s.backfilling);
   const processed = useUploadProgressStore((s) => s.processed);
   const total = useUploadProgressStore((s) => s.total);
   const fileCount = useUploadProgressStore((s) => s.fileCount);
@@ -34,8 +33,7 @@ export const UploadProgress = () => {
     };
   }, [doneMessage, reset]);
 
-  const active = uploading || backfilling;
-  if (!active && !doneMessage) return null;
+  if (!uploading && !doneMessage) return null;
 
   if (doneMessage) {
     return (
@@ -52,15 +50,20 @@ export const UploadProgress = () => {
     );
   }
 
+  const saving = uploading && processed >= total && total > 0;
   const pct = total > 0 ? Math.min(processed, total) / total : 0;
-  const offset = CIRCUMFERENCE * (1 - pct);
-  const label = uploading
-    ? `${fileCount} session${fileCount !== 1 ? "s" : ""} processing`
-    : `${processed} of ${total}`;
+  const offset = saving ? CIRCUMFERENCE * 0.75 : CIRCUMFERENCE * (1 - pct);
+  const label = saving
+    ? "Saving…"
+    : `${fileCount} session${fileCount !== 1 ? "s" : ""} processing`;
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-4 shadow-lg">
-      <svg width={SIZE} height={SIZE} className="-rotate-90">
+      <svg
+        width={SIZE}
+        height={SIZE}
+        className={cn("-rotate-90", saving && "animate-spin")}
+      >
         <circle
           cx={SIZE / 2}
           cy={SIZE / 2}
@@ -80,7 +83,10 @@ export const UploadProgress = () => {
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          className="text-accent transition-[stroke-dashoffset] duration-500"
+          className={cn(
+            "text-accent",
+            !saving && "transition-[stroke-dashoffset] duration-500",
+          )}
         />
       </svg>
       <span className="text-sm font-semibold text-text-primary">

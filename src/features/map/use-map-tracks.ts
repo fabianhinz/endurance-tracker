@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSessionsStore } from '../../store/sessions.ts';
 import { useFiltersStore } from '../../store/filters.ts';
 import { useMapFocusStore } from '../../store/map-focus.ts';
-import { useUploadProgressStore } from '../../store/upload-progress.ts';
-import { getAllSessionGPS, getSessionGPS } from '../../lib/indexeddb.ts';
+import { getSessionGPS } from '../../lib/indexeddb.ts';
 import { rangeToCutoff, customRangeToCutoffs } from '../../lib/time-range.ts';
 import type { SessionGPS } from '../../types/gps.ts';
 import type { Sport } from '../../types/index.ts';
@@ -14,13 +13,12 @@ export interface MapTrack {
   gps: SessionGPS;
 }
 
-export const useMapTracks = (backfillRevision: number) => {
+export const useMapTracks = (gpsData: SessionGPS[] | null) => {
   const sessions = useSessionsStore((s) => s.sessions);
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
   const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
-  const backfilling = useUploadProgressStore((s) => s.backfilling);
 
   const [tracks, setTracks] = useState<MapTrack[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,11 +43,10 @@ export const useMapTracks = (backfillRevision: number) => {
         return;
       }
 
-      const allGPS = await getAllSessionGPS();
-      if (cancelled) return;
+      if (!gpsData) return;
 
       const gpsMap = new Map<string, SessionGPS>();
-      for (const g of allGPS) {
+      for (const g of gpsData) {
         gpsMap.set(g.sessionId, g);
       }
 
@@ -82,7 +79,7 @@ export const useMapTracks = (backfillRevision: number) => {
     return () => {
       cancelled = true;
     };
-  }, [sessions, timeRange, customRange, sportFilter, backfillRevision, backfilling, focusedSessionId]);
+  }, [sessions, timeRange, customRange, sportFilter, gpsData, focusedSessionId]);
 
   return { tracks, loading };
 };

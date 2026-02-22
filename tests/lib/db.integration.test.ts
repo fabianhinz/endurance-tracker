@@ -6,27 +6,27 @@ describe('DB schema', () => {
     resetDBInstance();
   });
 
-  it('opens at version 4 with session-records, session-laps, session-gps, and kv stores', async () => {
+  it('opens at version 1 with session-records, session-laps, session-gps, and kv stores', async () => {
     const db = await getDB();
-    expect(db.version).toBe(4);
+    expect(db.version).toBe(1);
     expect(db.objectStoreNames.contains('session-records')).toBe(true);
     expect(db.objectStoreNames.contains('session-laps')).toBe(true);
     expect(db.objectStoreNames.contains('session-gps')).toBe(true);
     expect(db.objectStoreNames.contains('kv')).toBe(true);
   });
 
-  it('session-records store has sessionId index', async () => {
+  it('session-records store uses sessionId keyPath (no indexes)', async () => {
     const db = await getDB();
     const tx = db.transaction('session-records', 'readonly');
-    const indexNames = Array.from(tx.store.indexNames);
-    expect(indexNames).toContain('sessionId');
+    expect(tx.store.keyPath).toBe('sessionId');
+    expect(Array.from(tx.store.indexNames)).toHaveLength(0);
   });
 
-  it('session-laps store has sessionId index', async () => {
+  it('session-laps store uses sessionId keyPath (no indexes)', async () => {
     const db = await getDB();
     const tx = db.transaction('session-laps', 'readonly');
-    const indexNames = Array.from(tx.store.indexNames);
-    expect(indexNames).toContain('sessionId');
+    expect(tx.store.keyPath).toBe('sessionId');
+    expect(Array.from(tx.store.indexNames)).toHaveLength(0);
   });
 
   it('session-gps store has sessionId index', async () => {

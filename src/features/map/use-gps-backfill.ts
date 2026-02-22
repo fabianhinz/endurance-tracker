@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useSessionsStore } from '../../store/sessions.ts';
 import { useUploadProgressStore } from '../../store/upload-progress.ts';
-import {
-  getAllSessionGPS,
-  getSessionRecords,
-  saveSessionGPS,
-} from '../../lib/indexeddb.ts';
-import { buildSessionGPS } from '../../engine/gps.ts';
+import { getAllSessionGPS } from '../../lib/indexeddb.ts';
+import type { SessionGPS } from '../../types/gps.ts';
+import type { WorkerMessageOut } from './gps-build.worker.ts';
 
 export const useGPSBackfill = () => {
-  const [revision, setRevision] = useState(0);
+  const [backfilling, setBackfilling] = useState(false);
+  const [processed, setProcessed] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [gpsData, setGpsData] = useState<SessionGPS[] | null>(null);
 
   const sessions = useSessionsStore((s) => s.sessions);
   const uploading = useUploadProgressStore((s) => s.uploading);
@@ -17,11 +17,10 @@ export const useGPSBackfill = () => {
   useEffect(() => {
     if (uploading) return;
 
-    let cancelled = false;
+    let worker: Worker | null = null;
 
     const run = async () => {
       const existingGPS = await getAllSessionGPS();
-      if (cancelled) return;
       const processedIds = new Set(existingGPS.map((g) => g.sessionId));
 
       const missing = sessions.filter(
@@ -29,32 +28,46 @@ export const useGPSBackfill = () => {
       );
 
       if (missing.length === 0) {
-        setRevision((r) => r + 1);
+        setGpsData(existingGPS);
         return;
       }
 
-      useUploadProgressStore.getState().startBackfill(missing.length);
+      setBackfilling(true);
+      setProcessed(0);
+      setTotal(missing.length);
 
-      for (let i = 0; i < missing.length; i++) {
-        if (cancelled) return;
-        const records = await getSessionRecords(missing[i].id);
-        const gpsData = buildSessionGPS(missing[i].id, records);
-        if (gpsData) await saveSessionGPS(gpsData);
-        useUploadProgressStore.getState().advance();
-      }
+      worker = new Worker(
+        new URL('./gps-build.worker.ts', import.meta.url),
+        { type: 'module' },
+      );
 
-      if (!cancelled) {
-        setRevision((r) => r + 1);
-        useUploadProgressStore.getState().reset();
-      }
+      worker.onmessage = (e: MessageEvent<WorkerMessageOut>) => {
+        if (e.data.type === 'progress') {
+          setProcessed(e.data.processed);
+        } else if (e.data.type === 'done') {
+          setBackfilling(false);
+          worker?.terminate();
+          worker = null;
+          getAllSessionGPS().then(setGpsData);
+        }
+      };
+
+      worker.onerror = () => {
+        setBackfilling(false);
+        worker?.terminate();
+        worker = null;
+      };
+
+      worker.postMessage({ type: 'build', sessionIds: missing.map((s) => s.id) });
     };
 
     run();
 
     return () => {
-      cancelled = true;
+      worker?.terminate();
+      worker = null;
     };
   }, [sessions, uploading]);
 
-  return { revision };
+  return { gpsData, backfilling, processed, total };
 };

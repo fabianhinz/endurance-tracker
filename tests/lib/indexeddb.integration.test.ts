@@ -205,17 +205,15 @@ describe('bulkSaveSessionData', () => {
     await clearAllRecords();
   });
 
-  it('saves records, laps, and GPS for multiple sessions in chunked transactions', async () => {
+  it('saves records and laps for multiple sessions in chunked transactions', async () => {
     const entries = [
       {
         records: makeCyclingRecords('session-a', 10),
         laps: makeLaps('session-a', 2),
-        gps: makeTestGPS('session-a'),
       },
       {
         records: makeRunningRecords('session-b', 15),
         laps: makeLaps('session-b', 3),
-        gps: makeTestGPS('session-b'),
       },
     ];
 
@@ -225,23 +223,18 @@ describe('bulkSaveSessionData', () => {
     const recordsB = await getSessionRecords('session-b');
     const lapsA = await getSessionLaps('session-a');
     const lapsB = await getSessionLaps('session-b');
-    const gpsA = await getSessionGPS('session-a');
-    const gpsB = await getSessionGPS('session-b');
 
     expect(recordsA).toHaveLength(10);
     expect(recordsB).toHaveLength(15);
     expect(lapsA).toHaveLength(2);
     expect(lapsB).toHaveLength(3);
-    expect(gpsA).toBeDefined();
-    expect(gpsB).toBeDefined();
   });
 
-  it('handles entries with no laps or GPS', async () => {
+  it('handles entries with no laps', async () => {
     const entries = [
       {
         records: makeCyclingRecords('session-a', 5),
         laps: [] as ReturnType<typeof makeLaps>,
-        gps: null,
       },
     ];
 
@@ -249,11 +242,9 @@ describe('bulkSaveSessionData', () => {
 
     const records = await getSessionRecords('session-a');
     const laps = await getSessionLaps('session-a');
-    const gps = await getSessionGPS('session-a');
 
     expect(records).toHaveLength(5);
     expect(laps).toHaveLength(0);
-    expect(gps).toBeUndefined();
   });
 
   it('handles empty entries array', async () => {
@@ -266,7 +257,6 @@ describe('bulkSaveSessionData', () => {
     const entries = Array.from({ length: 5 }, (_, i) => ({
       records: makeCyclingRecords(`session-${i}`, 3),
       laps: makeLaps(`session-${i}`, 1),
-      gps: makeTestGPS(`session-${i}`),
     }));
 
     const chunkIndices: number[] = [];

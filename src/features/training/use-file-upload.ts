@@ -5,7 +5,6 @@ import { useUploadProgressStore } from "../../store/upload-progress.ts";
 import { parseFitFile } from "../../parsers/fit.ts";
 import { bulkSaveSessionData } from "../../lib/indexeddb.ts";
 import { detectNewPBs, mergePBs } from "../../engine/records.ts";
-import { buildSessionGPS } from "../../engine/gps.ts";
 import { mapWithConcurrency } from "../../lib/concurrency.ts";
 import { toast } from "../../components/ui/toast-store.ts";
 import type { TrainingSession, SessionRecord, SessionLap } from "../../types/index.ts";
@@ -27,7 +26,6 @@ export const useFileUpload = (
   const updatePersonalBests = useSessionsStore((s) => s.updatePersonalBests);
   const uploading = useUploadProgressStore((s) => s.uploading);
   const startUpload = useUploadProgressStore((s) => s.startUpload);
-  const adjustTotal = useUploadProgressStore((s) => s.adjustTotal);
   const advance = useUploadProgressStore((s) => s.advance);
   const finishProgress = useUploadProgressStore((s) => s.finish);
 
@@ -100,7 +98,6 @@ export const useFileUpload = (
           const idbEntries: Array<{
             records: (SessionRecord & { sessionId: string })[];
             laps: (SessionLap & { sessionId: string })[];
-            gps: import("../../types/gps.ts").SessionGPS | null;
           }> = [];
 
           for (let i = 0; i < parsed.length; i++) {
@@ -113,8 +110,6 @@ export const useFileUpload = (
                 sessionId,
               }));
 
-              const gpsData = buildSessionGPS(sessionId, recordsWithId);
-
               const lapsWithId =
                 entry.laps.length > 0
                   ? entry.laps.map((l) => ({ ...l, sessionId }))
@@ -123,7 +118,6 @@ export const useFileUpload = (
               idbEntries.push({
                 records: recordsWithId,
                 laps: lapsWithId,
-                gps: gpsData,
               });
 
               const newPBs = detectNewPBs(
@@ -142,12 +136,8 @@ export const useFileUpload = (
           }
 
           if (idbEntries.length > 0) {
-            const chunkCount = Math.ceil(idbEntries.length / CHUNK_SIZE);
-            adjustTotal(fitFiles.length + chunkCount);
-
             await bulkSaveSessionData(idbEntries, {
               chunkSize: CHUNK_SIZE,
-              onChunkDone: () => advance(),
             });
           }
 
@@ -178,7 +168,7 @@ export const useFileUpload = (
 
       if (inputRef.current) inputRef.current.value = "";
     },
-    [profile, addSessions, personalBests, updatePersonalBests, inputRef, startUpload, adjustTotal, advance, finishProgress],
+    [profile, addSessions, personalBests, updatePersonalBests, inputRef, startUpload, advance, finishProgress],
   );
 
   return { uploading, profile, triggerUpload, handleFiles };
