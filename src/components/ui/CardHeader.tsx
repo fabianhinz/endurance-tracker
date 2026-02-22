@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
 import { Typography } from "./Typography.tsx";
 
-interface CardHeaderProps {
-  title: string;
+type CardHeaderProps = {
   subtitle?: string;
   icon?: ReactNode;
   actions?: ReactNode;
-  titleSlot?: ReactNode;
-}
+} & (
+  | { title: string; titleSlot?: ReactNode }
+  | { title?: string; titleSlot: ReactNode }
+);
 
 export const CardHeader = (props: CardHeaderProps) => {
   const titleContent = props.titleSlot ?? (

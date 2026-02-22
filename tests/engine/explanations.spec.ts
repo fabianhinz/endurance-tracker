@@ -29,6 +29,7 @@ const ALL_METRIC_IDS: MetricId[] = [
   'speedValidation',
   'recovery',
   'pacingTrend',
+  'trainingZones',
 ];
 
 const REQUIRED_FIELDS: (keyof MetricExplanation)[] = [

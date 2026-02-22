@@ -5,6 +5,8 @@ import { Card } from '../../components/ui/Card.tsx';
 import { CardHeader } from '../../components/ui/CardHeader.tsx';
 import { Typography } from '../../components/ui/Typography.tsx';
 import { Button } from '../../components/ui/Button.tsx';
+import { MetricLabel } from '../../components/ui/MetricLabel.tsx';
+import { METRIC_EXPLANATIONS } from '../../engine/explanations.ts';
 
 import { CoachStatusCard } from './CoachStatusCard.tsx';
 import { WeeklyPlanTimeline } from './WeeklyPlanTimeline.tsx';
@@ -41,7 +43,17 @@ export const CoachPage = () => {
       </div>
       <div className="md:col-span-2">
         <Card>
-          <CardHeader title="Training Zones" />
+          <CardHeader
+            titleSlot={
+              <div className="flex items-center gap-1">
+                <Typography variant="overline" as="h3">
+                  {METRIC_EXPLANATIONS.trainingZones.friendlyName}
+                </Typography>
+                <MetricLabel metricId="trainingZones" size="sm" />
+              </div>
+            }
+            subtitle={METRIC_EXPLANATIONS.trainingZones.oneLiner}
+          />
           <div className="flex flex-wrap gap-2">
             {coach.zones.map((zone) => (
               <span key={zone.name} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 text-xs text-text-secondary">

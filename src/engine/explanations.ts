@@ -27,7 +27,8 @@ export type MetricId =
   | "powerValidation"
   | "speedValidation"
   | "recovery"
-  | "pacingTrend";
+  | "pacingTrend"
+  | "trainingZones";
 
 export interface MetricExplanation {
   id: MetricId;
@@ -606,6 +607,32 @@ const pacingTrend: MetricExplanation = {
 };
 
 // ---------------------------------------------------------------------------
+// Training zones (src/engine/zones.ts)
+// ---------------------------------------------------------------------------
+
+const trainingZones: MetricExplanation = {
+  id: "trainingZones",
+  shortLabel: "Zones",
+  friendlyName: "Training Zones",
+  name: "Training Zones",
+  oneLiner:
+    "Pace-based intensity zones derived from your threshold pace.",
+  fullExplanation:
+    "Training zones divide the intensity spectrum into distinct bands based on percentages of your threshold pace. Each zone targets a different physiological system — from easy recovery (Zone 1) through lactate threshold (Zone 4) to neuromuscular power (Zone 5). Zones are recalculated automatically whenever you update your threshold pace in settings.",
+  analogy:
+    "Zones are like gears on a bicycle. Each gear is suited to different terrain and effort. You would not climb a hill in top gear or cruise the flats in first. Training zones help you pick the right gear for each workout's goal.",
+  whyItMatters:
+    "Running every workout at the same effort is the most common training mistake. Zones ensure easy days are truly easy (building aerobic base) and hard days are truly hard (driving adaptation). This polarization produces better results than moderate-intensity monotony.",
+  range:
+    "Zone 1: Recovery. Zone 2: Aerobic/easy. Zone 3: Tempo. Zone 4: Threshold. Zone 5: VO2max and above. Each zone is defined as a pace range relative to your threshold.",
+  limitations:
+    "Zones are only as accurate as your threshold pace setting. If your threshold pace is outdated, all zones shift. Zones also assume flat terrain — on hills, heart rate or perceived effort may be a better intensity guide than pace.",
+  sports: ["running"],
+  displayContext:
+    "Coaching page as a quick reference. Show zone name, color, and pace range.",
+};
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 
@@ -642,4 +669,6 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   // Session analysis
   recovery,
   pacingTrend,
+  // Training zones
+  trainingZones,
 };
