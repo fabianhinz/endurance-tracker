@@ -7,7 +7,7 @@ import type { PickingInfo } from '@deck.gl/core';
 
 const pathCache = new Map<string, [number, number][]>();
 
-const decodeCached = (sessionId: string, encoded: string): [number, number][] => {
+export const decodeCached = (sessionId: string, encoded: string): [number, number][] => {
   let path = pathCache.get(sessionId);
   if (!path) {
     path = decodeTrackForRendering(encoded);

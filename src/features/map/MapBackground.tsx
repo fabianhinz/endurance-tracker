@@ -4,11 +4,11 @@ import MapGL from 'react-map-gl/maplibre';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { darkMatterStyle } from './map-style.ts';
 import { useMapTracks } from './use-map-tracks.ts';
-import { useDeckLayers } from './use-deck-layers.ts';
+import { useDeckLayers, decodeCached } from './use-deck-layers.ts';
 import { useGPSBackfill } from './use-gps-backfill.ts';
 import { DeckGLOverlay } from './DeckGLOverlay.tsx';
 import { MapPickPopup } from './MapPickPopup.tsx';
-import { densestClusterBounds } from '../../engine/gps.ts';
+import { densestClusterBounds, boundsOverlap } from '../../engine/gps.ts';
 import { useMapFocusStore } from '../../store/map-focus.ts';
 import { useLayoutStore } from '../../store/layout.ts';
 import type { MapRef } from 'react-map-gl/maplibre';
@@ -16,6 +16,7 @@ import type { MapboxOverlay } from '@deck.gl/mapbox';
 import type { PickingInfo } from '@deck.gl/core';
 import type { PopupInfo } from './MapPickPopup.tsx';
 import type { TrackPickData } from './use-deck-layers.ts';
+import type { GPSBounds } from '../../types/gps.ts';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './map-attribution.css';
 
@@ -52,30 +53,42 @@ export const MapBackground = () => {
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
   const onClick = useCallback((info: PickingInfo<TrackPickData>) => {
-    if (!info.object || !overlayRef.current || !mapRef.current) return;
+    if (!info.object || !mapRef.current) return;
 
     const center = mapRef.current.unproject([info.x, info.y]);
+    const topLeft = mapRef.current.unproject([info.x - PICK_RADIUS, info.y - PICK_RADIUS]);
+    const bottomRight = mapRef.current.unproject([info.x + PICK_RADIUS, info.y + PICK_RADIUS]);
 
-    const picked = overlayRef.current.pickObjects({
-      x: info.x - PICK_RADIUS,
-      y: info.y - PICK_RADIUS,
-      width: PICK_RADIUS * 2,
-      height: PICK_RADIUS * 2,
-    }) as PickingInfo<TrackPickData>[];
+    const geoBounds: GPSBounds = {
+      minLat: Math.min(topLeft.lat, bottomRight.lat),
+      maxLat: Math.max(topLeft.lat, bottomRight.lat),
+      minLng: Math.min(topLeft.lng, bottomRight.lng),
+      maxLng: Math.max(topLeft.lng, bottomRight.lng),
+    };
+
     const seen = new Set<string>();
-    const sessions = picked
-      .filter((p) => {
-        if (!p.object || seen.has(p.object.sessionId)) return false;
-        seen.add(p.object.sessionId);
-        return true;
+    const sessions = mapTracks.tracks
+      .filter((t) => {
+        if (seen.has(t.sessionId)) return false;
+        if (!boundsOverlap(t.gps.bounds, geoBounds)) return false;
+        const path = decodeCached(t.sessionId, t.gps.encodedPolyline);
+        const hit = path.some(
+          (p) =>
+            p[1] >= geoBounds.minLat &&
+            p[1] <= geoBounds.maxLat &&
+            p[0] >= geoBounds.minLng &&
+            p[0] <= geoBounds.maxLng,
+        );
+        if (hit) seen.add(t.sessionId);
+        return hit;
       })
-      .map((p) => p.object!.track.session);
+      .map((t) => t.session);
 
     if (sessions.length === 0) return;
 
     setPickCircle({ center: [center.lng, center.lat] });
     setPopup({ x: info.x, y: info.y, sessions });
-  }, []);
+  }, [mapTracks.tracks]);
 
   const closePopup = useCallback(() => {
     setPopup(null);
