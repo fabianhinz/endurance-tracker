@@ -11,7 +11,6 @@ import {
   ReferenceArea,
 } from "recharts";
 import { useSessionsStore } from "../../store/sessions.ts";
-import { useMapFocusStore } from "../../store/map-focus.ts";
 import { getSessionRecords, getSessionLaps } from "../../lib/indexeddb.ts";
 import { Button } from "../../components/ui/Button.tsx";
 import { MetricCard } from "../../components/ui/MetricCard.tsx";
@@ -43,17 +42,9 @@ export const SessionDetailPage = () => {
   const params = useParams<{ id: string }>();
   const sessions = useSessionsStore((s) => s.sessions);
   const session = sessions.find((s) => s.id === params.id);
-  const setFocusedSession = useMapFocusStore((s) => s.setFocusedSession);
   const [records, setRecords] = useState<SessionRecord[]>([]);
   const [laps, setLaps] = useState<SessionLap[]>([]);
   const [showGrade, setShowGrade] = useState(false);
-
-  useEffect(() => {
-    if (params.id) {
-      setFocusedSession(params.id);
-    }
-    return () => setFocusedSession(null);
-  }, [params.id, setFocusedSession]);
 
   useEffect(() => {
     if (params.id && session?.hasDetailedRecords) {

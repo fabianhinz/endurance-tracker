@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { useMatch } from 'react-router-dom';
 import MapGL from 'react-map-gl/maplibre';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { darkMatterStyle } from './map-style.ts';
@@ -35,6 +36,12 @@ export const MapBackground = () => {
   const mapTracks = useMapTracks(backfill.gpsData);
   const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
   const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
+  const setFocusedSession = useMapFocusStore((s) => s.setFocusedSession);
+
+  const match = useMatch('/training/:id');
+  useEffect(() => {
+    setFocusedSession(match?.params.id ?? null);
+  }, [match?.params.id, setFocusedSession]);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -42,7 +49,7 @@ export const MapBackground = () => {
   const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
   const [hoveringTrack, setHoveringTrack] = useState(false);
 
-  const highlightedSessionId = hoveredSessionId ?? focusedSessionId;
+  const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
   const onClick = useCallback((info: PickingInfo<TrackPickData>) => {
     if (!info.object || !overlayRef.current || !mapRef.current) return;
