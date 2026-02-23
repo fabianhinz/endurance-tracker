@@ -40,6 +40,7 @@ export const MapBackground = () => {
 
   const [popup, setPopup] = useState<PopupInfo | null>(null);
   const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
+  const [hoveringTrack, setHoveringTrack] = useState(false);
 
   const highlightedSessionId = hoveredSessionId ?? focusedSessionId;
 
@@ -74,17 +75,25 @@ export const MapBackground = () => {
     setPickCircle(null);
   }, []);
 
-  const getCursor = useCallback((state: { isHovering: boolean; isDragging: boolean }) => {
-    if (state.isDragging) return 'grabbing';
-    if (state.isHovering) return 'pointer';
-    return 'grab';
-  }, []);
+  const onHover = useCallback(
+    (info: PickingInfo<TrackPickData>) => {
+      setHoveringTrack(!!info.object);
+      if (!popup) {
+        setPickCircle(
+          info.object && info.coordinate
+            ? { center: [info.coordinate[0], info.coordinate[1]] }
+            : null,
+        );
+      }
+    },
+    [popup],
+  );
 
   const onOverlay = useCallback((overlay: MapboxOverlay) => {
     overlayRef.current = overlay;
   }, []);
 
-  const trackLayers = useDeckLayers(mapTracks.tracks, highlightedSessionId, { onClick });
+  const trackLayers = useDeckLayers(mapTracks.tracks, highlightedSessionId, { onClick, onHover });
 
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) return null;
@@ -144,6 +153,7 @@ export const MapBackground = () => {
         ref={mapRef}
         onLoad={() => setMapLoaded(true)}
         mapStyle={darkMatterStyle}
+        cursor={hoveringTrack ? 'pointer' : undefined}
         initialViewState={{
           longitude: 10,
           latitude: 50,
@@ -158,7 +168,7 @@ export const MapBackground = () => {
         attributionControl={{ compact: true }}
         style={{ width: '100%', height: '100%' }}
       >
-        <DeckGLOverlay layers={layers} getCursor={getCursor} onOverlay={onOverlay} />
+        <DeckGLOverlay layers={layers} onOverlay={onOverlay} />
       </MapGL>
       {popup && <MapPickPopup info={popup} onClose={closePopup} />}
       {backfill.backfilling && (

@@ -24,6 +24,7 @@ export interface TrackPickData {
 
 interface UseDeckLayersOptions {
   onClick?: (info: PickingInfo<TrackPickData>) => void;
+  onHover?: (info: PickingInfo<TrackPickData>) => void;
 }
 
 export const useDeckLayers = (
@@ -32,6 +33,7 @@ export const useDeckLayers = (
   options?: UseDeckLayersOptions,
 ) => {
   const onClick = options?.onClick;
+  const onHover = options?.onHover;
 
   return useMemo(() => {
     const data: TrackPickData[] = tracks.map((t) => ({
@@ -53,6 +55,7 @@ export const useDeckLayers = (
         capRounded: true,
         pickable: true,
         onClick: onClick as PathLayer<TrackPickData>['props']['onClick'],
+        onHover: onHover as PathLayer<TrackPickData>['props']['onHover'],
         updateTriggers: {
           getColor: [highlightedSessionId],
           getWidth: [highlightedSessionId],
@@ -71,5 +74,5 @@ export const useDeckLayers = (
         },
       }),
     ];
-  }, [tracks, highlightedSessionId, onClick]);
+  }, [tracks, highlightedSessionId, onClick, onHover]);
 };
