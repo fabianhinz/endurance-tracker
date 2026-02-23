@@ -4,6 +4,7 @@ import { computeRunningZones } from '../../src/engine/zones.ts';
 import type { DailyMetrics, PrescribedWorkout } from '../../src/types/index.ts';
 
 const zones = computeRunningZones(270); // 4:30/km threshold
+const MATURE = 42; // days — well above 28-day threshold
 
 const makeMetrics = (overrides: Partial<DailyMetrics> = {}): DailyMetrics => ({
   date: '2026-02-20',
@@ -17,20 +18,20 @@ const makeMetrics = (overrides: Partial<DailyMetrics> = {}): DailyMetrics => ({
 
 describe('generateWeeklyPlan', () => {
   it('returns 7 workouts', () => {
-    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20');
+    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20', MATURE);
     expect(plan.workouts).toHaveLength(7);
   });
 
   it('starts on Monday of the current week', () => {
-    // 2026-02-20 is a Saturday → Monday is 2026-02-15
-    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20');
-    expect(plan.weekOf).toBe('2026-02-15');
+    // 2026-02-20 is a Friday → Monday is 2026-02-16
+    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20', MATURE);
+    expect(plan.weekOf).toBe('2026-02-16');
     expect(plan.workouts[0].dayLabel).toBe('Monday');
     expect(plan.workouts[6].dayLabel).toBe('Sunday');
   });
 
   it('assigns consecutive dates Mon-Sun', () => {
-    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20');
+    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20', MATURE);
     for (let i = 1; i < plan.workouts.length; i++) {
       const prev = new Date(plan.workouts[i - 1].date + 'T00:00:00');
       const curr = new Date(plan.workouts[i].date + 'T00:00:00');
@@ -39,13 +40,13 @@ describe('generateWeeklyPlan', () => {
   });
 
   it('has totalEstimatedTss matching sum of individual workouts', () => {
-    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20');
+    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20', MATURE);
     const sum = plan.workouts.reduce((s, w) => s + w.estimatedTss, 0);
     expect(plan.totalEstimatedTss).toBe(sum);
   });
 
   it('rest workouts have 0 TSS and no steps', () => {
-    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20');
+    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20', MATURE);
     const rests = plan.workouts.filter((w) => w.type === 'rest');
     for (const r of rests) {
       expect(r.estimatedTss).toBe(0);
@@ -54,7 +55,7 @@ describe('generateWeeklyPlan', () => {
   });
 
   it('all non-rest workouts have steps with pace targets', () => {
-    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20');
+    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20', MATURE);
     const active = plan.workouts.filter((w) => w.type !== 'rest');
     for (const w of active) {
       expect(w.steps.length).toBeGreaterThan(0);
@@ -71,7 +72,7 @@ describe('form status templates', () => {
   it('overload (TSB < -30) generates mostly rest/recovery', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -35, acwr: 1.0 }),
-      [], zones, '2026-02-16',
+      [], zones, '2026-02-16', MATURE,
     );
     const types = plan.workouts.map((w) => w.type);
     const restCount = types.filter((t) => t === 'rest').length;
@@ -82,7 +83,7 @@ describe('form status templates', () => {
   it('optimal (TSB -10 to -30) includes intensity sessions', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -15, acwr: 1.0 }),
-      [], zones, '2026-02-16',
+      [], zones, '2026-02-16', MATURE,
     );
     const types = plan.workouts.map((w) => w.type);
     expect(types).toContain('threshold-intervals');
@@ -91,8 +92,8 @@ describe('form status templates', () => {
 
   it('detraining (TSB > 25) includes high-intensity sessions', () => {
     const plan = generateWeeklyPlan(
-      makeMetrics({ tsb: 30, acwr: 0.5 }),
-      [], zones, '2026-02-16',
+      makeMetrics({ tsb: 30, acwr: 1.0 }),
+      [], zones, '2026-02-16', MATURE,
     );
     const types = plan.workouts.map((w) => w.type);
     expect(types).toContain('vo2max-intervals');
@@ -100,7 +101,7 @@ describe('form status templates', () => {
   });
 
   it('no-data generates conservative plan', () => {
-    const plan = generateWeeklyPlan(undefined, [], zones, '2026-02-16');
+    const plan = generateWeeklyPlan(undefined, [], zones, '2026-02-16', 0);
     expect(plan.context).toEqual({ mode: 'no-data' });
     const types = plan.workouts.map((w) => w.type);
     const easyCount = types.filter((t) => t === 'easy').length;
@@ -108,26 +109,111 @@ describe('form status templates', () => {
   });
 });
 
-describe('ACWR guards', () => {
-  it('ACWR > 1.3 downgrades hardest session to easy', () => {
-    const plan = generateWeeklyPlan(
-      makeMetrics({ tsb: -15, acwr: 1.4 }),
-      [], zones, '2026-02-16',
-    );
-    const types = plan.workouts.map((w) => w.type);
-    // Optimal template has vo2max which should be downgraded
-    expect(types).not.toContain('vo2max-intervals');
+describe('load guards', () => {
+  describe('immature data (<28 days)', () => {
+    it('uses conservative no-data template regardless of form status', () => {
+      const statuses = [
+        { tsb: -15, acwr: 1.0 }, // optimal
+        { tsb: 30, acwr: 1.0 },  // detraining
+        { tsb: -35, acwr: 1.0 }, // overload
+      ];
+      for (const s of statuses) {
+        const plan = generateWeeklyPlan(
+          makeMetrics(s), [], zones, '2026-02-16', 14,
+        );
+        const types = plan.workouts.map((w) => w.type);
+        expect(types).not.toContain('threshold-intervals');
+        expect(types).not.toContain('vo2max-intervals');
+        expect(types).not.toContain('tempo');
+        expect(types).not.toContain('long-run');
+      }
+    });
+
+    it('rationale mentions data stabilizing', () => {
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: -15, acwr: 1.0 }), [], zones, '2026-02-16', 14,
+      );
+      expect(plan.workouts[0].rationale).toContain('stabilizing');
+    });
   });
 
-  it('ACWR > 1.5 forces extra rest day', () => {
-    const plan = generateWeeklyPlan(
-      makeMetrics({ tsb: -15, acwr: 1.6 }),
-      [], zones, '2026-02-16',
-    );
-    const types = plan.workouts.map((w) => w.type);
-    expect(types).not.toContain('vo2max-intervals');
-    const restCount = types.filter((t) => t === 'rest').length;
-    expect(restCount).toBeGreaterThanOrEqual(2);
+  describe('high risk (ACWR > 1.5, mature data)', () => {
+    it('removes all high-intensity and long-run sessions across all form statuses', () => {
+      const tsbValues = [-35, -15, 0, 10, 30];
+      for (const tsb of tsbValues) {
+        const plan = generateWeeklyPlan(
+          makeMetrics({ tsb, acwr: 1.6 }),
+          [], zones, '2026-02-16', MATURE,
+        );
+        const types = plan.workouts.map((w) => w.type);
+        expect(types).not.toContain('vo2max-intervals');
+        expect(types).not.toContain('threshold-intervals');
+        expect(types).not.toContain('long-run');
+      }
+    });
+
+    it('tempo sessions are downgraded to easy', () => {
+      // Fresh template has tempo — verify it gets replaced
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: 10, acwr: 1.6 }),
+        [], zones, '2026-02-16', MATURE,
+      );
+      const types = plan.workouts.map((w) => w.type);
+      expect(types).not.toContain('tempo');
+    });
+  });
+
+  describe('moderate risk (ACWR > 1.3, mature data)', () => {
+    it('removes threshold/vo2max/long-run but keeps tempo', () => {
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: -15, acwr: 1.4 }),
+        [], zones, '2026-02-16', MATURE,
+      );
+      const types = plan.workouts.map((w) => w.type);
+      expect(types).not.toContain('vo2max-intervals');
+      expect(types).not.toContain('threshold-intervals');
+      expect(types).not.toContain('long-run');
+      expect(types).toContain('tempo');
+    });
+  });
+
+  describe('undertraining (ACWR < 0.8, mature data)', () => {
+    it('upgrades one rest/recovery day to easy', () => {
+      // Neutral template: easy, threshold, recovery, tempo, easy, rest, long-run
+      const baseline = generateWeeklyPlan(
+        makeMetrics({ tsb: 0, acwr: 1.0 }),
+        [], zones, '2026-02-16', MATURE,
+      );
+      const undertrained = generateWeeklyPlan(
+        makeMetrics({ tsb: 0, acwr: 0.7 }),
+        [], zones, '2026-02-16', MATURE,
+      );
+      const baselineEasy = baseline.workouts.filter((w) => w.type === 'easy').length;
+      const undertrainedEasy = undertrained.workouts.filter((w) => w.type === 'easy').length;
+      expect(undertrainedEasy).toBeGreaterThan(baselineEasy);
+    });
+
+    it('does not upgrade the Saturday rest day (index 5)', () => {
+      // Fresh template has rest at index 5
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: 10, acwr: 0.7 }),
+        [], zones, '2026-02-16', MATURE,
+      );
+      // Saturday (index 5) should still be rest
+      expect(plan.workouts[5].type).toBe('rest');
+    });
+  });
+
+  describe('sweet spot (ACWR 0.8-1.3, mature data)', () => {
+    it('preserves the original template', () => {
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: -15, acwr: 1.0 }),
+        [], zones, '2026-02-16', MATURE,
+      );
+      const types = plan.workouts.map((w) => w.type);
+      expect(types).toContain('threshold-intervals');
+      expect(types).toContain('long-run');
+    });
   });
 });
 
@@ -142,7 +228,7 @@ describe('hard/easy alternation', () => {
     for (const tsb of tsbValues) {
       const plan = generateWeeklyPlan(
         makeMetrics({ tsb, acwr: 1.0 }),
-        [], zones, '2026-02-16',
+        [], zones, '2026-02-16', MATURE,
       );
       for (let i = 1; i < plan.workouts.length; i++) {
         const prev = plan.workouts[i - 1].type;
@@ -190,7 +276,7 @@ describe('estimateWorkoutDistance', () => {
   });
 
   it('easy workout returns reasonable distance', () => {
-    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20');
+    const plan = generateWeeklyPlan(makeMetrics(), [], zones, '2026-02-20', MATURE);
     const easy = plan.workouts.find((w) => w.type === 'easy')!;
     const dist = estimateWorkoutDistance(easy, zones);
     // 45min at ~5:30/km pace ≈ 8.2km
@@ -203,7 +289,7 @@ describe('workout structure', () => {
   it('threshold-intervals has warmup, work intervals, recovery intervals, cooldown', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -15, acwr: 1.0 }),
-      [], zones, '2026-02-16',
+      [], zones, '2026-02-16', MATURE,
     );
     const threshold = plan.workouts.find((w) => w.type === 'threshold-intervals')!;
     expect(threshold).toBeDefined();
@@ -219,7 +305,7 @@ describe('workout structure', () => {
   it('long-run has easy portion followed by tempo portion', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -15, acwr: 1.0 }),
-      [], zones, '2026-02-16',
+      [], zones, '2026-02-16', MATURE,
     );
     const longRun = plan.workouts.find((w) => w.type === 'long-run')!;
     expect(longRun).toBeDefined();

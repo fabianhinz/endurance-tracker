@@ -27,7 +27,7 @@ export const useCoachPlan = (): {
     const zones = computeRunningZones(thresholdPace);
     const history = computeMetrics(sessions);
     const current = history.length > 0 ? history[history.length - 1] : undefined;
-    const plan = generateWeeklyPlan(current, sessions, zones, today);
+    const plan = generateWeeklyPlan(current, sessions, zones, today, history.length);
 
     return { plan, zones, hasThresholdPace: true, today };
   }, [sessions, profile, today]);

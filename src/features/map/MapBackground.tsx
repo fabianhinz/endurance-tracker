@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import MapGL from 'react-map-gl/maplibre';
 import { darkMatterStyle } from './map-style.ts';
 import { useMapTracks } from './use-map-tracks.ts';
@@ -24,9 +24,10 @@ export const MapBackground = () => {
   const layers = useDeckLayers(mapTracks.tracks);
   const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
-    if (mapTracks.tracks.length === 0 || !mapRef.current) return;
+    if (mapTracks.tracks.length === 0 || !mapRef.current || !mapLoaded) return;
 
     // When compact mode is on (desktop only), reserve right side for the content panel
     const isDesktop = window.matchMedia('(min-width: 768px)').matches;
@@ -53,7 +54,7 @@ export const MapBackground = () => {
       ],
       { padding: { top: 50, bottom: 50, left: 50, right: 50 + rightPad }, duration: 1000 },
     );
-  }, [mapTracks.tracks, focusedSessionId, compactLayout]);
+  }, [mapTracks.tracks, focusedSessionId, compactLayout, mapLoaded]);
 
   const backfillPct = backfill.total > 0 ? Math.min(backfill.processed, backfill.total) / backfill.total : 0;
   const backfillOffset = PROGRESS_CIRCUMFERENCE * (1 - backfillPct);
@@ -62,6 +63,7 @@ export const MapBackground = () => {
     <div className="fixed inset-0 z-0">
       <MapGL
         ref={mapRef}
+        onLoad={() => setMapLoaded(true)}
         mapStyle={darkMatterStyle}
         initialViewState={{
           longitude: 10,

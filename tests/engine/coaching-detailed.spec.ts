@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getFormMessage, getFormMessageDetailed } from '../../src/engine/coaching.ts';
+import { getFormMessage, getFormMessageDetailed, getLoadState } from '../../src/engine/coaching.ts';
 import type { CoachingRecommendation, FormStatus } from '../../src/types/index.ts';
 
 const ALL_STATUSES: FormStatus[] = [
@@ -136,5 +136,56 @@ describe('getFormMessageDetailed', () => {
       const undertraining = makeRec({ status: 'neutral', acwr: 0.5, injuryRisk: 'low', dataMaturityDays: 42 });
       expect(getFormMessageDetailed(sweetSpot)).not.toBe(getFormMessageDetailed(undertraining));
     });
+  });
+});
+
+describe('getLoadState', () => {
+  it('returns immature when dataMaturityDays < 28', () => {
+    expect(getLoadState(1.0, 0)).toBe('immature');
+    expect(getLoadState(1.0, 27)).toBe('immature');
+    expect(getLoadState(2.0, 10)).toBe('immature'); // immature overrides high ACWR
+    expect(getLoadState(0.5, 10)).toBe('immature'); // immature overrides low ACWR
+  });
+
+  it('boundary: 27 days is immature, 28 days is not', () => {
+    expect(getLoadState(1.0, 27)).toBe('immature');
+    expect(getLoadState(1.0, 28)).toBe('sweet-spot');
+  });
+
+  it('returns high-risk when ACWR > 1.5 and data mature', () => {
+    expect(getLoadState(1.51, 42)).toBe('high-risk');
+    expect(getLoadState(2.0, 42)).toBe('high-risk');
+  });
+
+  it('returns moderate-risk when ACWR > 1.3 and <= 1.5', () => {
+    expect(getLoadState(1.31, 42)).toBe('moderate-risk');
+    expect(getLoadState(1.5, 42)).toBe('moderate-risk');
+  });
+
+  it('boundary: 1.3 is sweet-spot, 1.31 is moderate-risk', () => {
+    expect(getLoadState(1.3, 42)).toBe('sweet-spot');
+    expect(getLoadState(1.31, 42)).toBe('moderate-risk');
+  });
+
+  it('boundary: 1.5 is moderate-risk, 1.51 is high-risk', () => {
+    expect(getLoadState(1.5, 42)).toBe('moderate-risk');
+    expect(getLoadState(1.51, 42)).toBe('high-risk');
+  });
+
+  it('returns undertraining when ACWR < 0.8 and data mature', () => {
+    expect(getLoadState(0.79, 42)).toBe('undertraining');
+    expect(getLoadState(0.5, 42)).toBe('undertraining');
+    expect(getLoadState(0.0, 42)).toBe('undertraining');
+  });
+
+  it('boundary: 0.8 is sweet-spot, 0.79 is undertraining', () => {
+    expect(getLoadState(0.8, 42)).toBe('sweet-spot');
+    expect(getLoadState(0.79, 42)).toBe('undertraining');
+  });
+
+  it('returns sweet-spot when ACWR 0.8-1.3 and data mature', () => {
+    expect(getLoadState(0.8, 42)).toBe('sweet-spot');
+    expect(getLoadState(1.0, 42)).toBe('sweet-spot');
+    expect(getLoadState(1.3, 42)).toBe('sweet-spot');
   });
 });

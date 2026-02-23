@@ -105,6 +105,8 @@ export type FormStatus =
 
 export type InjuryRisk = "low" | "moderate" | "high";
 
+export type LoadState = "immature" | "high-risk" | "moderate-risk" | "undertraining" | "sweet-spot";
+
 export interface CoachingRecommendation {
   status: FormStatus;
   message: string;
@@ -160,7 +162,7 @@ export interface PrescribedWorkout {
 }
 
 export type PlanContext =
-  | { mode: "normal"; formStatus: FormStatus; tsb: number; acwr: number }
+  | { mode: "normal"; formStatus: FormStatus; tsb: number; acwr: number; dataMaturityDays: number }
   | { mode: "taper"; raceDate: string; raceDistance: RaceDistance; daysToRace: number }
   | { mode: "no-data" };
 
