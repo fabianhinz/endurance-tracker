@@ -11,6 +11,7 @@ import { Typography } from '../../components/ui/Typography.tsx';
 import { toast } from '../../components/ui/toast-store.ts';
 import { useSessionsStore } from '../../store/sessions.ts';
 import { useUserStore } from '../../store/user.ts';
+import { useCoachPlanStore } from '../../store/coach-plan.ts';
 import { clearAllRecords } from '../../lib/indexeddb.ts';
 interface DeleteAllDataDialogProps {
   open: boolean;
@@ -27,6 +28,7 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
     useSessionsStore.getState().clearAll();
     useUserStore.getState().resetProfile();
     useUserStore.getState().initializeProfile();
+    useCoachPlanStore.getState().clearPlan();
     await clearAllRecords();
     setIsDeleting(false);
     props.onOpenChange(false);

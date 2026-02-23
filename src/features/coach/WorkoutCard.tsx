@@ -5,7 +5,6 @@ import type { PrescribedWorkout } from "../../types/index.ts";
 
 interface WorkoutCardProps {
   workout: PrescribedWorkout;
-  isToday: boolean;
   isExpanded: boolean;
   onToggle: () => void;
 }
@@ -21,17 +20,13 @@ export const WorkoutCard = (props: WorkoutCardProps) => {
         isRest
           ? "opacity-50 bg-white/5"
           : "bg-white/5 hover:bg-white/10 cursor-pointer",
-        props.isExpanded
-          ? "border-accent"
-          : props.isToday
-            ? "border-accent/50"
-            : "border-white/10",
+        props.isExpanded ? "border-accent" : "border-white/10",
       )}
       onClick={isRest ? undefined : props.onToggle}
     >
       <Typography
         variant="caption"
-        color={props.isToday ? "primary" : "tertiary"}
+        color="tertiary"
         className="font-medium"
       >
         {props.workout.dayLabel.slice(0, 3)}

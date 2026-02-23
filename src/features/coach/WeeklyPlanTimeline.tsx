@@ -6,11 +6,9 @@ import type { WeeklyPlan, RunningZone } from "../../types/index.ts";
 interface WeeklyPlanTimelineProps {
   plan: WeeklyPlan;
   zones: RunningZone[];
-  today: string;
 }
 
 export const WeeklyPlanTimeline = (props: WeeklyPlanTimelineProps) => {
-  const today = props.today;
   const firstTrainingId =
     props.plan.workouts.find((w) => w.type !== "rest")?.id ?? null;
   const [expandedId, setExpandedId] = useState<string | null>(firstTrainingId);
@@ -26,7 +24,6 @@ export const WeeklyPlanTimeline = (props: WeeklyPlanTimelineProps) => {
           <WorkoutCard
             key={workout.id}
             workout={workout}
-            isToday={workout.date === today}
             isExpanded={workout.id === expandedId}
             onToggle={() =>
               setExpandedId(workout.id === expandedId ? null : workout.id)
