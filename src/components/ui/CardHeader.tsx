@@ -12,14 +12,21 @@ type CardHeaderProps = {
 
 export const CardHeader = (props: CardHeaderProps) => {
   const titleContent = props.titleSlot ?? (
-    <Typography variant="overline" as="h3">{props.title}</Typography>
+    <Typography variant="overline" as="h3">
+      {props.title}
+    </Typography>
   );
 
   const textBlock = (
     <div>
       {titleContent}
       {props.subtitle && (
-        <Typography variant="caption" color="quaternary" as="p" className="mt-0.5">
+        <Typography
+          variant="caption"
+          color="quaternary"
+          as="p"
+          className="mt-0.5"
+        >
           {props.subtitle}
         </Typography>
       )}
@@ -28,7 +35,7 @@ export const CardHeader = (props: CardHeaderProps) => {
 
   if (props.icon) {
     return (
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-4 flex items-center gap-2">
         {props.icon}
         {textBlock}
       </div>
@@ -36,7 +43,7 @@ export const CardHeader = (props: CardHeaderProps) => {
   }
 
   return (
-    <div className="mb-4 flex items-start justify-between gap-4 flex-wrap">
+    <div className="mb-4 flex items-start justify-between gap-2">
       {textBlock}
       {props.actions && <div className="shrink-0">{props.actions}</div>}
     </div>

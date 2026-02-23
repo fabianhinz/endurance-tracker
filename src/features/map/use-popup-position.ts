@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-const POPUP_WIDTH = 320;
+const POPUP_WIDTH = 380;
 const POPUP_HEIGHT = 300;
 const GAP = 8;
 const SAFE_ZONE_PADDING = 16;

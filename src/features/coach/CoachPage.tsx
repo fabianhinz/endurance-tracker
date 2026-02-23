@@ -12,7 +12,7 @@ import { METRIC_EXPLANATIONS } from '../../engine/explanations.ts';
 import { CoachStatusCard } from './CoachStatusCard.tsx';
 import { WeeklyPlanTimeline } from './WeeklyPlanTimeline.tsx';
 import { Settings } from 'lucide-react';
-import { formatPace } from '../../lib/utils.ts';
+import { ZoneLegend } from '../../components/ui/ZoneLegend.tsx';
 
 export const CoachPage = () => {
   const coach = useCoachPlan();
@@ -54,20 +54,7 @@ export const CoachPage = () => {
             }
             subtitle={METRIC_EXPLANATIONS.trainingZones.oneLiner}
           />
-          <div className="flex flex-wrap gap-2">
-            {coach.zones.map((zone) => (
-              <span key={zone.name} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 text-xs text-text-secondary">
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: zone.color }}
-                />
-                {zone.label}
-                <span className="text-text-quaternary">
-                  {formatPace(zone.maxPace)} – {formatPace(zone.minPace)}
-                </span>
-              </span>
-            ))}
-          </div>
+          <ZoneLegend zones={coach.zones} />
         </Card>
       </div>
       <div className="md:col-span-2">

@@ -8,6 +8,7 @@ import { useDeckLayers, decodeCached } from './use-deck-layers.ts';
 import { useGPSBackfill } from './use-gps-backfill.ts';
 import { DeckGLOverlay } from './DeckGLOverlay.tsx';
 import { MapPickPopup } from './MapPickPopup.tsx';
+import { LapPickPopup } from './LapPickPopup.tsx';
 import { densestClusterBounds, boundsOverlap, segmentIntersectsBounds } from '../../engine/gps.ts';
 import { useMapFocusStore } from '../../store/map-focus.ts';
 import { useLayoutStore } from '../../store/layout.ts';
@@ -15,6 +16,7 @@ import type { MapRef } from 'react-map-gl/maplibre';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import type { PickingInfo } from '@deck.gl/core';
 import type { PopupInfo } from './MapPickPopup.tsx';
+import type { LapPopupInfo } from './LapPickPopup.tsx';
 import type { TrackPickData } from './use-deck-layers.ts';
 import type { GPSBounds } from '../../types/gps.ts';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -38,6 +40,8 @@ export const MapBackground = () => {
   const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
   const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
   const setFocusedSession = useMapFocusStore((s) => s.setFocusedSession);
+  const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
+  const focusedSport = useMapFocusStore((s) => s.focusedSport);
 
   const match = useMatch('/training/:id');
   useEffect(() => {
@@ -48,10 +52,11 @@ export const MapBackground = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const [popup, setPopup] = useState<PopupInfo | null>(null);
+  const [lapPopup, setLapPopup] = useState<LapPopupInfo | null>(null);
   const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
   const [hoveringTrack, setHoveringTrack] = useState(false);
 
-  const interactive = !popup;
+  const interactive = !popup && !lapPopup;
 
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
@@ -59,6 +64,14 @@ export const MapBackground = () => {
     if (!info.object || !mapRef.current) return;
 
     const center = mapRef.current.unproject([info.x, info.y]);
+
+    // On session detail page with laps available, show lap popup instead
+    if (focusedSessionId && focusedLaps.length > 0) {
+      setPickCircle({ center: [center.lng, center.lat] });
+      setLapPopup({ x: info.x, y: info.y });
+      return;
+    }
+
     const topLeft = mapRef.current.unproject([info.x - PICK_RADIUS, info.y - PICK_RADIUS]);
     const bottomRight = mapRef.current.unproject([info.x + PICK_RADIUS, info.y + PICK_RADIUS]);
 
@@ -88,17 +101,18 @@ export const MapBackground = () => {
 
     setPickCircle({ center: [center.lng, center.lat] });
     setPopup({ x: info.x, y: info.y, sessions });
-  }, [mapTracks.tracks]);
+  }, [mapTracks.tracks, focusedSessionId, focusedLaps]);
 
   const closePopup = useCallback(() => {
     setPopup(null);
+    setLapPopup(null);
     setPickCircle(null);
   }, []);
 
   const onHover = useCallback(
     (info: PickingInfo<TrackPickData>) => {
       setHoveringTrack(!!info.object);
-      if (!popup) {
+      if (!popup && !lapPopup) {
         setPickCircle(
           info.object && info.coordinate
             ? { center: [info.coordinate[0], info.coordinate[1]] }
@@ -106,7 +120,7 @@ export const MapBackground = () => {
         );
       }
     },
-    [popup],
+    [popup, lapPopup],
   );
 
   const onOverlay = useCallback((overlay: MapboxOverlay) => {
@@ -178,7 +192,7 @@ export const MapBackground = () => {
   return (
     <div className="fixed inset-0 z-0" onPointerLeave={() => {
       setHoveringTrack(false);
-      if (!popup) setPickCircle(null);
+      if (!popup && !lapPopup) setPickCircle(null);
     }}>
       <MapGL
         ref={mapRef}
@@ -202,6 +216,14 @@ export const MapBackground = () => {
         <DeckGLOverlay layers={layers} onOverlay={onOverlay} />
       </MapGL>
       {popup && <MapPickPopup info={popup} onClose={closePopup} />}
+      {lapPopup && focusedSport && (
+        <LapPickPopup
+          info={lapPopup}
+          laps={focusedLaps}
+          sport={focusedSport}
+          onClose={closePopup}
+        />
+      )}
       {backfill.backfilling && (
         <svg
           width={PROGRESS_SIZE}

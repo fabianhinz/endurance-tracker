@@ -48,7 +48,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
     <div ref={popupRef} style={style}>
       <Card
         variant="compact"
-        className="max-w-[320px] max-h-[300px] flex flex-col overflow-hidden"
+        className="w-[380px] max-h-[300px] flex flex-col overflow-hidden"
       >
         <CardHeader
           title={`${props.info.sessions.length} Sessions`}

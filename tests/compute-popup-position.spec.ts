@@ -4,7 +4,7 @@ import {
   type SafeZone,
 } from "../src/features/map/use-popup-position.ts";
 
-// Popup dimensions from the module: 320x300, gap: 8
+// Popup dimensions from the module: 380x300, gap: 8
 
 const largeSafeZone: SafeZone = {
   left: 0,
@@ -24,7 +24,7 @@ describe("computePopupPosition", () => {
 
   it("flips left when click is near right edge", () => {
     const pos = computePopupPosition(1800, 400, largeSafeZone);
-    // 1800 + 8 + 320 = 2128 > 1920, so flips: anchor at 1800 - 8 = 1792
+    // 1800 + 8 + 380 = 2188 > 1920, so flips: anchor at 1800 - 8 = 1792
     expect(pos.left).toBe(1792);
     expect(pos.top).toBe(408);
     expect(pos.flipX).toBe(true);
@@ -56,7 +56,7 @@ describe("computePopupPosition", () => {
       right: 1200,
       bottom: 1080,
     };
-    // Click at x=1100: 1100+8+320=1428 > 1200 → flip: anchor at 1100-8=1092
+    // Click at x=1100: 1100+8+380=1488 > 1200 → flip: anchor at 1100-8=1092
     const pos = computePopupPosition(1100, 400, constrained);
     expect(pos.left).toBe(1092);
     expect(pos.top).toBe(408);
@@ -65,18 +65,18 @@ describe("computePopupPosition", () => {
   });
 
   it("clamps to safe zone edges in narrow safe zone", () => {
-    // Safe zone barely fits the popup (320 wide, 300 tall)
+    // Safe zone barely fits the popup (380 wide, 300 tall)
     const narrow: SafeZone = {
       left: 100,
       top: 50,
-      right: 420, // 320 available
+      right: 480, // 380 available
       bottom: 350, // 300 available
     };
     // Click at top-left of narrow zone
-    // 100+8+320=428 > 420 → flip: 100-8=92 → clamped to left+popupW=420
+    // 100+8+380=488 > 480 → flip: 100-8=92 → clamped to left+popupW=480
     // 50+8+300=358 > 350 → flip: 50-8=42 → clamped to top+popupH=350
     const pos = computePopupPosition(100, 50, narrow);
-    expect(pos.left).toBe(420);
+    expect(pos.left).toBe(480);
     expect(pos.top).toBe(350);
     expect(pos.flipX).toBe(true);
     expect(pos.flipY).toBe(true);

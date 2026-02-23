@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useSessionsStore } from "../../store/sessions.ts";
+import { useMapFocusStore } from "../../store/map-focus.ts";
 import { getSessionRecords, getSessionLaps } from "../../lib/indexeddb.ts";
 import { Button } from "../../components/ui/Button.tsx";
 import { MetricCard } from "../../components/ui/MetricCard.tsx";
@@ -50,6 +51,18 @@ export const SessionDetailPage = () => {
       getSessionLaps(params.id).then(setLaps);
     }
   }, [params.id, session?.hasDetailedRecords]);
+
+  const setFocusedLaps = useMapFocusStore((s) => s.setFocusedLaps);
+  const clearFocusedLaps = useMapFocusStore((s) => s.clearFocusedLaps);
+
+  useEffect(() => {
+    if (laps.length > 0 && session) {
+      setFocusedLaps(laps, session.sport);
+    }
+    return () => {
+      clearFocusedLaps();
+    };
+  }, [laps, session, setFocusedLaps, clearFocusedLaps]);
 
   // Downsample records for chart (every 10th point)
   const chartData = useMemo(
