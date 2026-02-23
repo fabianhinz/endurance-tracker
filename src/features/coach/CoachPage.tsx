@@ -10,7 +10,7 @@ import { METRIC_EXPLANATIONS } from '../../engine/explanations.ts';
 
 import { CoachStatusCard } from './CoachStatusCard.tsx';
 import { WeeklyPlanTimeline } from './WeeklyPlanTimeline.tsx';
-import { RefreshCw, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { formatPace } from '../../lib/utils.ts';
 
 export const CoachPage = () => {
@@ -75,11 +75,6 @@ export const CoachPage = () => {
           <CardHeader
             title="Weekly Plan"
             subtitle={`Week of ${coach.plan!.weekOf} — ${coach.plan!.totalEstimatedTss} TSS`}
-            actions={
-              <Button variant="ghost" size="icon" onClick={coach.refreshPlan} aria-label="Refresh plan">
-                <RefreshCw size={16} />
-              </Button>
-            }
           />
           <WeeklyPlanTimeline plan={coach.plan!} zones={coach.zones} />
         </Card>

@@ -21,8 +21,10 @@ export const MapBackground = () => {
   const mapRef = useRef<MapRef>(null);
   const backfill = useGPSBackfill();
   const mapTracks = useMapTracks(backfill.gpsData);
-  const layers = useDeckLayers(mapTracks.tracks);
+  const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
   const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
+  const highlightedSessionId = hoveredSessionId ?? focusedSessionId;
+  const layers = useDeckLayers(mapTracks.tracks, highlightedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
   const [mapLoaded, setMapLoaded] = useState(false);
 

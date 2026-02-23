@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSessionsStore } from '../store/sessions.ts';
 import { useUserStore } from '../store/user.ts';
 import { useCoachPlanStore } from '../store/coach-plan.ts';
@@ -13,7 +13,6 @@ export const useCoachPlan = (): {
   plan: WeeklyPlan | null;
   zones: RunningZone[];
   hasThresholdPace: boolean;
-  refreshPlan: () => void;
 } => {
   const sessions = useSessionsStore((s) => s.sessions);
   const profile = useUserStore((s) => s.profile);
@@ -21,10 +20,6 @@ export const useCoachPlan = (): {
   const cacheKey = useCoachPlanStore((s) => s.cacheKey);
 
   const [today] = useState(() => toDateString(Date.now()));
-
-  const refreshPlan = useCallback(() => {
-    useCoachPlanStore.getState().clearPlan();
-  }, []);
 
   const result = useMemo(() => {
     const thresholdPace = profile?.thresholds.thresholdPace;
@@ -55,5 +50,5 @@ export const useCoachPlan = (): {
     }
   }, [result.freshPlan, result.freshKey]);
 
-  return { plan: result.plan, zones: result.zones, hasThresholdPace: result.hasThresholdPace, refreshPlan };
+  return { plan: result.plan, zones: result.zones, hasThresholdPace: result.hasThresholdPace };
 };

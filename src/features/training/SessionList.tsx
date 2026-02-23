@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useFiltersStore } from "../../store/filters.ts";
+import { useMapFocusStore } from "../../store/map-focus.ts";
 import { formatDate, formatDuration, formatDistance } from "../../lib/utils.ts";
 import { Typography } from "../../components/ui/Typography.tsx";
 import {
@@ -28,8 +29,17 @@ export const SessionList = () => {
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
+  const setHoveredSession = useMapFocusStore((s) => s.setHoveredSession);
   const [sessionToDelete, setSessionToDelete] =
     useState<TrainingSession | null>(null);
+  const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(leaveTimer.current);
+      setHoveredSession(null);
+    };
+  }, [setHoveredSession]);
 
   const filtered = useMemo(() => {
     let list: typeof sessions;
@@ -55,6 +65,16 @@ export const SessionList = () => {
           <Link
             key={session.id}
             to={`/training/${session.id}`}
+            onPointerEnter={() => {
+              clearTimeout(leaveTimer.current);
+              setHoveredSession(session.id);
+            }}
+            onPointerLeave={() => {
+              leaveTimer.current = setTimeout(
+                () => setHoveredSession(null),
+                150,
+              );
+            }}
             className={`flex items-center gap-4 rounded-xl ${glassClass} p-4 transition-colors hover:bg-white/10`}
           >
             <SportBadge sport={session.sport} />

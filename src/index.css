@@ -104,6 +104,10 @@
   scrollbar-color: var(--color-gray-700) transparent;
 }
 
+html {
+  scrollbar-width: none;
+}
+
 *:focus {
   outline: none;
 }
