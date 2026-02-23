@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useFiltersStore } from "../../store/filters.ts";
+import { useMapFocusStore } from "../../store/map-focus.ts";
+import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
@@ -15,6 +17,7 @@ export const RecentSessions = () => {
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
+  const hover = useHoverIntent(useMapFocusStore((s) => s.setHoveredSession));
 
   const recent = useMemo(() => {
     let list: typeof sessions;
@@ -49,6 +52,8 @@ export const RecentSessions = () => {
           <Link
             key={s.id}
             to={`/training/${s.id}`}
+            onPointerEnter={() => hover.onPointerEnter(s.id)}
+            onPointerLeave={hover.onPointerLeave}
             className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-white/10 cursor-pointer"
           >
             <SportBadge sport={s.sport} size="sm" />

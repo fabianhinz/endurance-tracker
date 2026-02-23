@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { SportBadge } from "../../components/ui/SportBadge.tsx";
@@ -24,8 +25,7 @@ interface MapPickPopupProps {
 export const MapPickPopup = (props: MapPickPopupProps) => {
   const navigate = useNavigate();
   const popupRef = useRef<HTMLDivElement>(null);
-  const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const setHoveredSession = useMapFocusStore((s) => s.setHoveredSession);
+  const hover = useHoverIntent(useMapFocusStore((s) => s.setHoveredSession));
   const onClose = props.onClose;
 
   useEffect(() => {
@@ -42,10 +42,8 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("pointerdown", handleClickOutside);
-      clearTimeout(leaveTimer.current);
-      setHoveredSession(null);
     };
-  }, [onClose, setHoveredSession]);
+  }, [onClose]);
 
   const flipX = props.info.x > window.innerWidth - 300;
   const flipY = props.info.y > window.innerHeight - 250;
@@ -84,16 +82,8 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
               key={session.id}
               variant="ghost"
               className="w-full justify-start gap-3 h-auto p-2 text-left"
-              onPointerEnter={() => {
-                clearTimeout(leaveTimer.current);
-                setHoveredSession(session.id);
-              }}
-              onPointerLeave={() => {
-                leaveTimer.current = setTimeout(
-                  () => setHoveredSession(null),
-                  150,
-                );
-              }}
+              onPointerEnter={() => hover.onPointerEnter(session.id)}
+              onPointerLeave={hover.onPointerLeave}
               onClick={() => {
                 props.onClose();
                 navigate(`/training/${session.id}`);

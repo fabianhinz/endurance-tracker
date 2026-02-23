@@ -1,9 +1,10 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo } from "react";
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useFiltersStore } from "../../store/filters.ts";
 import { useMapFocusStore } from "../../store/map-focus.ts";
+import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
 import { formatDate, formatDuration, formatDistance } from "../../lib/utils.ts";
 import { Typography } from "../../components/ui/Typography.tsx";
 import {
@@ -30,16 +31,9 @@ export const SessionList = () => {
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
   const setHoveredSession = useMapFocusStore((s) => s.setHoveredSession);
+  const hover = useHoverIntent(setHoveredSession);
   const [sessionToDelete, setSessionToDelete] =
     useState<TrainingSession | null>(null);
-  const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(leaveTimer.current);
-      setHoveredSession(null);
-    };
-  }, [setHoveredSession]);
 
   const filtered = useMemo(() => {
     let list: typeof sessions;
@@ -65,16 +59,8 @@ export const SessionList = () => {
           <Link
             key={session.id}
             to={`/training/${session.id}`}
-            onPointerEnter={() => {
-              clearTimeout(leaveTimer.current);
-              setHoveredSession(session.id);
-            }}
-            onPointerLeave={() => {
-              leaveTimer.current = setTimeout(
-                () => setHoveredSession(null),
-                150,
-              );
-            }}
+            onPointerEnter={() => hover.onPointerEnter(session.id)}
+            onPointerLeave={hover.onPointerLeave}
             className={`flex items-center gap-4 rounded-xl ${glassClass} p-4 transition-colors hover:bg-white/10`}
           >
             <SportBadge sport={session.sport} />
