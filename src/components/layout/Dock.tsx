@@ -3,7 +3,6 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Zap,
-  Trophy,
   Settings,
   Ellipsis,
   Upload,
@@ -34,7 +33,6 @@ const tabs = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/training", label: "Training", icon: Zap },
   { to: "/coach", label: "Coach", icon: HeartPulse },
-  { to: "/records", label: "Records", icon: Trophy },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 

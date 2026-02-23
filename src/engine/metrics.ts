@@ -6,8 +6,10 @@ import { toDateString } from '../lib/utils.ts';
  * metric_today = metric_yesterday + (tss_today - metric_yesterday) * (2 / (days + 1))
  */
 const ewmaStep = (previous: number, todayTss: number, days: number): number => {
+  const safeTss = Number.isFinite(todayTss) ? todayTss : 0;
   const alpha = 2 / (days + 1);
-  return previous + (todayTss - previous) * alpha;
+  const result = previous + (safeTss - previous) * alpha;
+  return Number.isFinite(result) ? result : previous;
 };
 
 /**

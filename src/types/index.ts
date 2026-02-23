@@ -105,7 +105,7 @@ export type FormStatus =
 
 export type InjuryRisk = "low" | "moderate" | "high";
 
-export type LoadState = "immature" | "high-risk" | "moderate-risk" | "undertraining" | "sweet-spot";
+export type LoadState = "immature" | "transitioning" | "high-risk" | "moderate-risk" | "undertraining" | "sweet-spot";
 
 export interface CoachingRecommendation {
   status: FormStatus;

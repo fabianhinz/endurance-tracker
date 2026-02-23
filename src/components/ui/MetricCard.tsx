@@ -16,32 +16,33 @@ interface MetricCardProps {
 }
 
 export const MetricCard = (props: MetricCardProps) => {
-  const hasMetricId = props.metricId !== undefined;
+  const subtitle = props.metricId
+    ? METRIC_EXPLANATIONS[props.metricId].oneLiner
+    : props.subtitle;
 
   return (
-    <Card className="h-[160px]">
-      {hasMetricId ? (
-        <div className="mb-4 flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <div className="flex items-center gap-1">
-              <Typography variant="overline" as="h3">{props.label}</Typography>
-              <MetricLabel metricId={props.metricId!} size="sm" />
-            </div>
-            <Typography variant="caption" color="quaternary" as="p" className="mt-0.5">
-              {METRIC_EXPLANATIONS[props.metricId!].oneLiner}
-            </Typography>
-          </div>
-        </div>
-      ) : (
-        <>
-          <Typography variant="overline" as="h3">{props.label}</Typography>
-          <Typography variant="caption" color="quaternary" as="p" className="mt-0.5">{props.subtitle}</Typography>
-        </>
+    <Card className="h-[140px]">
+      <div className="flex items-center gap-1">
+        <Typography variant="overline" as="h3">
+          {props.label}
+        </Typography>
+        {props.metricId && <MetricLabel metricId={props.metricId} size="sm" />}
+      </div>
+      {subtitle && (
+        <Typography
+          variant="caption"
+          color="quaternary"
+          as="p"
+          className="mt-0.5"
+        >
+          {subtitle}
+        </Typography>
       )}
+      {props.subDetail && <div className="mt-1">{props.subDetail}</div>}
       <Typography
         variant={props.size === "lg" ? "h1" : "h3"}
         as="p"
-        className={hasMetricId ? undefined : "mt-2"}
+        className="mt-auto"
       >
         {props.value}
         {props.unit && (
@@ -50,7 +51,6 @@ export const MetricCard = (props: MetricCardProps) => {
           </Typography>
         )}
       </Typography>
-      {props.subDetail && <div className="mt-1">{props.subDetail}</div>}
     </Card>
   );
 };

@@ -79,6 +79,19 @@ describe('stress pipeline: records → validate → filter → NP → TSS/TRIMP'
     expect(maleTrimp).not.toBe(femaleTrimp);
   });
 
+  it('calculateTRIMP returns 0 when avgHr > maxHr (invalid FIT data)', () => {
+    // avgHr=200, maxHr=190 — impossible, should be guarded
+    expect(calculateTRIMP(200, 3600, 50, 190, 'male')).toBe(0);
+    expect(calculateTRIMP(191, 3600, 50, 190, 'female')).toBe(0);
+  });
+
+  it('calculateTRIMP returns 0 for edge case avgHr == maxHr', () => {
+    // avgHr exactly at maxHr — deltaHrRatio = 1.0, valid but also caught by > guard
+    // Actually avgHr > maxHr is the guard, avgHr == maxHr is still valid
+    const result = calculateTRIMP(190, 3600, 50, 190, 'male');
+    expect(result).toBeGreaterThan(0); // deltaHrRatio = 1.0, valid
+  });
+
   it('short session (< 30 records) → no NP, graceful fallback', () => {
     const records = makeCyclingRecords('s5', 20);
 

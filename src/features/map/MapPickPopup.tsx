@@ -48,7 +48,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
     <div ref={popupRef} style={style}>
       <Card
         variant="compact"
-        className="max-w-[320px] max-h-[300px] flex flex-col overflow-hidden"
+        className="w-[380px] max-h-[300px] flex flex-col overflow-hidden"
       >
         <CardHeader
           title={`${props.info.sessions.length} Sessions`}
@@ -65,7 +65,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
           }
         />
         <div className="space-y-1 overflow-y-auto min-h-0">
-          {props.info.sessions.map((session) => (
+          {props.info.sessions.toSorted((a, b) => b.date - a.date).map((session) => (
             <SessionItem
               key={session.id}
               session={session}

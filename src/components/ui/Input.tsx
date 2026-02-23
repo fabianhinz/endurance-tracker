@@ -1,22 +1,33 @@
-import { cn } from '../../lib/utils.ts';
+import type { ReactNode } from "react";
+import { cn } from "../../lib/utils.ts";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  error?: string;
+  helperText?: ReactNode;
+  error?: boolean;
 }
 
 export const Input = (props: InputProps) => {
-  const { className, error, ...rest } = props;
+  const { className, helperText, error, ...rest } = props;
   return (
     <div className="w-full">
       <input
         className={cn(
-          'flex h-10 w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-text-primary placeholder:text-text-quaternary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface-sunken disabled:cursor-not-allowed disabled:opacity-50',
-          error ? 'border-status-danger-strong' : 'border-white/10',
+          "flex h-10 w-full rounded-lg border bg-white/5 px-3 py-2 text-sm text-text-primary placeholder:text-text-quaternary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface-sunken disabled:cursor-not-allowed disabled:opacity-50",
+          error ? "border-status-danger-strong" : "border-white/10",
           className,
         )}
         {...rest}
       />
-      {error && <p className="mt-1 text-xs text-status-danger">{error}</p>}
+      {helperText && (
+        <p
+          className={cn(
+            "mt-1 text-xs",
+            error ? "text-status-danger" : "text-text-quaternary",
+          )}
+        >
+          {helperText}
+        </p>
+      )}
     </div>
   );
 };

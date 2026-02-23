@@ -30,14 +30,26 @@ export const getFormMessage = (status: FormStatus): string => {
 };
 
 // ---------------------------------------------------------------------------
+// Shared ACWR thresholds
+// ---------------------------------------------------------------------------
+
+export const ACWR_UNDERTRAINING_THRESHOLD = 0.8;
+export const ACWR_MODERATE_THRESHOLD = 1.3;
+export const ACWR_HIGH_THRESHOLD = 1.5;
+
+// ---------------------------------------------------------------------------
 // Shared load-state classification
 // ---------------------------------------------------------------------------
 
 export const getLoadState = (acwr: number, dataMaturityDays: number): LoadState => {
-  if (dataMaturityDays < 28) return 'immature';
-  if (acwr > 1.5) return 'high-risk';
-  if (acwr > 1.3) return 'moderate-risk';
-  if (acwr < 0.8) return 'undertraining';
+  if (dataMaturityDays < 21) return 'immature';
+  if (dataMaturityDays < 28) {
+    if (acwr > ACWR_HIGH_THRESHOLD) return 'high-risk';
+    return 'transitioning';
+  }
+  if (acwr > ACWR_HIGH_THRESHOLD) return 'high-risk';
+  if (acwr > ACWR_MODERATE_THRESHOLD) return 'moderate-risk';
+  if (acwr < ACWR_UNDERTRAINING_THRESHOLD) return 'undertraining';
   return 'sweet-spot';
 };
 
@@ -122,6 +134,7 @@ export const getFormMessageDetailed = (rec: CoachingRecommendation): string => {
 
   switch (state) {
     case 'immature':
+    case 'transitioning':
       return IMMATURE_MESSAGES[rec.status];
     case 'undertraining':
       return UNDERTRAINING_MESSAGES[rec.status];
@@ -131,42 +144,18 @@ export const getFormMessageDetailed = (rec: CoachingRecommendation): string => {
     case 'high-risk':
       return RISK_MESSAGES[rec.status][rec.injuryRisk as Exclude<InjuryRisk, 'low'>];
   }
-
-  // Priority 2: undertraining (ACWR < 0.8, mature data)
-  if (rec.acwr < 0.8) {
-    return UNDERTRAINING_MESSAGES[rec.status];
-  }
-
-  // Priority 3: sweet spot (low injury risk, ACWR >= 0.8)
-  if (rec.injuryRisk === 'low') {
-    switch (rec.status) {
-      case 'detraining':
-        return 'Your fitness is starting to decline because training has been too light recently. Your body has fully recovered and is ready for more stimulus. Consider gradually increasing your training volume to get back on track.';
-      case 'fresh':
-        return 'You are well-rested and your fitness is high relative to your fatigue. This is the ideal state for racing or key workouts. If you have a target event coming up, now is the time to perform.';
-      case 'neutral':
-        return 'Your training load is balanced with your recovery. This is normal day-to-day training territory. Keep following your plan and focus on aerobic development and consistency.';
-      case 'optimal':
-        return 'You have been training hard recently and your body is adapting. This is a good place to be — your fitness is growing. Just make sure you are sleeping well and eating enough to support recovery.';
-      case 'overload':
-        return 'You are carrying significant fatigue from recent training. Your body needs rest to absorb the training stress and come back stronger. Take easy days or a full rest day before pushing hard again.';
-    }
-  }
-
-  // Priority 4 & 5: moderate or high risk
-  return RISK_MESSAGES[rec.status][rec.injuryRisk];
 };
 
 export const getInjuryRisk = (acwr: number): InjuryRisk => {
-  if (acwr <= 1.3) return 'low';
-  if (acwr <= 1.5) return 'moderate';
+  if (acwr <= ACWR_MODERATE_THRESHOLD) return 'low';
+  if (acwr <= ACWR_HIGH_THRESHOLD) return 'moderate';
   return 'high';
 };
 
 export const getACWRColor = (acwr: number): 'green' | 'yellow' | 'red' => {
-  if (acwr < 0.8) return 'yellow';
-  if (acwr <= 1.3) return 'green';
-  if (acwr <= 1.5) return 'yellow';
+  if (acwr < ACWR_UNDERTRAINING_THRESHOLD) return 'yellow';
+  if (acwr <= ACWR_MODERATE_THRESHOLD) return 'green';
+  if (acwr <= ACWR_HIGH_THRESHOLD) return 'yellow';
   return 'red';
 };
 

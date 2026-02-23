@@ -8,13 +8,15 @@ import { useDeckLayers, decodeCached } from './use-deck-layers.ts';
 import { useGPSBackfill } from './use-gps-backfill.ts';
 import { DeckGLOverlay } from './DeckGLOverlay.tsx';
 import { MapPickPopup } from './MapPickPopup.tsx';
-import { densestClusterBounds, boundsOverlap } from '../../engine/gps.ts';
+import { LapPickPopup } from './LapPickPopup.tsx';
+import { densestClusterBounds, boundsOverlap, segmentIntersectsBounds } from '../../engine/gps.ts';
 import { useMapFocusStore } from '../../store/map-focus.ts';
 import { useLayoutStore } from '../../store/layout.ts';
 import type { MapRef } from 'react-map-gl/maplibre';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import type { PickingInfo } from '@deck.gl/core';
 import type { PopupInfo } from './MapPickPopup.tsx';
+import type { LapPopupInfo } from './LapPickPopup.tsx';
 import type { TrackPickData } from './use-deck-layers.ts';
 import type { GPSBounds } from '../../types/gps.ts';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -24,7 +26,7 @@ const PROGRESS_SIZE = 20;
 const PROGRESS_STROKE = 2.5;
 const PROGRESS_RADIUS = (PROGRESS_SIZE - PROGRESS_STROKE) / 2;
 const PROGRESS_CIRCUMFERENCE = 2 * Math.PI * PROGRESS_RADIUS;
-const PICK_RADIUS = 50;
+export const PICK_RADIUS = 25;
 
 interface PickCircle {
   center: [number, number];
@@ -38,17 +40,23 @@ export const MapBackground = () => {
   const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
   const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
   const setFocusedSession = useMapFocusStore((s) => s.setFocusedSession);
+  const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
+  const focusedSport = useMapFocusStore((s) => s.focusedSport);
 
   const match = useMatch('/training/:id');
   useEffect(() => {
     setFocusedSession(match?.params.id ?? null);
   }, [match?.params.id, setFocusedSession]);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
+  const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const [popup, setPopup] = useState<PopupInfo | null>(null);
+  const [lapPopup, setLapPopup] = useState<LapPopupInfo | null>(null);
   const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
   const [hoveringTrack, setHoveringTrack] = useState(false);
+
+  const interactive = !popup && !lapPopup;
 
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
@@ -56,6 +64,14 @@ export const MapBackground = () => {
     if (!info.object || !mapRef.current) return;
 
     const center = mapRef.current.unproject([info.x, info.y]);
+
+    // On session detail page with laps available, show lap popup instead
+    if (focusedSessionId && focusedLaps.length > 0) {
+      setPickCircle({ center: [center.lng, center.lat] });
+      setLapPopup({ x: info.x, y: info.y });
+      return;
+    }
+
     const topLeft = mapRef.current.unproject([info.x - PICK_RADIUS, info.y - PICK_RADIUS]);
     const bottomRight = mapRef.current.unproject([info.x + PICK_RADIUS, info.y + PICK_RADIUS]);
 
@@ -73,11 +89,8 @@ export const MapBackground = () => {
         if (!boundsOverlap(t.gps.bounds, geoBounds)) return false;
         const path = decodeCached(t.sessionId, t.gps.encodedPolyline);
         const hit = path.some(
-          (p) =>
-            p[1] >= geoBounds.minLat &&
-            p[1] <= geoBounds.maxLat &&
-            p[0] >= geoBounds.minLng &&
-            p[0] <= geoBounds.maxLng,
+          (p, i) =>
+            i > 0 && segmentIntersectsBounds(path[i - 1], p, geoBounds),
         );
         if (hit) seen.add(t.sessionId);
         return hit;
@@ -88,17 +101,18 @@ export const MapBackground = () => {
 
     setPickCircle({ center: [center.lng, center.lat] });
     setPopup({ x: info.x, y: info.y, sessions });
-  }, [mapTracks.tracks]);
+  }, [mapTracks.tracks, focusedSessionId, focusedLaps]);
 
   const closePopup = useCallback(() => {
     setPopup(null);
+    setLapPopup(null);
     setPickCircle(null);
   }, []);
 
   const onHover = useCallback(
     (info: PickingInfo<TrackPickData>) => {
       setHoveringTrack(!!info.object);
-      if (!popup) {
+      if (!popup && !lapPopup) {
         setPickCircle(
           info.object && info.coordinate
             ? { center: [info.coordinate[0], info.coordinate[1]] }
@@ -106,14 +120,18 @@ export const MapBackground = () => {
         );
       }
     },
-    [popup],
+    [popup, lapPopup],
   );
 
   const onOverlay = useCallback((overlay: MapboxOverlay) => {
     overlayRef.current = overlay;
   }, []);
 
-  const trackLayers = useDeckLayers(mapTracks.tracks, highlightedSessionId, { onClick, onHover });
+  const trackLayers = useDeckLayers(
+    mapTracks.tracks,
+    highlightedSessionId,
+    onboardingComplete ? { onClick, onHover } : undefined,
+  );
 
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) return null;
@@ -123,8 +141,12 @@ export const MapBackground = () => {
       getPosition: (d) => d.center,
       getRadius: PICK_RADIUS,
       radiusUnits: 'pixels',
-      getFillColor: [255, 255, 255, 20],
+      getFillColor: [255, 255, 255, 13],
       filled: true,
+      stroked: true,
+      getLineColor: [255, 255, 255, 25],
+      lineWidthUnits: 'pixels' as const,
+      getLineWidth: 1,
       pickable: false,
     });
   }, [pickCircle]);
@@ -170,7 +192,7 @@ export const MapBackground = () => {
   return (
     <div className="fixed inset-0 z-0" onPointerLeave={() => {
       setHoveringTrack(false);
-      if (!popup) setPickCircle(null);
+      if (!popup && !lapPopup) setPickCircle(null);
     }}>
       <MapGL
         ref={mapRef}
@@ -182,18 +204,26 @@ export const MapBackground = () => {
           latitude: 50,
           zoom: 4,
         }}
-        scrollZoom={!popup}
-        dragPan={!popup}
-        dragRotate={!popup}
-        doubleClickZoom={!popup}
-        touchZoomRotate={!popup}
-        keyboard={!popup}
+        scrollZoom={interactive}
+        dragPan={interactive}
+        dragRotate={interactive}
+        doubleClickZoom={interactive}
+        touchZoomRotate={interactive}
+        keyboard={interactive}
         attributionControl={{ compact: true }}
         style={{ width: '100%', height: '100%' }}
       >
         <DeckGLOverlay layers={layers} onOverlay={onOverlay} />
       </MapGL>
       {popup && <MapPickPopup info={popup} onClose={closePopup} />}
+      {lapPopup && focusedSport && (
+        <LapPickPopup
+          info={lapPopup}
+          laps={focusedLaps}
+          sport={focusedSport}
+          onClose={closePopup}
+        />
+      )}
       {backfill.backfilling && (
         <svg
           width={PROGRESS_SIZE}

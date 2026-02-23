@@ -85,6 +85,48 @@ export const unionBounds = (boundsArray: GPSBounds[]): GPSBounds | null => {
   return { minLat, maxLat, minLng, maxLng };
 };
 
+/**
+ * Test whether the line segment a→b intersects an axis-aligned bounding box.
+ * Uses parametric clipping (Liang-Barsky). Coordinates are [lng, lat].
+ */
+export const segmentIntersectsBounds = (
+  a: [number, number],
+  b: [number, number],
+  bounds: GPSBounds,
+): boolean => {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+
+  const p = [-dx, dx, -dy, dy];
+  const q = [
+    a[0] - bounds.minLng,
+    bounds.maxLng - a[0],
+    a[1] - bounds.minLat,
+    bounds.maxLat - a[1],
+  ];
+
+  let tMin = 0;
+  let tMax = 1;
+
+  for (let i = 0; i < 4; i++) {
+    if (p[i] === 0) {
+      // Segment is parallel to this edge — reject if outside
+      if (q[i] < 0) return false;
+    } else {
+      const t = q[i] / p[i];
+      if (p[i] < 0) {
+        if (t > tMax) return false;
+        if (t > tMin) tMin = t;
+      } else {
+        if (t < tMin) return false;
+        if (t < tMax) tMax = t;
+      }
+    }
+  }
+
+  return tMin <= tMax;
+};
+
 export const boundsCenter = (b: GPSBounds): GPSPoint => ({
   lat: (b.minLat + b.maxLat) / 2,
   lng: (b.minLng + b.maxLng) / 2,

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-const POPUP_WIDTH = 320;
+const POPUP_WIDTH = 380;
 const POPUP_HEIGHT = 300;
 const GAP = 8;
 const SAFE_ZONE_PADDING = 16;
@@ -15,6 +15,8 @@ export interface SafeZone {
 export interface PopupPosition {
   left: number;
   top: number;
+  flipX: boolean;
+  flipY: boolean;
 }
 
 export const computePopupPosition = (
@@ -28,25 +30,35 @@ export const computePopupPosition = (
   const popupW = Math.min(POPUP_WIDTH, safeWidth);
   const popupH = Math.min(POPUP_HEIGHT, safeHeight);
 
-  // Try below-right of click
+  // Horizontal: try right of click
   let left = x + GAP;
-  let top = y + GAP;
-
-  // Flip horizontally if overflows right edge
+  let flipX = false;
   if (left + popupW > safeZone.right) {
-    left = x - GAP - popupW;
+    left = x - GAP;
+    flipX = true;
   }
 
-  // Flip vertically if overflows bottom edge
+  // Vertical: try below click
+  let top = y + GAP;
+  let flipY = false;
   if (top + popupH > safeZone.bottom) {
-    top = y - GAP - popupH;
+    top = y - GAP;
+    flipY = true;
   }
 
-  // Clamp to safe zone edges
-  left = Math.max(safeZone.left, Math.min(left, safeZone.right - popupW));
-  top = Math.max(safeZone.top, Math.min(top, safeZone.bottom - popupH));
+  // Clamp (accounts for transform offset)
+  if (flipX) {
+    left = Math.max(safeZone.left + popupW, Math.min(left, safeZone.right));
+  } else {
+    left = Math.max(safeZone.left, Math.min(left, safeZone.right - popupW));
+  }
+  if (flipY) {
+    top = Math.max(safeZone.top + popupH, Math.min(top, safeZone.bottom));
+  } else {
+    top = Math.max(safeZone.top, Math.min(top, safeZone.bottom - popupH));
+  }
 
-  return { left, top };
+  return { left, top, flipX, flipY };
 };
 
 export const usePopupPosition = (
@@ -79,10 +91,15 @@ export const usePopupPosition = (
 
     const pos = computePopupPosition(x, y, safeZone);
 
+    const transforms: string[] = [];
+    if (pos.flipX) transforms.push("translateX(-100%)");
+    if (pos.flipY) transforms.push("translateY(-100%)");
+
     return {
       position: "fixed" as const,
       left: pos.left,
       top: pos.top,
+      ...(transforms.length > 0 && { transform: transforms.join(" ") }),
       zIndex: 50,
     };
   }, [x, y]);

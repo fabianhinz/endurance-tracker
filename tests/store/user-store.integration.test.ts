@@ -15,30 +15,6 @@ describe('user store', () => {
     expect(profile!.gender).toBe('male');
   });
 
-  it('initializeProfile creates default when profile is null', () => {
-    expect(useUserStore.getState().profile).toBeNull();
-
-    useUserStore.getState().initializeProfile();
-
-    const profile = useUserStore.getState().profile;
-    expect(profile).not.toBeNull();
-    expect(profile!.id).toBeTruthy();
-    expect(profile!.gender).toBe('male');
-    expect(profile!.thresholds.maxHr).toBe(203);
-    expect(profile!.thresholds.restHr).toBe(44);
-  });
-
-  it('initializeProfile is a no-op when profile already exists', () => {
-    const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
-    useUserStore.getState().setProfile(profileData);
-    const originalId = useUserStore.getState().profile!.id;
-
-    useUserStore.getState().initializeProfile();
-
-    expect(useUserStore.getState().profile!.id).toBe(originalId);
-    expect(useUserStore.getState().profile!.gender).toBe('male');
-  });
-
   it('updateProfile partial merge', () => {
     const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
     useUserStore.getState().setProfile(profileData);

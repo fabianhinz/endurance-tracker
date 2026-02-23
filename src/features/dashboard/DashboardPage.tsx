@@ -3,8 +3,7 @@ import { ReadinessDial } from "./ReadinessDial.tsx";
 import { ACWRIndicator } from "./ACWRIndicator.tsx";
 import { MetricsChart } from "./MetricsChart.tsx";
 import { WeeklyLoadChart } from "./WeeklyLoadChart.tsx";
-import { RecentSessions } from "./RecentSessions.tsx";
-import { PersonalBestsCard } from "./PersonalBestsCard.tsx";
+import { RecentActivityCard } from "./RecentActivityCard.tsx";
 import { useFiltersStore } from "../../store/filters.ts";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
 
@@ -35,8 +34,7 @@ export const DashboardPage = () => {
       <div className="md:col-span-2">
         <MetricsChart range={timeRange} customRange={customRange} onZoomComplete={handleZoomComplete} onZoomReset={handleZoomReset} />
       </div>
-      <RecentSessions />
-      <PersonalBestsCard />
+      <RecentActivityCard />
     </PageGrid>
   );
 };

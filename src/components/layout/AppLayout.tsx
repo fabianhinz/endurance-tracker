@@ -4,10 +4,27 @@ import { useLayoutStore } from "../../store/layout.ts";
 import { MapBackground } from "../../features/map/MapBackground.tsx";
 import { Dock } from "./Dock.tsx";
 import { UploadProgress } from "./UploadProgress.tsx";
+import { OnboardingPage } from "../../features/onboarding/OnboardingPage.tsx";
 
 export const AppLayout = () => {
   const compactLayout = useLayoutStore((s) => s.compactLayout);
   const dockExpanded = useLayoutStore((s) => s.dockExpanded);
+  const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
+
+  if (!onboardingComplete) {
+    return (
+      <div className="min-h-screen">
+        <MapBackground />
+        <main
+          data-layout="main"
+          className="relative z-10 p-6 pt-24 w-full mx-auto max-w-2xl"
+        >
+          <OnboardingPage />
+        </main>
+        <UploadProgress />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
