@@ -95,10 +95,7 @@ export const MapBackground = () => {
       getRadius: PICK_RADIUS,
       radiusUnits: 'pixels',
       getFillColor: [255, 255, 255, 20],
-      getLineColor: [255, 255, 255, 60],
-      stroked: true,
       filled: true,
-      lineWidthMinPixels: 1,
       pickable: false,
     });
   }, [pickCircle]);
