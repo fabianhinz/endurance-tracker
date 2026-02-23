@@ -18,26 +18,34 @@ describe("computePopupPosition", () => {
     const pos = computePopupPosition(500, 400, largeSafeZone);
     expect(pos.left).toBe(508); // x + 8 gap
     expect(pos.top).toBe(408); // y + 8 gap
+    expect(pos.flipX).toBe(false);
+    expect(pos.flipY).toBe(false);
   });
 
   it("flips left when click is near right edge", () => {
     const pos = computePopupPosition(1800, 400, largeSafeZone);
-    // 1800 + 8 + 320 = 2128 > 1920, so flips: 1800 - 8 - 320 = 1472
-    expect(pos.left).toBe(1472);
+    // 1800 + 8 + 320 = 2128 > 1920, so flips: anchor at 1800 - 8 = 1792
+    expect(pos.left).toBe(1792);
     expect(pos.top).toBe(408);
+    expect(pos.flipX).toBe(true);
+    expect(pos.flipY).toBe(false);
   });
 
   it("flips up when click is near bottom edge", () => {
     const pos = computePopupPosition(500, 900, largeSafeZone);
-    // 900 + 8 + 300 = 1208 > 1080, so flips: 900 - 8 - 300 = 592
+    // 900 + 8 + 300 = 1208 > 1080, so flips: anchor at 900 - 8 = 892
     expect(pos.left).toBe(508);
-    expect(pos.top).toBe(592);
+    expect(pos.top).toBe(892);
+    expect(pos.flipX).toBe(false);
+    expect(pos.flipY).toBe(true);
   });
 
   it("flips both when click is near bottom-right corner", () => {
     const pos = computePopupPosition(1800, 900, largeSafeZone);
-    expect(pos.left).toBe(1472);
-    expect(pos.top).toBe(592);
+    expect(pos.left).toBe(1792);
+    expect(pos.top).toBe(892);
+    expect(pos.flipX).toBe(true);
+    expect(pos.flipY).toBe(true);
   });
 
   it("clamps inside when click is under a page content area", () => {
@@ -48,10 +56,12 @@ describe("computePopupPosition", () => {
       right: 1200,
       bottom: 1080,
     };
-    // Click at x=1100: 1100+8+320=1428 > 1200 → flip: 1100-8-320=772
+    // Click at x=1100: 1100+8+320=1428 > 1200 → flip: anchor at 1100-8=1092
     const pos = computePopupPosition(1100, 400, constrained);
-    expect(pos.left).toBe(772);
+    expect(pos.left).toBe(1092);
     expect(pos.top).toBe(408);
+    expect(pos.flipX).toBe(true);
+    expect(pos.flipY).toBe(false);
   });
 
   it("clamps to safe zone edges in narrow safe zone", () => {
@@ -63,10 +73,12 @@ describe("computePopupPosition", () => {
       bottom: 350, // 300 available
     };
     // Click at top-left of narrow zone
+    // 100+8+320=428 > 420 → flip: 100-8=92 → clamped to left+popupW=420
+    // 50+8+300=358 > 350 → flip: 50-8=42 → clamped to top+popupH=350
     const pos = computePopupPosition(100, 50, narrow);
-    // 100+8+320=428 > 420 → flip: 100-8-320=-228 → clamped to 100
-    // 50+8+300=358 > 350 → flip: 50-8-300=-258 → clamped to 50
-    expect(pos.left).toBe(100);
-    expect(pos.top).toBe(50);
+    expect(pos.left).toBe(420);
+    expect(pos.top).toBe(350);
+    expect(pos.flipX).toBe(true);
+    expect(pos.flipY).toBe(true);
   });
 });

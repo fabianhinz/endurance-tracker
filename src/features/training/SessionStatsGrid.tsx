@@ -125,57 +125,32 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     props.session.elevationGain !== undefined &&
     props.session.elevationGain > 0
   ) {
-    const elevValue = (
-      <span className="flex items-baseline gap-3">
-        <span>+{props.session.elevationGain}m</span>
-        {props.session.elevationLoss !== undefined &&
-          props.session.elevationLoss > 0 && (
-            <span className="text-text-tertiary">
-              -{props.session.elevationLoss}m
-            </span>
-          )}
-      </span>
-    );
     stats.push({
       key: "elevation",
       label: "Elevation",
-      value: elevValue,
+      value: `+${props.session.elevationGain}`,
+      unit: "m",
+      subDetail:
+        props.session.elevationLoss !== undefined &&
+        props.session.elevationLoss > 0 ? (
+          <Typography variant="caption" as="p">
+            -{props.session.elevationLoss}m
+          </Typography>
+        ) : undefined,
     });
   }
 
   if (props.session.minAltitude !== undefined) {
-    const altValue = (
-      <span className="flex flex-wrap items-baseline gap-3 text-sm">
-        <span>
-          <span className="font-bold">
-            {Math.round(props.session.minAltitude)}m
-          </span>
-          <Typography variant="caption" className="ml-1 font-normal">
-            min
-          </Typography>
-        </span>
-        <span>
-          <span className="font-bold">
-            {Math.round(props.session.avgAltitude!)}m
-          </span>
-          <Typography variant="caption" className="ml-1 font-normal">
-            avg
-          </Typography>
-        </span>
-        <span>
-          <span className="font-bold">
-            {Math.round(props.session.maxAltitude!)}m
-          </span>
-          <Typography variant="caption" className="ml-1 font-normal">
-            max
-          </Typography>
-        </span>
-      </span>
-    );
     stats.push({
       key: "altitude",
       label: "Altitude",
-      value: altValue,
+      value: `${Math.round(props.session.minAltitude)} — ${Math.round(props.session.maxAltitude!)}`,
+      unit: "m",
+      subDetail: (
+        <Typography variant="caption" as="p">
+          avg {Math.round(props.session.avgAltitude!)}m
+        </Typography>
+      ),
     });
   }
 
@@ -189,7 +164,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
         <Typography
           variant="caption"
           as="p"
-          className={cn("font-medium", recoveryMeta.className)}
+          className={recoveryMeta.className}
         >
           {recoveryMeta.label}
         </Typography>
@@ -211,7 +186,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
         <Typography
           variant="caption"
           as="p"
-          className={cn("font-medium", trend.className)}
+          className={trend.className}
         >
           {trend.label}
         </Typography>
@@ -230,16 +205,17 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       {hasStats && (
         <>
           <CardHeader title="Details" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
+          <div className="grid grid-cols-2 gap-3">
             {stats.map((stat) => (
-              <StatItem
-                key={stat.key}
-                label={stat.label}
-                value={stat.value}
-                unit={stat.unit}
-                metricId={stat.metricId}
-                subDetail={stat.subDetail}
-              />
+              <div key={stat.key} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <StatItem
+                  label={stat.label}
+                  value={stat.value}
+                  unit={stat.unit}
+                  metricId={stat.metricId}
+                  subDetail={stat.subDetail}
+                />
+              </div>
             ))}
           </div>
         </>

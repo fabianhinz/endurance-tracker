@@ -8,7 +8,7 @@ import { useDeckLayers, decodeCached } from './use-deck-layers.ts';
 import { useGPSBackfill } from './use-gps-backfill.ts';
 import { DeckGLOverlay } from './DeckGLOverlay.tsx';
 import { MapPickPopup } from './MapPickPopup.tsx';
-import { densestClusterBounds, boundsOverlap } from '../../engine/gps.ts';
+import { densestClusterBounds, boundsOverlap, segmentIntersectsBounds } from '../../engine/gps.ts';
 import { useMapFocusStore } from '../../store/map-focus.ts';
 import { useLayoutStore } from '../../store/layout.ts';
 import type { MapRef } from 'react-map-gl/maplibre';
@@ -24,7 +24,7 @@ const PROGRESS_SIZE = 20;
 const PROGRESS_STROKE = 2.5;
 const PROGRESS_RADIUS = (PROGRESS_SIZE - PROGRESS_STROKE) / 2;
 const PROGRESS_CIRCUMFERENCE = 2 * Math.PI * PROGRESS_RADIUS;
-const PICK_RADIUS = 50;
+export const PICK_RADIUS = 25;
 
 interface PickCircle {
   center: [number, number];
@@ -76,11 +76,8 @@ export const MapBackground = () => {
         if (!boundsOverlap(t.gps.bounds, geoBounds)) return false;
         const path = decodeCached(t.sessionId, t.gps.encodedPolyline);
         const hit = path.some(
-          (p) =>
-            p[1] >= geoBounds.minLat &&
-            p[1] <= geoBounds.maxLat &&
-            p[0] >= geoBounds.minLng &&
-            p[0] <= geoBounds.maxLng,
+          (p, i) =>
+            i > 0 && segmentIntersectsBounds(path[i - 1], p, geoBounds),
         );
         if (hit) seen.add(t.sessionId);
         return hit;
@@ -130,8 +127,12 @@ export const MapBackground = () => {
       getPosition: (d) => d.center,
       getRadius: PICK_RADIUS,
       radiusUnits: 'pixels',
-      getFillColor: [255, 255, 255, 20],
+      getFillColor: [255, 255, 255, 13],
       filled: true,
+      stroked: true,
+      getLineColor: [255, 255, 255, 25],
+      lineWidthUnits: 'pixels' as const,
+      getLineWidth: 1,
       pickable: false,
     });
   }, [pickCircle]);

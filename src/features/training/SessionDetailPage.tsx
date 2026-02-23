@@ -1,21 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ReferenceArea,
-} from "recharts";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { getSessionRecords, getSessionLaps } from "../../lib/indexeddb.ts";
 import { Button } from "../../components/ui/Button.tsx";
 import { MetricCard } from "../../components/ui/MetricCard.tsx";
-import { ChartCard } from "../../components/ui/ChartCard.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
 import {
@@ -36,12 +25,9 @@ import {
   formatDistance,
   formatSubSport,
 } from "../../lib/utils.ts";
-import { cn } from "../../lib/utils.ts";
-import { useChartZoom } from "../../lib/use-chart-zoom.ts";
-import { chartTheme } from "../../lib/chart-theme.ts";
-import { tokens } from "../../lib/tokens.ts";
 import { SportChip } from "../../components/ui/SportChip.tsx";
 import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
+import { PerformanceChart } from "./PerformanceChart.tsx";
 import type { SessionRecord, SessionLap } from "../../types/index.ts";
 import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
 
@@ -54,7 +40,6 @@ export const SessionDetailPage = () => {
   const session = sessions.find((s) => s.id === params.id);
   const [records, setRecords] = useState<SessionRecord[]>([]);
   const [laps, setLaps] = useState<SessionLap[]>([]);
-  const [showGrade, setShowGrade] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [nameInput, setNameInput] = useState("");
@@ -76,15 +61,9 @@ export const SessionDetailPage = () => {
           hr: r.hr,
           power: r.power,
           speed: r.speed ? Math.round(r.speed * 3.6 * 10) / 10 : undefined,
-          grade:
-            r.grade !== undefined ? Math.round(r.grade * 10) / 10 : undefined,
         })),
     [records],
   );
-
-  const hasGradeData = chartData.some((d) => d.grade !== undefined);
-
-  const zoom = useChartZoom({ data: chartData, xKey: "time" });
 
   if (!session) {
     return (
@@ -118,7 +97,7 @@ export const SessionDetailPage = () => {
             <Typography
               variant="caption"
               color="quaternary"
-              className="rounded-md bg-white/10 px-2 py-0.5"
+              className="flex align-center rounded-md bg-white/10 px-2 py-0.5"
             >
               {subSportLabel}
             </Typography>
@@ -152,180 +131,44 @@ export const SessionDetailPage = () => {
       </div>
 
       <PageGrid>
-        <MetricCard
-          label="Duration"
-          subtitle="Total elapsed time"
-          size="lg"
-          value={formatDuration(session.duration)}
-          subDetail={
-            session.movingTime !== undefined &&
-            session.movingTime !== session.duration ? (
-              <div className="space-y-0.5">
-                <Typography variant="caption" as="p">
-                  Moving: {formatDuration(session.movingTime)}
-                </Typography>
-                <Typography variant="caption" as="p">
-                  Stopped:{" "}
-                  {formatDuration(session.duration - session.movingTime)}
-                </Typography>
-              </div>
-            ) : undefined
-          }
-        />
-        <MetricCard
-          label="Distance"
-          subtitle="Total distance covered"
-          size="lg"
-          value={formatDistance(session.distance)}
-        />
-        <MetricCard
-          label={METRIC_EXPLANATIONS[session.stressMethod].friendlyName}
-          subtitle=""
-          metricId={session.stressMethod}
-          size="lg"
-          value={session.tss.toFixed(0)}
-        />
-        {session.avgHr && (
+        <div className="grid grid-cols-2 gap-4 md:col-span-2">
+          <MetricCard
+            label="Duration"
+            subtitle=""
+            size="lg"
+            value={formatDuration(session.duration)}
+          />
+          <MetricCard
+            label="Distance"
+            subtitle=""
+            size="lg"
+            value={formatDistance(session.distance)}
+          />
+          <MetricCard
+            label={METRIC_EXPLANATIONS[session.stressMethod].friendlyName}
+            subtitle=""
+            metricId={session.stressMethod}
+            size="lg"
+            value={session.tss.toFixed(0)}
+          />
           <MetricCard
             label="Avg HR"
-            subtitle="Average heart rate"
+            subtitle=""
             size="lg"
-            value={session.avgHr}
-            unit="bpm"
+            value={session.avgHr ?? "--"}
+            unit={session.avgHr ? "bpm" : undefined}
           />
+        </div>
+
+        {chartData.length > 0 && (
+          <div className="md:col-span-2">
+            <PerformanceChart data={chartData} />
+          </div>
         )}
 
         <div className="md:col-span-2">
           <SessionStatsGrid session={session} laps={laps} />
         </div>
-
-        {chartData.length > 0 && (
-          <div className="md:col-span-2">
-            <ChartCard
-              title="Performance"
-              subtitle="Heart rate, power, and speed over time"
-              actions={
-                hasGradeData ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowGrade((v) => !v)}
-                    aria-pressed={showGrade}
-                    aria-label="Toggle grade overlay on chart"
-                    className={cn(
-                      "px-2 py-1 text-xs",
-                      showGrade
-                        ? "bg-chart-grade/20 text-chart-grade"
-                        : "bg-white/5 text-text-quaternary hover:text-text-tertiary",
-                    )}
-                  >
-                    Grade %
-                  </Button>
-                ) : undefined
-              }
-              minHeight="h-64"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={zoom.zoomedData}
-                  onMouseDown={zoom.onMouseDown}
-                  onMouseMove={zoom.onMouseMove}
-                  onMouseUp={zoom.onMouseUp}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke={chartTheme.grid.stroke}
-                  />
-                  <XAxis
-                    dataKey="time"
-                    tick={chartTheme.tick}
-                    tickLine={false}
-                    axisLine={chartTheme.axisLine}
-                    tickFormatter={(v: number) => `${Math.round(v)} min`}
-                  />
-                  <YAxis
-                    yAxisId="left"
-                    tick={chartTheme.tick}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <RechartsTooltip
-                    contentStyle={chartTheme.tooltip.contentStyle}
-                    labelStyle={chartTheme.tooltip.labelStyle}
-                    isAnimationActive={chartTheme.tooltip.isAnimationActive}
-                    labelFormatter={(v) => `${Math.round(Number(v))} min`}
-                  />
-                  {chartData.some((d) => d.hr) && (
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="hr"
-                      stroke={tokens.chartHr}
-                      strokeWidth={1.5}
-                      dot={false}
-                      name="HR (bpm)"
-                    />
-                  )}
-                  {chartData.some((d) => d.power) && (
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="power"
-                      stroke={tokens.chartPower}
-                      strokeWidth={1.5}
-                      dot={false}
-                      name="Power (W)"
-                    />
-                  )}
-                  {chartData.some((d) => d.speed) && (
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="speed"
-                      stroke={tokens.chartSpeed}
-                      strokeWidth={1.5}
-                      dot={false}
-                      name="Speed (km/h)"
-                    />
-                  )}
-                  {showGrade && (
-                    <>
-                      <YAxis
-                        yAxisId="grade"
-                        orientation="right"
-                        tick={chartTheme.tick}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(v: number) => `${v}%`}
-                        domain={["auto", "auto"]}
-                      />
-                      <Line
-                        yAxisId="grade"
-                        type="monotone"
-                        dataKey="grade"
-                        stroke={tokens.chartGrade}
-                        strokeWidth={1}
-                        strokeDasharray="4 2"
-                        dot={false}
-                        name="Grade (%)"
-                      />
-                    </>
-                  )}
-                  {zoom.refAreaLeft && zoom.refAreaRight && (
-                    <ReferenceArea
-                      yAxisId="left"
-                      x1={zoom.refAreaLeft}
-                      x2={zoom.refAreaRight}
-                      strokeOpacity={0.3}
-                      fill={tokens.accent}
-                      fillOpacity={0.15}
-                    />
-                  )}
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          </div>
-        )}
       </PageGrid>
 
       <DialogRoot
