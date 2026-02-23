@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { useSessionsStore } from '../../src/store/sessions.ts';
 import { useUserStore } from '../../src/store/user.ts';
+import { useCoachPlanStore } from '../../src/store/coach-plan.ts';
 import { makeSession } from '../factories/sessions.ts';
 import { makeUserProfile } from '../factories/profiles.ts';
 import { makeCyclingRecords, makeLaps } from '../factories/records.ts';
@@ -37,7 +38,14 @@ describe('delete all data', () => {
     // Populate IDB kv store (simulates Zustand persist)
     await idbStorage.setItem('endurance-tracker-user', '{"state":{"profile":{}}}');
 
+    // Populate coach plan cache
+    useCoachPlanStore.getState().setPlan(
+      { weekOf: '2026-02-09', workouts: [], totalEstimatedTss: 0, context: { mode: 'no-data' } },
+      '2026-02-09:1:300',
+    );
+
     // Verify everything is populated
+    expect(useCoachPlanStore.getState().cachedPlan).not.toBeNull();
     expect(useSessionsStore.getState().sessions).toHaveLength(1);
     expect(useSessionsStore.getState().personalBests).toHaveLength(1);
     expect(useUserStore.getState().profile).not.toBeNull();
@@ -49,9 +57,12 @@ describe('delete all data', () => {
     useSessionsStore.getState().clearAll();
     useUserStore.getState().resetProfile();
     useUserStore.getState().initializeProfile();
+    useCoachPlanStore.getState().clearPlan();
     await clearAllRecords();
 
     // Verify everything is cleared
+    expect(useCoachPlanStore.getState().cachedPlan).toBeNull();
+    expect(useCoachPlanStore.getState().cacheKey).toBeNull();
     expect(useSessionsStore.getState().sessions).toHaveLength(0);
     expect(useSessionsStore.getState().personalBests).toHaveLength(0);
     expect(await getSessionRecords(sessionId)).toHaveLength(0);

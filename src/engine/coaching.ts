@@ -3,6 +3,7 @@ import type {
   DailyMetrics,
   FormStatus,
   InjuryRisk,
+  LoadState,
 } from '../types/index.ts';
 
 export const getFormStatus = (tsb: number): FormStatus => {
@@ -26,6 +27,18 @@ export const getFormMessage = (status: FormStatus): string => {
     case 'overload':
       return 'Deep Fatigue. High Risk. Rest recommended.';
   }
+};
+
+// ---------------------------------------------------------------------------
+// Shared load-state classification
+// ---------------------------------------------------------------------------
+
+export const getLoadState = (acwr: number, dataMaturityDays: number): LoadState => {
+  if (dataMaturityDays < 28) return 'immature';
+  if (acwr > 1.5) return 'high-risk';
+  if (acwr > 1.3) return 'moderate-risk';
+  if (acwr < 0.8) return 'undertraining';
+  return 'sweet-spot';
 };
 
 // ---------------------------------------------------------------------------
@@ -56,6 +69,19 @@ const UNDERTRAINING_MESSAGES: Record<FormStatus, string> = {
     'You have been training hard recently, yet your acute load is still below your long-term average. This can happen after a sudden taper. Ensure the reduced load is intentional and time-limited.',
   overload:
     'You are carrying significant fatigue despite a low recent training load relative to your history. This may indicate accumulated stress from non-training factors. Prioritize recovery before adding volume.',
+};
+
+const SWEET_SPOT_MESSAGES: Record<FormStatus, string> = {
+  detraining:
+    'Your fitness is starting to decline because training has been too light recently. Your body has fully recovered and is ready for more stimulus. Consider gradually increasing your training volume to get back on track.',
+  fresh:
+    'You are well-rested and your fitness is high relative to your fatigue. This is the ideal state for racing or key workouts. If you have a target event coming up, now is the time to perform.',
+  neutral:
+    'Your training load is balanced with your recovery. This is normal day-to-day training territory. Keep following your plan and focus on aerobic development and consistency.',
+  optimal:
+    'You have been training hard recently and your body is adapting. This is a good place to be — your fitness is growing. Just make sure you are sleeping well and eating enough to support recovery.',
+  overload:
+    'You are carrying significant fatigue from recent training. Your body needs rest to absorb the training stress and come back stronger. Take easy days or a full rest day before pushing hard again.',
 };
 
 const RISK_MESSAGES: Record<FormStatus, Record<Exclude<InjuryRisk, 'low'>, string>> = {
@@ -92,9 +118,18 @@ const RISK_MESSAGES: Record<FormStatus, Record<Exclude<InjuryRisk, 'low'>, strin
 };
 
 export const getFormMessageDetailed = (rec: CoachingRecommendation): string => {
-  // Priority 1: immature data — don't reference ACWR
-  if (rec.dataMaturityDays < 28) {
-    return IMMATURE_MESSAGES[rec.status];
+  const state = getLoadState(rec.acwr, rec.dataMaturityDays);
+
+  switch (state) {
+    case 'immature':
+      return IMMATURE_MESSAGES[rec.status];
+    case 'undertraining':
+      return UNDERTRAINING_MESSAGES[rec.status];
+    case 'sweet-spot':
+      return SWEET_SPOT_MESSAGES[rec.status];
+    case 'moderate-risk':
+    case 'high-risk':
+      return RISK_MESSAGES[rec.status][rec.injuryRisk as Exclude<InjuryRisk, 'low'>];
   }
 
   // Priority 2: undertraining (ACWR < 0.8, mature data)

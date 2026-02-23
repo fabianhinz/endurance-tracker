@@ -5,12 +5,13 @@ import { useMapFocusStore } from '../../store/map-focus.ts';
 import { getSessionGPS } from '../../lib/indexeddb.ts';
 import { rangeToCutoff, customRangeToCutoffs } from '../../lib/time-range.ts';
 import type { SessionGPS } from '../../types/gps.ts';
-import type { Sport } from '../../types/index.ts';
+import type { Sport, TrainingSession } from '../../types/index.ts';
 
 export interface MapTrack {
   sessionId: string;
   sport: Sport;
   gps: SessionGPS;
+  session: TrainingSession;
 }
 
 export const useMapTracks = (gpsData: SessionGPS[] | null) => {
@@ -35,7 +36,7 @@ export const useMapTracks = (gpsData: SessionGPS[] | null) => {
         if (cancelled) return;
 
         if (gps && session) {
-          setTracks([{ sessionId: focusedSessionId, sport: session.sport, gps }]);
+          setTracks([{ sessionId: focusedSessionId, sport: session.sport, gps, session }]);
         } else {
           setTracks([]);
         }
@@ -66,7 +67,7 @@ export const useMapTracks = (gpsData: SessionGPS[] | null) => {
       const result: MapTrack[] = [];
       for (const s of filtered) {
         const gps = gpsMap.get(s.id);
-        if (gps) result.push({ sessionId: s.id, sport: s.sport, gps });
+        if (gps) result.push({ sessionId: s.id, sport: s.sport, gps, session: s });
       }
 
       if (!cancelled) {

@@ -76,7 +76,7 @@ export const CoachPage = () => {
             title="Weekly Plan"
             subtitle={`Week of ${coach.plan!.weekOf} — ${coach.plan!.totalEstimatedTss} TSS`}
           />
-          <WeeklyPlanTimeline plan={coach.plan!} zones={coach.zones} today={coach.today} />
+          <WeeklyPlanTimeline plan={coach.plan!} zones={coach.zones} />
         </Card>
       </div>
     </PageGrid>

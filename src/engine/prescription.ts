@@ -10,7 +10,8 @@ import type {
   WorkoutType,
   PlanContext,
 } from '../types/index.ts';
-import { getFormStatus, getInjuryRisk } from './coaching.ts';
+import { toDateString } from '../lib/utils.ts';
+import { getFormStatus, getInjuryRisk, getLoadState } from './coaching.ts';
 import { getZoneMidPace } from './zones.ts';
 
 // --- TSS per hour by workout type ---
@@ -160,35 +161,60 @@ const getRationale = (context: PlanContext): string => {
     return `Taper plan for race on ${context.raceDate}. ${context.daysToRace} days to race.`;
   }
   const risk = getInjuryRisk(context.acwr);
-  return `TSB is ${context.tsb > 0 ? '+' : ''}${Math.round(context.tsb)}. Form: ${context.formStatus}. ACWR ${context.acwr.toFixed(2)} (${risk} injury risk).`;
+  const base = `TSB is ${context.tsb > 0 ? '+' : ''}${Math.round(context.tsb)}. Form: ${context.formStatus}. ACWR ${context.acwr.toFixed(2)} (${risk} injury risk).`;
+  if (context.dataMaturityDays < 28) {
+    return `${base} Metrics are still stabilizing (${context.dataMaturityDays} days of data) — plan is conservative until 4 weeks of history.`;
+  }
+  return base;
 };
 
-// --- ACWR guards ---
+// --- Load guards ---
 
-const applyACWRGuards = (template: WeekTemplate, acwr: number): WeekTemplate => {
+const HIGH_INTENSITY: Set<WorkoutType> = new Set(['vo2max-intervals', 'threshold-intervals']);
+
+const downgradeToRecoveryWeek = (template: WeekTemplate): WeekTemplate =>
+  template.map((t) => {
+    if (HIGH_INTENSITY.has(t)) return 'rest';
+    if (t === 'tempo' || t === 'long-run') return 'easy';
+    return t;
+  });
+
+const downgradeModerately = (template: WeekTemplate): WeekTemplate =>
+  template.map((t) => {
+    if (HIGH_INTENSITY.has(t) || t === 'long-run') return 'easy';
+    return t;
+  });
+
+const upgradeForUndertraining = (template: WeekTemplate): WeekTemplate => {
   const result = [...template];
-
-  if (acwr > 1.5) {
-    // Force an extra rest day — replace the hardest session
-    const hardestIndex = result.findIndex((t) => t === 'vo2max-intervals');
-    if (hardestIndex !== -1) {
-      result[hardestIndex] = 'rest';
-    } else {
-      const threshIndex = result.findIndex((t) => t === 'threshold-intervals');
-      if (threshIndex !== -1) result[threshIndex] = 'rest';
-    }
-  } else if (acwr > 1.3) {
-    // Downgrade hardest session to easy
-    const hardestIndex = result.findIndex((t) => t === 'vo2max-intervals');
-    if (hardestIndex !== -1) {
-      result[hardestIndex] = 'easy';
-    } else {
-      const threshIndex = result.findIndex((t) => t === 'threshold-intervals');
-      if (threshIndex !== -1) result[threshIndex] = 'easy';
-    }
+  // Upgrade first rest day (not Saturday index 5) to easy
+  const restIndex = result.findIndex((t, i) => t === 'rest' && i !== 5);
+  if (restIndex !== -1) {
+    result[restIndex] = 'easy';
+    return result;
   }
-
+  // Fallback: upgrade first recovery to easy
+  const recoveryIndex = result.findIndex((t) => t === 'recovery');
+  if (recoveryIndex !== -1) {
+    result[recoveryIndex] = 'easy';
+  }
   return result;
+};
+
+const applyLoadGuards = (template: WeekTemplate, acwr: number, dataMaturityDays: number): WeekTemplate => {
+  const state = getLoadState(acwr, dataMaturityDays);
+  switch (state) {
+    case 'immature':
+      return WEEK_TEMPLATES['no-data'];
+    case 'high-risk':
+      return downgradeToRecoveryWeek(template);
+    case 'moderate-risk':
+      return downgradeModerately(template);
+    case 'undertraining':
+      return upgradeForUndertraining(template);
+    case 'sweet-spot':
+      return [...template];
+  }
 };
 
 // --- Hard/easy validation ---
@@ -215,7 +241,7 @@ const fixBackToBackIntensity = (template: WeekTemplate): WeekTemplate => {
 const addDays = (dateStr: string, days: number): string => {
   const d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return toDateString(d.getTime());
 };
 
 const getDayOfWeek = (dateStr: string): number => {
@@ -229,6 +255,7 @@ export const generateWeeklyPlan = (
   _recentSessions: TrainingSession[],
   zones: RunningZone[],
   today: string,
+  historyDays: number,
 ): WeeklyPlan => {
   // Determine context
   const context: PlanContext = currentMetrics
@@ -237,6 +264,7 @@ export const generateWeeklyPlan = (
         formStatus: getFormStatus(currentMetrics.tsb),
         tsb: currentMetrics.tsb,
         acwr: currentMetrics.acwr,
+        dataMaturityDays: historyDays,
       }
     : { mode: 'no-data' };
 
@@ -246,7 +274,7 @@ export const generateWeeklyPlan = (
   let template = WEEK_TEMPLATES[formKey];
 
   if (context.mode === 'normal') {
-    template = applyACWRGuards(template, context.acwr);
+    template = applyLoadGuards(template, context.acwr, context.dataMaturityDays);
     template = fixBackToBackIntensity(template);
   }
 

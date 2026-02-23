@@ -1,15 +1,23 @@
+import { useEffect } from 'react';
 import { useControl } from 'react-map-gl/maplibre';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import type { Layer } from '@deck.gl/core';
 
 interface DeckGLOverlayProps {
   layers: Layer[];
+  onOverlay?: (overlay: MapboxOverlay) => void;
 }
 
 export const DeckGLOverlay = (props: DeckGLOverlayProps) => {
+  const onOverlay = props.onOverlay;
   const overlay = useControl<MapboxOverlay>(
-    () => new MapboxOverlay({ interleaved: false }),
+    () => new MapboxOverlay({ interleaved: false, pickingRadius: 30 }),
   );
-  overlay.setProps({ layers: props.layers });
+  overlay.setProps({ layers: props.layers, pickingRadius: 30 });
+
+  useEffect(() => {
+    onOverlay?.(overlay);
+  }, [overlay, onOverlay]);
+
   return null;
 };

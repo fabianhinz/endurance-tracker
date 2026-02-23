@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import { beforeEach, afterEach, vi } from 'vitest';
 import { useUserStore } from '../src/store/user.ts';
 import { useSessionsStore } from '../src/store/sessions.ts';
+import { useCoachPlanStore } from '../src/store/coach-plan.ts';
 import { resetDBInstance } from '../src/lib/db.ts';
 
 beforeEach(() => {
@@ -17,6 +18,7 @@ beforeEach(() => {
   // Reset Zustand stores (merge, not replace — keeps action methods)
   useUserStore.setState({ profile: null });
   useSessionsStore.setState({ sessions: [], personalBests: [] });
+  useCoachPlanStore.setState({ cachedPlan: null, cacheKey: null });
 });
 
 afterEach(() => {

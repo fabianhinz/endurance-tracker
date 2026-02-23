@@ -10,6 +10,7 @@ interface SessionsState {
   addSession: (session: Omit<TrainingSession, 'id' | 'createdAt'>) => string;
   addSessions: (sessions: Omit<TrainingSession, 'id' | 'createdAt'>[]) => string[];
   deleteSession: (id: string) => void;
+  renameSession: (id: string, name: string) => void;
   updatePersonalBests: (newBests: PersonalBest[]) => void;
   clearAll: () => void;
 }
@@ -46,6 +47,13 @@ export const useSessionsStore = create<SessionsState>()(
       deleteSession: (id) =>
         set((state) => ({
           sessions: state.sessions.filter((s) => s.id !== id),
+        })),
+
+      renameSession: (id, name) =>
+        set((state) => ({
+          sessions: state.sessions.map((s) =>
+            s.id === id ? { ...s, name } : s,
+          ),
         })),
 
       updatePersonalBests: (newBests) =>
