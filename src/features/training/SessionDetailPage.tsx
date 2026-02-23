@@ -34,7 +34,6 @@ import {
   formatDate,
   formatDuration,
   formatDistance,
-  formatPace,
   formatSubSport,
 } from "../../lib/utils.ts";
 import { cn } from "../../lib/utils.ts";
@@ -42,12 +41,7 @@ import { useChartZoom } from "../../lib/use-chart-zoom.ts";
 import { chartTheme } from "../../lib/chart-theme.ts";
 import { tokens } from "../../lib/tokens.ts";
 import { SportChip } from "../../components/ui/SportChip.tsx";
-import {
-  detectIntervals,
-  detectProgressiveOverload,
-} from "../../engine/laps.ts";
-import { LapSplitsSection } from "./LapSplitsSection.tsx";
-import { SessionPersonalBests } from "./SessionPersonalBests.tsx";
+import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
 import type { SessionRecord, SessionLap } from "../../types/index.ts";
 import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
 
@@ -90,9 +84,6 @@ export const SessionDetailPage = () => {
 
   const hasGradeData = chartData.some((d) => d.grade !== undefined);
 
-  const intervals = useMemo(() => detectIntervals(laps), [laps]);
-  const overload = useMemo(() => detectProgressiveOverload(laps), [laps]);
-
   const zoom = useChartZoom({ data: chartData, xKey: "time" });
 
   if (!session) {
@@ -107,40 +98,6 @@ export const SessionDetailPage = () => {
     session.subSport && session.subSport !== "generic"
       ? formatSubSport(session.subSport)
       : null;
-
-  const intervalPairsWithHr = intervals.filter(
-    (p) => p.hrRecovery !== undefined,
-  );
-  const avgRecovery =
-    intervalPairsWithHr.length > 0
-      ? intervalPairsWithHr.reduce((sum, p) => sum + p.hrRecovery!, 0) /
-        intervalPairsWithHr.length
-      : 0;
-
-  const recoveryMeta =
-    avgRecovery > 25
-      ? { label: "Strong recovery", className: "text-status-success" }
-      : avgRecovery >= 15
-        ? { label: "Adequate recovery", className: "text-text-secondary" }
-        : { label: "Slow recovery", className: "text-status-warning" };
-
-  const trendMeta = {
-    stable: {
-      label: "Stable",
-      description: "Consistent pacing across laps",
-      className: "text-text-secondary",
-    },
-    fading: {
-      label: "Fading",
-      description: "Pace slowing — normal fatigue",
-      className: "text-status-warning",
-    },
-    building: {
-      label: "Building",
-      description: "Pace improving — progressive effort",
-      className: "text-status-success",
-    },
-  } as const;
 
   return (
     <div className="space-y-4">
@@ -237,167 +194,10 @@ export const SessionDetailPage = () => {
             unit="bpm"
           />
         )}
-        {session.avgPower && (
-          <MetricCard
-            label="Avg Power"
-            subtitle="Mean power output"
-            value={session.avgPower}
-            unit="W"
-          />
-        )}
-        {session.normalizedPower && (
-          <MetricCard
-            label={METRIC_EXPLANATIONS.normalizedPower.shortLabel}
-            subtitle=""
-            metricId="normalizedPower"
-            value={session.normalizedPower}
-            unit="W"
-          />
-        )}
-        {session.avgPace && (
-          <MetricCard
-            label="Avg Pace"
-            subtitle="Average speed as min/km"
-            value={formatPace(session.avgPace)}
-          />
-        )}
-        {session.elevationGain !== undefined && session.elevationGain > 0 && (
-          <MetricCard
-            label="Elevation"
-            subtitle="Cumulative climb and descent"
-            value={
-              <span className="flex items-baseline gap-3">
-                <span>+{session.elevationGain}m</span>
-                {session.elevationLoss !== undefined &&
-                  session.elevationLoss > 0 && (
-                    <span className="text-text-tertiary">
-                      -{session.elevationLoss}m
-                    </span>
-                  )}
-              </span>
-            }
-          />
-        )}
-        {session.avgCadence && (
-          <MetricCard
-            label="Cadence"
-            subtitle="Average steps or revolutions per minute"
-            value={session.avgCadence}
-            unit="rpm"
-          />
-        )}
-        {session.calories && (
-          <MetricCard
-            label="Calories"
-            subtitle="Estimated energy expenditure"
-            value={session.calories}
-            unit="kcal"
-          />
-        )}
-        {session.minAltitude !== undefined && (
-          <MetricCard
-            label="Altitude"
-            subtitle="Elevation range during the session"
-            value={
-              <span
-                className="flex flex-wrap items-baseline gap-4 text-sm"
-                aria-label={`Altitude statistics: minimum ${Math.round(session.minAltitude)} meters, average ${Math.round(session.avgAltitude!)} meters, maximum ${Math.round(session.maxAltitude!)} meters`}
-              >
-                <span>
-                  <span className="font-bold">
-                    {Math.round(session.minAltitude)}m
-                  </span>
-                  <Typography variant="caption" className="ml-1 font-normal">
-                    min
-                  </Typography>
-                </span>
-                <span>
-                  <span className="font-bold">
-                    {Math.round(session.avgAltitude!)}m
-                  </span>
-                  <Typography variant="caption" className="ml-1 font-normal">
-                    avg
-                  </Typography>
-                </span>
-                <span>
-                  <span className="font-bold">
-                    {Math.round(session.maxAltitude!)}m
-                  </span>
-                  <Typography variant="caption" className="ml-1 font-normal">
-                    max
-                  </Typography>
-                </span>
-              </span>
-            }
-          />
-        )}
-        {intervalPairsWithHr.length > 0 && (
-          <MetricCard
-            label="Recovery"
-            subtitle=""
-            metricId="recovery"
-            value={`${Math.round(avgRecovery)} bpm`}
-            subDetail={
-              <Typography
-                variant="caption"
-                as="p"
-                className={cn("font-medium", recoveryMeta.className)}
-              >
-                {recoveryMeta.label}
-              </Typography>
-            }
-          />
-        )}
-        {overload.lapCount >= 3 && (
-          <MetricCard
-            label="Pacing Trend"
-            subtitle=""
-            metricId="pacingTrend"
-            value={
-              overload.paceDriftPercent !== undefined
-                ? `${overload.paceDriftPercent > 0 ? "+" : ""}${overload.paceDriftPercent}% drift`
-                : trendMeta[overload.trend].label
-            }
-            subDetail={
-              <Typography
-                variant="caption"
-                as="p"
-                className={cn(
-                  "font-medium",
-                  trendMeta[overload.trend].className,
-                )}
-              >
-                {trendMeta[overload.trend].label}
-              </Typography>
-            }
-          />
-        )}
+
         <div className="md:col-span-2">
-          <SessionPersonalBests sessionId={params.id!} />
+          <SessionStatsGrid session={session} laps={laps} />
         </div>
-
-        {session.sensorWarnings.length > 0 && (
-          <div className="md:col-span-2 rounded-lg bg-status-warning-muted border border-status-warning-strong/20 p-4">
-            <Typography variant="emphasis" color="warning">
-              Sensor Warnings
-            </Typography>
-            {session.sensorWarnings.map((w, i) => (
-              <Typography
-                key={i}
-                variant="body"
-                className="text-status-warning/80 mt-1"
-              >
-                {w}
-              </Typography>
-            ))}
-          </div>
-        )}
-
-        {laps.length > 0 && (
-          <div className="md:col-span-2">
-            <LapSplitsSection laps={laps} sport={session.sport} />
-          </div>
-        )}
 
         {chartData.length > 0 && (
           <div className="md:col-span-2">

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { useSessionsStore } from '../../src/store/sessions.ts';
 import { useUserStore } from '../../src/store/user.ts';
 import { useCoachPlanStore } from '../../src/store/coach-plan.ts';
+import { useLayoutStore } from '../../src/store/layout.ts';
 import { makeSession } from '../factories/sessions.ts';
 import { makeUserProfile } from '../factories/profiles.ts';
 import { makeCyclingRecords, makeLaps } from '../factories/records.ts';
@@ -15,7 +16,7 @@ import {
 import { idbStorage } from '../../src/lib/idb-storage.ts';
 
 describe('delete all data', () => {
-  it('clears sessions, personal bests, profile, session-records, and session-laps', async () => {
+  it('clears sessions, personal bests, profile, session-records, session-laps, and resets onboarding', async () => {
     // Populate sessions store
     const { id: _id, createdAt: _ca, ...sessionData } = makeSession();
     const sessionId = useSessionsStore.getState().addSession(sessionData);
@@ -26,6 +27,9 @@ describe('delete all data', () => {
     // Populate user store
     const { id: _pid, createdAt: _pca, ...profileData } = makeUserProfile();
     useUserStore.getState().setProfile(profileData);
+
+    // Mark onboarding as complete
+    useLayoutStore.getState().completeOnboarding();
 
     // Populate IDB session-records
     const records = makeCyclingRecords(sessionId, 60, { basePower: 200 });
@@ -49,6 +53,7 @@ describe('delete all data', () => {
     expect(useSessionsStore.getState().sessions).toHaveLength(1);
     expect(useSessionsStore.getState().personalBests).toHaveLength(1);
     expect(useUserStore.getState().profile).not.toBeNull();
+    expect(useLayoutStore.getState().onboardingComplete).toBe(true);
     expect(await getSessionRecords(sessionId)).toHaveLength(60);
     expect(await getSessionLaps(sessionId)).toHaveLength(2);
     expect(await idbStorage.getItem('endurance-tracker-user')).not.toBeNull();
@@ -56,8 +61,8 @@ describe('delete all data', () => {
     // Perform full data wipe (same sequence as DeleteAllDataDialog.handleDelete)
     useSessionsStore.getState().clearAll();
     useUserStore.getState().resetProfile();
-    useUserStore.getState().initializeProfile();
     useCoachPlanStore.getState().clearPlan();
+    useLayoutStore.setState({ onboardingComplete: false });
     await clearAllRecords();
 
     // Verify everything is cleared
@@ -69,10 +74,9 @@ describe('delete all data', () => {
     expect(await getSessionLaps(sessionId)).toHaveLength(0);
     expect(await idbStorage.getItem('endurance-tracker-user')).toBeNull();
 
-    // Verify profile is re-initialized with defaults (not null)
-    const profile = useUserStore.getState().profile;
-    expect(profile).not.toBeNull();
-    expect(profile!.id).toBeDefined();
-    expect(profile!.thresholds).toBeDefined();
+    // Verify profile is null (user returns to onboarding)
+    expect(useUserStore.getState().profile).toBeNull();
+    // Verify onboarding is reset
+    expect(useLayoutStore.getState().onboardingComplete).toBe(false);
   });
 });

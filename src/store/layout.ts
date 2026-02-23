@@ -6,6 +6,8 @@ interface LayoutState {
   toggleDock: () => void;
   compactLayout: boolean;
   toggleCompactLayout: () => void;
+  onboardingComplete: boolean;
+  completeOnboarding: () => void;
 }
 
 export const useLayoutStore = create<LayoutState>()(
@@ -13,9 +15,11 @@ export const useLayoutStore = create<LayoutState>()(
     (set) => ({
       dockExpanded: true,
       toggleDock: () => set((state) => ({ dockExpanded: !state.dockExpanded })),
-      compactLayout: true,
+      compactLayout: false,
       toggleCompactLayout: () =>
         set((state) => ({ compactLayout: !state.compactLayout })),
+      onboardingComplete: false,
+      completeOnboarding: () => set({ onboardingComplete: true, compactLayout: true }),
     }),
     { name: "endurance-tracker-layout" },
   ),

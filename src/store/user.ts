@@ -2,11 +2,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { UserProfile } from '../types/index.ts';
 import { idbStorage } from '../lib/idb-storage.ts';
-import { createDefaultProfile } from '../engine/defaults.ts';
 
 interface UserState {
   profile: UserProfile | null;
-  initializeProfile: () => void;
   setProfile: (profile: Omit<UserProfile, 'id' | 'createdAt'>) => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
   updateThresholds: (thresholds: UserProfile['thresholds']) => void;
@@ -16,13 +14,8 @@ interface UserState {
 
 export const useUserStore = create<UserState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       profile: null,
-
-      initializeProfile: () => {
-        if (get().profile) return;
-        set({ profile: createDefaultProfile(crypto.randomUUID()) });
-      },
 
       setProfile: (data) =>
         set({

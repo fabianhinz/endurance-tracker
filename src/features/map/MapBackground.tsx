@@ -44,11 +44,14 @@ export const MapBackground = () => {
     setFocusedSession(match?.params.id ?? null);
   }, [match?.params.id, setFocusedSession]);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
+  const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const [popup, setPopup] = useState<PopupInfo | null>(null);
   const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
   const [hoveringTrack, setHoveringTrack] = useState(false);
+
+  const interactive = !popup;
 
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
@@ -113,7 +116,11 @@ export const MapBackground = () => {
     overlayRef.current = overlay;
   }, []);
 
-  const trackLayers = useDeckLayers(mapTracks.tracks, highlightedSessionId, { onClick, onHover });
+  const trackLayers = useDeckLayers(
+    mapTracks.tracks,
+    highlightedSessionId,
+    onboardingComplete ? { onClick, onHover } : undefined,
+  );
 
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) return null;
@@ -182,12 +189,12 @@ export const MapBackground = () => {
           latitude: 50,
           zoom: 4,
         }}
-        scrollZoom={!popup}
-        dragPan={!popup}
-        dragRotate={!popup}
-        doubleClickZoom={!popup}
-        touchZoomRotate={!popup}
-        keyboard={!popup}
+        scrollZoom={interactive}
+        dragPan={interactive}
+        dragRotate={interactive}
+        doubleClickZoom={interactive}
+        touchZoomRotate={interactive}
+        keyboard={interactive}
         attributionControl={{ compact: true }}
         style={{ width: '100%', height: '100%' }}
       >
