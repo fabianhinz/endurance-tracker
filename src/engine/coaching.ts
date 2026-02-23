@@ -131,6 +131,30 @@ export const getFormMessageDetailed = (rec: CoachingRecommendation): string => {
     case 'high-risk':
       return RISK_MESSAGES[rec.status][rec.injuryRisk as Exclude<InjuryRisk, 'low'>];
   }
+
+  // Priority 2: undertraining (ACWR < 0.8, mature data)
+  if (rec.acwr < 0.8) {
+    return UNDERTRAINING_MESSAGES[rec.status];
+  }
+
+  // Priority 3: sweet spot (low injury risk, ACWR >= 0.8)
+  if (rec.injuryRisk === 'low') {
+    switch (rec.status) {
+      case 'detraining':
+        return 'Your fitness is starting to decline because training has been too light recently. Your body has fully recovered and is ready for more stimulus. Consider gradually increasing your training volume to get back on track.';
+      case 'fresh':
+        return 'You are well-rested and your fitness is high relative to your fatigue. This is the ideal state for racing or key workouts. If you have a target event coming up, now is the time to perform.';
+      case 'neutral':
+        return 'Your training load is balanced with your recovery. This is normal day-to-day training territory. Keep following your plan and focus on aerobic development and consistency.';
+      case 'optimal':
+        return 'You have been training hard recently and your body is adapting. This is a good place to be — your fitness is growing. Just make sure you are sleeping well and eating enough to support recovery.';
+      case 'overload':
+        return 'You are carrying significant fatigue from recent training. Your body needs rest to absorb the training stress and come back stronger. Take easy days or a full rest day before pushing hard again.';
+    }
+  }
+
+  // Priority 4 & 5: moderate or high risk
+  return RISK_MESSAGES[rec.status][rec.injuryRisk];
 };
 
 export const getInjuryRisk = (acwr: number): InjuryRisk => {
