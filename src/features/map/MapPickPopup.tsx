@@ -65,7 +65,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
           }
         />
         <div className="space-y-1 overflow-y-auto min-h-0">
-          {props.info.sessions.map((session) => (
+          {props.info.sessions.toSorted((a, b) => b.date - a.date).map((session) => (
             <SessionItem
               key={session.id}
               session={session}

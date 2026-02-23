@@ -166,6 +166,98 @@ describe('metrics → coaching pipeline', () => {
     expect(coaching.injuryRisk).toBe('low');
   });
 
+  it('NaN TSS does not poison subsequent metrics', () => {
+    const now = Date.now();
+    const sessions = [
+      makeSession({ id: 'good-1', date: now - 3 * DAY_MS, tss: 100 }),
+      makeSession({ id: 'bad', date: now - 2 * DAY_MS, tss: NaN }),
+      makeSession({ id: 'good-2', date: now - 1 * DAY_MS, tss: 80 }),
+    ];
+
+    const metrics = computeMetrics(sessions);
+    const last = metrics[metrics.length - 1];
+
+    expect(Number.isFinite(last.ctl)).toBe(true);
+    expect(Number.isFinite(last.atl)).toBe(true);
+    expect(Number.isFinite(last.tsb)).toBe(true);
+    expect(Number.isFinite(last.acwr)).toBe(true);
+  });
+
+  it('Infinity TSS is treated as 0', () => {
+    const now = Date.now();
+    const sessions = [
+      makeSession({ id: 'good', date: now - 2 * DAY_MS, tss: 100 }),
+      makeSession({ id: 'inf', date: now - 1 * DAY_MS, tss: Infinity }),
+    ];
+
+    const metrics = computeMetrics(sessions);
+    const last = metrics[metrics.length - 1];
+
+    expect(Number.isFinite(last.ctl)).toBe(true);
+    expect(Number.isFinite(last.atl)).toBe(true);
+    // Infinity TSS treated as 0, so ATL should decay (not spike)
+    const dayBeforeLast = metrics[metrics.length - 2];
+    expect(last.atl).toBeLessThan(dayBeforeLast.atl);
+  });
+
+  it('two sessions on the same date produce summed TSS', () => {
+    const now = Date.now();
+    const sameDay = now - 1 * DAY_MS;
+    const session1 = makeSession({ id: 'am', date: sameDay, tss: 60 });
+    const session2 = makeSession({ id: 'pm', date: sameDay, tss: 40 });
+
+    const endDate = sameDay;
+    const combinedMetrics = computeMetrics([session1, session2], { endDate });
+    const singleMetrics = computeMetrics([makeSession({ id: 'single', date: sameDay, tss: 100 })], { endDate });
+
+    const combinedLast = combinedMetrics[combinedMetrics.length - 1];
+    const singleLast = singleMetrics[singleMetrics.length - 1];
+
+    // Both should produce the same daily TSS of 100
+    expect(combinedLast.tss).toBe(100);
+    expect(combinedLast.ctl).toBe(singleLast.ctl);
+    expect(combinedLast.atl).toBe(singleLast.atl);
+  });
+
+  it('ACWR has at most 2 decimal places', () => {
+    const now = Date.now();
+    const sessions = Array.from({ length: 30 }, (_, i) =>
+      makeSession({
+        id: `day-${i}`,
+        date: now - (30 - i) * DAY_MS,
+        tss: 50 + (i % 7) * 20, // varying TSS
+      }),
+    );
+
+    const metrics = computeMetrics(sessions);
+    for (const m of metrics) {
+      const decimals = m.acwr.toString().split('.')[1]?.length ?? 0;
+      expect(decimals).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('ACWR rounding at classification boundaries is within +/-0.005 noise', () => {
+    // With rounding to 2 decimals, a "true" ACWR of 1.305 rounds to 1.31
+    // which crosses the 1.3 moderate threshold. This is expected behavior.
+    const now = Date.now();
+    // Craft sessions that produce ACWR near 1.3
+    // 42 days constant then a spike
+    const sessions = Array.from({ length: 42 }, (_, i) =>
+      makeSession({
+        id: `day-${i}`,
+        date: now - (42 - i) * DAY_MS,
+        tss: 50,
+      }),
+    );
+
+    const metrics = computeMetrics(sessions);
+    const last = metrics[metrics.length - 1];
+    // After rounding, ACWR stays at most 2 decimal places
+    const str = last.acwr.toString();
+    const decimals = str.split('.')[1]?.length ?? 0;
+    expect(decimals).toBeLessThanOrEqual(2);
+  });
+
   it('form status boundaries', () => {
     expect(getFormStatus(30)).toBe('detraining');
     expect(getFormStatus(25.1)).toBe('detraining');

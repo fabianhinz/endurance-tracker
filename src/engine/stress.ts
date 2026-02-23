@@ -36,7 +36,7 @@ export const calculateTRIMP = (
   maxHr: number,
   gender: Gender,
 ): number => {
-  if (maxHr <= restHr || avgHr <= restHr) return 0;
+  if (maxHr <= restHr || avgHr <= restHr || avgHr > maxHr) return 0;
 
   const durationMin = durationSec / 60;
   const deltaHrRatio = (avgHr - restHr) / (maxHr - restHr);

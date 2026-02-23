@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { getFormMessage, getFormMessageDetailed, getLoadState } from '../../src/engine/coaching.ts';
+import {
+  getFormMessage,
+  getFormMessageDetailed,
+  getLoadState,
+  getInjuryRisk,
+  ACWR_MODERATE_THRESHOLD,
+  ACWR_HIGH_THRESHOLD,
+  ACWR_UNDERTRAINING_THRESHOLD,
+} from '../../src/engine/coaching.ts';
 import type { CoachingRecommendation, FormStatus } from '../../src/types/index.ts';
 
 const ALL_STATUSES: FormStatus[] = [
@@ -40,10 +48,12 @@ describe('getFormMessageDetailed', () => {
       expect(msg).not.toContain('ramp rate');
     });
 
-    it('boundary: 27 days is immature, 28 days is not', () => {
-      const immature = makeRec({ status: 'neutral', dataMaturityDays: 27 });
+    it('boundary: 20 days is immature, 21-27 transitioning (same messages), 28 is mature', () => {
+      const immature = makeRec({ status: 'neutral', dataMaturityDays: 20 });
+      const transitioning = makeRec({ status: 'neutral', dataMaturityDays: 25 });
       const mature = makeRec({ status: 'neutral', dataMaturityDays: 28, acwr: 1.0 });
       expect(getFormMessageDetailed(immature)).toContain('stabilizing');
+      expect(getFormMessageDetailed(transitioning)).toContain('stabilizing');
       expect(getFormMessageDetailed(mature)).not.toContain('stabilizing');
     });
   });
@@ -131,6 +141,13 @@ describe('getFormMessageDetailed', () => {
       expect(msg).toContain('stabilizing');
     });
 
+    it('transitioning with extreme ACWR returns risk message, not immature', () => {
+      const rec = makeRec({ status: 'fresh', acwr: 1.8, injuryRisk: 'high', dataMaturityDays: 25 });
+      const msg = getFormMessageDetailed(rec);
+      expect(msg).not.toContain('stabilizing');
+      expect(msg.length).toBeGreaterThan(0);
+    });
+
     it('undertraining takes priority over low-risk sweet-spot message', () => {
       const sweetSpot = makeRec({ status: 'neutral', acwr: 1.0, injuryRisk: 'low', dataMaturityDays: 42 });
       const undertraining = makeRec({ status: 'neutral', acwr: 0.5, injuryRisk: 'low', dataMaturityDays: 42 });
@@ -140,15 +157,30 @@ describe('getFormMessageDetailed', () => {
 });
 
 describe('getLoadState', () => {
-  it('returns immature when dataMaturityDays < 28', () => {
+  it('returns immature when dataMaturityDays < 21', () => {
     expect(getLoadState(1.0, 0)).toBe('immature');
-    expect(getLoadState(1.0, 27)).toBe('immature');
+    expect(getLoadState(1.0, 20)).toBe('immature');
     expect(getLoadState(2.0, 10)).toBe('immature'); // immature overrides high ACWR
     expect(getLoadState(0.5, 10)).toBe('immature'); // immature overrides low ACWR
   });
 
-  it('boundary: 27 days is immature, 28 days is not', () => {
-    expect(getLoadState(1.0, 27)).toBe('immature');
+  it('returns transitioning when dataMaturityDays 21-27', () => {
+    expect(getLoadState(1.0, 21)).toBe('transitioning');
+    expect(getLoadState(1.0, 27)).toBe('transitioning');
+    expect(getLoadState(0.5, 25)).toBe('transitioning'); // low ACWR still transitioning
+    expect(getLoadState(1.4, 25)).toBe('transitioning'); // moderate ACWR still transitioning
+  });
+
+  it('returns high-risk during transition when ACWR > 1.5', () => {
+    expect(getLoadState(1.51, 21)).toBe('high-risk');
+    expect(getLoadState(2.0, 25)).toBe('high-risk');
+    expect(getLoadState(1.6, 27)).toBe('high-risk');
+  });
+
+  it('boundary: 20 days is immature, 21 days is transitioning, 28 days is fully mature', () => {
+    expect(getLoadState(1.0, 20)).toBe('immature');
+    expect(getLoadState(1.0, 21)).toBe('transitioning');
+    expect(getLoadState(1.0, 27)).toBe('transitioning');
     expect(getLoadState(1.0, 28)).toBe('sweet-spot');
   });
 
@@ -187,5 +219,72 @@ describe('getLoadState', () => {
     expect(getLoadState(0.8, 42)).toBe('sweet-spot');
     expect(getLoadState(1.0, 42)).toBe('sweet-spot');
     expect(getLoadState(1.3, 42)).toBe('sweet-spot');
+  });
+
+  it('dataMaturityDays=0 returns immature regardless of ACWR', () => {
+    expect(getLoadState(0.0, 0)).toBe('immature');
+    expect(getLoadState(1.0, 0)).toBe('immature');
+    expect(getLoadState(1.5, 0)).toBe('immature');
+    expect(getLoadState(2.0, 0)).toBe('immature');
+    expect(getLoadState(100, 0)).toBe('immature');
+  });
+});
+
+describe('threshold consistency: getLoadState and getInjuryRisk agree at boundaries', () => {
+  it('ACWR at ACWR_MODERATE_THRESHOLD is low risk and sweet-spot', () => {
+    expect(getInjuryRisk(ACWR_MODERATE_THRESHOLD)).toBe('low');
+    expect(getLoadState(ACWR_MODERATE_THRESHOLD, 42)).toBe('sweet-spot');
+  });
+
+  it('ACWR just above ACWR_MODERATE_THRESHOLD is moderate risk and moderate-risk state', () => {
+    const above = ACWR_MODERATE_THRESHOLD + 0.01;
+    expect(getInjuryRisk(above)).toBe('moderate');
+    expect(getLoadState(above, 42)).toBe('moderate-risk');
+  });
+
+  it('ACWR at ACWR_HIGH_THRESHOLD is moderate risk and moderate-risk state', () => {
+    expect(getInjuryRisk(ACWR_HIGH_THRESHOLD)).toBe('moderate');
+    expect(getLoadState(ACWR_HIGH_THRESHOLD, 42)).toBe('moderate-risk');
+  });
+
+  it('ACWR just above ACWR_HIGH_THRESHOLD is high risk and high-risk state', () => {
+    const above = ACWR_HIGH_THRESHOLD + 0.01;
+    expect(getInjuryRisk(above)).toBe('high');
+    expect(getLoadState(above, 42)).toBe('high-risk');
+  });
+
+  it('ACWR below ACWR_UNDERTRAINING_THRESHOLD is low risk and undertraining', () => {
+    const below = ACWR_UNDERTRAINING_THRESHOLD - 0.01;
+    expect(getInjuryRisk(below)).toBe('low');
+    expect(getLoadState(below, 42)).toBe('undertraining');
+  });
+
+  it('ACWR at ACWR_UNDERTRAINING_THRESHOLD is low risk and sweet-spot', () => {
+    expect(getInjuryRisk(ACWR_UNDERTRAINING_THRESHOLD)).toBe('low');
+    expect(getLoadState(ACWR_UNDERTRAINING_THRESHOLD, 42)).toBe('sweet-spot');
+  });
+});
+
+describe('message uniqueness', () => {
+  it('all 25 status x load-state messages are unique and non-trivial', () => {
+    const messages = new Set<string>();
+    const loadConfigs: Array<{ acwr: number; dataMaturityDays: number; injuryRisk: CoachingRecommendation['injuryRisk'] }> = [
+      { acwr: 1.0, dataMaturityDays: 10, injuryRisk: 'low' },      // immature
+      { acwr: 0.5, dataMaturityDays: 42, injuryRisk: 'low' },      // undertraining
+      { acwr: 1.0, dataMaturityDays: 42, injuryRisk: 'low' },      // sweet-spot
+      { acwr: 1.4, dataMaturityDays: 42, injuryRisk: 'moderate' }, // moderate-risk
+      { acwr: 1.8, dataMaturityDays: 42, injuryRisk: 'high' },    // high-risk
+    ];
+
+    for (const config of loadConfigs) {
+      for (const status of ALL_STATUSES) {
+        const rec = makeRec({ status, ...config });
+        const msg = getFormMessageDetailed(rec);
+        expect(msg.length).toBeGreaterThan(50);
+        messages.add(msg);
+      }
+    }
+
+    expect(messages.size).toBe(25);
   });
 });

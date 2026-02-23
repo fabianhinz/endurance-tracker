@@ -30,14 +30,26 @@ export const getFormMessage = (status: FormStatus): string => {
 };
 
 // ---------------------------------------------------------------------------
+// Shared ACWR thresholds
+// ---------------------------------------------------------------------------
+
+export const ACWR_UNDERTRAINING_THRESHOLD = 0.8;
+export const ACWR_MODERATE_THRESHOLD = 1.3;
+export const ACWR_HIGH_THRESHOLD = 1.5;
+
+// ---------------------------------------------------------------------------
 // Shared load-state classification
 // ---------------------------------------------------------------------------
 
 export const getLoadState = (acwr: number, dataMaturityDays: number): LoadState => {
-  if (dataMaturityDays < 28) return 'immature';
-  if (acwr > 1.5) return 'high-risk';
-  if (acwr > 1.3) return 'moderate-risk';
-  if (acwr < 0.8) return 'undertraining';
+  if (dataMaturityDays < 21) return 'immature';
+  if (dataMaturityDays < 28) {
+    if (acwr > ACWR_HIGH_THRESHOLD) return 'high-risk';
+    return 'transitioning';
+  }
+  if (acwr > ACWR_HIGH_THRESHOLD) return 'high-risk';
+  if (acwr > ACWR_MODERATE_THRESHOLD) return 'moderate-risk';
+  if (acwr < ACWR_UNDERTRAINING_THRESHOLD) return 'undertraining';
   return 'sweet-spot';
 };
 
@@ -122,6 +134,7 @@ export const getFormMessageDetailed = (rec: CoachingRecommendation): string => {
 
   switch (state) {
     case 'immature':
+    case 'transitioning':
       return IMMATURE_MESSAGES[rec.status];
     case 'undertraining':
       return UNDERTRAINING_MESSAGES[rec.status];
@@ -134,15 +147,15 @@ export const getFormMessageDetailed = (rec: CoachingRecommendation): string => {
 };
 
 export const getInjuryRisk = (acwr: number): InjuryRisk => {
-  if (acwr <= 1.3) return 'low';
-  if (acwr <= 1.5) return 'moderate';
+  if (acwr <= ACWR_MODERATE_THRESHOLD) return 'low';
+  if (acwr <= ACWR_HIGH_THRESHOLD) return 'moderate';
   return 'high';
 };
 
 export const getACWRColor = (acwr: number): 'green' | 'yellow' | 'red' => {
-  if (acwr < 0.8) return 'yellow';
-  if (acwr <= 1.3) return 'green';
-  if (acwr <= 1.5) return 'yellow';
+  if (acwr < ACWR_UNDERTRAINING_THRESHOLD) return 'yellow';
+  if (acwr <= ACWR_MODERATE_THRESHOLD) return 'green';
+  if (acwr <= ACWR_HIGH_THRESHOLD) return 'yellow';
   return 'red';
 };
 

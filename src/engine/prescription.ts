@@ -205,6 +205,7 @@ const applyLoadGuards = (template: WeekTemplate, acwr: number, dataMaturityDays:
   const state = getLoadState(acwr, dataMaturityDays);
   switch (state) {
     case 'immature':
+    case 'transitioning':
       return WEEK_TEMPLATES['no-data'];
     case 'high-risk':
       return downgradeToRecoveryWeek(template);

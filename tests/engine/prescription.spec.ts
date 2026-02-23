@@ -110,7 +110,7 @@ describe('form status templates', () => {
 });
 
 describe('load guards', () => {
-  describe('immature data (<28 days)', () => {
+  describe('immature data (<21 days)', () => {
     it('uses conservative no-data template regardless of form status', () => {
       const statuses = [
         { tsb: -15, acwr: 1.0 }, // optimal
@@ -132,6 +132,37 @@ describe('load guards', () => {
     it('rationale mentions data stabilizing', () => {
       const plan = generateWeeklyPlan(
         makeMetrics({ tsb: -15, acwr: 1.0 }), [], zones, '2026-02-16', 14,
+      );
+      expect(plan.workouts[0].rationale).toContain('stabilizing');
+    });
+  });
+
+  describe('transitioning data (21-27 days)', () => {
+    it('uses conservative no-data template for normal ACWR', () => {
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: -15, acwr: 1.0 }), [], zones, '2026-02-16', 25,
+      );
+      const types = plan.workouts.map((w) => w.type);
+      expect(types).not.toContain('threshold-intervals');
+      expect(types).not.toContain('vo2max-intervals');
+      expect(types).not.toContain('tempo');
+      expect(types).not.toContain('long-run');
+    });
+
+    it('uses recovery plan for extreme ACWR (> 1.5) during transition', () => {
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: -15, acwr: 1.8 }), [], zones, '2026-02-16', 25,
+      );
+      const types = plan.workouts.map((w) => w.type);
+      // high-risk: downgradeToRecoveryWeek — no intensity
+      expect(types).not.toContain('threshold-intervals');
+      expect(types).not.toContain('vo2max-intervals');
+      expect(types).not.toContain('long-run');
+    });
+
+    it('rationale mentions data stabilizing', () => {
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: -15, acwr: 1.0 }), [], zones, '2026-02-16', 25,
       );
       expect(plan.workouts[0].rationale).toContain('stabilizing');
     });
@@ -313,4 +344,49 @@ describe('workout structure', () => {
     expect(longRun.steps[0].zone).toBe('easy');
     expect(longRun.steps[1].zone).toBe('tempo');
   });
+});
+
+describe('all workout types produce valid TSS and distance', () => {
+  const NON_REST_TYPES: Array<Exclude<import('../../src/types/index.ts').WorkoutType, 'rest'>> = [
+    'recovery',
+    'easy',
+    'long-run',
+    'tempo',
+    'threshold-intervals',
+    'vo2max-intervals',
+  ];
+
+  it.each(NON_REST_TYPES)(
+    '"%s" returns positive TSS and distance',
+    (type) => {
+      // Generate a plan that includes all types by using different form statuses
+      // Build a workout directly via a plan that would include this type
+      const plan = generateWeeklyPlan(
+        makeMetrics({ tsb: -15, acwr: 1.0 }),
+        [], zones, '2026-02-16', MATURE,
+      );
+      // Find the workout or create a synthetic one
+      const workout = plan.workouts.find((w) => w.type === type);
+      if (workout) {
+        expect(estimateWorkoutTss(workout)).toBeGreaterThan(0);
+        expect(estimateWorkoutDistance(workout, zones)).toBeGreaterThan(0);
+      } else {
+        // Type not in this plan — create a synthetic workout to test estimation
+        const synth: PrescribedWorkout = {
+          id: 'test',
+          date: '2026-02-20',
+          dayLabel: 'Monday',
+          type,
+          title: type,
+          steps: [{ type: 'work', durationSec: 30 * 60, zone: 'easy', targetPaceMin: 360, targetPaceMax: 300 }],
+          estimatedDurationSec: 30 * 60,
+          estimatedTss: 0,
+          rationale: '',
+          isTaper: false,
+        };
+        expect(estimateWorkoutTss(synth)).toBeGreaterThan(0);
+        expect(estimateWorkoutDistance(synth, zones)).toBeGreaterThan(0);
+      }
+    },
+  );
 });
