@@ -79,6 +79,27 @@ describe('sessions store', () => {
     expect(useSessionsStore.getState().sessions).toHaveLength(0);
   });
 
+  it('renameSession updates the session name', () => {
+    const { id: _id, createdAt: _ca, ...data } = makeSession();
+    const id = useSessionsStore.getState().addSession(data);
+
+    useSessionsStore.getState().renameSession(id, 'Morning Ride');
+
+    const session = useSessionsStore.getState().sessions.find((s) => s.id === id);
+    expect(session!.name).toBe('Morning Ride');
+  });
+
+  it('renameSession with unknown id is a no-op', () => {
+    const { id: _id, createdAt: _ca, ...data } = makeSession();
+    useSessionsStore.getState().addSession(data);
+    const before = useSessionsStore.getState().sessions;
+
+    useSessionsStore.getState().renameSession('nonexistent', 'Nope');
+
+    const after = useSessionsStore.getState().sessions;
+    expect(after).toEqual(before);
+  });
+
   it('clearAll resets both arrays', () => {
     const { id: _id, createdAt: _ca, ...data } = makeSession();
     useSessionsStore.getState().addSession(data);

@@ -1,14 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
-import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
-import { SportBadge } from "../../components/ui/SportBadge.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
 import { Button } from "../../components/ui/Button.tsx";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
+import { SessionItem } from "../../components/ui/SessionItem.tsx";
 import { useMapFocusStore } from "../../store/map-focus.ts";
-import { formatDate, formatDistance, formatDuration } from "../../lib/utils.ts";
 import type { TrainingSession } from "../../types/index.ts";
 
 export interface PopupInfo {
@@ -23,7 +20,6 @@ interface MapPickPopupProps {
 }
 
 export const MapPickPopup = (props: MapPickPopupProps) => {
-  const navigate = useNavigate();
   const popupRef = useRef<HTMLDivElement>(null);
   const hover = useHoverIntent(useMapFocusStore((s) => s.setHoveredSession));
   const onClose = props.onClose;
@@ -78,29 +74,14 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
         />
         <div className="space-y-1 overflow-y-auto min-h-0">
           {props.info.sessions.map((session) => (
-            <Button
+            <SessionItem
               key={session.id}
-              variant="ghost"
-              className="w-full justify-start gap-3 h-auto p-2 text-left"
+              session={session}
+              size="sm"
+              onClick={() => props.onClose()}
               onPointerEnter={() => hover.onPointerEnter(session.id)}
               onPointerLeave={hover.onPointerLeave}
-              onClick={() => {
-                props.onClose();
-                navigate(`/training/${session.id}`);
-              }}
-            >
-              <SportBadge sport={session.sport} size="sm" />
-              <div className="min-w-0 flex-1">
-                <Typography variant="emphasis" className="truncate">
-                  {session.name ?? formatDate(session.date)}
-                </Typography>
-                <Typography variant="caption" as="p">
-                  {session.name && <>{formatDate(session.date)} &middot; </>}
-                  {formatDistance(session.distance)} &middot;{" "}
-                  {formatDuration(session.duration)}
-                </Typography>
-              </div>
-            </Button>
+            />
           ))}
         </div>
       </Card>

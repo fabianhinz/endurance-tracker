@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   LineChart,
   Line,
@@ -10,6 +10,7 @@ import {
   Tooltip as RechartsTooltip,
   ReferenceArea,
 } from "recharts";
+import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { getSessionRecords, getSessionLaps } from "../../lib/indexeddb.ts";
 import { Button } from "../../components/ui/Button.tsx";
@@ -17,6 +18,18 @@ import { MetricCard } from "../../components/ui/MetricCard.tsx";
 import { ChartCard } from "../../components/ui/ChartCard.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
+import {
+  DialogRoot,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "../../components/ui/Dialog.tsx";
+import {
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "../../components/ui/DropdownMenu.tsx";
 import {
   formatDate,
   formatDuration,
@@ -40,11 +53,17 @@ import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
 
 export const SessionDetailPage = () => {
   const params = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const sessions = useSessionsStore((s) => s.sessions);
+  const deleteSession = useSessionsStore((s) => s.deleteSession);
+  const renameSession = useSessionsStore((s) => s.renameSession);
   const session = sessions.find((s) => s.id === params.id);
   const [records, setRecords] = useState<SessionRecord[]>([]);
   const [laps, setLaps] = useState<SessionLap[]>([]);
   const [showGrade, setShowGrade] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
+  const [nameInput, setNameInput] = useState("");
 
   useEffect(() => {
     if (params.id && session?.hasDetailedRecords) {
@@ -147,6 +166,31 @@ export const SessionDetailPage = () => {
               {subSportLabel}
             </Typography>
           )}
+          <DropdownMenuRoot>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Session actions">
+                <Ellipsis size={18} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onSelect={() => {
+                  setNameInput(session.name ?? formatDate(session.date));
+                  setShowRenameDialog(true);
+                }}
+              >
+                <Pencil size={14} />
+                Rename
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-status-danger focus:text-status-danger"
+                onSelect={() => setShowDeleteDialog(true)}
+              >
+                <Trash2 size={14} />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenuRoot>
         </div>
       </div>
 
@@ -483,6 +527,84 @@ export const SessionDetailPage = () => {
           </div>
         )}
       </PageGrid>
+
+      <DialogRoot
+        open={showRenameDialog}
+        onOpenChange={(open) => {
+          if (!open) setShowRenameDialog(false);
+        }}
+      >
+        <DialogContent>
+          <DialogTitle>Rename Session</DialogTitle>
+          <DialogDescription>
+            Enter a new name for this session.
+          </DialogDescription>
+          <input
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && nameInput.trim()) {
+                renameSession(session.id, nameInput.trim());
+                setShowRenameDialog(false);
+              }
+            }}
+            className="mt-4 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+            autoFocus
+          />
+          <div className="mt-4 flex justify-end gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => setShowRenameDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (nameInput.trim()) {
+                  renameSession(session.id, nameInput.trim());
+                  setShowRenameDialog(false);
+                }
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </DialogRoot>
+
+      <DialogRoot
+        open={showDeleteDialog}
+        onOpenChange={(open) => {
+          if (!open) setShowDeleteDialog(false);
+        }}
+      >
+        <DialogContent>
+          <DialogTitle>Delete Session</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete the {session.sport} session from{" "}
+            {formatDate(session.date)}? This action cannot be undone.
+          </DialogDescription>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-status-danger text-white hover:bg-status-danger/80"
+              onClick={() => {
+                deleteSession(session.id);
+                setShowDeleteDialog(false);
+                navigate("/training");
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </DialogRoot>
     </div>
   );
 };
