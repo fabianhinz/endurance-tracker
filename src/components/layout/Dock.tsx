@@ -151,6 +151,7 @@ export const Dock = () => {
   return (
     <>
       <nav
+        data-layout="dock"
         className={cn(
           cardClass,
           "fixed z-50 md:flex-row md:items-center",

@@ -6,6 +6,7 @@ import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { SessionItem } from "../../components/ui/SessionItem.tsx";
 import { useMapFocusStore } from "../../store/map-focus.ts";
+import { usePopupPosition } from "./use-popup-position.ts";
 import type { TrainingSession } from "../../types/index.ts";
 
 export interface PopupInfo {
@@ -41,16 +42,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
     };
   }, [onClose]);
 
-  const flipX = props.info.x > window.innerWidth - 300;
-  const flipY = props.info.y > window.innerHeight - 250;
-
-  const style: React.CSSProperties = {
-    position: "fixed",
-    left: props.info.x,
-    top: props.info.y,
-    transform: `translate(${flipX ? "-100%" : "0"}, ${flipY ? "-100%" : "0"})`,
-    zIndex: 50,
-  };
+  const style = usePopupPosition(props.info.x, props.info.y);
 
   return (
     <div ref={popupRef} style={style}>

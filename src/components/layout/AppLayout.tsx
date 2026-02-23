@@ -14,10 +14,11 @@ export const AppLayout = () => {
       <MapBackground />
       <Dock />
       <main
+        data-layout="main"
         className={cn(
           "relative z-10 p-6 w-full transition-[padding,max-width,margin] duration-300",
           compactLayout
-            ? "mx-auto max-w-[1280px] md:ml-auto md:mr-0 md:max-w-[40dvw]"
+            ? "mx-auto max-w-[1280px] md:pl-0 md:ml-auto md:mr-0 md:max-w-[40dvw]"
             : "mx-auto max-w-[1280px]",
           dockExpanded ? "pb-28" : "pb-20",
         )}

@@ -168,7 +168,10 @@ export const MapBackground = () => {
   const backfillOffset = PROGRESS_CIRCUMFERENCE * (1 - backfillPct);
 
   return (
-    <div className="fixed inset-0 z-0">
+    <div className="fixed inset-0 z-0" onPointerLeave={() => {
+      setHoveringTrack(false);
+      if (!popup) setPickCircle(null);
+    }}>
       <MapGL
         ref={mapRef}
         onLoad={() => setMapLoaded(true)}
