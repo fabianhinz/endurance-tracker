@@ -3,6 +3,7 @@ import { PathLayer } from '@deck.gl/layers';
 import { decodeTrackForRendering } from '../../engine/gps.ts';
 import { getTrackColor, getTrackWidth } from './track-colors.ts';
 import type { MapTrack } from './use-map-tracks.ts';
+import type { PickingInfo } from '@deck.gl/core';
 
 const pathCache = new Map<string, [number, number][]>();
 
@@ -15,25 +16,43 @@ const decodeCached = (sessionId: string, encoded: string): [number, number][] =>
   return path;
 };
 
-export const useDeckLayers = (tracks: MapTrack[], highlightedSessionId: string | null) =>
-  useMemo(() => {
-    const data = tracks.map((t) => ({
+export interface TrackPickData {
+  sessionId: string;
+  track: MapTrack;
+  path: [number, number][];
+}
+
+interface UseDeckLayersOptions {
+  onClick?: (info: PickingInfo<TrackPickData>) => void;
+}
+
+export const useDeckLayers = (
+  tracks: MapTrack[],
+  highlightedSessionId: string | null,
+  options?: UseDeckLayersOptions,
+) => {
+  const onClick = options?.onClick;
+
+  return useMemo(() => {
+    const data: TrackPickData[] = tracks.map((t) => ({
       sessionId: t.sessionId,
-      sport: t.sport,
+      track: t,
       path: decodeCached(t.sessionId, t.gps.encodedPolyline),
     }));
 
     return [
-      new PathLayer({
+      new PathLayer<TrackPickData>({
         id: 'gps-tracks',
         data,
-        getPath: (d: (typeof data)[number]) => d.path,
-        getColor: (d: (typeof data)[number]) => getTrackColor(d.sport, highlightedSessionId, d.sessionId),
-        getWidth: (d: (typeof data)[number]) => getTrackWidth(highlightedSessionId, d.sessionId),
+        getPath: (d) => d.path,
+        getColor: (d) => getTrackColor(d.track.sport, highlightedSessionId, d.sessionId),
+        getWidth: (d) => getTrackWidth(highlightedSessionId, d.sessionId),
         widthMinPixels: 1,
         widthMaxPixels: 5,
         jointRounded: true,
         capRounded: true,
+        pickable: true,
+        onClick: onClick as PathLayer<TrackPickData>['props']['onClick'],
         updateTriggers: {
           getColor: [highlightedSessionId],
           getWidth: [highlightedSessionId],
@@ -52,4 +71,5 @@ export const useDeckLayers = (tracks: MapTrack[], highlightedSessionId: string |
         },
       }),
     ];
-  }, [tracks, highlightedSessionId]);
+  }, [tracks, highlightedSessionId, onClick]);
+};
