@@ -3,10 +3,8 @@ import { useSessionsStore } from "../../store/sessions.ts";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { StatItem } from "../../components/ui/StatItem.tsx";
-import { PbChip } from "../../components/ui/PbChip.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
-import { cn } from "../../lib/utils.ts";
-import { formatPace } from "../../lib/utils.ts";
+import { cn, formatDate, formatPace, pbLabel, formatPBValue } from "../../lib/utils.ts";
 import {
   detectIntervals,
   detectProgressiveOverload,
@@ -222,23 +220,29 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       )}
 
       {hasPBs && (
-        <>
-          <div
-            className={cn(
-              "border-t border-white/10",
-              hasStats ? "mt-4 pt-4" : "",
-            )}
-          >
-            <Typography variant="overline" as="h3" className="mb-2">
-              Personal Bests
-            </Typography>
-            <div className="flex flex-wrap gap-2">
-              {sessionPBs.map((pb, idx) => (
-                <PbChip key={idx} pb={pb} />
-              ))}
-            </div>
+        <div
+          className={cn(
+            "border-t border-white/10",
+            hasStats ? "mt-4 pt-4" : "",
+          )}
+        >
+          <CardHeader title="Records" />
+          <div className="grid grid-cols-2 gap-3">
+            {sessionPBs.map((pb, idx) => (
+              <div key={idx} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <StatItem
+                  label={pbLabel(pb)}
+                  value={formatPBValue(pb)}
+                  subDetail={
+                    <Typography variant="caption" as="p">
+                      {formatDate(pb.date)}
+                    </Typography>
+                  }
+                />
+              </div>
+            ))}
           </div>
-        </>
+        </div>
       )}
 
       {hasWarnings && (

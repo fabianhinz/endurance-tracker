@@ -51,6 +51,10 @@ export const tokens = {
   chartSpeed: '#22c55e',
   chartLoad: '#3b82f6',
   chartGrade: '#a78bfa',
+  chartCadence: '#f59e0b',
+  chartElevation: '#8b5cf6',
+  chartPace: '#06b6d4',
+  chartGap: '#ec4899',
 
   // Border radius
   radiusSm: '4px',

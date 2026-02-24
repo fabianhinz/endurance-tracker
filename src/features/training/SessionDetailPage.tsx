@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useSessionsStore } from "../../store/sessions.ts";
@@ -28,7 +28,7 @@ import {
 } from "../../lib/utils.ts";
 import { SportChip } from "../../components/ui/SportChip.tsx";
 import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
-import { PerformanceChart } from "./PerformanceChart.tsx";
+import { SessionChartsExplorer } from "./SessionChartsExplorer.tsx";
 import type { SessionRecord, SessionLap } from "../../types/index.ts";
 import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
 
@@ -64,20 +64,6 @@ export const SessionDetailPage = () => {
     };
   }, [laps, session, setFocusedLaps, clearFocusedLaps]);
 
-  // Downsample records for chart (every 10th point)
-  const chartData = useMemo(
-    () =>
-      records
-        .filter((_, i) => i % 10 === 0)
-        .map((r) => ({
-          time: Math.round((r.timestamp / 60) * 100) / 100,
-          hr: r.hr,
-          power: r.power,
-          speed: r.speed ? Math.round(r.speed * 3.6 * 10) / 10 : undefined,
-        })),
-    [records],
-  );
-
   if (!session) {
     return (
       <Typography variant="body" color="tertiary">
@@ -110,7 +96,7 @@ export const SessionDetailPage = () => {
             <Typography
               variant="caption"
               color="quaternary"
-              className="flex align-center rounded-md bg-white/10 px-2 py-0.5"
+              className="flex items-center rounded-md bg-white/10 px-2 py-0.5"
             >
               {subSportLabel}
             </Typography>
@@ -173,9 +159,9 @@ export const SessionDetailPage = () => {
           />
         </div>
 
-        {chartData.length > 0 && (
+        {records.length > 0 && (
           <div className="md:col-span-2">
-            <PerformanceChart data={chartData} />
+            <SessionChartsExplorer records={records} session={session} />
           </div>
         )}
 
