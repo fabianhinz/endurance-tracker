@@ -38,8 +38,18 @@ export interface GAPPoint extends TimeSeriesPoint {
   gap: number;
 }
 
-const toMinutes = (timestamp: number): number =>
+export const toMinutes = (timestamp: number): number =>
   Math.round((timestamp / 60) * 100) / 100;
+
+export const buildTimeToGpsLookup = (records: SessionRecord[]): Map<number, [number, number]> => {
+  const map = new Map<number, [number, number]>();
+  for (const r of records) {
+    if (r.lat != null && r.lng != null) {
+      map.set(toMinutes(r.timestamp), [r.lng, r.lat]);
+    }
+  }
+  return map;
+};
 
 export const prepareHrData = (records: SessionRecord[]): HrPoint[] =>
   records

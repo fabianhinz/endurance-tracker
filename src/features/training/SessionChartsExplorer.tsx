@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Heart,
   Zap,
@@ -22,7 +22,9 @@ import {
   prepareGradeData,
   preparePaceData,
   prepareGAPData,
+  buildTimeToGpsLookup,
 } from "../../engine/chart-data.ts";
+import { useMapFocusStore } from "../../store/map-focus.ts";
 import {
   computeHrZoneDistribution,
   computePowerZoneDistribution,
@@ -101,6 +103,29 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
     return computePaceZoneDistribution(props.records, thresholdPace);
   }, [props.records, profile?.thresholds?.thresholdPace, isRunning]);
 
+  const gpsLookup = useMemo(() => buildTimeToGpsLookup(sampled), [sampled]);
+
+  const setHoveredPoint = useMapFocusStore((s) => s.setHoveredPoint);
+  const clearHoveredPoint = useMapFocusStore((s) => s.clearHoveredPoint);
+
+  const onActiveTimeChange = useCallback(
+    (time: number | null) => {
+      if (time == null) {
+        clearHoveredPoint();
+        return;
+      }
+      const point = gpsLookup.get(time);
+      if (point) {
+        setHoveredPoint(point);
+      }
+    },
+    [gpsLookup, setHoveredPoint, clearHoveredPoint],
+  );
+
+  useEffect(() => clearHoveredPoint, [clearHoveredPoint]);
+
+  const hasGps = gpsLookup.size > 0;
+
   const cadenceIcon = sportIcon[props.session.sport] ?? sportIcon.running;
 
   // Chart registry
@@ -113,7 +138,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
         color: tokens.chartHr,
         hasData: hrData.length > 0,
         render: (mode: "compact" | "expanded") => (
-          <HrChart data={hrData} mode={mode} />
+          <HrChart data={hrData} mode={mode} onActiveTimeChange={hasGps ? onActiveTimeChange : undefined} />
         ),
       },
       {
@@ -123,7 +148,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
         color: tokens.chartPower,
         hasData: powerData.length > 0,
         render: (mode: "compact" | "expanded") => (
-          <PowerChart data={powerData} mode={mode} />
+          <PowerChart data={powerData} mode={mode} onActiveTimeChange={hasGps ? onActiveTimeChange : undefined} />
         ),
       },
       {
@@ -133,7 +158,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
         color: tokens.chartSpeed,
         hasData: speedData.length > 0,
         render: (mode: "compact" | "expanded") => (
-          <SpeedChart data={speedData} mode={mode} />
+          <SpeedChart data={speedData} mode={mode} onActiveTimeChange={hasGps ? onActiveTimeChange : undefined} />
         ),
       },
       {
@@ -143,7 +168,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
         color: tokens.chartElevation,
         hasData: elevationData.length > 0,
         render: (mode: "compact" | "expanded") => (
-          <ElevationChart data={elevationData} mode={mode} />
+          <ElevationChart data={elevationData} mode={mode} onActiveTimeChange={hasGps ? onActiveTimeChange : undefined} />
         ),
       },
       {
@@ -153,7 +178,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
         color: tokens.chartCadence,
         hasData: cadenceData.length > 0,
         render: (mode: "compact" | "expanded") => (
-          <CadenceChart data={cadenceData} mode={mode} />
+          <CadenceChart data={cadenceData} mode={mode} onActiveTimeChange={hasGps ? onActiveTimeChange : undefined} />
         ),
       },
       {
@@ -163,7 +188,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
         color: tokens.chartGrade,
         hasData: gradeData.length > 0,
         render: (mode: "compact" | "expanded") => (
-          <GradeChart data={gradeData} mode={mode} />
+          <GradeChart data={gradeData} mode={mode} onActiveTimeChange={hasGps ? onActiveTimeChange : undefined} />
         ),
       },
       {
@@ -173,7 +198,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
         color: tokens.chartPace,
         hasData: paceData.length > 0,
         render: (mode: "compact" | "expanded") => (
-          <PaceChart data={paceData} mode={mode} />
+          <PaceChart data={paceData} mode={mode} onActiveTimeChange={hasGps ? onActiveTimeChange : undefined} />
         ),
       },
       {
@@ -186,6 +211,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
           <GradeAdjustedPaceChart
             data={gapData}
             mode={mode}
+            onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
           />
         ),
       },
@@ -222,6 +248,8 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       hrZoneData,
       powerZoneData,
       paceZoneData,
+      hasGps,
+      onActiveTimeChange,
     ],
   );
 

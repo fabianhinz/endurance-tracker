@@ -42,6 +42,7 @@ export const MapBackground = () => {
   const setFocusedSession = useMapFocusStore((s) => s.setFocusedSession);
   const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
+  const hoveredPoint = useMapFocusStore((s) => s.hoveredPoint);
 
   const match = useMatch('/training/:id');
   useEffect(() => {
@@ -151,9 +152,31 @@ export const MapBackground = () => {
     });
   }, [pickCircle]);
 
+  const hoveredPointLayer = useMemo(() => {
+    if (!hoveredPoint) return null;
+    return new ScatterplotLayer<{ position: [number, number] }>({
+      id: 'hovered-point',
+      data: [{ position: hoveredPoint }],
+      getPosition: (d) => d.position,
+      getRadius: 6,
+      radiusUnits: 'pixels',
+      getFillColor: [255, 255, 255, 230],
+      filled: true,
+      stroked: true,
+      getLineColor: [0, 0, 0, 180],
+      lineWidthUnits: 'pixels' as const,
+      getLineWidth: 2,
+      pickable: false,
+    });
+  }, [hoveredPoint]);
+
   const layers = useMemo(
-    () => (pickCircleLayer ? [...trackLayers, pickCircleLayer] : trackLayers),
-    [trackLayers, pickCircleLayer],
+    () => [
+      ...trackLayers,
+      ...(pickCircleLayer ? [pickCircleLayer] : []),
+      ...(hoveredPointLayer ? [hoveredPointLayer] : []),
+    ],
+    [trackLayers, pickCircleLayer, hoveredPointLayer],
   );
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import type { PacePoint } from "../../engine/chart-data.ts";
 interface PaceChartProps {
   data: PacePoint[];
   mode?: "compact" | "expanded";
+  onActiveTimeChange?: (time: number | null) => void;
 }
 
 const formatPace = (minPerKm: number): string => {
@@ -31,10 +32,12 @@ export const PaceChart = (props: PaceChartProps) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
+        syncId={compact ? "session-detail" : undefined}
         data={zoom.zoomedData}
         onMouseDown={compact ? undefined : zoom.onMouseDown}
-        onMouseMove={compact ? undefined : zoom.onMouseMove}
+        onMouseMove={compact ? (props.onActiveTimeChange ? (e) => { if (e.activeLabel != null) props.onActiveTimeChange!(Number(e.activeLabel)); } : undefined) : zoom.onMouseMove}
         onMouseUp={compact ? undefined : zoom.onMouseUp}
+        onMouseLeave={compact && props.onActiveTimeChange ? () => props.onActiveTimeChange!(null) : undefined}
       >
         {!compact && (
           <CartesianGrid
@@ -59,15 +62,13 @@ export const PaceChart = (props: PaceChartProps) => {
           tickCount={compact ? 3 : undefined}
           tickFormatter={formatPace}
         />
-        {!compact && (
-          <RechartsTooltip
-            contentStyle={chartTheme.tooltip.contentStyle}
-            labelStyle={chartTheme.tooltip.labelStyle}
-            isAnimationActive={chartTheme.tooltip.isAnimationActive}
-            labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
-            formatter={(v: number | undefined) => [v !== undefined ? formatPace(v) : "", "Pace"]}
-          />
-        )}
+        <RechartsTooltip
+          contentStyle={chartTheme.tooltip.contentStyle}
+          labelStyle={chartTheme.tooltip.labelStyle}
+          isAnimationActive={chartTheme.tooltip.isAnimationActive}
+          labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
+          formatter={(v: number | undefined) => [v !== undefined ? formatPace(v) : "", "Pace"]}
+        />
         <Line
           yAxisId="left"
           type="monotone"
@@ -75,7 +76,6 @@ export const PaceChart = (props: PaceChartProps) => {
           stroke={tokens.chartPace}
           strokeWidth={1.5}
           dot={false}
-          activeDot={compact ? false : undefined}
           name="Pace (min/km)"
         />
         {!compact && zoom.refAreaLeft && zoom.refAreaRight && (

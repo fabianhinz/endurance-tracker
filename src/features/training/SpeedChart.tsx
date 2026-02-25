@@ -16,6 +16,7 @@ import type { SpeedPoint } from "../../engine/chart-data.ts";
 interface SpeedChartProps {
   data: SpeedPoint[];
   mode?: "compact" | "expanded";
+  onActiveTimeChange?: (time: number | null) => void;
 }
 
 export const SpeedChart = (props: SpeedChartProps) => {
@@ -25,10 +26,12 @@ export const SpeedChart = (props: SpeedChartProps) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
+        syncId={compact ? "session-detail" : undefined}
         data={zoom.zoomedData}
         onMouseDown={compact ? undefined : zoom.onMouseDown}
-        onMouseMove={compact ? undefined : zoom.onMouseMove}
+        onMouseMove={compact ? (props.onActiveTimeChange ? (e) => { if (e.activeLabel != null) props.onActiveTimeChange!(Number(e.activeLabel)); } : undefined) : zoom.onMouseMove}
         onMouseUp={compact ? undefined : zoom.onMouseUp}
+        onMouseLeave={compact && props.onActiveTimeChange ? () => props.onActiveTimeChange!(null) : undefined}
       >
         {!compact && (
           <CartesianGrid
@@ -52,14 +55,12 @@ export const SpeedChart = (props: SpeedChartProps) => {
           tickCount={compact ? 3 : undefined}
           tickFormatter={(v: number) => compact ? `${v}` : `${v} km/h`}
         />
-        {!compact && (
-          <RechartsTooltip
-            contentStyle={chartTheme.tooltip.contentStyle}
-            labelStyle={chartTheme.tooltip.labelStyle}
-            isAnimationActive={chartTheme.tooltip.isAnimationActive}
-            labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
-          />
-        )}
+        <RechartsTooltip
+          contentStyle={chartTheme.tooltip.contentStyle}
+          labelStyle={chartTheme.tooltip.labelStyle}
+          isAnimationActive={chartTheme.tooltip.isAnimationActive}
+          labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
+        />
         <Line
           yAxisId="left"
           type="monotone"
@@ -67,7 +68,6 @@ export const SpeedChart = (props: SpeedChartProps) => {
           stroke={tokens.chartSpeed}
           strokeWidth={1.5}
           dot={false}
-          activeDot={compact ? false : undefined}
           name="Speed (km/h)"
         />
         {!compact && zoom.refAreaLeft && zoom.refAreaRight && (

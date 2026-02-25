@@ -17,6 +17,7 @@ import type { GradePoint } from "../../engine/chart-data.ts";
 interface GradeChartProps {
   data: GradePoint[];
   mode?: "compact" | "expanded";
+  onActiveTimeChange?: (time: number | null) => void;
 }
 
 export const GradeChart = (props: GradeChartProps) => {
@@ -26,10 +27,12 @@ export const GradeChart = (props: GradeChartProps) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
+        syncId={compact ? "session-detail" : undefined}
         data={zoom.zoomedData}
         onMouseDown={compact ? undefined : zoom.onMouseDown}
-        onMouseMove={compact ? undefined : zoom.onMouseMove}
+        onMouseMove={compact ? (props.onActiveTimeChange ? (e) => { if (e.activeLabel != null) props.onActiveTimeChange!(Number(e.activeLabel)); } : undefined) : zoom.onMouseMove}
         onMouseUp={compact ? undefined : zoom.onMouseUp}
+        onMouseLeave={compact && props.onActiveTimeChange ? () => props.onActiveTimeChange!(null) : undefined}
       >
         {!compact && (
           <CartesianGrid
@@ -53,14 +56,12 @@ export const GradeChart = (props: GradeChartProps) => {
           tickCount={compact ? 3 : undefined}
           tickFormatter={(v: number) => `${v}%`}
         />
-        {!compact && (
-          <RechartsTooltip
-            contentStyle={chartTheme.tooltip.contentStyle}
-            labelStyle={chartTheme.tooltip.labelStyle}
-            isAnimationActive={chartTheme.tooltip.isAnimationActive}
-            labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
-          />
-        )}
+        <RechartsTooltip
+          contentStyle={chartTheme.tooltip.contentStyle}
+          labelStyle={chartTheme.tooltip.labelStyle}
+          isAnimationActive={chartTheme.tooltip.isAnimationActive}
+          labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
+        />
         {!compact && (
           <ReferenceLine
             yAxisId="left"
@@ -76,7 +77,6 @@ export const GradeChart = (props: GradeChartProps) => {
           stroke={tokens.chartGrade}
           strokeWidth={1.5}
           dot={false}
-          activeDot={compact ? false : undefined}
           name="Grade (%)"
         />
         {!compact && zoom.refAreaLeft && zoom.refAreaRight && (
