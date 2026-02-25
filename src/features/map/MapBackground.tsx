@@ -1,28 +1,30 @@
-import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { useMatch } from 'react-router-dom';
-import MapGL from 'react-map-gl/maplibre';
-import { ScatterplotLayer } from '@deck.gl/layers';
-import { darkMatterStyle } from './map-style.ts';
-import { useMapTracks } from './use-map-tracks.ts';
-import { useDeckLayers, decodeCached } from './use-deck-layers.ts';
-import { useGPSBackfill } from './use-gps-backfill.ts';
-import { DeckGLOverlay } from './DeckGLOverlay.tsx';
-import { DeckMetricsOverlay } from './DeckMetricsOverlay.tsx';
-import { MapPickPopup } from './MapPickPopup.tsx';
-import { LapPickPopup } from './LapPickPopup.tsx';
-import { densestClusterBounds, boundsOverlap, segmentIntersectsBounds } from '../../engine/gps.ts';
-import { useMapFocusStore } from '../../store/map-focus.ts';
-import { useLayoutStore } from '../../store/layout.ts';
-import { useDeckMetricsStore } from '../../store/deck-metrics.ts';
-import type { MapRef } from 'react-map-gl/maplibre';
-import type { MapboxOverlay } from '@deck.gl/mapbox';
-import type { PickingInfo } from '@deck.gl/core';
-import type { PopupInfo } from './MapPickPopup.tsx';
-import type { LapPopupInfo } from './LapPickPopup.tsx';
-import type { TrackPickData } from './use-deck-layers.ts';
-import type { GPSBounds } from '../../types/gps.ts';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import './map-attribution.css';
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import { useMatch } from "react-router-dom";
+import MapGL from "react-map-gl/maplibre";
+import { ScatterplotLayer } from "@deck.gl/layers";
+import { darkMatterStyle } from "./map-style.ts";
+import { useMapTracks } from "./use-map-tracks.ts";
+import { useDeckLayers, decodeCached } from "./use-deck-layers.ts";
+import { useGPSBackfill } from "./use-gps-backfill.ts";
+import { DeckGLOverlay } from "./DeckGLOverlay.tsx";
+import { DeckMetricsOverlay } from "./DeckMetricsOverlay.tsx";
+import { MapPickPopup } from "./MapPickPopup.tsx";
+import { LapPickPopup } from "./LapPickPopup.tsx";
+import {
+  densestClusterBounds,
+  boundsOverlap,
+  segmentIntersectsBounds,
+} from "../../engine/gps.ts";
+import { useMapFocusStore } from "../../store/map-focus.ts";
+import { useLayoutStore } from "../../store/layout.ts";
+import type { MapRef } from "react-map-gl/maplibre";
+import type { PickingInfo } from "@deck.gl/core";
+import type { PopupInfo } from "./MapPickPopup.tsx";
+import type { LapPopupInfo } from "./LapPickPopup.tsx";
+import type { TrackPickData } from "./use-deck-layers.ts";
+import type { GPSBounds } from "../../types/gps.ts";
+import "maplibre-gl/dist/maplibre-gl.css";
+import "./map-attribution.css";
 
 const PROGRESS_SIZE = 20;
 const PROGRESS_STROKE = 2.5;
@@ -36,7 +38,6 @@ interface PickCircle {
 
 export const MapBackground = () => {
   const mapRef = useRef<MapRef>(null);
-  const overlayRef = useRef<MapboxOverlay | null>(null);
   const backfill = useGPSBackfill();
   const mapTracks = useMapTracks(backfill.gpsData);
   const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
@@ -46,8 +47,7 @@ export const MapBackground = () => {
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
   const hoveredPoint = useMapFocusStore((s) => s.hoveredPoint);
 
-
-  const match = useMatch('/training/:id');
+  const match = useMatch("/training/:id");
   useEffect(() => {
     setFocusedSession(match?.params.id ?? null);
   }, [match?.params.id, setFocusedSession]);
@@ -59,54 +59,62 @@ export const MapBackground = () => {
   const [lapPopup, setLapPopup] = useState<LapPopupInfo | null>(null);
   const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
   const [hoveringTrack, setHoveringTrack] = useState(false);
-  const updateDeckMetrics = useDeckMetricsStore((s) => s.update);
 
   const interactive = !popup && !lapPopup;
 
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
-  const onClick = useCallback((info: PickingInfo<TrackPickData>) => {
-    if (!info.object || !mapRef.current) return;
+  const onClick = useCallback(
+    (info: PickingInfo<TrackPickData>) => {
+      if (!info.object || !mapRef.current) return;
 
-    const center = mapRef.current.unproject([info.x, info.y]);
+      const center = mapRef.current.unproject([info.x, info.y]);
 
-    // On session detail page with laps available, show lap popup instead
-    if (focusedSessionId && focusedLaps.length > 0) {
+      // On session detail page with laps available, show lap popup instead
+      if (focusedSessionId && focusedLaps.length > 0) {
+        setPickCircle({ center: [center.lng, center.lat] });
+        setLapPopup({ x: info.x, y: info.y });
+        return;
+      }
+
+      const topLeft = mapRef.current.unproject([
+        info.x - PICK_RADIUS,
+        info.y - PICK_RADIUS,
+      ]);
+      const bottomRight = mapRef.current.unproject([
+        info.x + PICK_RADIUS,
+        info.y + PICK_RADIUS,
+      ]);
+
+      const geoBounds: GPSBounds = {
+        minLat: Math.min(topLeft.lat, bottomRight.lat),
+        maxLat: Math.max(topLeft.lat, bottomRight.lat),
+        minLng: Math.min(topLeft.lng, bottomRight.lng),
+        maxLng: Math.max(topLeft.lng, bottomRight.lng),
+      };
+
+      const seen = new Set<string>();
+      const sessions = mapTracks.tracks
+        .filter((t) => {
+          if (seen.has(t.sessionId)) return false;
+          if (!boundsOverlap(t.gps.bounds, geoBounds)) return false;
+          const path = decodeCached(t.sessionId, t.gps.encodedPolyline);
+          const hit = path.some(
+            (p, i) =>
+              i > 0 && segmentIntersectsBounds(path[i - 1], p, geoBounds),
+          );
+          if (hit) seen.add(t.sessionId);
+          return hit;
+        })
+        .map((t) => t.session);
+
+      if (sessions.length === 0) return;
+
       setPickCircle({ center: [center.lng, center.lat] });
-      setLapPopup({ x: info.x, y: info.y });
-      return;
-    }
-
-    const topLeft = mapRef.current.unproject([info.x - PICK_RADIUS, info.y - PICK_RADIUS]);
-    const bottomRight = mapRef.current.unproject([info.x + PICK_RADIUS, info.y + PICK_RADIUS]);
-
-    const geoBounds: GPSBounds = {
-      minLat: Math.min(topLeft.lat, bottomRight.lat),
-      maxLat: Math.max(topLeft.lat, bottomRight.lat),
-      minLng: Math.min(topLeft.lng, bottomRight.lng),
-      maxLng: Math.max(topLeft.lng, bottomRight.lng),
-    };
-
-    const seen = new Set<string>();
-    const sessions = mapTracks.tracks
-      .filter((t) => {
-        if (seen.has(t.sessionId)) return false;
-        if (!boundsOverlap(t.gps.bounds, geoBounds)) return false;
-        const path = decodeCached(t.sessionId, t.gps.encodedPolyline);
-        const hit = path.some(
-          (p, i) =>
-            i > 0 && segmentIntersectsBounds(path[i - 1], p, geoBounds),
-        );
-        if (hit) seen.add(t.sessionId);
-        return hit;
-      })
-      .map((t) => t.session);
-
-    if (sessions.length === 0) return;
-
-    setPickCircle({ center: [center.lng, center.lat] });
-    setPopup({ x: info.x, y: info.y, sessions });
-  }, [mapTracks.tracks, focusedSessionId, focusedLaps]);
+      setPopup({ x: info.x, y: info.y, sessions });
+    },
+    [mapTracks.tracks, focusedSessionId, focusedLaps],
+  );
 
   const closePopup = useCallback(() => {
     setPopup(null);
@@ -128,10 +136,6 @@ export const MapBackground = () => {
     [popup, lapPopup],
   );
 
-  const onOverlay = useCallback((overlay: MapboxOverlay) => {
-    overlayRef.current = overlay;
-  }, []);
-
   const trackLayers = useDeckLayers(
     mapTracks.tracks,
     highlightedSessionId,
@@ -141,16 +145,16 @@ export const MapBackground = () => {
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) return null;
     return new ScatterplotLayer<PickCircle>({
-      id: 'pick-circle',
+      id: "pick-circle",
       data: [pickCircle],
       getPosition: (d) => d.center,
       getRadius: PICK_RADIUS,
-      radiusUnits: 'pixels',
+      radiusUnits: "pixels",
       getFillColor: [255, 255, 255, 13],
       filled: true,
       stroked: true,
       getLineColor: [255, 255, 255, 25],
-      lineWidthUnits: 'pixels' as const,
+      lineWidthUnits: "pixels" as const,
       getLineWidth: 1,
       pickable: false,
     });
@@ -159,16 +163,16 @@ export const MapBackground = () => {
   const hoveredPointLayer = useMemo(() => {
     if (!hoveredPoint) return null;
     return new ScatterplotLayer<{ position: [number, number] }>({
-      id: 'hovered-point',
+      id: "hovered-point",
       data: [{ position: hoveredPoint }],
       getPosition: (d) => d.position,
       getRadius: 6,
-      radiusUnits: 'pixels',
+      radiusUnits: "pixels",
       getFillColor: [255, 255, 255, 230],
       filled: true,
       stroked: true,
       getLineColor: [0, 0, 0, 180],
-      lineWidthUnits: 'pixels' as const,
+      lineWidthUnits: "pixels" as const,
       getLineWidth: 2,
       pickable: false,
     });
@@ -187,7 +191,7 @@ export const MapBackground = () => {
     if (mapTracks.tracks.length === 0 || !mapRef.current || !mapLoaded) return;
 
     // When compact mode is on (desktop only), reserve right side for the content panel
-    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
     const rightPad = compactLayout && isDesktop ? window.innerWidth * 0.4 : 0;
 
     if (focusedSessionId) {
@@ -197,35 +201,49 @@ export const MapBackground = () => {
           [b.minLng, b.minLat],
           [b.maxLng, b.maxLat],
         ],
-        { padding: { top: 80, bottom: 80, left: 80, right: 80 + rightPad }, duration: 1200 },
+        {
+          padding: { top: 80, bottom: 80, left: 80, right: 80 + rightPad },
+          duration: 1200,
+        },
       );
       return;
     }
 
-    const bounds = densestClusterBounds(mapTracks.tracks.map((t) => t.gps.bounds));
+    const bounds = densestClusterBounds(
+      mapTracks.tracks.map((t) => t.gps.bounds),
+    );
     if (!bounds) return;
     mapRef.current.fitBounds(
       [
         [bounds.minLng, bounds.minLat],
         [bounds.maxLng, bounds.maxLat],
       ],
-      { padding: { top: 50, bottom: 50, left: 50, right: 50 + rightPad }, duration: 1000 },
+      {
+        padding: { top: 50, bottom: 50, left: 50, right: 50 + rightPad },
+        duration: 1000,
+      },
     );
   }, [mapTracks.tracks, focusedSessionId, compactLayout, mapLoaded]);
 
-  const backfillPct = backfill.total > 0 ? Math.min(backfill.processed, backfill.total) / backfill.total : 0;
+  const backfillPct =
+    backfill.total > 0
+      ? Math.min(backfill.processed, backfill.total) / backfill.total
+      : 0;
   const backfillOffset = PROGRESS_CIRCUMFERENCE * (1 - backfillPct);
 
   return (
-    <div className="fixed inset-0 z-0" onPointerLeave={() => {
-      setHoveringTrack(false);
-      if (!popup && !lapPopup) setPickCircle(null);
-    }}>
+    <div
+      className="fixed inset-0 z-0"
+      onPointerLeave={() => {
+        setHoveringTrack(false);
+        if (!popup && !lapPopup) setPickCircle(null);
+      }}
+    >
       <MapGL
         ref={mapRef}
         onLoad={() => setMapLoaded(true)}
         mapStyle={darkMatterStyle}
-        cursor={hoveringTrack ? 'pointer' : undefined}
+        cursor={hoveringTrack ? "pointer" : undefined}
         initialViewState={{
           longitude: 10,
           latitude: 50,
@@ -238,9 +256,9 @@ export const MapBackground = () => {
         touchZoomRotate={interactive}
         keyboard={interactive}
         attributionControl={{ compact: true }}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: "100%", height: "100%" }}
       >
-        <DeckGLOverlay layers={layers} onOverlay={onOverlay} onMetrics={updateDeckMetrics} />
+        <DeckGLOverlay layers={layers} />
       </MapGL>
       <DeckMetricsOverlay />
       {popup && <MapPickPopup info={popup} onClose={closePopup} />}
