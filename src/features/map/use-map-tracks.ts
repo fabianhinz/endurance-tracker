@@ -19,7 +19,7 @@ export const useMapTracks = (gpsData: SessionGPS[] | null) => {
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
-  const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
+  const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
 
   const [tracks, setTracks] = useState<MapTrack[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,13 +30,13 @@ export const useMapTracks = (gpsData: SessionGPS[] | null) => {
     const load = async () => {
       setLoading(true);
 
-      if (focusedSessionId) {
-        const session = sessions.find((s) => s.id === focusedSessionId);
-        const gps = await getSessionGPS(focusedSessionId);
+      if (openedSessionId) {
+        const session = sessions.find((s) => s.id === openedSessionId);
+        const gps = await getSessionGPS(openedSessionId);
         if (cancelled) return;
 
         if (gps && session) {
-          setTracks([{ sessionId: focusedSessionId, sport: session.sport, gps, session }]);
+          setTracks([{ sessionId: openedSessionId, sport: session.sport, gps, session }]);
         } else {
           setTracks([]);
         }
@@ -80,7 +80,7 @@ export const useMapTracks = (gpsData: SessionGPS[] | null) => {
     return () => {
       cancelled = true;
     };
-  }, [sessions, timeRange, customRange, sportFilter, gpsData, focusedSessionId]);
+  }, [sessions, timeRange, customRange, sportFilter, gpsData, openedSessionId]);
 
   return { tracks, loading };
 };

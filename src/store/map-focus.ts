@@ -2,8 +2,8 @@ import { create } from "zustand";
 import type { SessionLap, Sport } from "../types/index.ts";
 
 interface MapFocusState {
-  focusedSessionId: string | null;
-  setFocusedSession: (id: string | null) => void;
+  openedSessionId: string | null;
+  setOpenedSession: (id: string | null) => void;
   hoveredSessionId: string | null;
   setHoveredSession: (id: string | null) => void;
   focusedLaps: SessionLap[];
@@ -16,12 +16,12 @@ interface MapFocusState {
 }
 
 export const useMapFocusStore = create<MapFocusState>()((set) => ({
-  focusedSessionId: null,
-  setFocusedSession: (id) =>
+  openedSessionId: null,
+  setOpenedSession: (id) =>
     set(
       id === null
-        ? { focusedSessionId: null, focusedLaps: [], focusedSport: null, hoveredPoint: null }
-        : { focusedSessionId: id },
+        ? { openedSessionId: null, focusedLaps: [], focusedSport: null, hoveredPoint: null }
+        : { openedSessionId: id },
     ),
   hoveredSessionId: null,
   setHoveredSession: (id) => set({ hoveredSessionId: id }),

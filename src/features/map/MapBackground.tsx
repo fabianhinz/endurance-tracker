@@ -1,11 +1,13 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { useMatch } from "react-router-dom";
 import MapGL from "react-map-gl/maplibre";
-import { ScatterplotLayer } from "@deck.gl/layers";
+import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { darkMatterStyle } from "./map-style.ts";
 import { useMapTracks } from "./use-map-tracks.ts";
 import { useDeckLayers, decodeCached } from "./use-deck-layers.ts";
 import { useGPSBackfill } from "./use-gps-backfill.ts";
+import { useHiresPaths } from "./use-hires-paths.ts";
+import { sportTrackColor } from "./track-colors.ts";
 import { DeckGLOverlay } from "./DeckGLOverlay.tsx";
 import { DeckMetricsOverlay } from "./DeckMetricsOverlay.tsx";
 import { MapPickPopup } from "./MapPickPopup.tsx";
@@ -15,6 +17,7 @@ import {
   boundsOverlap,
   segmentIntersectsBounds,
 } from "../../engine/gps.ts";
+import { useSessionsStore } from "../../store/sessions.ts";
 import { useMapFocusStore } from "../../store/map-focus.ts";
 import { useLayoutStore } from "../../store/layout.ts";
 import type { MapRef } from "react-map-gl/maplibre";
@@ -41,16 +44,18 @@ export const MapBackground = () => {
   const backfill = useGPSBackfill();
   const mapTracks = useMapTracks(backfill.gpsData);
   const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
-  const focusedSessionId = useMapFocusStore((s) => s.focusedSessionId);
-  const setFocusedSession = useMapFocusStore((s) => s.setFocusedSession);
+  const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
+  const setOpenedSession = useMapFocusStore((s) => s.setOpenedSession);
   const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
   const hoveredPoint = useMapFocusStore((s) => s.hoveredPoint);
 
+  const sessions = useSessionsStore((s) => s.sessions);
+
   const match = useMatch("/training/:id");
   useEffect(() => {
-    setFocusedSession(match?.params.id ?? null);
-  }, [match?.params.id, setFocusedSession]);
+    setOpenedSession(match?.params.id ?? null);
+  }, [match?.params.id, setOpenedSession]);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -64,6 +69,12 @@ export const MapBackground = () => {
 
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
+  const hiresPaths = useHiresPaths(
+    hoveredSessionId,
+    openedSessionId,
+    sessions,
+  );
+
   const onClick = useCallback(
     (info: PickingInfo<TrackPickData>) => {
       if (!info.object || !mapRef.current) return;
@@ -71,7 +82,7 @@ export const MapBackground = () => {
       const center = mapRef.current.unproject([info.x, info.y]);
 
       // On session detail page with laps available, show lap popup instead
-      if (focusedSessionId && focusedLaps.length > 0) {
+      if (openedSessionId && focusedLaps.length > 0) {
         setPickCircle({ center: [center.lng, center.lat] });
         setLapPopup({ x: info.x, y: info.y });
         return;
@@ -113,7 +124,7 @@ export const MapBackground = () => {
       setPickCircle({ center: [center.lng, center.lat] });
       setPopup({ x: info.x, y: info.y, sessions });
     },
-    [mapTracks.tracks, focusedSessionId, focusedLaps],
+    [mapTracks.tracks, openedSessionId, focusedLaps],
   );
 
   const closePopup = useCallback(() => {
@@ -139,8 +150,49 @@ export const MapBackground = () => {
   const trackLayers = useDeckLayers(
     mapTracks.tracks,
     highlightedSessionId,
-    onboardingComplete ? { onClick, onHover } : undefined,
+    onboardingComplete
+      ? { onClick, onHover, hiddenSessionId: openedSessionId }
+      : { hiddenSessionId: openedSessionId },
   );
+
+  const hiresLayer = useMemo(() => {
+    if (hiresPaths.size === 0) return null;
+
+    const sportMap = new Map(sessions.map((s) => [s.id, s.sport]));
+    const data = [...hiresPaths.entries()].map(([sessionId, path]) => ({
+      sessionId,
+      path,
+      sport: sportMap.get(sessionId) ?? ("running" as const),
+    }));
+
+    return new PathLayer<(typeof data)[number]>({
+      id: "hires-tracks",
+      data,
+      getPath: (d) => d.path,
+      getColor: (d) => {
+        const base = sportTrackColor[d.sport];
+        const alpha = d.sessionId === openedSessionId ? 200 : 0;
+        return [base[0], base[1], base[2], alpha];
+      },
+      getWidth: 4,
+      widthMinPixels: 1,
+      widthMaxPixels: 5,
+      jointRounded: true,
+      capRounded: true,
+      pickable: false,
+      updateTriggers: {
+        getColor: [openedSessionId],
+      },
+      parameters: {
+        blendColorSrcFactor: "src-alpha",
+        blendColorDstFactor: "one",
+        blendColorOperation: "add",
+        blendAlphaSrcFactor: "one",
+        blendAlphaDstFactor: "one",
+        blendAlphaOperation: "add",
+      },
+    });
+  }, [hiresPaths, openedSessionId, sessions]);
 
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) return null;
@@ -181,10 +233,11 @@ export const MapBackground = () => {
   const layers = useMemo(
     () => [
       ...trackLayers,
+      ...(hiresLayer ? [hiresLayer] : []),
       ...(pickCircleLayer ? [pickCircleLayer] : []),
       ...(hoveredPointLayer ? [hoveredPointLayer] : []),
     ],
-    [trackLayers, pickCircleLayer, hoveredPointLayer],
+    [trackLayers, hiresLayer, pickCircleLayer, hoveredPointLayer],
   );
 
   useEffect(() => {
@@ -194,7 +247,7 @@ export const MapBackground = () => {
     const isDesktop = window.matchMedia("(min-width: 768px)").matches;
     const rightPad = compactLayout && isDesktop ? window.innerWidth * 0.4 : 0;
 
-    if (focusedSessionId) {
+    if (openedSessionId) {
       const b = mapTracks.tracks[0].gps.bounds;
       mapRef.current.fitBounds(
         [
@@ -223,7 +276,7 @@ export const MapBackground = () => {
         duration: 1000,
       },
     );
-  }, [mapTracks.tracks, focusedSessionId, compactLayout, mapLoaded]);
+  }, [mapTracks.tracks, openedSessionId, compactLayout, mapLoaded]);
 
   const backfillPct =
     backfill.total > 0
