@@ -7,6 +7,7 @@ import type { Layer } from '@deck.gl/core';
 interface DeckGLOverlayProps {
   layers: Layer[];
   onOverlay?: (overlay: MapboxOverlay) => void;
+  onMetrics?: (metrics: Record<string, number>) => void;
 }
 
 export const DeckGLOverlay = (props: DeckGLOverlayProps) => {
@@ -14,7 +15,7 @@ export const DeckGLOverlay = (props: DeckGLOverlayProps) => {
   const overlay = useControl<MapboxOverlay>(
     () => new MapboxOverlay({ interleaved: false, pickingRadius: PICK_RADIUS }),
   );
-  overlay.setProps({ layers: props.layers, pickingRadius: PICK_RADIUS });
+  overlay.setProps({ layers: props.layers, pickingRadius: PICK_RADIUS, _onMetrics: props.onMetrics });
 
   useEffect(() => {
     onOverlay?.(overlay);

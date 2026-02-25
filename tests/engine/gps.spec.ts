@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   extractGPSPoints,
+  extractPathFromRecords,
   simplifyTrack,
   encodeTrack,
   decodeTrackForRendering,
@@ -42,6 +43,55 @@ describe('extractGPSPoints', () => {
     expect(points).toHaveLength(2);
     expect(points[0].lat).toBe(48.0);
     expect(points[1].lat).toBe(49.0);
+  });
+});
+
+describe('extractPathFromRecords', () => {
+  it('extracts [lng, lat] pairs from records with valid GPS', () => {
+    const records = makeGPSRunningRecords('s1', 10);
+    const path = extractPathFromRecords(records);
+    expect(path).toHaveLength(10);
+    // Output is [lng, lat] — same convention as decodeTrackForRendering
+    expect(path[0][0]).toBeCloseTo(11.575, 3); // lng
+    expect(path[0][1]).toBeCloseTo(48.137, 3); // lat
+  });
+
+  it('returns empty array for indoor sessions', () => {
+    const records = makeIndoorRecords('s1', 50);
+    const path = extractPathFromRecords(records);
+    expect(path).toHaveLength(0);
+  });
+
+  it('filters out null and out-of-range coordinates', () => {
+    const records = [
+      { sessionId: 's1', timestamp: 0, lat: 48.0, lng: 11.0 },
+      { sessionId: 's1', timestamp: 1, lat: undefined, lng: 11.0 },
+      { sessionId: 's1', timestamp: 2, lat: 48.0, lng: undefined },
+      { sessionId: 's1', timestamp: 3, lat: 91, lng: 11.0 },
+      { sessionId: 's1', timestamp: 4, lat: 48.0, lng: -181 },
+      { sessionId: 's1', timestamp: 5, lat: 49.0, lng: 12.0 },
+    ];
+    const path = extractPathFromRecords(records);
+    expect(path).toHaveLength(2);
+    expect(path[0]).toEqual([11.0, 48.0]);
+    expect(path[1]).toEqual([12.0, 49.0]);
+  });
+
+  it('preserves all points without simplification', () => {
+    const records = makeGPSRunningRecords('s1', 500);
+    const path = extractPathFromRecords(records);
+    expect(path).toHaveLength(500);
+  });
+
+  it('outputs [lng, lat] matching decodeTrackForRendering convention', () => {
+    const records = [
+      { sessionId: 's1', timestamp: 0, lat: 48.137, lng: 11.575 },
+    ];
+    const path = extractPathFromRecords(records);
+    const decoded = decodeTrackForRendering(encodeTrack([{ lat: 48.137, lng: 11.575 }]));
+    // Both should be [lng, lat]
+    expect(path[0][0]).toBeCloseTo(decoded[0][0], 4);
+    expect(path[0][1]).toBeCloseTo(decoded[0][1], 4);
   });
 });
 

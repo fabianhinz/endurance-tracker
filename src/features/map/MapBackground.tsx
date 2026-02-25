@@ -7,11 +7,13 @@ import { useMapTracks } from './use-map-tracks.ts';
 import { useDeckLayers, decodeCached } from './use-deck-layers.ts';
 import { useGPSBackfill } from './use-gps-backfill.ts';
 import { DeckGLOverlay } from './DeckGLOverlay.tsx';
+import { DeckMetricsOverlay } from './DeckMetricsOverlay.tsx';
 import { MapPickPopup } from './MapPickPopup.tsx';
 import { LapPickPopup } from './LapPickPopup.tsx';
 import { densestClusterBounds, boundsOverlap, segmentIntersectsBounds } from '../../engine/gps.ts';
 import { useMapFocusStore } from '../../store/map-focus.ts';
 import { useLayoutStore } from '../../store/layout.ts';
+import { useDeckMetricsStore } from '../../store/deck-metrics.ts';
 import type { MapRef } from 'react-map-gl/maplibre';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import type { PickingInfo } from '@deck.gl/core';
@@ -44,6 +46,7 @@ export const MapBackground = () => {
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
   const hoveredPoint = useMapFocusStore((s) => s.hoveredPoint);
 
+
   const match = useMatch('/training/:id');
   useEffect(() => {
     setFocusedSession(match?.params.id ?? null);
@@ -56,6 +59,7 @@ export const MapBackground = () => {
   const [lapPopup, setLapPopup] = useState<LapPopupInfo | null>(null);
   const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
   const [hoveringTrack, setHoveringTrack] = useState(false);
+  const updateDeckMetrics = useDeckMetricsStore((s) => s.update);
 
   const interactive = !popup && !lapPopup;
 
@@ -236,8 +240,9 @@ export const MapBackground = () => {
         attributionControl={{ compact: true }}
         style={{ width: '100%', height: '100%' }}
       >
-        <DeckGLOverlay layers={layers} onOverlay={onOverlay} />
+        <DeckGLOverlay layers={layers} onOverlay={onOverlay} onMetrics={updateDeckMetrics} />
       </MapGL>
+      <DeckMetricsOverlay />
       {popup && <MapPickPopup info={popup} onClose={closePopup} />}
       {lapPopup && focusedSport && (
         <LapPickPopup

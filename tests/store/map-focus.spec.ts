@@ -21,6 +21,7 @@ describe("useMapFocusStore", () => {
       hoveredSessionId: null,
       focusedLaps: [],
       focusedSport: null,
+      hoveredPoint: null,
     });
   });
 
@@ -92,4 +93,5 @@ describe("useMapFocusStore", () => {
     expect(useMapFocusStore.getState().focusedLaps).toEqual(laps);
     expect(useMapFocusStore.getState().focusedSport).toBe("cycling");
   });
+
 });
