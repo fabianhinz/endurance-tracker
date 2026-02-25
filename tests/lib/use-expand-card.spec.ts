@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   computeFlipDeltas,
   computeExpandedSize,
+  getResponsivePadding,
 } from "../../src/lib/use-expand-card.ts";
 
 // Helper to create a DOMRect-like object
@@ -96,5 +97,27 @@ describe("computeExpandedSize", () => {
 
     expect(size.width).toBe(800);
     expect(size.height).toBe(600);
+  });
+});
+
+describe("getResponsivePadding", () => {
+  it("returns 24px padding for small viewports", () => {
+    const padding = getResponsivePadding(375);
+    expect(padding).toEqual({ x: 24, top: 24, bottom: 24 });
+  });
+
+  it("returns 24px padding at 767px", () => {
+    const padding = getResponsivePadding(767);
+    expect(padding).toEqual({ x: 24, top: 24, bottom: 24 });
+  });
+
+  it("returns 200px padding at 768px", () => {
+    const padding = getResponsivePadding(768);
+    expect(padding).toEqual({ x: 200, top: 200, bottom: 200 });
+  });
+
+  it("returns 200px padding for large viewports", () => {
+    const padding = getResponsivePadding(1920);
+    expect(padding).toEqual({ x: 200, top: 200, bottom: 200 });
   });
 });

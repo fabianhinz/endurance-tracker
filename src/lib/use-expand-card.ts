@@ -35,6 +35,11 @@ interface ExpandPadding {
 }
 
 const DEFAULT_PADDING: Required<ExpandPadding> = { x: 200, top: 200, bottom: 200 };
+const SMALL_PADDING: Required<ExpandPadding> = { x: 24, top: 24, bottom: 24 };
+const SMALL_BREAKPOINT = 768;
+
+export const getResponsivePadding = (viewportWidth: number): Required<ExpandPadding> =>
+  viewportWidth < SMALL_BREAKPOINT ? SMALL_PADDING : DEFAULT_PADDING;
 
 export const computeExpandedSize = (
   viewportWidth: number,
@@ -76,7 +81,6 @@ export const useExpandCard = (
   const placeholderRef = useRef<HTMLDivElement | null>(null);
   const guardRef = useRef(false);
   const [phase, setPhase] = useState<Phase>("idle");
-
   const getDuration = useCallback(() => {
     if (typeof window === "undefined") return baseDuration;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -101,9 +105,10 @@ export const useExpandCard = (
     placeholderRef.current = placeholder;
 
     // Last: apply fixed centered positioning
-    const size = computeExpandedSize(window.innerWidth, window.innerHeight);
+    const padding = getResponsivePadding(window.innerWidth);
+    const size = computeExpandedSize(window.innerWidth, window.innerHeight, padding);
     el.style.position = "fixed";
-    el.style.inset = `${DEFAULT_PADDING.top}px ${DEFAULT_PADDING.x}px ${DEFAULT_PADDING.bottom}px ${DEFAULT_PADDING.x}px`;
+    el.style.inset = `${padding.top}px ${padding.x}px ${padding.bottom}px ${padding.x}px`;
     el.style.margin = "auto";
     el.style.width = `${size.width}px`;
     el.style.height = `${size.height}px`;
@@ -196,7 +201,7 @@ export const useExpandCard = (
     };
   }, []);
 
-  const isExpanded = phase !== "idle";
+  const isExpanded = phase === "expanding" || phase === "expanded";
   const isAnimating = phase === "expanding" || phase === "collapsing";
 
   return { isExpanded, isAnimating, expand, collapse, toggle };

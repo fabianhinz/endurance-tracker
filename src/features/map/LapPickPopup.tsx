@@ -6,7 +6,7 @@ import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { usePopupPosition } from "./use-popup-position.ts";
 import { analyzeLaps } from "../../engine/laps.ts";
-import { computeRunningZones, getZoneForPace } from "../../engine/zones.ts";
+import { computeRunningZones } from "../../engine/zones.ts";
 import { useUserStore } from "../../store/user.ts";
 import {
   formatPace,
@@ -105,33 +105,6 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
       isRunning && thresholdPace ? computeRunningZones(thresholdPace) : null,
     [isRunning, thresholdPace],
   );
-  const zoneSummary = useMemo(() => {
-    if (!zones) return null;
-    const distByZone = new Map<string, { label: string; distance: number }>();
-    let totalDist = 0;
-    for (const lap of analysis) {
-      if (lap.paceSecPerKm === undefined) continue;
-      const zone = getZoneForPace(lap.paceSecPerKm, zones);
-      if (!zone) continue;
-      const entry = distByZone.get(zone.name) ?? {
-        label: zone.label,
-        distance: 0,
-      };
-      entry.distance += lap.distance;
-      distByZone.set(zone.name, entry);
-      totalDist += lap.distance;
-    }
-    if (totalDist === 0) return null;
-    return zones
-      .filter((z) => distByZone.has(z.name))
-      .map((z) => {
-        const pct = Math.round(
-          (distByZone.get(z.name)!.distance / totalDist) * 100,
-        );
-        return `${z.label} ${pct}%`;
-      })
-      .join(" · ");
-  }, [zones, analysis]);
 
   return (
     <div ref={popupRef} style={style}>
@@ -141,7 +114,6 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
       >
         <CardHeader
           title={`${analysis.length} Laps`}
-          subtitle={zoneSummary ?? undefined}
           actions={
             <Button
               variant="ghost"

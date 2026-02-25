@@ -12,8 +12,11 @@ export const getTrackColor = (
   sport: Sport,
   highlightedSessionId: string | null,
   sessionId: string,
+  hiddenSessionId?: string | null,
 ): [number, number, number, number] => {
   const base = sportTrackColor[sport];
+  if (hiddenSessionId && hiddenSessionId === sessionId)
+    return [base[0], base[1], base[2], 0];
   if (!highlightedSessionId) return base;
   const alpha = sessionId === highlightedSessionId ? ALPHA_HIGHLIGHTED : 0;
   return [base[0], base[1], base[2], alpha];

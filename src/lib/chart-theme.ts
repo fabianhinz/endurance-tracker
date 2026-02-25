@@ -1,5 +1,11 @@
 import { tokens } from './tokens';
 
+export const formatChartTime = (minutes: number): string => {
+  const m = Math.floor(minutes);
+  const s = Math.round((minutes - m) * 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+};
+
 export const chartTheme = {
   tick: { fill: tokens.textTertiary, fontSize: 11 },
   axisLine: { stroke: tokens.border },

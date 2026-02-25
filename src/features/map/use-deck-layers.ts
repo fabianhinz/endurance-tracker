@@ -25,6 +25,7 @@ export interface TrackPickData {
 interface UseDeckLayersOptions {
   onClick?: (info: PickingInfo<TrackPickData>) => void;
   onHover?: (info: PickingInfo<TrackPickData>) => void;
+  hiddenSessionId?: string | null;
 }
 
 export const useDeckLayers = (
@@ -34,6 +35,7 @@ export const useDeckLayers = (
 ) => {
   const onClick = options?.onClick;
   const onHover = options?.onHover;
+  const hiddenSessionId = options?.hiddenSessionId;
 
   return useMemo(() => {
     const data: TrackPickData[] = tracks.map((t) => ({
@@ -47,7 +49,7 @@ export const useDeckLayers = (
         id: 'gps-tracks',
         data,
         getPath: (d) => d.path,
-        getColor: (d) => getTrackColor(d.track.sport, highlightedSessionId, d.sessionId),
+        getColor: (d) => getTrackColor(d.track.sport, highlightedSessionId, d.sessionId, hiddenSessionId),
         getWidth: (d) => getTrackWidth(highlightedSessionId, d.sessionId),
         widthMinPixels: 1,
         widthMaxPixels: 5,
@@ -57,7 +59,7 @@ export const useDeckLayers = (
         onClick: onClick as PathLayer<TrackPickData>['props']['onClick'],
         onHover: onHover as PathLayer<TrackPickData>['props']['onHover'],
         updateTriggers: {
-          getColor: [highlightedSessionId],
+          getColor: [highlightedSessionId, hiddenSessionId],
           getWidth: [highlightedSessionId],
         },
         transitions: {
@@ -74,5 +76,5 @@ export const useDeckLayers = (
         },
       }),
     ];
-  }, [tracks, highlightedSessionId, onClick, onHover]);
+  }, [tracks, highlightedSessionId, onClick, onHover, hiddenSessionId]);
 };

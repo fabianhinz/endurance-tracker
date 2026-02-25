@@ -18,6 +18,23 @@ export const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
     return acc;
   }, []);
 
+export const extractPathFromRecords = (
+  records: SessionRecord[],
+): [number, number][] =>
+  records.reduce<[number, number][]>((acc, r) => {
+    if (
+      r.lat != null &&
+      r.lng != null &&
+      r.lat >= -90 &&
+      r.lat <= 90 &&
+      r.lng >= -180 &&
+      r.lng <= 180
+    ) {
+      acc.push([r.lng, r.lat]);
+    }
+    return acc;
+  }, []);
+
 export const simplifyTrack = (
   points: GPSPoint[],
   tolerance = 0.00005,
