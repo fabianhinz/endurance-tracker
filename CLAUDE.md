@@ -26,6 +26,10 @@ Client-side only SPA. No server, no APIs, no `fetch`/`axios`.
 - **Named exports only** everywhere.
 - **Arrow functions only**: never use the `function` keyword — use arrow functions (`const fn = () => {}`) everywhere.
 - **No object destructuring** for component props and hook return values — access via `props.x` and `result.x` instead.
+- **Feature-level hooks**: feature-specific hooks live in `src/features/<feature>/hooks/` with camelCase file naming (e.g., `useDashboardChartZoom.ts`).
+- **Colocate store subscriptions**: don't hoist store reads in parent components just to pass as props — let child components subscribe directly via hooks.
+- **Scope-clear store naming**: when store actions serve one feature, name them to reflect that scope (e.g., `setDashboardChartRange` not `setCustomRange`).
+- **Delete dead code**: exported but never-imported code should be removed, not left around.
 
 ## Dev Workflow
 

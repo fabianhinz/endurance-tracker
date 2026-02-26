@@ -6,11 +6,11 @@ import type { Sport } from "../types/index.ts";
 interface FiltersState {
   timeRange: TimeRange;
   customRange: { from: string; to: string } | null;
-  previousTimeRange: Exclude<TimeRange, "custom"> | null;
+  prevDashboardRange: Exclude<TimeRange, "custom"> | null;
   sportFilter: Sport | "all";
   setTimeRange: (r: TimeRange) => void;
-  setCustomRange: (from: string, to: string) => void;
-  clearCustomRange: () => void;
+  setDashboardChartRange: (from: string, to: string) => void;
+  clearDashboardChartRange: () => void;
   setSportFilter: (s: Sport | "all") => void;
 }
 
@@ -18,24 +18,24 @@ export const useFiltersStore = create<FiltersState>()(
   persist((set) => ({
   timeRange: "all",
   customRange: null,
-  previousTimeRange: null,
+  prevDashboardRange: null,
   sportFilter: "all",
   setTimeRange: (r) =>
-    set({ timeRange: r, customRange: null, previousTimeRange: null }),
-  setCustomRange: (from, to) =>
+    set({ timeRange: r, customRange: null, prevDashboardRange: null }),
+  setDashboardChartRange: (from, to) =>
     set((state) => ({
       timeRange: "custom",
       customRange: { from, to },
-      previousTimeRange:
+      prevDashboardRange:
         state.timeRange === "custom"
-          ? state.previousTimeRange
+          ? state.prevDashboardRange
           : (state.timeRange as Exclude<TimeRange, "custom">),
     })),
-  clearCustomRange: () =>
+  clearDashboardChartRange: () =>
     set((state) => ({
-      timeRange: state.previousTimeRange ?? "90d",
+      timeRange: state.prevDashboardRange ?? "90d",
       customRange: null,
-      previousTimeRange: null,
+      prevDashboardRange: null,
     })),
   setSportFilter: (s) => set({ sportFilter: s }),
 }), { name: "endurance-tracker-filters" }));

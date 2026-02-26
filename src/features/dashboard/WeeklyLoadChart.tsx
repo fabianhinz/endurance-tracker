@@ -17,39 +17,35 @@ import { useChartZoom } from "../../lib/use-chart-zoom.ts";
 import { chartTheme } from "../../lib/chart-theme.ts";
 import { tokens } from "../../lib/tokens.ts";
 import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
-import { type TimeRange, rangeMap } from "../../lib/time-range.ts";
+import { rangeMap } from "../../lib/time-range.ts";
+import type { TimeRange } from "../../lib/time-range.ts";
+import { useDashboardChartZoom } from "./hooks/useDashboardChartZoom.ts";
 
 const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-interface WeeklyLoadChartProps {
-  range: TimeRange;
-  customRange?: { from: string; to: string } | null;
-  onZoomComplete?: (from: string | number, to: string | number) => void;
-  onZoomReset?: () => void;
-}
-
-export const WeeklyLoadChart = (props: WeeklyLoadChartProps) => {
+export const WeeklyLoadChart = () => {
   const metrics = useFilteredMetrics();
+  const dashboardZoom = useDashboardChartZoom();
 
   const chartData = useMemo(() => {
-    if (props.range === "custom" && props.customRange) {
+    if (dashboardZoom.range === "custom" && dashboardZoom.customRange) {
       return metrics.history
-        .filter((d) => d.date >= props.customRange!.from && d.date <= props.customRange!.to)
+        .filter((d) => d.date >= dashboardZoom.customRange!.from && d.date <= dashboardZoom.customRange!.to)
         .map((d) => ({ date: d.date, tss: d.tss }));
     }
-    const days = rangeMap[props.range as Exclude<TimeRange, "custom">];
+    const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, "custom">];
     const sliced = days === Infinity ? metrics.history : metrics.history.slice(-days);
     return sliced.map((d) => ({
       date: d.date,
       tss: d.tss,
     }));
-  }, [metrics.history, props.range, props.customRange]);
+  }, [metrics.history, dashboardZoom.range, dashboardZoom.customRange]);
 
-  const zoom = useChartZoom({ data: chartData, xKey: "date", onZoomComplete: props.onZoomComplete, onZoomReset: props.onZoomReset });
+  const zoom = useChartZoom({ data: chartData, xKey: "date", onZoomComplete: dashboardZoom.onZoomComplete, onZoomReset: dashboardZoom.onZoomReset });
 
   const tickFormatter = (v: string) => {
     const d = new Date(v);
-    if (props.range === "7d") {
+    if (dashboardZoom.range === "7d") {
       return dayLabels[(d.getDay() + 6) % 7];
     }
     return `${d.getMonth() + 1}/${d.getDate()}`;

@@ -16,30 +16,26 @@ import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
 import { useChartZoom } from "../../lib/use-chart-zoom.ts";
 import { chartTheme } from "../../lib/chart-theme.ts";
 import { tokens } from "../../lib/tokens.ts";
-import { type TimeRange, rangeMap } from "../../lib/time-range.ts";
+import { rangeMap } from "../../lib/time-range.ts";
+import type { TimeRange } from "../../lib/time-range.ts";
+import { useDashboardChartZoom } from "./hooks/useDashboardChartZoom.ts";
 
-interface MetricsChartProps {
-  range: TimeRange;
-  customRange?: { from: string; to: string } | null;
-  onZoomComplete?: (from: string | number, to: string | number) => void;
-  onZoomReset?: () => void;
-}
-
-export const MetricsChart = (props: MetricsChartProps) => {
+export const MetricsChart = () => {
   const metrics = useFilteredMetrics();
+  const dashboardZoom = useDashboardChartZoom();
 
   const filtered = useMemo(() => {
-    if (props.range === "custom" && props.customRange) {
+    if (dashboardZoom.range === "custom" && dashboardZoom.customRange) {
       return metrics.history.filter(
-        (d) => d.date >= props.customRange!.from && d.date <= props.customRange!.to,
+        (d) => d.date >= dashboardZoom.customRange!.from && d.date <= dashboardZoom.customRange!.to,
       );
     }
-    const days = rangeMap[props.range as Exclude<TimeRange, "custom">];
+    const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, "custom">];
     if (days === Infinity) return metrics.history;
     return metrics.history.slice(-days);
-  }, [metrics.history, props.range, props.customRange]);
+  }, [metrics.history, dashboardZoom.range, dashboardZoom.customRange]);
 
-  const zoom = useChartZoom({ data: filtered, xKey: "date", onZoomComplete: props.onZoomComplete, onZoomReset: props.onZoomReset });
+  const zoom = useChartZoom({ data: filtered, xKey: "date", onZoomComplete: dashboardZoom.onZoomComplete, onZoomReset: dashboardZoom.onZoomReset });
 
   return (
     <ChartPreviewCard
