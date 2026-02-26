@@ -1,57 +1,53 @@
 # Forge
 
-Client-side only SPA. No server, no APIs, no `fetch`/`axios`.
+**WHY:** Forge is a local-first, Progressive Web App (PWA) designed for mapping, analyzing, and storing fitness/GPS activities (primarily parsing `.FIT` binaries).
+**WHAT:** A pure client-side SPA. There is no backend server, no external APIs to call, and no `fetch`/`axios`. The browser _is_ the database.
 
-## Stack
+## 1. Tech Stack
 
 | Layer           | Choice                                                                                                                                                                                      |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Build           | Vite 7 + `@tailwindcss/vite`                                                                                                                                                                |
+| Build & PWA     | Vite 7 + `@tailwindcss/vite` + `vite-plugin-pwa`                                                                                                                                            |
 | Framework       | React 19, TypeScript 5.9 strict                                                                                                                                                             |
 | Routing         | React Router v7 (`<Routes>`, `<Route>`, `<BrowserRouter>`)                                                                                                                                  |
 | UI              | `@radix-ui/*` primitives wrapped in `src/components/ui/`, styled with Tailwind v4. Dark mode only. Use `clsx` + `tailwind-merge` via `cn()`. No component libraries (no MUI, AntD, Shadcn). |
+| Mapping / GIS   | `deck.gl` (core, layers, mapbox), `maplibre-gl`, `react-map-gl`, `@googlemaps/polyline-codec`                                                                                               |
 | State           | Zustand (`persist` middleware) for global state                                                                                                                                             |
-| Charts          | Recharts                                                                                                                                                                                    |
-| File parsing    | `fit-file-parser` for .FIT binaries                                                                                                                                                         |
+| Data Vis        | Recharts                                                                                                                                                                                    |
 | Icons           | `lucide-react`                                                                                                                                                                              |
+| File parsing    | `fit-file-parser` for .FIT binaries                                                                                                                                                         |
 | Storage         | IndexedDB via `idb` — `kv` store for Zustand persist, `session-records` store for time-series (`src/lib/db.ts`)                                                                             |
 | Package manager | **pnpm** (`pnpm add`, `pnpm dev`, `pnpm build`, etc.)                                                                                                                                       |
 
-## Architecture Rules
+## 2. Core Architecture Rules
 
-- **Local-first**: browser is the database. IDs via `crypto.randomUUID()`. Never call external APIs.
-- **Pure engine**: all business logic lives in `src/engine/` as pure functions — no React, no state imports.
-- **Headless UI**: import Radix primitive → wrap in `src/components/ui/` → style with Tailwind.
-- **Reuse UI components**: before inlining layout or UI patterns in feature code, check `src/components/ui/` for existing components (`CardHeader`, `SettingToggle`, `ValueSkeleton`, etc.). Extract new shared components when a pattern appears in 2+ places.
-- **Named exports only** everywhere.
-- **Arrow functions only**: never use the `function` keyword — use arrow functions (`const fn = () => {}`) everywhere.
+- **Local-first absolute rule**: IDs are generated via `crypto.randomUUID()`. Never attempt to call an external API.
+- **Pure engine**: All business logic lives in `src/engine/` as pure functions — absolutely no React or state imports in this directory.
+- **Headless UI**: Import Radix primitive → wrap in `src/components/ui/` → style with Tailwind.
+- **Reuse UI components**: Before inlining layout or UI patterns in feature code, check `src/components/ui/` for existing components (`CardHeader`, `SettingToggle`, `ValueSkeleton`, etc.). Extract new shared components when a pattern appears in 2+ places.
+- **Named exports only**: Use named exports everywhere.
+- **Arrow functions only**: Never use the `function` keyword — use arrow functions (`const fn = () => {}`) everywhere.
 - **No object destructuring** for component props and hook return values — access via `props.x` and `result.x` instead.
-- **Feature-level hooks**: feature-specific hooks live in `src/features/<feature>/hooks/` with camelCase file naming (e.g., `useDashboardChartZoom.ts`).
-- **Colocate store subscriptions**: don't hoist store reads in parent components just to pass as props — let child components subscribe directly via hooks.
-- **Scope-clear store naming**: when store actions serve one feature, name them to reflect that scope (e.g., `setDashboardChartRange` not `setCustomRange`).
-- **Delete dead code**: exported but never-imported code should be removed, not left around.
+- **Delete dead code**: Exported but never-imported code should be removed immediately, not left around.
+- **Syntax & Formatting**: Defer to ESLint and Prettier. Do not waste time manually formatting code or enforcing linting rules; focus on logic.
 
-## Dev Workflow
+## 3. Directory Structure & Deep Context (Progressive Disclosure)
 
-> Plan first, then build. Create a new branch for every feature or bug fix. Once approved by the user merge it into main.
+Specific guidelines for features, testing, and state management are located in their respective directories. Read these files when working in these areas:
 
-1. **Plan**: write a plan in `./plans/<feature-name>.md` — context, approach, files to modify, verification steps. Review with the user before writing code.
-2. **Branch**: create a feature branch off `main`.
-3. **Implement & verify**:
+- `@src/features/CLAUDE.md`: Rules for feature-level hooks and store colocation.
+- `@src/store/CLAUDE.md`: Rules for Zustand store scope-naming and persist middleware.
+- `@tests/CLAUDE.md`: The testing strategy (Engine/Lib vs. Integration vs. UI).
 
-```bash
-pnpm test          # vitest run — must pass
-pnpm lint --fix    # eslint — must pass
-pnpm typecheck     # tsc --noEmit — must pass
-```
+## 4. Dev Workflow & Actionable Verification
 
-- Write tests for new functionality: happy path, edge cases, error conditions.
-- Test files go in `tests/` with `*.integration.test.ts` or `*.spec.ts` naming.
-- You might need to update the README
+> **Plan first, then build.** Create a new branch for every feature or bug fix.
 
-## Testing Strategy
-
-- **Engine & lib** (`src/engine/`, `src/lib/`): tests required for every change. Cover happy path, edge cases, error conditions.
-- **Stores** (`src/store/`): tests required for state transitions, persistence, and derived computations.
-- **UI components**: no unit tests. Bugs here are caught visually, not by render tests.
-- **Integration tests**: required when wiring new cross-layer flows (e.g., file import → engine → store → recomputation).
+1. **Plan**: Write a plan in `./plans/<feature-name>.md` detailing context, approach, files to modify, and verification steps. Review with the user before writing code.
+2. **Implement**: Write the code and the corresponding tests (happy path, edge cases, error conditions).
+3. **Verify**: Run the following suite:
+   ```bash
+   pnpm test          # vitest run
+   pnpm lint --fix    # eslint
+   pnpm typecheck     # tsc --noEmit
+   ```
