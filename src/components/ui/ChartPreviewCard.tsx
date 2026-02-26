@@ -9,9 +9,12 @@ import { useExpandCard } from "../../lib/use-expand-card.ts";
 
 interface ChartPreviewCardProps {
   title: string;
-  icon: LucideIcon;
-  color: string;
+  icon?: LucideIcon;
+  color?: string;
   compactHeight?: string;
+  subtitle?: string;
+  footer?: ReactNode;
+  titleSlot?: ReactNode;
   children: (mode: "compact" | "expanded") => ReactNode;
 }
 
@@ -30,10 +33,13 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
       )}
     >
       <div className="flex items-center px-4 py-2">
-        <Icon size={16} style={{ color: props.color }} />
-        <Typography variant="overline" className="flex-1 text-left ml-2">
-          {props.title}
-        </Typography>
+        {Icon && <Icon size={16} style={{ color: props.color }} />}
+        {props.titleSlot ?? (
+          <Typography variant="overline" className={cn("flex-1 text-left", Icon && "ml-2")}>
+            {props.title}
+          </Typography>
+        )}
+        {!props.titleSlot && !Icon && <div className="flex-1" />}
         <Button
           variant="ghost"
           size="icon"
@@ -50,6 +56,12 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
         </Button>
       </div>
 
+      {props.subtitle && (
+        <p className="px-4 -mt-1 mb-1 text-xs text-[var(--color-text-tertiary)]">
+          {props.subtitle}
+        </p>
+      )}
+
       <div
         className={cn(
           expandCard.isExpanded ? "flex-1 min-h-0 px-4 pb-4" : `${props.compactHeight ?? "h-[140px]"} px-2 pb-2`,
@@ -57,6 +69,12 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
       >
         {props.children(isFullyExpanded ? "expanded" : "compact")}
       </div>
+
+      {props.footer && (
+        <div className="px-4 pb-3">
+          {props.footer}
+        </div>
+      )}
     </div>
   );
 };

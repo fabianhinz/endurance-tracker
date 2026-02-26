@@ -1,11 +1,10 @@
 import { useCallback } from "react";
-import { ReadinessDial } from "./ReadinessDial.tsx";
-import { ACWRIndicator } from "./ACWRIndicator.tsx";
 import { MetricsChart } from "./MetricsChart.tsx";
 import { WeeklyLoadChart } from "./WeeklyLoadChart.tsx";
 import { RecentActivityCard } from "./RecentActivityCard.tsx";
 import { useFiltersStore } from "../../store/filters.ts";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
+import { CoachStatusCard } from "../coach/CoachStatusCard.tsx";
 
 export const DashboardPage = () => {
   const timeRange = useFiltersStore((s) => s.timeRange);
@@ -26,13 +25,22 @@ export const DashboardPage = () => {
 
   return (
     <PageGrid>
-      <ReadinessDial />
-      <ACWRIndicator />
+      <CoachStatusCard />
       <div className="md:col-span-2">
-        <WeeklyLoadChart range={timeRange} customRange={customRange} onZoomComplete={handleZoomComplete} onZoomReset={handleZoomReset} />
+        <WeeklyLoadChart
+          range={timeRange}
+          customRange={customRange}
+          onZoomComplete={handleZoomComplete}
+          onZoomReset={handleZoomReset}
+        />
       </div>
       <div className="md:col-span-2">
-        <MetricsChart range={timeRange} customRange={customRange} onZoomComplete={handleZoomComplete} onZoomReset={handleZoomReset} />
+        <MetricsChart
+          range={timeRange}
+          customRange={customRange}
+          onZoomComplete={handleZoomComplete}
+          onZoomReset={handleZoomReset}
+        />
       </div>
       <RecentActivityCard />
     </PageGrid>

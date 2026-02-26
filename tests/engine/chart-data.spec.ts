@@ -8,9 +8,42 @@ import {
   prepareGradeData,
   preparePaceData,
   prepareGAPData,
+  filterTimeSeries,
 } from '../../src/engine/chart-data.ts';
 import { makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
 import type { SessionRecord } from '../../src/types/index.ts';
+
+describe('filterTimeSeries', () => {
+  const data = [
+    { time: 1, hr: 100 },
+    { time: 2, hr: 110 },
+    { time: 3, hr: 120 },
+    { time: 4, hr: 130 },
+    { time: 5, hr: 140 },
+  ];
+
+  it('filters to inclusive range', () => {
+    const result = filterTimeSeries(data, 2, 4);
+    expect(result).toEqual([
+      { time: 2, hr: 110 },
+      { time: 3, hr: 120 },
+      { time: 4, hr: 130 },
+    ]);
+  });
+
+  it('returns empty array when no points in range', () => {
+    expect(filterTimeSeries(data, 10, 20)).toEqual([]);
+  });
+
+  it('returns all points when range covers full data', () => {
+    expect(filterTimeSeries(data, 0, 100)).toEqual(data);
+  });
+
+  it('returns single point when from equals to', () => {
+    const result = filterTimeSeries(data, 3, 3);
+    expect(result).toEqual([{ time: 3, hr: 120 }]);
+  });
+});
 
 describe('prepareHrData', () => {
   it('converts records with hr to time-series points', () => {

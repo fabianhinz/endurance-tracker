@@ -10,7 +10,7 @@ import {
   ReferenceArea,
 } from "recharts";
 import { useFilteredMetrics } from "../../hooks/useFilteredMetrics.ts";
-import { ChartCard } from "../../components/ui/ChartCard.tsx";
+import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
 import { useChartZoom } from "../../lib/use-chart-zoom.ts";
@@ -56,68 +56,75 @@ export const WeeklyLoadChart = (props: WeeklyLoadChartProps) => {
   };
 
   return (
-    <ChartCard
+    <ChartPreviewCard
+      title=""
       titleSlot={
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-1">
           <Typography variant="overline" as="h3">{METRIC_EXPLANATIONS.tss.friendlyName}</Typography>
           <MetricLabel metricId="tss" size="sm" />
         </div>
       }
-      title=""
       subtitle={METRIC_EXPLANATIONS.tss.oneLiner}
-      minHeight="h-64"
-      minWidth="min-w-[280px]"
+      compactHeight="h-64"
     >
-      {chartData.length > 0 && (
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={zoom.zoomedData}
-            onMouseDown={zoom.onMouseDown}
-            onMouseMove={zoom.onMouseMove}
-            onMouseUp={zoom.onMouseUp}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={chartTheme.grid.stroke}
-              vertical={false}
-            />
-            <XAxis
-              dataKey="date"
-              tick={chartTheme.tick}
-              tickLine={false}
-              axisLine={chartTheme.axisLine}
-              tickFormatter={tickFormatter}
-            />
-            <YAxis
-              tick={chartTheme.tick}
-              tickLine={false}
-              axisLine={false}
-              width={30}
-            />
-            <RechartsTooltip
-              contentStyle={chartTheme.tooltip.contentStyle}
-              labelStyle={chartTheme.tooltip.labelStyle}
-              isAnimationActive={chartTheme.tooltip.isAnimationActive}
-              cursor={{ fill: `${tokens.accent}14` }}
-            />
-            <Bar
-              dataKey="tss"
-              fill={tokens.chartLoad}
-              radius={[4, 4, 0, 0]}
-              name="TSS"
-            />
-            {zoom.refAreaLeft && zoom.refAreaRight && (
-              <ReferenceArea
-                x1={zoom.refAreaLeft}
-                x2={zoom.refAreaRight}
-                strokeOpacity={0.3}
-                fill={tokens.accent}
-                fillOpacity={0.15}
+      {(mode) => {
+        const compact = mode === "compact";
+        return chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              syncId={compact ? "dashboard" : undefined}
+              data={zoom.zoomedData}
+              onMouseDown={zoom.onMouseDown}
+              onMouseMove={zoom.onMouseMove}
+              onMouseUp={zoom.onMouseUp}
+            >
+              {!compact && (
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={chartTheme.grid.stroke}
+                  vertical={false}
+                />
+              )}
+              <XAxis
+                dataKey="date"
+                ticks={compact ? [zoom.zoomedData[0]?.date, zoom.zoomedData[zoom.zoomedData.length - 1]?.date].filter(Boolean) as string[] : undefined}
+                tick={chartTheme.tick}
+                tickLine={false}
+                axisLine={chartTheme.axisLine}
+                tickFormatter={tickFormatter}
               />
-            )}
-          </BarChart>
-        </ResponsiveContainer>
-      )}
-    </ChartCard>
+              <YAxis
+                tick={chartTheme.tick}
+                tickLine={false}
+                axisLine={false}
+                width={40}
+                tickCount={compact ? 3 : undefined}
+              />
+              <RechartsTooltip
+                contentStyle={chartTheme.tooltip.contentStyle}
+                labelStyle={chartTheme.tooltip.labelStyle}
+                isAnimationActive={chartTheme.tooltip.isAnimationActive}
+                cursor={{ fill: `${tokens.accent}14` }}
+              />
+              <Bar
+                dataKey="tss"
+                fill={tokens.chartLoad}
+                radius={[4, 4, 0, 0]}
+                name="TSS"
+              />
+              {zoom.refAreaLeft && zoom.refAreaRight && (
+                <ReferenceArea
+                  x1={zoom.refAreaLeft}
+                  x2={zoom.refAreaRight}
+                  strokeOpacity={0.3}
+                  fill={tokens.accent}
+                  fillOpacity={0.15}
+                />
+              )}
+            </BarChart>
+          </ResponsiveContainer>
+        ) : null;
+      }}
+    </ChartPreviewCard>
   );
 };

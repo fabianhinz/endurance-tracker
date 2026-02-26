@@ -17,20 +17,22 @@ interface PowerChartProps {
   data: PowerPoint[];
   mode?: "compact" | "expanded";
   onActiveTimeChange?: (time: number | null) => void;
+  onZoomComplete?: (from: string | number, to: string | number) => void;
+  onZoomReset?: () => void;
 }
 
 export const PowerChart = (props: PowerChartProps) => {
   const compact = props.mode === "compact";
-  const zoom = useChartZoom({ data: props.data, xKey: "time" });
+  const zoom = useChartZoom({ data: props.data, xKey: "time", onZoomComplete: props.onZoomComplete, onZoomReset: props.onZoomReset });
 
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
         syncId={compact ? "session-detail" : undefined}
         data={zoom.zoomedData}
-        onMouseDown={compact ? undefined : zoom.onMouseDown}
-        onMouseMove={compact ? (props.onActiveTimeChange ? (e) => { if (e.activeLabel != null) props.onActiveTimeChange!(Number(e.activeLabel)); } : undefined) : zoom.onMouseMove}
-        onMouseUp={compact ? undefined : zoom.onMouseUp}
+        onMouseDown={zoom.onMouseDown}
+        onMouseMove={(e) => { zoom.onMouseMove(e); if (compact && props.onActiveTimeChange && e.activeLabel != null) props.onActiveTimeChange(Number(e.activeLabel)); }}
+        onMouseUp={zoom.onMouseUp}
         onMouseLeave={compact && props.onActiveTimeChange ? () => props.onActiveTimeChange!(null) : undefined}
       >
         {!compact && (
@@ -70,7 +72,7 @@ export const PowerChart = (props: PowerChartProps) => {
           dot={false}
           name="Power (W)"
         />
-        {!compact && zoom.refAreaLeft && zoom.refAreaRight && (
+        {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea
             yAxisId="left"
             x1={zoom.refAreaLeft}
