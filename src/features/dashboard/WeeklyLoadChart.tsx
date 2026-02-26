@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import {
-  BarChart,
-  Bar,
+  ComposedChart,
+  Area,
   XAxis,
   YAxis,
   ResponsiveContainer,
@@ -30,18 +30,28 @@ export const WeeklyLoadChart = () => {
   const chartData = useMemo(() => {
     if (dashboardZoom.range === "custom" && dashboardZoom.customRange) {
       return metrics.history
-        .filter((d) => d.date >= dashboardZoom.customRange!.from && d.date <= dashboardZoom.customRange!.to)
+        .filter(
+          (d) =>
+            d.date >= dashboardZoom.customRange!.from &&
+            d.date <= dashboardZoom.customRange!.to,
+        )
         .map((d) => ({ date: d.date, tss: d.tss }));
     }
     const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, "custom">];
-    const sliced = days === Infinity ? metrics.history : metrics.history.slice(-days);
+    const sliced =
+      days === Infinity ? metrics.history : metrics.history.slice(-days);
     return sliced.map((d) => ({
       date: d.date,
       tss: d.tss,
     }));
   }, [metrics.history, dashboardZoom.range, dashboardZoom.customRange]);
 
-  const zoom = useChartZoom({ data: chartData, xKey: "date", onZoomComplete: dashboardZoom.onZoomComplete, onZoomReset: dashboardZoom.onZoomReset });
+  const zoom = useChartZoom({
+    data: chartData,
+    xKey: "date",
+    onZoomComplete: dashboardZoom.onZoomComplete,
+    onZoomReset: dashboardZoom.onZoomReset,
+  });
 
   const tickFormatter = (v: string) => {
     const d = new Date(v);
@@ -56,7 +66,9 @@ export const WeeklyLoadChart = () => {
       title=""
       titleSlot={
         <div className="flex items-center gap-1 flex-1">
-          <Typography variant="overline" as="h3">{METRIC_EXPLANATIONS.tss.friendlyName}</Typography>
+          <Typography variant="overline" as="h3">
+            {METRIC_EXPLANATIONS.tss.friendlyName}
+          </Typography>
           <MetricLabel metricId="tss" size="sm" />
         </div>
       }
@@ -67,7 +79,7 @@ export const WeeklyLoadChart = () => {
         const compact = mode === "compact";
         return chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
+            <ComposedChart
               syncId={compact ? "dashboard" : undefined}
               data={zoom.zoomedData}
               onMouseDown={zoom.onMouseDown}
@@ -78,12 +90,18 @@ export const WeeklyLoadChart = () => {
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke={chartTheme.grid.stroke}
-                  vertical={false}
                 />
               )}
               <XAxis
                 dataKey="date"
-                ticks={compact ? [zoom.zoomedData[0]?.date, zoom.zoomedData[zoom.zoomedData.length - 1]?.date].filter(Boolean) as string[] : undefined}
+                ticks={
+                  compact
+                    ? ([
+                        zoom.zoomedData[0]?.date,
+                        zoom.zoomedData[zoom.zoomedData.length - 1]?.date,
+                      ].filter(Boolean) as string[])
+                    : undefined
+                }
                 tick={chartTheme.tick}
                 tickLine={false}
                 axisLine={chartTheme.axisLine}
@@ -92,7 +110,7 @@ export const WeeklyLoadChart = () => {
               <YAxis
                 tick={chartTheme.tick}
                 tickLine={false}
-                axisLine={false}
+                axisLine={compact ? false : chartTheme.axisLine}
                 width={40}
                 tickCount={compact ? 3 : undefined}
               />
@@ -100,12 +118,14 @@ export const WeeklyLoadChart = () => {
                 contentStyle={chartTheme.tooltip.contentStyle}
                 labelStyle={chartTheme.tooltip.labelStyle}
                 isAnimationActive={chartTheme.tooltip.isAnimationActive}
-                cursor={{ fill: `${tokens.accent}14` }}
               />
-              <Bar
+              <Area
+                type="step"
                 dataKey="tss"
                 fill={tokens.chartLoad}
-                radius={[4, 4, 0, 0]}
+                fillOpacity={1}
+                stroke="none"
+                dot={false}
                 name="TSS"
               />
               {zoom.refAreaLeft && zoom.refAreaRight && (
@@ -117,7 +137,7 @@ export const WeeklyLoadChart = () => {
                   fillOpacity={0.15}
                 />
               )}
-            </BarChart>
+            </ComposedChart>
           </ResponsiveContainer>
         ) : null;
       }}
