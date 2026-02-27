@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from "react";
+import { useDeferredValue, useRef, type ReactNode } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { glassClass } from "./Card.tsx";
@@ -19,6 +19,7 @@ interface ChartPreviewCardProps {
 }
 
 export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
+  const ready = useDeferredValue(true, false);
   const Icon = props.icon;
   const cardRef = useRef<HTMLDivElement>(null);
   const expandCard = useExpandCard(cardRef);
@@ -35,7 +36,10 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
       <div className="flex items-center px-4 py-2">
         {Icon && <Icon size={16} style={{ color: props.color }} />}
         {props.titleSlot ?? (
-          <Typography variant="overline" className={cn("flex-1 text-left", Icon && "ml-2")}>
+          <Typography
+            variant="overline"
+            className={cn("flex-1 text-left", Icon && "ml-2")}
+          >
             {props.title}
           </Typography>
         )}
@@ -44,9 +48,7 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
           variant="ghost"
           size="icon"
           onClick={expandCard.toggle}
-          aria-label={
-            expandCard.isExpanded ? "Collapse chart" : "Expand chart"
-          }
+          aria-label={expandCard.isExpanded ? "Collapse chart" : "Expand chart"}
         >
           {expandCard.isExpanded ? (
             <Minimize2 size={16} />
@@ -64,17 +66,16 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
 
       <div
         className={cn(
-          expandCard.isExpanded ? "flex-1 min-h-0 px-4 pb-4" : `${props.compactHeight ?? "h-[140px]"} px-2 pb-2`,
+          expandCard.isExpanded
+            ? "flex-1 min-h-0 px-4 pb-4"
+            : `${props.compactHeight ?? "h-[140px]"} px-2 pb-2`,
         )}
       >
-        {props.children(isFullyExpanded ? "expanded" : "compact")}
+        {(ready || isFullyExpanded) &&
+          props.children(isFullyExpanded ? "expanded" : "compact")}
       </div>
 
-      {props.footer && (
-        <div className="px-4 pb-3">
-          {props.footer}
-        </div>
-      )}
+      {props.footer && <div className="px-4 pb-3">{props.footer}</div>}
     </div>
   );
 };

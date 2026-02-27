@@ -6,10 +6,10 @@ interface UploadProgressState {
   total: number;
   fileCount: number;
   doneMessage: string | null;
-  doneVariant: 'success' | 'error' | null;
+  doneVariant: 'success' | 'error' | 'warning' | null;
   startUpload: (total: number) => void;
   advance: () => void;
-  finish: (message: string, variant: 'success' | 'error') => void;
+  finish: (message: string, variant: 'success' | 'error' | 'warning') => void;
   reset: () => void;
 }
 

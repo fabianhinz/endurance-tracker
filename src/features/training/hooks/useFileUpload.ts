@@ -106,14 +106,6 @@ export const useFileUpload = (
         return true;
       });
 
-      if (duplicated > 0) {
-        toast(
-          "Duplicates skipped",
-          `${duplicated} file${duplicated !== 1 ? "s" : ""} already imported`,
-          "warning",
-        );
-      }
-
       // Phase 2 — Batch commit
       let newPBCount = 0;
 
@@ -194,7 +186,7 @@ export const useFileUpload = (
       if (parts.length > 0) {
         finishProgress(
           parts.join(", "),
-          failed > 0 ? "error" : "success",
+          failed > 0 ? "error" : uploaded === 0 ? "warning" : "success",
         );
       }
 
