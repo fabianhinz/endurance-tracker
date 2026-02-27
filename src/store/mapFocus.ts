@@ -13,6 +13,9 @@ interface MapFocusState {
   hoveredPoint: [number, number] | null;
   setHoveredPoint: (point: [number, number]) => void;
   clearHoveredPoint: () => void;
+  pickCircle: [number, number] | null;
+  setPickCircle: (center: [number, number]) => void;
+  clearPickCircle: () => void;
 }
 
 export const useMapFocusStore = create<MapFocusState>()((set) => ({
@@ -32,4 +35,7 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
   hoveredPoint: null,
   setHoveredPoint: (point) => set({ hoveredPoint: point }),
   clearHoveredPoint: () => set({ hoveredPoint: null }),
+  pickCircle: null,
+  setPickCircle: (center) => set({ pickCircle: center }),
+  clearPickCircle: () => set({ pickCircle: null }),
 }));

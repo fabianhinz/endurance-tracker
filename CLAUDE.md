@@ -46,6 +46,7 @@
 
 - Feature hooks live in `src/features/<feature>/hooks/`
 - Shared hooks live in `src/lib/hooks/`
+- Side-effect-only hooks (no return value) use `Effect` suffix: `useMapCameraEffect.ts`. Hooks that return data, refs, or callbacks keep normal `useSomething` naming.
 - No kebab-case for TypeScript files.
 
 ## 4. Directory Structure & Deep Context (Progressive Disclosure)

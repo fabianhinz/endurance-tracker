@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { PathLayer } from '@deck.gl/layers';
 import { decodeTrackForRendering } from '../../../engine/gps.ts';
-import { getTrackColor, getTrackWidth } from '../trackColors.ts';
+import { ADDITIVE_BLEND, getTrackColor, getTrackWidth } from '../trackColors.ts';
 import type { MapTrack } from './useMapTracks.ts';
 import type { PickingInfo } from '@deck.gl/core';
 
@@ -66,14 +66,7 @@ export const useDeckLayers = (
           getColor: 150,
           getWidth: 150,
         },
-        parameters: {
-          blendColorSrcFactor: 'src-alpha',
-          blendColorDstFactor: 'one',
-          blendColorOperation: 'add',
-          blendAlphaSrcFactor: 'one',
-          blendAlphaDstFactor: 'one',
-          blendAlphaOperation: 'add',
-        },
+        parameters: ADDITIVE_BLEND,
       }),
     ];
   }, [tracks, highlightedSessionId, onClick, onHover, hiddenSessionId]);

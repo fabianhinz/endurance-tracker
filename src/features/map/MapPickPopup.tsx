@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
 import { X } from "lucide-react";
 import { Button } from "../../components/ui/Button.tsx";
@@ -7,6 +6,7 @@ import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { SessionItem } from "../../components/ui/SessionItem.tsx";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
 import { usePopupPosition } from "./hooks/usePopupPosition.ts";
+import { useDismiss } from "./hooks/useDismiss.ts";
 import type { TrainingSession } from "../../engine/types.ts";
 
 export interface PopupInfo {
@@ -21,26 +21,8 @@ interface MapPickPopupProps {
 }
 
 export const MapPickPopup = (props: MapPickPopupProps) => {
-  const popupRef = useRef<HTMLDivElement>(null);
+  const popupRef = useDismiss(props.onClose);
   const hover = useHoverIntent(useMapFocusStore((s) => s.setHoveredSession));
-  const onClose = props.onClose;
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    const handleClickOutside = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("pointerdown", handleClickOutside);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("pointerdown", handleClickOutside);
-    };
-  }, [onClose]);
 
   const style = usePopupPosition(props.info.x, props.info.y);
 
@@ -58,7 +40,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
               variant="ghost"
               size="icon"
               aria-label="Close"
-              onClick={onClose}
+              onClick={props.onClose}
             >
               <X size={16} />
             </Button>

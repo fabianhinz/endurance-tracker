@@ -1,5 +1,14 @@
 import type { Sport } from '../../engine/types.ts';
 
+export const ADDITIVE_BLEND = {
+  blendColorSrcFactor: 'src-alpha',
+  blendColorDstFactor: 'one',
+  blendColorOperation: 'add',
+  blendAlphaSrcFactor: 'one',
+  blendAlphaDstFactor: 'one',
+  blendAlphaOperation: 'add',
+} as const;
+
 export const sportTrackColor: Record<Sport, [number, number, number, number]> = {
   running: [74, 222, 128, 80],
   cycling: [96, 165, 250, 80],
