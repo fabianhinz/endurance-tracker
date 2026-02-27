@@ -29,6 +29,7 @@
 - **Arrow functions only**: Never use the `function` keyword — use arrow functions (`const fn = () => {}`) everywhere.
 - **No object destructuring** for component props and hook return values — access via `props.x` and `result.x` instead.
 - **Delete dead code**: Exported but never-imported code should be removed immediately, not left around.
+- **No `as any` for external data**: Use Zod schemas with `safeParse` + `z.infer` to validate and type data from untyped sources (file parsers, IndexedDB, etc.). Schemas live next to the parser/consumer (e.g. `fitSchemas.ts`). On failure: return a safe fallback (`undefined`, `[]`), never throw.
 - **Syntax & Formatting**: Defer to ESLint and Prettier. Do not waste time manually formatting code or enforcing linting rules; focus on logic.
 
 ## 3. File Naming Conventions

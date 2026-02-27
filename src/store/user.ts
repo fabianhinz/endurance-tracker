@@ -50,7 +50,7 @@ export const useUserStore = create<UserState>()(
       resetProfile: () => set({ profile: null }),
     }),
     {
-      name: 'endurance-tracker-user',
+      name: 'store-user',
       storage: createJSONStorage(() => idbStorage),
       skipHydration: true,
       version: 1,

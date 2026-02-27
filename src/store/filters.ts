@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { idbStorage } from "../lib/idbStorage.ts";
 import type { TimeRange } from "../lib/timeRange.ts";
 import type { Sport } from "../engine/types.ts";
 
@@ -38,4 +39,4 @@ export const useFiltersStore = create<FiltersState>()(
       prevDashboardRange: null,
     })),
   setSportFilter: (s) => set({ sportFilter: s }),
-}), { name: "endurance-tracker-filters" }));
+}), { name: "store-filters", storage: createJSONStorage(() => idbStorage), skipHydration: true, version: 1 }));
