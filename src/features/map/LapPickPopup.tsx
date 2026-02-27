@@ -1,10 +1,11 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useMemo } from "react";
 import { X } from "lucide-react";
 import { Button } from "../../components/ui/Button.tsx";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { usePopupPosition } from "./hooks/usePopupPosition.ts";
+import { useDismiss } from "./hooks/useDismiss.ts";
 import { analyzeLaps } from "../../engine/laps.ts";
 import { computeRunningZones } from "../../engine/zones.ts";
 import { useUserStore } from "../../store/user.ts";
@@ -74,25 +75,7 @@ const LapPickItem = (props: LapPickItemProps) => {
 };
 
 export const LapPickPopup = (props: LapPickPopupProps) => {
-  const popupRef = useRef<HTMLDivElement>(null);
-  const onClose = props.onClose;
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    const handleClickOutside = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("pointerdown", handleClickOutside);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("pointerdown", handleClickOutside);
-    };
-  }, [onClose]);
+  const popupRef = useDismiss(props.onClose);
 
   const style = usePopupPosition(props.info.x, props.info.y);
   const analysis = useMemo(() => analyzeLaps(props.laps), [props.laps]);
@@ -119,7 +102,7 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
               variant="ghost"
               size="icon"
               aria-label="Close"
-              onClick={onClose}
+              onClick={props.onClose}
             >
               <X size={16} />
             </Button>
