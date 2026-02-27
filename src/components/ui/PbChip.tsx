@@ -1,5 +1,5 @@
 import { Typography } from "./Typography.tsx";
-import { sportIcon } from "../../lib/sport-icons.ts";
+import { sportIcon } from "../../lib/sportIcons.ts";
 import { pbLabel, formatPBValue } from "../../lib/utils.ts";
 import type { PersonalBest } from "../../engine/types.ts";
 

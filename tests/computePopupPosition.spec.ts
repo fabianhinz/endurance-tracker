@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   computePopupPosition,
   type SafeZone,
-} from "../src/features/map/use-popup-position.ts";
+} from "../src/features/map/hooks/usePopupPosition.ts";
 
 // Popup dimensions from the module: 380x300, gap: 8
 

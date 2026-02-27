@@ -1,13 +1,13 @@
 import { useCallback } from "react";
-import { useUserStore } from "../../store/user.ts";
-import { useSessionsStore } from "../../store/sessions.ts";
-import { useUploadProgressStore } from "../../store/upload-progress.ts";
-import { parseFitFile } from "../../parsers/fit.ts";
-import { bulkSaveSessionData } from "../../lib/indexeddb.ts";
-import { detectNewPBs, mergePBs } from "../../engine/records.ts";
-import { mapWithConcurrency } from "../../lib/concurrency.ts";
-import { toast } from "../../components/ui/toast-store.ts";
-import type { TrainingSession, SessionRecord, SessionLap } from "../../engine/types.ts";
+import { useUserStore } from "../../../store/user.ts";
+import { useSessionsStore } from "../../../store/sessions.ts";
+import { useUploadProgressStore } from "../../../store/uploadProgress.ts";
+import { parseFitFile } from "../../../parsers/fit.ts";
+import { bulkSaveSessionData } from "../../../lib/indexeddb.ts";
+import { detectNewPBs, mergePBs } from "../../../engine/records.ts";
+import { mapWithConcurrency } from "../../../lib/concurrency.ts";
+import { toast } from "../../../components/ui/toastStore.ts";
+import type { TrainingSession, SessionRecord, SessionLap } from "../../../engine/types.ts";
 
 interface ParsedFile {
   session: Omit<TrainingSession, "id" | "createdAt">;

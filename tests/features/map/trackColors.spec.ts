@@ -3,7 +3,7 @@ import {
   sportTrackColor,
   getTrackColor,
   getTrackWidth,
-} from "../../../src/features/map/track-colors.ts";
+} from "../../../src/features/map/trackColors.ts";
 
 describe("getTrackColor", () => {
   it("returns default sport color when no session is highlighted", () => {

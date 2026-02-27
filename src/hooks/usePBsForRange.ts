@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useFiltersStore } from "../store/filters.ts";
 import { useSessionsStore } from "../store/sessions.ts";
 import { getRecordsForSessions } from "../lib/indexeddb.ts";
-import { rangeToCutoff, customRangeToCutoffs } from "../lib/time-range.ts";
+import { rangeToCutoff, customRangeToCutoffs } from "../lib/timeRange.ts";
 import { computePBsForSessions, groupPBsBySport, PB_SLOTS } from "../engine/records.ts";
 import type { PersonalBest, Sport } from "../engine/types.ts";
 
@@ -39,7 +39,7 @@ export const usePBsForRange = (): {
           (s) => !s.isPlanned && s.date >= bounds.from && s.date <= bounds.to && s.hasDetailedRecords && (sportFilter === "all" || s.sport === sportFilter),
         );
       } else {
-        const cutoff = rangeToCutoff(timeRange as Exclude<import("../lib/time-range.ts").TimeRange, "custom">);
+        const cutoff = rangeToCutoff(timeRange as Exclude<import("../lib/timeRange.ts").TimeRange, "custom">);
         eligible = sessions.filter(
           (s) => !s.isPlanned && s.date >= cutoff && s.hasDetailedRecords && (sportFilter === "all" || s.sport === sportFilter),
         );

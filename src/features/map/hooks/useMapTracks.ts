@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useSessionsStore } from '../../store/sessions.ts';
-import { useFiltersStore } from '../../store/filters.ts';
-import { useMapFocusStore } from '../../store/map-focus.ts';
-import { getSessionGPS } from '../../lib/indexeddb.ts';
-import { rangeToCutoff, customRangeToCutoffs } from '../../lib/time-range.ts';
-import type { SessionGPS, Sport, TrainingSession } from '../../engine/types.ts';
+import { useSessionsStore } from '../../../store/sessions.ts';
+import { useFiltersStore } from '../../../store/filters.ts';
+import { useMapFocusStore } from '../../../store/mapFocus.ts';
+import { getSessionGPS } from '../../../lib/indexeddb.ts';
+import { rangeToCutoff, customRangeToCutoffs } from '../../../lib/timeRange.ts';
+import type { SessionGPS, Sport, TrainingSession } from '../../../engine/types.ts';
 
 export interface MapTrack {
   sessionId: string;

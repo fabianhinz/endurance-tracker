@@ -3,7 +3,7 @@ import {
   calculateTrainingEffect,
   getTrainingEffectLabel,
   getTrainingEffectSummary,
-} from '../../src/engine/training-effect.ts';
+} from '../../src/engine/trainingEffect.ts';
 import { makeRunningRecords, makeCyclingRecords } from '../factories/records.ts';
 
 describe('calculateTrainingEffect', () => {

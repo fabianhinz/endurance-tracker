@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { computeMetrics } from '../../src/engine/metrics.ts';
-import { getCoachingRecommendation } from '../../src/lib/coaching-messages.ts';
+import { getCoachingRecommendation } from '../../src/lib/coachingMessages.ts';
 import { getFormStatus } from '../../src/engine/coaching.ts';
 import { makeSession, makeSessionSequence } from '../factories/sessions.ts';
 

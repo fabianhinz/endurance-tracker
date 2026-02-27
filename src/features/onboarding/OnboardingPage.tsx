@@ -3,7 +3,7 @@ import { Upload, ArrowRight } from "lucide-react";
 import { useUserStore } from "../../store/user.ts";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useLayoutStore } from "../../store/layout.ts";
-import { useFileUpload } from "../training/use-file-upload.ts";
+import { useFileUpload } from "../training/hooks/useFileUpload.ts";
 import { Button } from "../../components/ui/Button.tsx";
 import { ActionPromptCard } from "../../components/ui/ActionPromptCard.tsx";
 import { ThresholdsSection } from "../settings/ThresholdsSection.tsx";

@@ -3,7 +3,7 @@ import {
   prepareLapSplitsData,
   prepareLapHrData,
   prepareHrRecoveryData,
-} from '../../src/lib/lap-chart-data.ts';
+} from '../../src/lib/lapChartData.ts';
 import { makeLaps } from '../factories/records.ts';
 
 describe('prepareLapSplitsData', () => {

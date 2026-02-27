@@ -3,7 +3,7 @@ import {
   computeHrZoneDistribution,
   computePowerZoneDistribution,
   computePaceZoneDistribution,
-} from '../../src/engine/zone-distribution.ts';
+} from '../../src/engine/zoneDistribution.ts';
 import type { SessionRecord } from '../../src/engine/types.ts';
 
 describe('computeHrZoneDistribution', () => {

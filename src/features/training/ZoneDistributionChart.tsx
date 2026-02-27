@@ -13,9 +13,9 @@ import { Heart, Timer, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { Tabs, TabsContent, TabsTrigger } from "../../components/ui/Tabs.tsx";
-import { chartTheme } from "../../lib/chart-theme.ts";
+import { chartTheme } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
-import type { ZoneBucket } from "../../engine/zone-distribution.ts";
+import type { ZoneBucket } from "../../engine/zoneDistribution.ts";
 
 interface TabConfig {
   key: string;

@@ -5,7 +5,7 @@ import { glassClass } from "./Card.tsx";
 import { Typography } from "./Typography.tsx";
 import { Button } from "./Button.tsx";
 import { cn } from "../../lib/utils.ts";
-import { useExpandCard } from "../../lib/use-expand-card.ts";
+import { useExpandCard } from "../../lib/hooks/useExpandCard.ts";
 
 interface ChartPreviewCardProps {
   title: string;

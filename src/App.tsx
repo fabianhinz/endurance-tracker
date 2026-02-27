@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useStoresHydrated } from './lib/use-hydrated.ts';
+import { useStoresHydrated } from './lib/hooks/useHydrated.ts';
 import { AppLayout } from './components/layout/AppLayout.tsx';
 import { DashboardPage } from './features/dashboard/DashboardPage.tsx';
 import { TrainingPage } from './features/training/TrainingPage.tsx';

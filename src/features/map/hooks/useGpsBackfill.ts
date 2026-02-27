@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useSessionsStore } from '../../store/sessions.ts';
-import { useUploadProgressStore } from '../../store/upload-progress.ts';
-import { getAllSessionGPS } from '../../lib/indexeddb.ts';
-import type { SessionGPS } from '../../engine/types.ts';
-import type { WorkerMessageOut } from './gps-build.worker.ts';
+import { useSessionsStore } from '../../../store/sessions.ts';
+import { useUploadProgressStore } from '../../../store/uploadProgress.ts';
+import { getAllSessionGPS } from '../../../lib/indexeddb.ts';
+import type { SessionGPS } from '../../../engine/types.ts';
+import type { WorkerMessageOut } from '../gpsBuild.worker.ts';
 
 export const useGPSBackfill = () => {
   const [backfilling, setBackfilling] = useState(false);
@@ -37,7 +37,7 @@ export const useGPSBackfill = () => {
       setTotal(missing.length);
 
       worker = new Worker(
-        new URL('./gps-build.worker.ts', import.meta.url),
+        new URL('../gpsBuild.worker.ts', import.meta.url),
         { type: 'module' },
       );
 

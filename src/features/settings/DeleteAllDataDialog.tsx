@@ -8,10 +8,10 @@ import {
 } from '../../components/ui/Dialog.tsx';
 import { Button } from '../../components/ui/Button.tsx';
 import { Typography } from '../../components/ui/Typography.tsx';
-import { toast } from '../../components/ui/toast-store.ts';
+import { toast } from '../../components/ui/toastStore.ts';
 import { useSessionsStore } from '../../store/sessions.ts';
 import { useUserStore } from '../../store/user.ts';
-import { useCoachPlanStore } from '../../store/coach-plan.ts';
+import { useCoachPlanStore } from '../../store/coachPlan.ts';
 import { useLayoutStore } from '../../store/layout.ts';
 import { clearAllRecords } from '../../lib/indexeddb.ts';
 interface DeleteAllDataDialogProps {

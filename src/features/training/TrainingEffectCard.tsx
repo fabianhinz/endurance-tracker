@@ -11,7 +11,7 @@ import {
   calculateTrainingEffect,
   getTrainingEffectLabel,
   getTrainingEffectSummary,
-} from "../../engine/training-effect.ts";
+} from "../../engine/trainingEffect.ts";
 import type { SessionRecord, TrainingSession } from "../../engine/types.ts";
 
 const TE_ZONES = [

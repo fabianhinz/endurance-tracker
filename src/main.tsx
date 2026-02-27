@@ -6,7 +6,7 @@ import { ToastViewport } from './components/ui/Toast.tsx';
 import { App } from './App.tsx';
 import { useUserStore } from './store/user.ts';
 import { useSessionsStore } from './store/sessions.ts';
-import { useCoachPlanStore } from './store/coach-plan.ts';
+import { useCoachPlanStore } from './store/coachPlan.ts';
 import './index.css';
 
 const boot = async () => {

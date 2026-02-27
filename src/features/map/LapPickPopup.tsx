@@ -4,7 +4,7 @@ import { Button } from "../../components/ui/Button.tsx";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
-import { usePopupPosition } from "./use-popup-position.ts";
+import { usePopupPosition } from "./hooks/usePopupPosition.ts";
 import { analyzeLaps } from "../../engine/laps.ts";
 import { computeRunningZones } from "../../engine/zones.ts";
 import { useUserStore } from "../../store/user.ts";

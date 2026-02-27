@@ -11,7 +11,7 @@ import {
   Clock,
   HeartPulse,
 } from "lucide-react";
-import { useFileUpload } from "../../features/training/use-file-upload.ts";
+import { useFileUpload } from "../../features/training/hooks/useFileUpload.ts";
 import { cn } from "../../lib/utils.ts";
 import { cardClass } from "../ui/Card.tsx";
 import { useSlideIndicator } from "../ui/SlideIndicator.tsx";
@@ -20,13 +20,13 @@ import { useFiltersStore } from "../../store/filters.ts";
 import { Button } from "../ui/Button.tsx";
 import { DockRevealPanel } from "./DockRevealPanel.tsx";
 import { DockFilterOptions } from "./DockFilterOptions.tsx";
-import { sportIcon } from "../../lib/sport-icons.ts";
+import { sportIcon } from "../../lib/sportIcons.ts";
 import {
   type TimeRange,
   timeRangeOptions,
   rangeLabelMap,
   formatCustomRangeDuration,
-} from "../../lib/time-range.ts";
+} from "../../lib/timeRange.ts";
 import type { Sport } from "../../engine/types.ts";
 
 const tabs = [

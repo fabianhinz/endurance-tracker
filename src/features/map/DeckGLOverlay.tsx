@@ -2,7 +2,7 @@ import { useControl } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { PICK_RADIUS } from "./MapBackground.tsx";
 import type { Layer } from "@deck.gl/core";
-import { useDeckMetricsStore } from "../../store/deck-metrics.ts";
+import { useDeckMetricsStore } from "../../store/deckMetrics.ts";
 
 interface DeckGLOverlayProps {
   layers: Layer[];
