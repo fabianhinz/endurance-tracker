@@ -1,4 +1,4 @@
-import type { SessionRecord, PersonalBest, PBCategory, Sport } from '../types/index.ts';
+import type { SessionRecord, PersonalBest, PBCategory, Sport } from './types.ts';
 
 /**
  * Rolling power-window durations (in seconds) used for peak-power PB detection.

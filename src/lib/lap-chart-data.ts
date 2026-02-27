@@ -1,4 +1,4 @@
-import type { SessionLap } from '../types/index.ts';
+import type { SessionLap } from '../engine/types.ts';
 
 export interface LapSplitPoint {
   lap: string;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getSessionRecords } from '../../lib/indexeddb.ts';
 import { extractPathFromRecords } from '../../engine/gps.ts';
-import type { TrainingSession } from '../../types/index.ts';
+import type { TrainingSession } from '../../engine/types.ts';
 
 const pathCache = new Map<string, [number, number][]>();
 const loading = new Set<string>();

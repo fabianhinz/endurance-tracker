@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/Ta
 import { usePBsForRange } from "../../hooks/usePBsForRange.ts";
 import { SportRecordsCard } from "../records/SportRecordsCard.tsx";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
-import type { Sport } from "../../types/index.ts";
+import type { Sport } from "../../engine/types.ts";
 
 const sports: Sport[] = ["running", "cycling", "swimming"];
 const validTabs = new Set(["log", "records"]);

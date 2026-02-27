@@ -12,7 +12,7 @@ import {
   getTrainingEffectLabel,
   getTrainingEffectSummary,
 } from "../../engine/training-effect.ts";
-import type { SessionRecord, TrainingSession } from "../../types/index.ts";
+import type { SessionRecord, TrainingSession } from "../../engine/types.ts";
 
 const TE_ZONES = [
   { from: 0, to: 1, color: tokens.statusNeutral },

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { SessionLap, Sport } from "../types/index.ts";
+import type { SessionLap, Sport } from "../engine/types.ts";
 
 interface MapFocusState {
   openedSessionId: string | null;

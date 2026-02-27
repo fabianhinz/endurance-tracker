@@ -1,4 +1,4 @@
-import type { SessionRecord, Gender } from '../types/index.ts';
+import type { SessionRecord, Gender } from './types.ts';
 import { BANISTER } from './stress.ts';
 
 /** Human-readable label and semantic color token for a training effect score. */

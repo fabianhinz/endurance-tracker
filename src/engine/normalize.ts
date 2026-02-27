@@ -1,4 +1,4 @@
-import type { SessionRecord } from '../types/index.ts';
+import type { SessionRecord } from './types.ts';
 
 /** Width of the rolling average window used in the normalized power calculation, in seconds. */
 export const NP_ROLLING_WINDOW_SEC = 30;

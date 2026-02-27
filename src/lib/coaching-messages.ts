@@ -1,9 +1,5 @@
-import type {
-  CoachingRecommendation,
-  DailyMetrics,
-  FormStatus,
-  InjuryRisk,
-} from '../types/index.ts';
+import type { DailyMetrics, FormStatus, InjuryRisk } from '../engine/types.ts';
+import type { CoachingRecommendation } from '../types/index.ts';
 import { getFormStatus, getInjuryRisk, getLoadState } from '../engine/coaching.ts';
 
 export const getFormMessage = (status: FormStatus): string => {

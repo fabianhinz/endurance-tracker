@@ -25,7 +25,7 @@ import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
 import { SessionChartsExplorer } from "./SessionChartsExplorer.tsx";
 import { TrainingEffectCard } from "./TrainingEffectCard.tsx";
 import { SessionRecordsCard } from "./SessionRecordsCard.tsx";
-import type { SessionRecord, SessionLap } from "../../types/index.ts";
+import type { SessionRecord, SessionLap } from "../../engine/types.ts";
 export const SessionDetailPage = () => {
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();

@@ -42,7 +42,7 @@ import { PaceChart } from "./PaceChart.tsx";
 import { GradeAdjustedPaceChart } from "./GradeAdjustedPaceChart.tsx";
 import { ZoneDistributionChart } from "./ZoneDistributionChart.tsx";
 import { tokens } from "../../lib/tokens.ts";
-import type { SessionRecord, TrainingSession } from "../../types/index.ts";
+import type { SessionRecord, TrainingSession } from "../../engine/types.ts";
 
 interface ChartEntry {
   key: string;

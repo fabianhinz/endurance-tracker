@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useSessionsStore } from "../store/sessions.ts";
 import { useFiltersStore } from "../store/filters.ts";
 import { computeMetrics } from "../engine/metrics.ts";
-import type { DailyMetrics } from "../types/index.ts";
+import type { DailyMetrics } from "../engine/types.ts";
 
 export const useFilteredMetrics = (): {
   history: DailyMetrics[];

@@ -3,7 +3,7 @@ import { CardGrid } from "../../components/ui/CardGrid.tsx";
 import { StatItem } from "../../components/ui/StatItem.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { pbLabel, formatPBValue, formatDate } from "../../lib/utils.ts";
-import type { PersonalBest } from "../../types/index.ts";
+import type { PersonalBest } from "../../engine/types.ts";
 
 interface SessionRecordsCardProps {
   sessionPBs: PersonalBest[];

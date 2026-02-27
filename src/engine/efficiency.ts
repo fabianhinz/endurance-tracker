@@ -1,4 +1,4 @@
-import type { SessionRecord, TrainingSession } from '../types/index.ts';
+import type { SessionRecord, TrainingSession } from './types.ts';
 
 /** Minimum number of valid power+HR records required to compute Pw:Hr decoupling. */
 export const MIN_RECORDS_FOR_DECOUPLING = 10;

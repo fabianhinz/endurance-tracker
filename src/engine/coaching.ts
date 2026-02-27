@@ -2,7 +2,7 @@ import type {
   FormStatus,
   InjuryRisk,
   LoadState,
-} from '../types/index.ts';
+} from './types.ts';
 
 // ---------------------------------------------------------------------------
 // TSB thresholds for form classification

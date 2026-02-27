@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { useSessionsStore } from '../../src/store/sessions.ts';
 import { makeSession } from '../factories/sessions.ts';
-import type { PersonalBest } from '../../src/types/index.ts';
+import type { PersonalBest } from '../../src/engine/types.ts';
 
 describe('sessions store', () => {
   it('addSession returns UUID, session in state', () => {

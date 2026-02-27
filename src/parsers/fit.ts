@@ -1,5 +1,5 @@
 import FitParser from 'fit-file-parser';
-import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '../types/index.ts';
+import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '../engine/types.ts';
 import { validateRecords } from '../engine/validation.ts';
 import { calculateSessionStress } from '../engine/stress.ts';
 import { extractSessionName } from '../lib/filename.ts';

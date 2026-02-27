@@ -1,4 +1,4 @@
-import type { RunningZone, RunningZoneName } from '../types/index.ts';
+import type { RunningZone, RunningZoneName } from './types.ts';
 
 const ZONE_DEFS: {
   name: RunningZoneName;

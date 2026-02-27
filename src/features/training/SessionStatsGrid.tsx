@@ -15,7 +15,7 @@ import {
   detectIntervals,
   detectProgressiveOverload,
 } from "../../engine/laps.ts";
-import type { TrainingSession, SessionLap } from "../../types/index.ts";
+import type { TrainingSession, SessionLap } from "../../engine/types.ts";
 
 interface SessionStatsGridProps {
   session: TrainingSession;

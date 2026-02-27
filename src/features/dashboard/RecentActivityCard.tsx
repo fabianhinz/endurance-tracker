@@ -16,7 +16,7 @@ import { ChevronRight } from "lucide-react";
 import { pbLabel, formatPBValue, formatDate } from "../../lib/utils.ts";
 import { rangeToCutoff, customRangeToCutoffs } from "../../lib/time-range.ts";
 import type { TimeRange } from "../../lib/time-range.ts";
-import type { PersonalBest, Sport } from "../../types/index.ts";
+import type { PersonalBest, Sport } from "../../engine/types.ts";
 
 const sports: Sport[] = ["running", "cycling", "swimming"];
 

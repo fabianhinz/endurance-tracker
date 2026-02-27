@@ -1,4 +1,4 @@
-import type { TrainingSession, DailyMetrics } from '../types/index.ts';
+import type { TrainingSession, DailyMetrics } from './types.ts';
 import type { EngineFormatter } from './formatter.ts';
 import { defaultFormatter } from './formatter.ts';
 

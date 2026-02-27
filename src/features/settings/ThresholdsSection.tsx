@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useTransition } from "react";
-import type { Gender } from "../../types/index.ts";
+import type { Gender } from "../../engine/types.ts";
 import { useUserStore } from "../../store/user.ts";
 import { Input } from "../../components/ui/Input.tsx";
 import { Label } from "../../components/ui/Label.tsx";

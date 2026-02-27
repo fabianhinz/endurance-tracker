@@ -1,4 +1,4 @@
-import type { SessionLap } from '../types/index.ts';
+import type { SessionLap } from './types.ts';
 
 /**
  * Derived metrics for a single lap computed from raw {@link SessionLap} data.

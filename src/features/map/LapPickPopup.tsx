@@ -14,7 +14,7 @@ import {
   formatLapTime,
   formatDistance,
 } from "../../lib/utils.ts";
-import type { SessionLap, Sport, RunningZone } from "../../types/index.ts";
+import type { SessionLap, Sport, RunningZone } from "../../engine/types.ts";
 import type { LapAnalysis } from "../../engine/laps.ts";
 
 export interface LapPopupInfo {

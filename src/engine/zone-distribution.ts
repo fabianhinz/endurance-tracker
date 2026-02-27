@@ -1,4 +1,4 @@
-import type { SessionRecord } from '../types/index.ts';
+import type { SessionRecord } from './types.ts';
 import { computeRunningZones, getZoneForPace } from './zones.ts';
 import type { EngineFormatter } from './formatter.ts';
 import { defaultFormatter } from './formatter.ts';

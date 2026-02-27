@@ -1,4 +1,4 @@
-import type { SessionRecord, Sport } from '../types/index.ts';
+import type { SessionRecord, Sport } from './types.ts';
 
 /** Maximum physiologically plausible heart rate in bpm before a reading is considered a sensor error. */
 export const MAX_VALID_HR = 230;

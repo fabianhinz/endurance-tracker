@@ -4,7 +4,7 @@ import { formatDate, formatDuration, formatDistance } from "../../lib/utils.ts";
 import { Typography } from "./Typography.tsx";
 import { SportBadge } from "./SportBadge.tsx";
 import { glassClass } from "./Card.tsx";
-import type { TrainingSession } from "../../types/index.ts";
+import type { TrainingSession } from "../../engine/types.ts";
 
 interface SessionItemProps {
   session: TrainingSession;

@@ -1,7 +1,6 @@
 import { encode, decode } from '@googlemaps/polyline-codec';
 import { Simplify as simplify } from 'simplify-ts';
-import type { SessionRecord } from '../types/index.ts';
-import type { GPSPoint, GPSBounds, SessionGPS } from '../types/gps.ts';
+import type { SessionRecord, GPSPoint, GPSBounds, SessionGPS } from './types.ts';
 
 /**
  * Extract valid GPS points from an array of session records, filtering out nulls and out-of-range values.

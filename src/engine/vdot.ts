@@ -1,4 +1,4 @@
-import type { RaceDistance } from '../types/index.ts';
+import type { RaceDistance } from './types.ts';
 
 /**
  * Canonical race distances in metres, keyed by the {@link RaceDistance} union type.

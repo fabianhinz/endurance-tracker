@@ -1,5 +1,5 @@
 import { formatPace } from "../../lib/utils.ts";
-import type { RunningZone } from "../../types/index.ts";
+import type { RunningZone } from "../../engine/types.ts";
 
 export const ZoneLegend = (props: {
   zones: RunningZone[];

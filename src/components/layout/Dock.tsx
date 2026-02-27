@@ -27,7 +27,7 @@ import {
   rangeLabelMap,
   formatCustomRangeDuration,
 } from "../../lib/time-range.ts";
-import type { Sport } from "../../types/index.ts";
+import type { Sport } from "../../engine/types.ts";
 
 const tabs = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },

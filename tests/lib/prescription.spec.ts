@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateWeeklyPlan, estimateWorkoutTss, estimateWorkoutDistance } from '../../src/lib/prescription.ts';
 import { computeRunningZones } from '../../src/engine/zones.ts';
-import type { DailyMetrics, PrescribedWorkout } from '../../src/types/index.ts';
+import type { DailyMetrics } from '../../src/engine/types.ts';
+import type { PrescribedWorkout } from '../../src/types/index.ts';
 
 const zones = computeRunningZones(270); // 4:30/km threshold
 const MATURE = 42; // days — well above 28-day threshold

@@ -1,4 +1,4 @@
-import type { SessionRecord, Gender } from '../types/index.ts';
+import type { SessionRecord, Gender } from './types.ts';
 import { calculateNormalizedPower } from './normalize.ts';
 
 /**
