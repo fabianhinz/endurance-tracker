@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   getFormMessage,
   getFormMessageDetailed,
+} from '../../src/lib/coaching-messages.ts';
+import {
   getLoadState,
   getInjuryRisk,
   ACWR_MODERATE_THRESHOLD,

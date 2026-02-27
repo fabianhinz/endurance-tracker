@@ -3,6 +3,11 @@ import { Simplify as simplify } from 'simplify-ts';
 import type { SessionRecord } from '../types/index.ts';
 import type { GPSPoint, GPSBounds, SessionGPS } from '../types/gps.ts';
 
+/**
+ * Extract valid GPS points from an array of session records, filtering out nulls and out-of-range values.
+ * @param records - Raw time-series records from a parsed FIT file.
+ * @returns Array of `{lat, lng}` objects containing only geographically valid coordinates.
+ */
 export const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
   records.reduce<GPSPoint[]>((acc, r) => {
     if (
@@ -18,6 +23,11 @@ export const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
     return acc;
   }, []);
 
+/**
+ * Extract valid GPS coordinates from session records as `[lng, lat]` tuples suitable for deck.gl / MapLibre layers.
+ * @param records - Raw time-series records from a parsed FIT file.
+ * @returns Array of `[lng, lat]` pairs containing only geographically valid coordinates.
+ */
 export const extractPathFromRecords = (
   records: SessionRecord[],
 ): [number, number][] =>
@@ -35,6 +45,12 @@ export const extractPathFromRecords = (
     return acc;
   }, []);
 
+/**
+ * Reduce the number of GPS points using the Ramer-Douglas-Peucker algorithm while preserving track shape.
+ * @param points - Input GPS points to simplify.
+ * @param tolerance - Maximum allowed deviation in degrees (default `0.00005`).
+ * @returns Simplified array of GPS points; returns the original array unchanged when it has fewer than 3 points.
+ */
 export const simplifyTrack = (
   points: GPSPoint[],
   tolerance = 0.00005,
@@ -47,9 +63,19 @@ export const simplifyTrack = (
   return simplified.map((p) => ({ lat: p.y, lng: p.x }));
 };
 
+/**
+ * Encode an array of GPS points into a Google Polyline-encoded string for compact storage.
+ * @param points - GPS points to encode.
+ * @returns Polyline-encoded string representing the track.
+ */
 export const encodeTrack = (points: GPSPoint[]): string =>
   encode(points.map((p) => [p.lat, p.lng]));
 
+/**
+ * Compute the axis-aligned bounding box that tightly encloses all given GPS points.
+ * @param points - GPS points to compute bounds for.
+ * @returns `GPSBounds` with `minLat`, `maxLat`, `minLng`, and `maxLng`.
+ */
 export const computeBounds = (points: GPSPoint[]): GPSBounds => {
   let minLat = Infinity;
   let maxLat = -Infinity;
@@ -64,6 +90,12 @@ export const computeBounds = (points: GPSPoint[]): GPSBounds => {
   return { minLat, maxLat, minLng, maxLng };
 };
 
+/**
+ * Build a complete `SessionGPS` object from raw session records, applying simplification and encoding.
+ * @param sessionId - Unique identifier of the session these records belong to.
+ * @param records - Raw time-series records from a parsed FIT file.
+ * @returns A `SessionGPS` object ready for storage, or `null` when fewer than 2 valid GPS points are found.
+ */
 export const buildSessionGPS = (
   sessionId: string,
   records: SessionRecord[],
@@ -76,17 +108,33 @@ export const buildSessionGPS = (
   return { sessionId, encodedPolyline, pointCount: simplified.length, bounds };
 };
 
+/**
+ * Decode a stored polyline string into `[lng, lat]` tuples ready for deck.gl / MapLibre rendering.
+ * @param encodedPolyline - Google Polyline-encoded string produced by `encodeTrack`.
+ * @returns Array of `[lng, lat]` pairs in the order expected by mapping layers.
+ */
 export const decodeTrackForRendering = (
   encodedPolyline: string,
 ): [number, number][] =>
   decode(encodedPolyline).map((p) => [p[1], p[0]]);
 
+/**
+ * Test whether two axis-aligned bounding boxes overlap in both latitude and longitude.
+ * @param a - First bounding box.
+ * @param b - Second bounding box.
+ * @returns `true` when the boxes share at least one point, `false` otherwise.
+ */
 export const boundsOverlap = (a: GPSBounds, b: GPSBounds): boolean =>
   a.minLat <= b.maxLat &&
   a.maxLat >= b.minLat &&
   a.minLng <= b.maxLng &&
   a.maxLng >= b.minLng;
 
+/**
+ * Compute the smallest bounding box that encloses every box in the input array.
+ * @param boundsArray - Array of bounding boxes to merge.
+ * @returns Union `GPSBounds`, or `null` when `boundsArray` is empty.
+ */
 export const unionBounds = (boundsArray: GPSBounds[]): GPSBounds | null => {
   if (boundsArray.length === 0) return null;
   let minLat = Infinity;
@@ -105,6 +153,10 @@ export const unionBounds = (boundsArray: GPSBounds[]): GPSBounds | null => {
 /**
  * Test whether the line segment a→b intersects an axis-aligned bounding box.
  * Uses parametric clipping (Liang-Barsky). Coordinates are [lng, lat].
+ * @param a - Start point of the segment as `[lng, lat]`.
+ * @param b - End point of the segment as `[lng, lat]`.
+ * @param bounds - Axis-aligned bounding box to test against.
+ * @returns `true` when the segment intersects or touches the box, `false` otherwise.
  */
 export const segmentIntersectsBounds = (
   a: [number, number],
@@ -144,11 +196,22 @@ export const segmentIntersectsBounds = (
   return tMin <= tMax;
 };
 
+/**
+ * Compute the geographic center point of an axis-aligned bounding box.
+ * @param b - Bounding box to find the center of.
+ * @returns `GPSPoint` at the midpoint of the box's latitude and longitude extents.
+ */
 export const boundsCenter = (b: GPSBounds): GPSPoint => ({
   lat: (b.minLat + b.maxLat) / 2,
   lng: (b.minLng + b.maxLng) / 2,
 });
 
+/**
+ * Compute a cosine-corrected degree distance between two GPS points, approximating metres-per-degree scaling.
+ * @param a - First GPS point.
+ * @param b - Second GPS point.
+ * @returns Scalar distance in degrees adjusted for longitude compression at the midpoint latitude.
+ */
 export const scaledDistDeg = (a: GPSPoint, b: GPSPoint): number => {
   const dLat = a.lat - b.lat;
   const dLng = (a.lng - b.lng) * Math.cos(((a.lat + b.lat) / 2) * (Math.PI / 180));
@@ -160,6 +223,9 @@ export const scaledDistDeg = (a: GPSPoint, b: GPSPoint): number => {
  * For each track center, count how many other centers are within radiusDeg.
  * Pick the center with the highest neighbor count, collect all tracks within
  * radius, and return their union bounds.
+ * @param boundsArray - Bounding boxes of all tracks to consider.
+ * @param radiusDeg - Search radius in (cosine-corrected) degrees (default `0.25`).
+ * @returns Union `GPSBounds` of the densest cluster, or `null` when `boundsArray` is empty.
  */
 export const densestClusterBounds = (
   boundsArray: GPSBounds[],

@@ -2,7 +2,7 @@ import { useMetrics } from "../../hooks/useMetrics.ts";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
-import { getFormMessageDetailed } from "../../engine/coaching.ts";
+import { getFormMessageDetailed } from "../../lib/coaching-messages.ts";
 import { ReadinessGauge } from "../dashboard/ReadinessDial.tsx";
 import { ACWRGauge } from "../dashboard/ACWRIndicator.tsx";
 

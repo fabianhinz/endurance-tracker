@@ -4,8 +4,8 @@ import { useUserStore } from '../store/user.ts';
 import { useCoachPlanStore } from '../store/coach-plan.ts';
 import { computeMetrics } from '../engine/metrics.ts';
 import { computeRunningZones } from '../engine/zones.ts';
-import { generateWeeklyPlan } from '../engine/prescription.ts';
-import { getMondayOfWeek, buildPlanCacheKey } from '../engine/week-key.ts';
+import { generateWeeklyPlan } from '../lib/prescription.ts';
+import { getMondayOfWeek, buildPlanCacheKey } from '../lib/week-key.ts';
 import { toDateString } from '../lib/utils.ts';
 import type { RunningZone, WeeklyPlan } from '../types/index.ts';
 
@@ -39,7 +39,7 @@ export const useCoachPlan = (): {
     const zones = computeRunningZones(thresholdPace);
     const history = computeMetrics(sessions);
     const current = history.length > 0 ? history[history.length - 1] : undefined;
-    const plan = generateWeeklyPlan(current, sessions, zones, today, history.length);
+    const plan = generateWeeklyPlan(current, zones, today, history.length);
 
     return { plan, zones, hasThresholdPace: true, freshPlan: plan, freshKey: currentKey };
   }, [sessions, profile, today, cachedPlan, cacheKey]);

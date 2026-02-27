@@ -7,7 +7,7 @@ import { Typography } from '../../components/ui/Typography.tsx';
 import { Button } from '../../components/ui/Button.tsx';
 import { MetricLabel } from '../../components/ui/MetricLabel.tsx';
 import { ActionPromptCard } from '../../components/ui/ActionPromptCard.tsx';
-import { METRIC_EXPLANATIONS } from '../../engine/explanations.ts';
+import { METRIC_EXPLANATIONS } from '../../lib/explanations.ts';
 
 import { CoachStatusCard } from './CoachStatusCard.tsx';
 import { WeeklyPlanTimeline } from './WeeklyPlanTimeline.tsx';

@@ -36,6 +36,7 @@ export interface TrainingSession {
   deviceTss?: number;
   deviceIf?: number;
   deviceFtp?: number;
+  avgSpeed?: number;
   maxSpeed?: number;
   minAltitude?: number;
   maxAltitude?: number;
@@ -174,6 +175,15 @@ export interface WeeklyPlan {
   totalEstimatedTss: number;
   context: PlanContext;
 }
+
+// --- Personal Bests ---
+
+// --- Training Effect ---
+
+export type TrainingEffectResult = {
+  aerobic: number;   // 0–5
+  anaerobic: number; // 0–5
+};
 
 // --- Personal Bests ---
 

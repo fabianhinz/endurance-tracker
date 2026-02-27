@@ -4,7 +4,7 @@ import { Typography } from "../../components/ui/Typography.tsx";
 import { cn } from "../../lib/utils.ts";
 import { tokens } from "../../lib/tokens.ts";
 import { statusTextClass, statusFill } from "../../lib/status-colors.ts";
-import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
+import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
 import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
 import { GaugeDial } from "../../components/ui/GaugeDial.tsx";
 

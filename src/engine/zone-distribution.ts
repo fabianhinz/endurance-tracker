@@ -1,13 +1,23 @@
 import type { SessionRecord } from '../types/index.ts';
 import { computeRunningZones, getZoneForPace } from './zones.ts';
-import { formatPace } from '../lib/utils.ts';
+import type { EngineFormatter } from './formatter.ts';
+import { defaultFormatter } from './formatter.ts';
 
+/**
+ * A single training-zone bucket produced by a zone-distribution computation.
+ */
 export interface ZoneBucket {
+  /** Short zone identifier, e.g. `"Z1"` or `"Z4"`. */
   zone: string;
+  /** Human-readable label combining the zone id and name, e.g. `"Z2 Aerobic"`. */
   label: string;
+  /** Number of data-point samples (records) that fell into this zone. */
   seconds: number;
+  /** Proportion of total valid samples in this zone, expressed as a percentage (0–100, one decimal). */
   percentage: number;
+  /** Hex colour string used to represent this zone in charts. */
   color: string;
+  /** Formatted intensity range for display, e.g. `"130–148 bpm"` or `"3:45–4:10 /km"`. */
   rangeLabel: string;
 }
 
@@ -21,6 +31,14 @@ const HR_ZONE_DEFS = [
   { zone: 'Z5', label: 'VO2max', minPct: 0.90, maxPct: 1.00, color: '#ef4444' },
 ];
 
+/**
+ * Computes a 5-zone heart-rate distribution using the Karvonen (HR-reserve) method.
+ *
+ * @param records - Time-series session records; only those with a positive `hr` value are used.
+ * @param maxHr - Athlete's maximum heart rate in bpm.
+ * @param restHr - Athlete's resting heart rate in bpm.
+ * @returns One `ZoneBucket` per HR zone (Z1–Z5), or an empty array when inputs are insufficient.
+ */
 export const computeHrZoneDistribution = (
   records: SessionRecord[],
   maxHr: number,
@@ -69,6 +87,13 @@ const POWER_ZONE_DEFS = [
   { zone: 'Z7', label: 'Neuromuscular', minPct: 1.50, maxPct: Infinity, color: '#dc2626' },
 ];
 
+/**
+ * Computes a 7-zone power distribution using the Coggan FTP model.
+ *
+ * @param records - Time-series session records; only those with a positive `power` value are used.
+ * @param ftp - Athlete's Functional Threshold Power in watts.
+ * @returns One `ZoneBucket` per power zone (Z1–Z7), or an empty array when inputs are insufficient.
+ */
 export const computePowerZoneDistribution = (
   records: SessionRecord[],
   ftp: number,
@@ -105,9 +130,17 @@ export const computePowerZoneDistribution = (
 
 // --- Pace Zones (reuses computeRunningZones) ---
 
+/**
+ * Computes a pace-zone distribution derived from the athlete's running threshold pace.
+ *
+ * @param records - Time-series session records; only those with a `speed` above 0.5 m/s are used.
+ * @param thresholdPace - Athlete's threshold pace in seconds per kilometre.
+ * @returns One `ZoneBucket` per pace zone as defined by `computeRunningZones`, or an empty array when inputs are insufficient.
+ */
 export const computePaceZoneDistribution = (
   records: SessionRecord[],
   thresholdPace: number,
+  formatter: EngineFormatter = defaultFormatter,
 ): ZoneBucket[] => {
   if (thresholdPace <= 0) return [];
 
@@ -135,6 +168,6 @@ export const computePaceZoneDistribution = (
     seconds: counts[i],
     percentage: Math.round((counts[i] / total) * 1000) / 10,
     color: z.color,
-    rangeLabel: `${formatPace(z.maxPace)}–${formatPace(z.minPace)}`,
+    rangeLabel: `${formatter.pace(z.maxPace)}–${formatter.pace(z.minPace)}`,
   }));
 };

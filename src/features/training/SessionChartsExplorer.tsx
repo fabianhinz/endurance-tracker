@@ -24,7 +24,7 @@ import {
   prepareGAPData,
   buildTimeToGpsLookup,
   filterTimeSeries,
-} from "../../engine/chart-data.ts";
+} from "../../lib/chart-data.ts";
 import { useMapFocusStore } from "../../store/map-focus.ts";
 import {
   computeHrZoneDistribution,

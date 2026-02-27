@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useMapFocusStore } from "../../store/map-focus.ts";
 import { getSessionRecords, getSessionLaps } from "../../lib/indexeddb.ts";
 import { Button } from "../../components/ui/Button.tsx";
-import { MetricCard } from "../../components/ui/MetricCard.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
 import {
@@ -20,25 +19,25 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../../components/ui/DropdownMenu.tsx";
-import {
-  formatDate,
-  formatDuration,
-  formatDistance,
-  formatSubSport,
-} from "../../lib/utils.ts";
+import { formatDate, formatSubSport } from "../../lib/utils.ts";
 import { SportChip } from "../../components/ui/SportChip.tsx";
 import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
 import { SessionChartsExplorer } from "./SessionChartsExplorer.tsx";
+import { TrainingEffectCard } from "./TrainingEffectCard.tsx";
+import { SessionRecordsCard } from "./SessionRecordsCard.tsx";
 import type { SessionRecord, SessionLap } from "../../types/index.ts";
-import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
-
 export const SessionDetailPage = () => {
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
   const sessions = useSessionsStore((s) => s.sessions);
   const deleteSession = useSessionsStore((s) => s.deleteSession);
   const renameSession = useSessionsStore((s) => s.renameSession);
+  const personalBests = useSessionsStore((s) => s.personalBests);
   const session = sessions.find((s) => s.id === params.id);
+  const sessionPBs = useMemo(
+    () => personalBests.filter((pb) => pb.sessionId === params.id),
+    [personalBests, params.id],
+  );
   const [records, setRecords] = useState<SessionRecord[]>([]);
   const [laps, setLaps] = useState<SessionLap[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -130,44 +129,27 @@ export const SessionDetailPage = () => {
       </div>
 
       <PageGrid>
-        <div className="grid grid-cols-2 gap-4 md:col-span-2">
-          <MetricCard
-            label="Duration"
-            subtitle=""
-            size="lg"
-            value={formatDuration(session.duration)}
-          />
-          <MetricCard
-            label="Distance"
-            subtitle=""
-            size="lg"
-            value={formatDistance(session.distance)}
-          />
-          <MetricCard
-            label={METRIC_EXPLANATIONS[session.stressMethod].friendlyName}
-            subtitle=""
-            metricId={session.stressMethod}
-            size="lg"
-            value={session.tss.toFixed(0)}
-          />
-          <MetricCard
-            label="Avg HR"
-            subtitle=""
-            size="lg"
-            value={session.avgHr ?? "--"}
-            unit={session.avgHr ? "bpm" : undefined}
-          />
-        </div>
-
         {records.length > 0 && (
           <div className="md:col-span-2">
-            <SessionChartsExplorer records={records} session={session} />
+            <TrainingEffectCard records={records} session={session} />
           </div>
         )}
 
         <div className="md:col-span-2">
           <SessionStatsGrid session={session} laps={laps} />
         </div>
+
+        {sessionPBs.length > 0 && (
+          <div className="md:col-span-2">
+            <SessionRecordsCard sessionPBs={sessionPBs} />
+          </div>
+        )}
+
+        {records.length > 0 && (
+          <div className="md:col-span-2">
+            <SessionChartsExplorer records={records} session={session} />
+          </div>
+        )}
       </PageGrid>
 
       <DialogRoot

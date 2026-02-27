@@ -3,7 +3,7 @@ import {
   METRIC_EXPLANATIONS,
   type MetricId,
   type MetricExplanation,
-} from '../../src/engine/explanations.ts';
+} from '../../src/lib/explanations.ts';
 
 const ALL_METRIC_IDS: MetricId[] = [
   'tss',
@@ -30,6 +30,8 @@ const ALL_METRIC_IDS: MetricId[] = [
   'recovery',
   'pacingTrend',
   'trainingZones',
+  'aerobicTE',
+  'anaerobicTE',
 ];
 
 const REQUIRED_FIELDS: (keyof MetricExplanation)[] = [

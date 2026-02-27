@@ -4,15 +4,14 @@ import type {
   PrescribedWorkout,
   RunningZone,
   RunningZoneName,
-  TrainingSession,
   WeeklyPlan,
   WorkoutStep,
   WorkoutType,
   PlanContext,
 } from '../types/index.ts';
-import { toDateString } from '../lib/utils.ts';
-import { getFormStatus, getInjuryRisk, getLoadState } from './coaching.ts';
-import { getZoneMidPace } from './zones.ts';
+import { toDateString } from './utils.ts';
+import { getFormStatus, getInjuryRisk, getLoadState } from '../engine/coaching.ts';
+import { getZoneMidPace } from '../engine/zones.ts';
 
 // --- TSS per hour by workout type ---
 
@@ -253,7 +252,6 @@ const getDayOfWeek = (dateStr: string): number => {
 
 export const generateWeeklyPlan = (
   currentMetrics: DailyMetrics | undefined,
-  _recentSessions: TrainingSession[],
   zones: RunningZone[],
   today: string,
   historyDays: number,

@@ -28,7 +28,9 @@ export type MetricId =
   | "speedValidation"
   | "recovery"
   | "pacingTrend"
-  | "trainingZones";
+  | "trainingZones"
+  | "aerobicTE"
+  | "anaerobicTE";
 
 export interface MetricExplanation {
   id: MetricId;
@@ -633,6 +635,58 @@ const trainingZones: MetricExplanation = {
 };
 
 // ---------------------------------------------------------------------------
+// Training Effect (src/engine/training-effect.ts)
+// ---------------------------------------------------------------------------
+
+const aerobicTE: MetricExplanation = {
+  id: "aerobicTE",
+  shortLabel: "Aerobic TE",
+  friendlyName: "Aerobic Training Effect",
+  name: "Aerobic Training Effect",
+  oneLiner:
+    "How much this session improved your aerobic endurance, on a 0–5 scale.",
+  fullExplanation:
+    "Aerobic Training Effect uses per-sample Banister TRIMP — accumulating heart rate impulse across every second of the session rather than using session-average HR. The raw TRIMP is then scaled by your chronic fitness level (CTL) so the same workout produces a smaller TE as you get fitter. The result maps to a 0–5 scale matching the industry standard used by Garmin, COROS, and Suunto.",
+  formula:
+    "For each record: TRIMP += dt × HRR × a × exp(b × HRR). Reference = 1-hour threshold effort. TE = clamp(TRIMP / (reference × fitnessScale) × 3, 0, 5)",
+  analogy:
+    "Think of Aerobic TE like a receipt for your workout. A score of 2 means you kept the lights on (maintaining fitness). A score of 4 means you made a serious deposit in your endurance bank account.",
+  whyItMatters:
+    "Aerobic TE tells you whether a session was hard enough to drive adaptation or just maintenance. Over time, you need higher TE sessions to keep improving, while lower TE sessions serve as active recovery.",
+  range:
+    "0–0.9: No effect. 1–1.9: Minor benefit. 2–2.9: Maintaining fitness. 3–3.9: Improving fitness. 4–4.9: Highly improving. 5.0: Overreaching.",
+  limitations:
+    "Requires accurate max HR and resting HR settings. HR lag means the first few minutes of intervals may undercount intensity. Sessions without HR data cannot be scored.",
+  sports: ["all"],
+  displayContext:
+    "Session detail view as a gauge dial alongside Anaerobic TE. Only shown for sessions with HR data.",
+};
+
+const anaerobicTE: MetricExplanation = {
+  id: "anaerobicTE",
+  shortLabel: "Anaerobic TE",
+  friendlyName: "Anaerobic Training Effect",
+  name: "Anaerobic Training Effect",
+  oneLiner:
+    "How much this session stressed your anaerobic (high-intensity) energy system, on a 0–5 scale.",
+  fullExplanation:
+    "Anaerobic Training Effect measures accumulated time and intensity above the VO2max threshold (90% of heart rate reserve). Only the portion of each second spent above that threshold counts. Like Aerobic TE, the result is scaled by chronic fitness so fitter athletes need harder efforts to score high.",
+  formula:
+    "For each record with HRR > 0.9: impulse += dt × (HRR − 0.9) / 0.1. Reference = 10 min at VO2max. TE = clamp(impulse / (10 × fitnessScale) × 3, 0, 5)",
+  analogy:
+    "Anaerobic TE is like measuring how many times you redlined your engine during a drive. A low score means you cruised. A high score means you spent serious time in the red zone.",
+  whyItMatters:
+    "Anaerobic capacity is what powers sprints, hills, and race surges. A high Anaerobic TE confirms you pushed into the high-intensity zone enough to stimulate VO2max and lactate tolerance improvements.",
+  range:
+    "0–0.9: No anaerobic stimulus. 1–1.9: Minor. 2–2.9: Moderate high-intensity work. 3–3.9: Significant VO2max stimulus. 4–4.9: Very high anaerobic stress. 5.0: Overreaching.",
+  limitations:
+    "HR-based detection has inherent lag — short sprints (< 30s) may not raise HR above 90% HRR even when truly anaerobic. Power-based anaerobic detection would be more accurate but is not yet supported.",
+  sports: ["all"],
+  displayContext:
+    "Session detail view as a gauge dial alongside Aerobic TE. Only shown for sessions with HR data.",
+};
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 
@@ -671,4 +725,7 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   pacingTrend,
   // Training zones
   trainingZones,
+  // Training Effect
+  aerobicTE,
+  anaerobicTE,
 };

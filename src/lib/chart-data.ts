@@ -1,5 +1,5 @@
 import type { SessionRecord } from '../types/index.ts';
-import { gradeAdjustedPaceFactor } from './normalize.ts';
+import { gradeAdjustedPaceFactor } from '../engine/normalize.ts';
 
 export interface TimeSeriesPoint {
   time: number;

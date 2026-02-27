@@ -1,27 +1,28 @@
 import type { SessionRecord } from '../types/index.ts';
 
+/** Width of the rolling average window used in the normalized power calculation, in seconds. */
+export const NP_ROLLING_WINDOW_SEC = 30;
+
 /**
- * Calculate Normalized Power (NP) from time-series power data.
- * 1. Calculate 30-second rolling average of power
- * 2. Raise each value to the 4th power
- * 3. Average the 4th-power values
- * 4. Take the 4th root
+ * Calculate Normalized Power (NP) from time-series power data using the standard 30 s rolling-average → 4th-power → mean → 4th-root algorithm.
+ * @param records - Full time-series session records; only records with `power > 0` are used, assumed to be sampled at ~1 Hz.
+ * @returns NP rounded to the nearest watt, or `undefined` when fewer than `NP_ROLLING_WINDOW_SEC` valid power samples are available.
  */
 export const calculateNormalizedPower = (records: SessionRecord[]): number | undefined => {
   const powerData = records
     .filter((r) => r.power !== undefined && r.power > 0)
     .map((r) => r.power!);
 
-  if (powerData.length < 30) return undefined;
+  if (powerData.length < NP_ROLLING_WINDOW_SEC) return undefined;
 
   // 30-second rolling average (assuming 1 record per second)
   const rollingAvg: number[] = [];
-  for (let i = 29; i < powerData.length; i++) {
+  for (let i = NP_ROLLING_WINDOW_SEC - 1; i < powerData.length; i++) {
     let sum = 0;
-    for (let j = i - 29; j <= i; j++) {
+    for (let j = i - (NP_ROLLING_WINDOW_SEC - 1); j <= i; j++) {
       sum += powerData[j];
     }
-    rollingAvg.push(sum / 30);
+    rollingAvg.push(sum / NP_ROLLING_WINDOW_SEC);
   }
 
   if (rollingAvg.length === 0) return undefined;
@@ -35,9 +36,9 @@ export const calculateNormalizedPower = (records: SessionRecord[]): number | und
 };
 
 /**
- * Grade Adjusted Pace using Minetti cost-of-transport curve.
- * Adjusts running pace for elevation changes.
- * gradient is expressed as fraction (e.g., 0.05 = 5%).
+ * Compute the metabolic cost multiplier for a given gradient using the Minetti cost-of-transport polynomial, relative to flat running.
+ * @param gradient - Slope as a decimal fraction (e.g. `0.05` = 5%); clamped to [-0.45, 0.45].
+ * @returns Dimensionless factor where `1.0` represents flat-ground effort; values above 1 indicate uphill, below 1 indicate downhill.
  */
 export const gradeAdjustedPaceFactor = (gradient: number): number => {
   // Simplified Minetti curve: metabolic cost relative to flat running
@@ -57,8 +58,9 @@ export const gradeAdjustedPaceFactor = (gradient: number): number => {
 };
 
 /**
- * Calculate Grade Adjusted Pace (GAP) from time-series records.
- * Returns pace in sec/km adjusted for elevation.
+ * Calculate Grade Adjusted Pace (GAP) from time-series records by weighting each segment's elapsed time by its Minetti cost factor.
+ * @param records - Full time-series session records; records must have `speed > 0`, `distance`, and either `grade` or `elevation`; fewer than 2 valid records returns `undefined`.
+ * @returns GAP in seconds per kilometre adjusted for elevation gain/loss, or `undefined` when there is insufficient data.
  */
 export const calculateGAP = (records: SessionRecord[]): number | undefined => {
   const validRecords = records.filter(

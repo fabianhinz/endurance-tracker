@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { extractSessionName } from "../../src/engine/filename.ts";
+import { extractSessionName } from "../../src/lib/filename.ts";
 
 describe("extractSessionName", () => {
   it("extracts single-word name", () => {

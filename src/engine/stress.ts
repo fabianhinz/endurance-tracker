@@ -2,9 +2,23 @@ import type { SessionRecord, Gender } from '../types/index.ts';
 import { calculateNormalizedPower } from './normalize.ts';
 
 /**
+ * Gender-specific Banister coefficients used in the TRIMP exponential weighting formula.
+ * @property male - Coefficients for male athletes: `a` (linear weight), `b` (exponential rate).
+ * @property female - Coefficients for female athletes: `a` (linear weight), `b` (exponential rate).
+ */
+export const BANISTER = {
+  male: { a: 0.64, b: 1.92 },
+  female: { a: 0.86, b: 1.67 },
+} as const;
+
+/**
  * Calculate TSS (Training Stress Score) when power data is available.
  * TSS = (duration_sec * NP * IF) / (FTP * 3600) * 100
  * IF = NP / FTP
+ * @param records - Array of session records containing power samples.
+ * @param durationSec - Total session duration in seconds.
+ * @param ftp - Functional Threshold Power in watts.
+ * @returns Object with rounded `tss` and `normalizedPower`, or `undefined` when NP cannot be derived or FTP is invalid.
  */
 export const calculateTSS = (
   records: SessionRecord[],
@@ -28,6 +42,12 @@ export const calculateTSS = (
  * TRIMP = duration_min * deltaHR_ratio * 0.64 * e^(1.92 * deltaHR_ratio)  (male)
  * TRIMP = duration_min * deltaHR_ratio * 0.86 * e^(1.67 * deltaHR_ratio)  (female)
  * deltaHR_ratio = (avgHR - restHR) / (maxHR - restHR)
+ * @param avgHr - Average heart rate during the session in bpm.
+ * @param durationSec - Total session duration in seconds.
+ * @param restHr - Resting heart rate in bpm.
+ * @param maxHr - Maximum heart rate in bpm.
+ * @param gender - Athlete gender used to select Banister coefficients.
+ * @returns TRIMP value normalized to the TSS scale (rounded to one decimal), or `0` when HR values are physiologically invalid.
  */
 export const calculateTRIMP = (
   avgHr: number,
@@ -41,24 +61,28 @@ export const calculateTRIMP = (
   const durationMin = durationSec / 60;
   const deltaHrRatio = (avgHr - restHr) / (maxHr - restHr);
 
-  // Gender-specific Banister constants
-  const a = gender === 'female' ? 0.86 : 0.64;
-  const b = gender === 'female' ? 1.67 : 1.92;
+  const { a, b } = BANISTER[gender === 'female' ? 'female' : 'male'];
 
   const trimp = durationMin * deltaHrRatio * a * Math.exp(b * deltaHrRatio);
 
   // Normalize TRIMP to approximate TSS scale (divide by ~1 hour threshold effort TRIMP)
   // A 1-hour threshold effort for male: 60 * 1.0 * 0.64 * e^1.92 ≈ 262
   // We normalize so that effort produces ~100 TSS
-  const normFactor = gender === 'female'
-    ? 60 * 1.0 * 0.86 * Math.exp(1.67) / 100
-    : 60 * 1.0 * 0.64 * Math.exp(1.92) / 100;
+  const normFactor = 60 * 1.0 * a * Math.exp(b) / 100;
 
   return Math.round((trimp / normFactor) * 10) / 10;
 };
 
 /**
  * Calculate stress for a session, preferring TSS (power) over TRIMP (HR).
+ * @param records - Array of session records containing power and/or HR samples.
+ * @param durationSec - Total session duration in seconds.
+ * @param avgHr - Average heart rate in bpm, used as fallback when power data is absent.
+ * @param restHr - Resting heart rate in bpm, required for TRIMP calculation.
+ * @param maxHr - Maximum heart rate in bpm, required for TRIMP calculation.
+ * @param gender - Athlete gender used to select Banister coefficients for TRIMP.
+ * @param ftp - Optional Functional Threshold Power in watts; when provided and valid, TSS is attempted first.
+ * @returns Object with the stress score (`tss`), the method used (`stressMethod`), and optionally `normalizedPower` when TSS was computed from power data.
  */
 export const calculateSessionStress = (
   records: SessionRecord[],
@@ -97,18 +121,28 @@ export const calculateSessionStress = (
   };
 };
 
+/** Structured comparison between a device-reported TSS and the app-computed TSS. */
 export interface TSSComparison {
+  /** TSS value as reported by the recording device. */
   deviceTss: number;
+  /** TSS value computed by the app from raw session records. */
   computedTss: number;
+  /** Absolute difference between `deviceTss` and `computedTss`. */
   delta: number;
+  /** Relative divergence expressed as a percentage of `deviceTss`. */
   divergencePercent: number;
+  /** Confidence band derived from `divergencePercent`: high ≤5%, moderate ≤15%, low >15%. */
   confidence: 'high' | 'moderate' | 'low';
+  /** Human-readable warning message emitted only when confidence is `'low'`. */
   warning?: string;
 }
 
 /**
  * Compare device-reported TSS with app-computed TSS.
  * Returns null when deviceTss is unavailable.
+ * @param deviceTss - TSS value reported by the recording device, or `undefined` when absent.
+ * @param computedTss - TSS value computed by the app from raw session records.
+ * @returns A `TSSComparison` object with delta, divergence percentage, and confidence rating, or `null` when `deviceTss` is not available.
  */
 export const compareTSS = (
   deviceTss: number | undefined,
