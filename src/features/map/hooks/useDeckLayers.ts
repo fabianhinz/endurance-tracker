@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { PathLayer } from '@deck.gl/layers';
-import { decodeTrackForRendering } from '../../engine/gps.ts';
-import { getTrackColor, getTrackWidth } from './track-colors.ts';
-import type { MapTrack } from './use-map-tracks.ts';
+import { decodeTrackForRendering } from '../../../engine/gps.ts';
+import { getTrackColor, getTrackWidth } from '../trackColors.ts';
+import type { MapTrack } from './useMapTracks.ts';
 import type { PickingInfo } from '@deck.gl/core';
 
 const pathCache = new Map<string, [number, number][]>();

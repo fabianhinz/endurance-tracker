@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useUploadProgressStore } from '../../src/store/upload-progress.ts';
+import { useUploadProgressStore } from '../../src/store/uploadProgress.ts';
 
 describe('upload-progress store', () => {
   beforeEach(() => {

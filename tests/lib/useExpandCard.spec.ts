@@ -3,7 +3,7 @@ import {
   computeFlipDeltas,
   computeExpandedSize,
   getResponsivePadding,
-} from "../../src/lib/use-expand-card.ts";
+} from "../../src/lib/hooks/useExpandCard.ts";
 
 // Helper to create a DOMRect-like object
 const rect = (

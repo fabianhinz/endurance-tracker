@@ -635,7 +635,7 @@ const trainingZones: MetricExplanation = {
 };
 
 // ---------------------------------------------------------------------------
-// Training Effect (src/engine/training-effect.ts)
+// Training Effect (src/engine/trainingEffect.ts)
 // ---------------------------------------------------------------------------
 
 const aerobicTE: MetricExplanation = {

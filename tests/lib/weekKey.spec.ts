@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getMondayOfWeek, buildPlanCacheKey } from '../../src/lib/week-key.ts';
+import { getMondayOfWeek, buildPlanCacheKey } from '../../src/lib/weekKey.ts';
 
 describe('getMondayOfWeek', () => {
   it('returns the same date when input is a Monday', () => {

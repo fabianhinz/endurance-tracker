@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
-import { useUserStore } from '../store/user.ts';
-import { useSessionsStore } from '../store/sessions.ts';
-import { useCoachPlanStore } from '../store/coach-plan.ts';
+import { useUserStore } from '../../store/user.ts';
+import { useSessionsStore } from '../../store/sessions.ts';
+import { useCoachPlanStore } from '../../store/coachPlan.ts';
 
 const subscribe = (cb: () => void): (() => void) => {
   const unsubs = [

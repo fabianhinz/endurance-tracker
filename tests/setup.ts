@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { beforeEach, afterEach, vi } from 'vitest';
 import { useUserStore } from '../src/store/user.ts';
 import { useSessionsStore } from '../src/store/sessions.ts';
-import { useCoachPlanStore } from '../src/store/coach-plan.ts';
+import { useCoachPlanStore } from '../src/store/coachPlan.ts';
 import { resetDBInstance } from '../src/lib/db.ts';
 
 beforeEach(() => {

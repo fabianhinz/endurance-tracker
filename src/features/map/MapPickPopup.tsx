@@ -5,8 +5,8 @@ import { Button } from "../../components/ui/Button.tsx";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { SessionItem } from "../../components/ui/SessionItem.tsx";
-import { useMapFocusStore } from "../../store/map-focus.ts";
-import { usePopupPosition } from "./use-popup-position.ts";
+import { useMapFocusStore } from "../../store/mapFocus.ts";
+import { usePopupPosition } from "./hooks/usePopupPosition.ts";
 import type { TrainingSession } from "../../engine/types.ts";
 
 export interface PopupInfo {

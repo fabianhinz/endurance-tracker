@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { cn } from "../../lib/utils.ts";
-import { useUploadProgressStore } from "../../store/upload-progress.ts";
+import { useUploadProgressStore } from "../../store/uploadProgress.ts";
 
 const SIZE = 20;
 const STROKE = 2.5;

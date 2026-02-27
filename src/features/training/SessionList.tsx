@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useFiltersStore } from "../../store/filters.ts";
-import { useMapFocusStore } from "../../store/map-focus.ts";
+import { useMapFocusStore } from "../../store/mapFocus.ts";
 import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
 import { SessionItem } from "../../components/ui/SessionItem.tsx";
 import {
   type TimeRange,
   rangeToCutoff,
   customRangeToCutoffs,
-} from "../../lib/time-range.ts";
+} from "../../lib/timeRange.ts";
 
 export const SessionList = () => {
   const sessions = useSessionsStore((s) => s.sessions);

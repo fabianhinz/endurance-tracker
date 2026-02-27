@@ -24,14 +24,14 @@ import {
   prepareGAPData,
   buildTimeToGpsLookup,
   filterTimeSeries,
-} from "../../lib/chart-data.ts";
-import { useMapFocusStore } from "../../store/map-focus.ts";
+} from "../../lib/chartData.ts";
+import { useMapFocusStore } from "../../store/mapFocus.ts";
 import {
   computeHrZoneDistribution,
   computePowerZoneDistribution,
   computePaceZoneDistribution,
-} from "../../engine/zone-distribution.ts";
-import { sportIcon } from "../../lib/sport-icons.ts";
+} from "../../engine/zoneDistribution.ts";
+import { sportIcon } from "../../lib/sportIcons.ts";
 import { HrChart } from "./HrChart.tsx";
 import { PowerChart } from "./PowerChart.tsx";
 import { SpeedChart } from "./SpeedChart.tsx";

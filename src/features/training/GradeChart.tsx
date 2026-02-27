@@ -9,10 +9,10 @@ import {
   ReferenceArea,
   ReferenceLine,
 } from "recharts";
-import { useChartZoom } from "../../lib/use-chart-zoom.ts";
-import { chartTheme, formatChartTime } from "../../lib/chart-theme.ts";
+import { useChartZoom } from "../../lib/hooks/useChartZoom.ts";
+import { chartTheme, formatChartTime } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
-import type { GradePoint } from "../../lib/chart-data.ts";
+import type { GradePoint } from "../../lib/chartData.ts";
 
 interface GradeChartProps {
   data: GradePoint[];

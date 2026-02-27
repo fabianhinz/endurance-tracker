@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { useUserStore } from '../../src/store/user.ts';
 import { useSessionsStore } from '../../src/store/sessions.ts';
 import { computeMetrics, getCurrentMetrics } from '../../src/engine/metrics.ts';
-import { getCoachingRecommendation } from '../../src/lib/coaching-messages.ts';
+import { getCoachingRecommendation } from '../../src/lib/coachingMessages.ts';
 import { detectNewPBs } from '../../src/engine/records.ts';
 import { makeUserProfile } from '../factories/profiles.ts';
 import { makeSession } from '../factories/sessions.ts';

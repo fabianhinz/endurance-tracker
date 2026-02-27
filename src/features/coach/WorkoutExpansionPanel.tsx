@@ -1,8 +1,8 @@
 import { Typography } from "../../components/ui/Typography.tsx";
 import { Button } from "../../components/ui/Button.tsx";
 import { formatDuration } from "../../lib/utils.ts";
-import { groupSteps } from "../../lib/group-steps.ts";
-import { STEP_LABELS } from "./workout-display.ts";
+import { groupSteps } from "../../lib/groupSteps.ts";
+import { STEP_LABELS } from "./workoutDisplay.ts";
 import type { RunningZone } from "../../engine/types.ts";
 import type { PrescribedWorkout, WorkoutStep } from "../../types/index.ts";
 import { X } from "lucide-react";

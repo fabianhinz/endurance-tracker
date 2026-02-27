@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   getFormMessage,
   getFormMessageDetailed,
-} from '../../src/lib/coaching-messages.ts';
+} from '../../src/lib/coachingMessages.ts';
 import {
   getLoadState,
   getInjuryRisk,

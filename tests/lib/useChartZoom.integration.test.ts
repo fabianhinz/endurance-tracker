@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useChartZoom } from '../../src/lib/use-chart-zoom.ts';
+import { useChartZoom } from '../../src/lib/hooks/useChartZoom.ts';
 import type { MouseHandlerDataParam } from 'recharts/types/synchronisation/types';
 
 const sampleData = [

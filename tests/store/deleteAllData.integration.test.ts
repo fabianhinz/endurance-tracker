@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { useSessionsStore } from '../../src/store/sessions.ts';
 import { useUserStore } from '../../src/store/user.ts';
-import { useCoachPlanStore } from '../../src/store/coach-plan.ts';
+import { useCoachPlanStore } from '../../src/store/coachPlan.ts';
 import { useLayoutStore } from '../../src/store/layout.ts';
 import { makeSession } from '../factories/sessions.ts';
 import { makeUserProfile } from '../factories/profiles.ts';
@@ -13,7 +13,7 @@ import {
   saveSessionLaps,
   getSessionLaps,
 } from '../../src/lib/indexeddb.ts';
-import { idbStorage } from '../../src/lib/idb-storage.ts';
+import { idbStorage } from '../../src/lib/idbStorage.ts';
 
 describe('delete all data', () => {
   it('clears sessions, personal bests, profile, session-records, session-laps, and resets onboarding', async () => {

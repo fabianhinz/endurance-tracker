@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatCustomRangeDuration } from "../../src/lib/time-range.ts";
+import { formatCustomRangeDuration } from "../../src/lib/timeRange.ts";
 
 describe("formatCustomRangeDuration", () => {
   it("returns ~Xd for single-day range", () => {

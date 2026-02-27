@@ -9,7 +9,7 @@ import {
   preparePaceData,
   prepareGAPData,
   filterTimeSeries,
-} from '../../src/lib/chart-data.ts';
+} from '../../src/lib/chartData.ts';
 import { makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
 import type { SessionRecord } from '../../src/engine/types.ts';
 

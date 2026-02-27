@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { TimeRange } from "../lib/time-range.ts";
+import type { TimeRange } from "../lib/timeRange.ts";
 import type { Sport } from "../engine/types.ts";
 
 interface FiltersState {
