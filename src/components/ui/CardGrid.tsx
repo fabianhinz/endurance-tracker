@@ -34,15 +34,15 @@ export const CardGrid = (props: CardGridProps) => {
               size="icon"
               onClick={() => setExpanded((prev) => !prev)}
             >
+              <Typography variant="caption" color="secondary">
+                ({totalCount})
+              </Typography>
               <ChevronRight
                 className={cn(
                   "size-4 transition-transform",
                   expanded && "rotate-90",
                 )}
               />
-              <Typography variant="caption" color="secondary">
-                ({totalCount})
-              </Typography>
             </Button>
           )}
         </div>
