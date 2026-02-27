@@ -1,14 +1,11 @@
-import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useMatch } from "react-router-dom";
 import MapGL from "react-map-gl/maplibre";
-import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { darkMatterStyle } from "./mapStyle.ts";
 import { useMapTracks } from "./hooks/useMapTracks.ts";
-import { useDeckLayers, decodeCached } from "./hooks/useDeckLayers.ts";
+import { decodeCached } from "./hooks/useDeckLayers.ts";
 import { useGPSBackfill } from "./hooks/useGpsBackfill.ts";
-import { useHiresPaths } from "./hooks/useHiresPaths.ts";
-import { sportTrackColor } from "./trackColors.ts";
-import { DeckGLOverlay } from "./DeckGLOverlay.tsx";
+import { DeckGLOverlay, PICK_RADIUS } from "./DeckGLOverlay.tsx";
 import { DeckMetricsOverlay } from "./DeckMetricsOverlay.tsx";
 import { MapPickPopup } from "./MapPickPopup.tsx";
 import { LapPickPopup } from "./LapPickPopup.tsx";
@@ -17,7 +14,6 @@ import {
   boundsOverlap,
   segmentIntersectsBounds,
 } from "../../engine/gps.ts";
-import { useSessionsStore } from "../../store/sessions.ts";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
 import { useLayoutStore } from "../../store/layout.ts";
 import type { MapRef } from "react-map-gl/maplibre";
@@ -33,47 +29,28 @@ const PROGRESS_SIZE = 20;
 const PROGRESS_STROKE = 2.5;
 const PROGRESS_RADIUS = (PROGRESS_SIZE - PROGRESS_STROKE) / 2;
 const PROGRESS_CIRCUMFERENCE = 2 * Math.PI * PROGRESS_RADIUS;
-export const PICK_RADIUS = 25;
-
-interface PickCircle {
-  center: [number, number];
-}
 
 export const MapBackground = () => {
   const mapRef = useRef<MapRef>(null);
   const backfill = useGPSBackfill();
   const mapTracks = useMapTracks(backfill.gpsData);
-  const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const setOpenedSession = useMapFocusStore((s) => s.setOpenedSession);
   const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
-  const hoveredPoint = useMapFocusStore((s) => s.hoveredPoint);
-
-  const sessions = useSessionsStore((s) => s.sessions);
 
   const match = useMatch("/training/:id");
   useEffect(() => {
     setOpenedSession(match?.params.id ?? null);
   }, [match?.params.id, setOpenedSession]);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
-  const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const [popup, setPopup] = useState<PopupInfo | null>(null);
   const [lapPopup, setLapPopup] = useState<LapPopupInfo | null>(null);
-  const [pickCircle, setPickCircle] = useState<PickCircle | null>(null);
   const [hoveringTrack, setHoveringTrack] = useState(false);
 
   const interactive = !popup && !lapPopup;
-
-  const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
-
-  const hiresPaths = useHiresPaths(
-    hoveredSessionId,
-    openedSessionId,
-    sessions,
-  );
 
   const onClick = useCallback(
     (info: PickingInfo<TrackPickData>) => {
@@ -83,7 +60,9 @@ export const MapBackground = () => {
 
       // On session detail page with laps available, show lap popup instead
       if (openedSessionId && focusedLaps.length > 0) {
-        setPickCircle({ center: [center.lng, center.lat] });
+        useMapFocusStore
+          .getState()
+          .setPickCircle([center.lng, center.lat]);
         setLapPopup({ x: info.x, y: info.y });
         return;
       }
@@ -121,7 +100,9 @@ export const MapBackground = () => {
 
       if (sessions.length === 0) return;
 
-      setPickCircle({ center: [center.lng, center.lat] });
+      useMapFocusStore
+        .getState()
+        .setPickCircle([center.lng, center.lat]);
       setPopup({ x: info.x, y: info.y, sessions });
     },
     [mapTracks.tracks, openedSessionId, focusedLaps],
@@ -130,114 +111,23 @@ export const MapBackground = () => {
   const closePopup = useCallback(() => {
     setPopup(null);
     setLapPopup(null);
-    setPickCircle(null);
+    useMapFocusStore.getState().clearPickCircle();
   }, []);
 
   const onHover = useCallback(
     (info: PickingInfo<TrackPickData>) => {
       setHoveringTrack(!!info.object);
       if (!popup && !lapPopup) {
-        setPickCircle(
-          info.object && info.coordinate
-            ? { center: [info.coordinate[0], info.coordinate[1]] }
-            : null,
-        );
+        if (info.object && info.coordinate) {
+          useMapFocusStore
+            .getState()
+            .setPickCircle([info.coordinate[0], info.coordinate[1]]);
+        } else {
+          useMapFocusStore.getState().clearPickCircle();
+        }
       }
     },
     [popup, lapPopup],
-  );
-
-  const trackLayers = useDeckLayers(
-    mapTracks.tracks,
-    highlightedSessionId,
-    onboardingComplete
-      ? { onClick, onHover, hiddenSessionId: openedSessionId }
-      : { hiddenSessionId: openedSessionId },
-  );
-
-  const hiresLayer = useMemo(() => {
-    if (hiresPaths.size === 0) return null;
-
-    const sportMap = new Map(sessions.map((s) => [s.id, s.sport]));
-    const data = [...hiresPaths.entries()].map(([sessionId, path]) => ({
-      sessionId,
-      path,
-      sport: sportMap.get(sessionId) ?? ("running" as const),
-    }));
-
-    return new PathLayer<(typeof data)[number]>({
-      id: "hires-tracks",
-      data,
-      getPath: (d) => d.path,
-      getColor: (d) => {
-        const base = sportTrackColor[d.sport];
-        const alpha = d.sessionId === openedSessionId ? 200 : 0;
-        return [base[0], base[1], base[2], alpha];
-      },
-      getWidth: 4,
-      widthMinPixels: 1,
-      widthMaxPixels: 5,
-      jointRounded: true,
-      capRounded: true,
-      pickable: false,
-      updateTriggers: {
-        getColor: [openedSessionId],
-      },
-      parameters: {
-        blendColorSrcFactor: "src-alpha",
-        blendColorDstFactor: "one",
-        blendColorOperation: "add",
-        blendAlphaSrcFactor: "one",
-        blendAlphaDstFactor: "one",
-        blendAlphaOperation: "add",
-      },
-    });
-  }, [hiresPaths, openedSessionId, sessions]);
-
-  const pickCircleLayer = useMemo(() => {
-    if (!pickCircle) return null;
-    return new ScatterplotLayer<PickCircle>({
-      id: "pick-circle",
-      data: [pickCircle],
-      getPosition: (d) => d.center,
-      getRadius: PICK_RADIUS,
-      radiusUnits: "pixels",
-      getFillColor: [255, 255, 255, 13],
-      filled: true,
-      stroked: true,
-      getLineColor: [255, 255, 255, 25],
-      lineWidthUnits: "pixels" as const,
-      getLineWidth: 1,
-      pickable: false,
-    });
-  }, [pickCircle]);
-
-  const hoveredPointLayer = useMemo(() => {
-    if (!hoveredPoint) return null;
-    return new ScatterplotLayer<{ position: [number, number] }>({
-      id: "hovered-point",
-      data: [{ position: hoveredPoint }],
-      getPosition: (d) => d.position,
-      getRadius: 6,
-      radiusUnits: "pixels",
-      getFillColor: [255, 255, 255, 230],
-      filled: true,
-      stroked: true,
-      getLineColor: [0, 0, 0, 180],
-      lineWidthUnits: "pixels" as const,
-      getLineWidth: 2,
-      pickable: false,
-    });
-  }, [hoveredPoint]);
-
-  const layers = useMemo(
-    () => [
-      ...trackLayers,
-      ...(hiresLayer ? [hiresLayer] : []),
-      ...(pickCircleLayer ? [pickCircleLayer] : []),
-      ...(hoveredPointLayer ? [hoveredPointLayer] : []),
-    ],
-    [trackLayers, hiresLayer, pickCircleLayer, hoveredPointLayer],
   );
 
   useEffect(() => {
@@ -289,7 +179,8 @@ export const MapBackground = () => {
       className="fixed inset-0 z-0"
       onPointerLeave={() => {
         setHoveringTrack(false);
-        if (!popup && !lapPopup) setPickCircle(null);
+        if (!popup && !lapPopup)
+          useMapFocusStore.getState().clearPickCircle();
       }}
     >
       <MapGL
@@ -311,7 +202,11 @@ export const MapBackground = () => {
         attributionControl={{ compact: true }}
         style={{ width: "100%", height: "100%" }}
       >
-        <DeckGLOverlay layers={layers} />
+        <DeckGLOverlay
+          tracks={mapTracks.tracks}
+          onClick={onClick}
+          onHover={onHover}
+        />
       </MapGL>
       <DeckMetricsOverlay />
       {popup && <MapPickPopup info={popup} onClose={closePopup} />}

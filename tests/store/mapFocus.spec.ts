@@ -22,6 +22,7 @@ describe("useMapFocusStore", () => {
       focusedLaps: [],
       focusedSport: null,
       hoveredPoint: null,
+      pickCircle: null,
     });
   });
 
@@ -92,6 +93,21 @@ describe("useMapFocusStore", () => {
     useMapFocusStore.getState().setOpenedSession("new-id");
     expect(useMapFocusStore.getState().focusedLaps).toEqual(laps);
     expect(useMapFocusStore.getState().focusedSport).toBe("cycling");
+  });
+
+  it("defaults pickCircle to null", () => {
+    expect(useMapFocusStore.getState().pickCircle).toBeNull();
+  });
+
+  it("setPickCircle stores the center", () => {
+    useMapFocusStore.getState().setPickCircle([10.5, 48.2]);
+    expect(useMapFocusStore.getState().pickCircle).toEqual([10.5, 48.2]);
+  });
+
+  it("clearPickCircle resets to null", () => {
+    useMapFocusStore.getState().setPickCircle([10.5, 48.2]);
+    useMapFocusStore.getState().clearPickCircle();
+    expect(useMapFocusStore.getState().pickCircle).toBeNull();
   });
 
 });
