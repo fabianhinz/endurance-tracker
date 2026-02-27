@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { RaceDistance } from "../../types/index.ts";
+import type { RaceDistance } from "../../engine/types.ts";
 import {
   RACE_DISTANCE_METERS,
   thresholdPaceFromRace,

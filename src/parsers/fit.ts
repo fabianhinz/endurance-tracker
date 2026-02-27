@@ -1,8 +1,8 @@
 import FitParser from 'fit-file-parser';
-import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '../types/index.ts';
+import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '../engine/types.ts';
 import { validateRecords } from '../engine/validation.ts';
 import { calculateSessionStress } from '../engine/stress.ts';
-import { extractSessionName } from '../engine/filename.ts';
+import { extractSessionName } from '../lib/filename.ts';
 
 export interface FitUserProfile {
   weight?: number;
@@ -208,6 +208,7 @@ export const parseFitFile = async (
     maxPower: deriveMaxFromRecords(records, 'power') ?? fitSession?.max_power,
     normalizedPower: stressResult.normalizedPower ?? fitSession?.normalized_power,
     avgCadence: deriveAvgFromRecords(records, 'cadence') ?? fitSession?.avg_cadence,
+    avgSpeed,
     avgPace:
       sport === 'running' && avgSpeed && avgSpeed > 0
         ? 1000 / avgSpeed

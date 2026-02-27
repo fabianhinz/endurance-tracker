@@ -1,5 +1,8 @@
-import type { SessionRecord, PersonalBest, PBCategory, Sport } from '../types/index.ts';
+import type { SessionRecord, PersonalBest, PBCategory, Sport } from './types.ts';
 
+/**
+ * Rolling power-window durations (in seconds) used for peak-power PB detection.
+ */
 export const POWER_WINDOWS = [
   { seconds: 5 },
   { seconds: 60 },
@@ -8,6 +11,9 @@ export const POWER_WINDOWS = [
   { seconds: 3600 },
 ] as const;
 
+/**
+ * Target distances (in metres) used for fastest-distance PB detection in running.
+ */
 export const RUNNING_DISTANCES = [
   { meters: 1000 },
   { meters: 5000 },
@@ -16,6 +22,9 @@ export const RUNNING_DISTANCES = [
   { meters: 42195 },
 ] as const;
 
+/**
+ * Target distances (in metres) used for fastest-distance PB detection in swimming.
+ */
 export const SWIMMING_DISTANCES = [
   { meters: 100 },
   { meters: 400 },
@@ -23,6 +32,9 @@ export const SWIMMING_DISTANCES = [
   { meters: 1500 },
 ] as const;
 
+/**
+ * Canonical PB slot definitions keyed by sport, listing every category and window to track.
+ */
 export const PB_SLOTS: Record<Sport, Array<{ category: PBCategory; window: number }>> = {
   running: [
     { category: "fastest-distance", window: 1000 },
@@ -75,8 +87,9 @@ const findPeakAverage = (values: number[], windowSize: number): number => {
 };
 
 /**
- * Extract peak power values for standard duration windows from a session.
- * Returns Map keyed by seconds.
+ * Extract peak average power for each standard duration window from a session's records.
+ * @param records - Time-series session records, each optionally containing a `power` field in watts.
+ * @returns Map keyed by window duration in seconds, valued by peak average power in watts; windows with no data are omitted.
  */
 export const extractPeakPower = (
   records: SessionRecord[],
@@ -97,8 +110,10 @@ export const extractPeakPower = (
 };
 
 /**
- * Extract fastest times for target distances using two-pointer on cumulative distance.
- * Returns Map<meters, timeInSeconds>.
+ * Extract the fastest elapsed time for each target distance using a two-pointer scan over cumulative distance.
+ * @param records - Time-series session records with cumulative `distance` (metres) and `timestamp` (seconds) fields.
+ * @param targets - Array of distance targets (in metres) to find best times for.
+ * @returns Map keyed by target distance in metres, valued by fastest elapsed time in seconds; targets not covered by the data are omitted.
  */
 export const extractFastestDistances = (
   records: SessionRecord[],
@@ -132,9 +147,69 @@ export const extractFastestDistances = (
   return results;
 };
 
+interface SessionPeak {
+  category: PBCategory;
+  window: number;
+  value: number;
+  higherIsBetter: boolean;
+}
+
 /**
- * Compare new session peaks against existing personal bests.
- * Returns array of new PBs found. All-time comparison (no rolling window).
+ * Extract all measurable performance peaks from a session's records and metadata for the given sport.
+ * @param sport - The sport type, which determines which peak categories are computed.
+ * @param records - Time-series session records used to compute power and distance peaks.
+ * @param sessionMeta - Optional session-level metadata providing total distance and elevation gain.
+ * @returns Array of peaks, each carrying its category, window, raw value, and whether a higher value is better.
+ */
+export const extractSessionPeaks = (
+  sport: Sport,
+  records: SessionRecord[],
+  sessionMeta?: { distance: number; elevationGain?: number },
+): SessionPeak[] => {
+  const peaks: SessionPeak[] = [];
+
+  if (sport === 'cycling') {
+    const powerPeaks = extractPeakPower(records);
+    for (const [seconds, value] of powerPeaks) {
+      peaks.push({ category: 'peak-power', window: seconds, value, higherIsBetter: true });
+    }
+  }
+
+  if (sport === 'running') {
+    const distances = extractFastestDistances(records, RUNNING_DISTANCES);
+    for (const [meters, time] of distances) {
+      peaks.push({ category: 'fastest-distance', window: meters, value: time, higherIsBetter: false });
+    }
+  }
+
+  if (sport === 'swimming') {
+    const distances = extractFastestDistances(records, SWIMMING_DISTANCES);
+    for (const [meters, time] of distances) {
+      peaks.push({ category: 'fastest-distance', window: meters, value: time, higherIsBetter: false });
+    }
+  }
+
+  if (sessionMeta) {
+    if (sessionMeta.distance > 0) {
+      peaks.push({ category: 'longest', window: 0, value: sessionMeta.distance, higherIsBetter: true });
+    }
+    if (sport === 'cycling' && sessionMeta.elevationGain && sessionMeta.elevationGain > 0) {
+      peaks.push({ category: 'most-elevation', window: 0, value: sessionMeta.elevationGain, higherIsBetter: true });
+    }
+  }
+
+  return peaks;
+};
+
+/**
+ * Compare a single session's peaks against existing personal bests and return any that set a new all-time record.
+ * @param sessionId - Unique identifier of the session being evaluated.
+ * @param sessionDate - Unix timestamp (milliseconds) of the session.
+ * @param sport - Sport type of the session.
+ * @param records - Time-series session records used to derive peaks.
+ * @param existingBests - Current personal bests to compare against.
+ * @param sessionMeta - Optional session-level metadata providing total distance and elevation gain.
+ * @returns Array of `PersonalBest` entries that beat the corresponding existing best; empty when no improvement is found.
  */
 export const detectNewPBs = (
   sessionId: string,
@@ -144,56 +219,18 @@ export const detectNewPBs = (
   existingBests: PersonalBest[],
   sessionMeta?: { distance: number; elevationGain?: number },
 ): PersonalBest[] => {
+  const peaks = extractSessionPeaks(sport, records, sessionMeta);
   const newPBs: PersonalBest[] = [];
 
-  const findExisting = (category: PBCategory, window: number) =>
-    existingBests.find(
-      (pb) => pb.sport === sport && pb.category === category && pb.window === window,
+  for (const peak of peaks) {
+    const existing = existingBests.find(
+      (pb) => pb.sport === sport && pb.category === peak.category && pb.window === peak.window,
     );
-
-  const pushIfBetter = (
-    category: PBCategory,
-    window: number,
-    value: number,
-    higherIsBetter: boolean,
-  ) => {
-    const existing = findExisting(category, window);
-    const isBetter = higherIsBetter
-      ? !existing || value > existing.value
-      : !existing || value < existing.value;
+    const isBetter = peak.higherIsBetter
+      ? !existing || peak.value > existing.value
+      : !existing || peak.value < existing.value;
     if (isBetter) {
-      newPBs.push({ sport, category, window, value, sessionId, date: sessionDate });
-    }
-  };
-
-  if (sport === 'cycling') {
-    const peaks = extractPeakPower(records);
-    for (const [seconds, value] of peaks) {
-      pushIfBetter('peak-power', seconds, value, true);
-    }
-  }
-
-  if (sport === 'running') {
-    const distances = extractFastestDistances(records, RUNNING_DISTANCES);
-    for (const [meters, time] of distances) {
-      pushIfBetter('fastest-distance', meters, time, false);
-    }
-  }
-
-  if (sport === 'swimming') {
-    const distances = extractFastestDistances(records, SWIMMING_DISTANCES);
-    for (const [meters, time] of distances) {
-      pushIfBetter('fastest-distance', meters, time, false);
-    }
-  }
-
-  // Session-level records
-  if (sessionMeta) {
-    if (sessionMeta.distance > 0) {
-      pushIfBetter('longest', 0, sessionMeta.distance, true);
-    }
-    if (sport === 'cycling' && sessionMeta.elevationGain && sessionMeta.elevationGain > 0) {
-      pushIfBetter('most-elevation', 0, sessionMeta.elevationGain, true);
+      newPBs.push({ sport, category: peak.category, window: peak.window, value: peak.value, sessionId, date: sessionDate });
     }
   }
 
@@ -201,8 +238,10 @@ export const detectNewPBs = (
 };
 
 /**
- * Merge incoming PBs into an existing array.
- * Replaces entries with matching sport+category+window, appends new ones.
+ * Merge incoming personal bests into an existing array, replacing entries with the same sport+category+window key.
+ * @param existing - Current array of personal bests to merge into.
+ * @param incoming - New personal bests to apply; each replaces a matching entry or is appended if none exists.
+ * @returns New array containing the merged personal bests.
  */
 export const mergePBs = (
   existing: PersonalBest[],
@@ -226,7 +265,9 @@ export const mergePBs = (
 };
 
 /**
- * Group personal bests by sport for per-sport dashboard cards.
+ * Group personal bests by sport for per-sport display in dashboard cards.
+ * @param pbs - Flat array of personal bests spanning any number of sports.
+ * @returns Partial record mapping each sport to its corresponding array of personal bests.
  */
 export const groupPBsBySport = (
   pbs: PersonalBest[],
@@ -242,8 +283,9 @@ export const groupPBsBySport = (
 };
 
 /**
- * Compute personal bests across multiple sessions.
- * Handles all three sports and all PB categories.
+ * Compute the all-time personal bests across an arbitrary collection of sessions for all three sports.
+ * @param sessions - Array of session descriptors, each carrying its id, date, sport, time-series records, and optional distance/elevation metadata.
+ * @returns Flat array of personal bests — one entry per unique sport+category+window combination — reflecting the best value seen across all sessions.
  */
 export const computePBsForSessions = (
   sessions: Array<{
@@ -257,66 +299,32 @@ export const computePBsForSessions = (
 ): PersonalBest[] => {
   const bestByKey = new Map<string, PersonalBest>();
 
-  const trySet = (
-    key: string,
-    pb: PersonalBest,
-    higherIsBetter: boolean,
-  ) => {
-    const existing = bestByKey.get(key);
-    const isBetter = higherIsBetter
-      ? !existing || pb.value > existing.value
-      : !existing || pb.value < existing.value;
-    if (isBetter) {
-      bestByKey.set(key, pb);
-    }
-  };
-
   for (const session of sessions) {
-    const makePB = (category: PBCategory, window: number, value: number): PersonalBest => ({
-      sport: session.sport,
-      category,
-      window,
-      value,
-      sessionId: session.sessionId,
-      date: session.date,
-    });
+    const peaks = extractSessionPeaks(
+      session.sport,
+      session.records,
+      session.distance !== undefined || session.elevationGain !== undefined
+        ? { distance: session.distance ?? 0, elevationGain: session.elevationGain }
+        : undefined,
+    );
 
-    if (session.sport === 'cycling') {
-      const peaks = extractPeakPower(session.records);
-      for (const [seconds, value] of peaks) {
-        trySet(`cycling:peak-power:${seconds}`, makePB('peak-power', seconds, value), true);
+    for (const peak of peaks) {
+      const key = `${session.sport}:${peak.category}:${peak.window}`;
+      const pb: PersonalBest = {
+        sport: session.sport,
+        category: peak.category,
+        window: peak.window,
+        value: peak.value,
+        sessionId: session.sessionId,
+        date: session.date,
+      };
+      const existing = bestByKey.get(key);
+      const isBetter = peak.higherIsBetter
+        ? !existing || pb.value > existing.value
+        : !existing || pb.value < existing.value;
+      if (isBetter) {
+        bestByKey.set(key, pb);
       }
-    }
-
-    if (session.sport === 'running') {
-      const distances = extractFastestDistances(session.records, RUNNING_DISTANCES);
-      for (const [meters, time] of distances) {
-        trySet(`running:fastest-distance:${meters}`, makePB('fastest-distance', meters, time), false);
-      }
-    }
-
-    if (session.sport === 'swimming') {
-      const distances = extractFastestDistances(session.records, SWIMMING_DISTANCES);
-      for (const [meters, time] of distances) {
-        trySet(`swimming:fastest-distance:${meters}`, makePB('fastest-distance', meters, time), false);
-      }
-    }
-
-    // Session-level records
-    if (session.distance && session.distance > 0) {
-      trySet(
-        `${session.sport}:longest:0`,
-        makePB('longest', 0, session.distance),
-        true,
-      );
-    }
-
-    if (session.sport === 'cycling' && session.elevationGain && session.elevationGain > 0) {
-      trySet(
-        'cycling:most-elevation:0',
-        makePB('most-elevation', 0, session.elevationGain),
-        true,
-      );
     }
   }
 

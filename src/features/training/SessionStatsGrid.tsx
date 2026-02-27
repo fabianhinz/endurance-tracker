@@ -1,15 +1,21 @@
 import { useMemo } from "react";
-import { useSessionsStore } from "../../store/sessions.ts";
 import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
+import { CardGrid } from "../../components/ui/CardGrid.tsx";
 import { StatItem } from "../../components/ui/StatItem.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
-import { cn, formatDate, formatPace, pbLabel, formatPBValue } from "../../lib/utils.ts";
+import {
+  cn,
+  formatDuration,
+  formatDistance,
+  formatPace,
+  formatSpeed,
+} from "../../lib/utils.ts";
+import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
 import {
   detectIntervals,
   detectProgressiveOverload,
 } from "../../engine/laps.ts";
-import type { TrainingSession, SessionLap } from "../../types/index.ts";
+import type { TrainingSession, SessionLap } from "../../engine/types.ts";
 
 interface SessionStatsGridProps {
   session: TrainingSession;
@@ -32,14 +38,6 @@ const TREND_META = {
 } as const;
 
 export const SessionStatsGrid = (props: SessionStatsGridProps) => {
-  const personalBests = useSessionsStore((s) => s.personalBests);
-
-  const sessionPBs = useMemo(
-    () =>
-      personalBests.filter((pb) => pb.sessionId === props.session.id),
-    [personalBests, props.session.id],
-  );
-
   const intervals = useMemo(
     () => detectIntervals(props.laps),
     [props.laps],
@@ -70,10 +68,56 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     label: string;
     value: React.ReactNode;
     unit?: string;
-    metricId?: import("../../engine/explanations.ts").MetricId;
+    metricId?: import("../../lib/explanations.ts").MetricId;
     subDetail?: React.ReactNode;
   }> = [];
 
+  // Row 1: Duration & Distance (always present)
+  stats.push({
+    key: "duration",
+    label: "Duration",
+    value: formatDuration(props.session.duration),
+  });
+
+  stats.push({
+    key: "distance",
+    label: "Distance",
+    value: formatDistance(props.session.distance),
+  });
+
+  // Row 2: Stress Score & Avg HR
+  stats.push({
+    key: "tss",
+    label: METRIC_EXPLANATIONS[props.session.stressMethod].friendlyName,
+    value: props.session.tss.toFixed(0),
+    metricId: props.session.stressMethod,
+  });
+
+  stats.push({
+    key: "avgHr",
+    label: "Avg HR",
+    value: props.session.avgHr ?? "--",
+    unit: props.session.avgHr ? "bpm" : undefined,
+  });
+
+  // Row 3: Avg Pace (running) & Avg Speed
+  if (props.session.avgPace) {
+    stats.push({
+      key: "avgPace",
+      label: "Avg Pace",
+      value: formatPace(props.session.avgPace),
+    });
+  }
+
+  if (props.session.avgSpeed ?? (props.session.distance > 0 && props.session.duration > 0)) {
+    stats.push({
+      key: "avgSpeed",
+      label: "Avg Speed",
+      value: formatSpeed(props.session.avgSpeed ?? props.session.distance / props.session.duration),
+    });
+  }
+
+  // Row 4: Avg Power & Normalized Power
   if (props.session.avgPower) {
     stats.push({
       key: "avgPower",
@@ -93,32 +137,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     });
   }
 
-  if (props.session.avgPace) {
-    stats.push({
-      key: "avgPace",
-      label: "Avg Pace",
-      value: formatPace(props.session.avgPace),
-    });
-  }
-
-  if (props.session.avgCadence) {
-    stats.push({
-      key: "cadence",
-      label: "Cadence",
-      value: props.session.avgCadence,
-      unit: "rpm",
-    });
-  }
-
-  if (props.session.calories) {
-    stats.push({
-      key: "calories",
-      label: "Calories",
-      value: props.session.calories,
-      unit: "kcal",
-    });
-  }
-
+  // Row 5: Elevation & Cadence
   if (
     props.session.elevationGain !== undefined &&
     props.session.elevationGain > 0
@@ -138,6 +157,16 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     });
   }
 
+  if (props.session.avgCadence) {
+    stats.push({
+      key: "cadence",
+      label: "Cadence",
+      value: props.session.avgCadence,
+      unit: "rpm",
+    });
+  }
+
+  // Row 6: Altitude & Pacing Trend
   if (props.session.minAltitude !== undefined) {
     stats.push({
       key: "altitude",
@@ -147,24 +176,6 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       subDetail: (
         <Typography variant="caption" as="p">
           avg {Math.round(props.session.avgAltitude!)}m
-        </Typography>
-      ),
-    });
-  }
-
-  if (intervalPairsWithHr.length > 0) {
-    stats.push({
-      key: "recovery",
-      label: "Recovery",
-      value: `${Math.round(avgRecovery)} bpm`,
-      metricId: "recovery",
-      subDetail: (
-        <Typography
-          variant="caption"
-          as="p"
-          className={recoveryMeta.className}
-        >
-          {recoveryMeta.label}
         </Typography>
       ),
     });
@@ -192,66 +203,53 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     });
   }
 
-  const hasStats = stats.length > 0;
-  const hasPBs = sessionPBs.length > 0;
-  const hasWarnings = props.session.sensorWarnings.length > 0;
+  // Row 7: Recovery & Calories
+  if (intervalPairsWithHr.length > 0) {
+    stats.push({
+      key: "recovery",
+      label: "Recovery",
+      value: `${Math.round(avgRecovery)} bpm`,
+      metricId: "recovery",
+      subDetail: (
+        <Typography
+          variant="caption"
+          as="p"
+          className={recoveryMeta.className}
+        >
+          {recoveryMeta.label}
+        </Typography>
+      ),
+    });
+  }
 
-  if (!hasStats && !hasPBs && !hasWarnings) return null;
+  if (props.session.calories) {
+    stats.push({
+      key: "calories",
+      label: "Calories",
+      value: props.session.calories,
+      unit: "kcal",
+    });
+  }
+
+  const hasWarnings = props.session.sensorWarnings.length > 0;
 
   return (
     <Card>
-      {hasStats && (
-        <>
-          <CardHeader title="Details" />
-          <div className="grid grid-cols-2 gap-3">
-            {stats.map((stat) => (
-              <div key={stat.key} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                <StatItem
-                  label={stat.label}
-                  value={stat.value}
-                  unit={stat.unit}
-                  metricId={stat.metricId}
-                  subDetail={stat.subDetail}
-                />
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {hasPBs && (
-        <div
-          className={cn(
-            "border-t border-white/10",
-            hasStats ? "mt-4 pt-4" : "",
-          )}
-        >
-          <CardHeader title="Records" />
-          <div className="grid grid-cols-2 gap-3">
-            {sessionPBs.map((pb, idx) => (
-              <div key={idx} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                <StatItem
-                  label={pbLabel(pb)}
-                  value={formatPBValue(pb)}
-                  subDetail={
-                    <Typography variant="caption" as="p">
-                      {formatDate(pb.date)}
-                    </Typography>
-                  }
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <CardGrid collapsedRows={2} title="Stats">
+        {stats.map((stat) => (
+          <StatItem
+            key={stat.key}
+            label={stat.label}
+            value={stat.value}
+            unit={stat.unit}
+            metricId={stat.metricId}
+            subDetail={stat.subDetail}
+          />
+        ))}
+      </CardGrid>
 
       {hasWarnings && (
-        <div
-          className={cn(
-            "border-t border-white/10",
-            hasStats || hasPBs ? "mt-4 pt-4" : "",
-          )}
-        >
+        <div className={cn("border-t border-white/10", "mt-4 pt-4")}>
           <Typography
             variant="overline"
             as="h3"

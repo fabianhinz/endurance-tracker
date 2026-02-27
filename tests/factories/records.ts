@@ -1,4 +1,4 @@
-import type { SessionRecord, SessionLap } from '../../src/types/index.ts';
+import type { SessionRecord, SessionLap } from '../../src/engine/types.ts';
 
 /**
  * Generate realistic cycling records with power, HR, speed, cadence, cumulative distance.

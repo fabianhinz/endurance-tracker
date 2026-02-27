@@ -16,7 +16,7 @@ import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
 import { useChartZoom } from "../../lib/use-chart-zoom.ts";
 import { chartTheme } from "../../lib/chart-theme.ts";
 import { tokens } from "../../lib/tokens.ts";
-import { METRIC_EXPLANATIONS } from "../../engine/explanations.ts";
+import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
 import { rangeMap } from "../../lib/time-range.ts";
 import type { TimeRange } from "../../lib/time-range.ts";
 import { useDashboardChartZoom } from "./hooks/useDashboardChartZoom.ts";

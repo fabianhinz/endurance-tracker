@@ -7,7 +7,7 @@ import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { SessionItem } from "../../components/ui/SessionItem.tsx";
 import { useMapFocusStore } from "../../store/map-focus.ts";
 import { usePopupPosition } from "./use-popup-position.ts";
-import type { TrainingSession } from "../../types/index.ts";
+import type { TrainingSession } from "../../engine/types.ts";
 
 export interface PopupInfo {
   x: number;

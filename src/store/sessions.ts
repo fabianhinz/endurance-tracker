@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { TrainingSession, PersonalBest } from '../types/index.ts';
+import type { TrainingSession, PersonalBest } from '../engine/types.ts';
 import { idbStorage } from '../lib/idb-storage.ts';
 import { mergePBs } from '../engine/records.ts';
 

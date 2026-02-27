@@ -1,4 +1,4 @@
-import type { Sport } from '../../types/index.ts';
+import type { Sport } from '../../engine/types.ts';
 
 export const sportTrackColor: Record<Sport, [number, number, number, number]> = {
   running: [74, 222, 128, 80],

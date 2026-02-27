@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createDefaultProfile } from '../../src/engine/defaults.ts';
+import { createDefaultProfile } from '../../src/lib/defaults.ts';
 
 describe('createDefaultProfile', () => {
   it('returns a profile with the provided ID', () => {

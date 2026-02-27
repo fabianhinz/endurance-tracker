@@ -7,7 +7,7 @@ import {
 import {
   METRIC_EXPLANATIONS,
   type MetricId,
-} from "../../engine/explanations.ts";
+} from "../../lib/explanations.ts";
 import { useUserStore } from "../../store/user.ts";
 import { cn } from "../../lib/utils.ts";
 import { Button } from "./Button.tsx";

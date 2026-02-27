@@ -1,7 +1,7 @@
 import { cn } from "../../lib/utils.ts";
 import { sportColorClass } from "../../lib/status-colors.ts";
 import { sportIcon } from "../../lib/sport-icons.ts";
-import type { Sport } from "../../types/index.ts";
+import type { Sport } from "../../engine/types.ts";
 
 const sizeMap = {
   sm: { container: "h-8 w-8 rounded-md", iconSize: 16 },

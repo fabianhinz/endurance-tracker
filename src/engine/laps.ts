@@ -1,31 +1,67 @@
-import type { SessionLap } from '../types/index.ts';
+import type { SessionLap } from './types.ts';
 
+/**
+ * Derived metrics for a single lap computed from raw {@link SessionLap} data.
+ */
 export interface LapAnalysis {
+  /** Zero-based position of this lap within the session. */
   lapIndex: number;
+  /** Average pace in seconds per kilometre, or `undefined` when distance/time data is missing. */
   paceSecPerKm: number | undefined;
+  /** Average heart rate in bpm, or `undefined` when the device did not record HR. */
   avgHr: number | undefined;
+  /** Average cadence in rpm/spm, or `undefined` when not recorded. */
   avgCadence: number | undefined;
+  /** Total lap distance in metres. */
   distance: number;
+  /** Elapsed (timer) duration of the lap in seconds. */
   duration: number;
+  /** Moving time of the lap in seconds (excludes stopped periods when available). */
   movingTime: number;
+  /** Total elevation gain for the lap in metres. */
   elevationGain: number;
+  /** Intensity label as reported by the device (e.g. `'active'`, `'rest'`). */
   intensity: string;
+  /** `true` when the session contains rest laps and this lap is classified as active. */
   isInterval: boolean;
 }
 
+/**
+ * Pairing of one active interval lap with its optional following recovery lap.
+ */
 export interface IntervalPair {
+  /** The active (high-intensity) lap of the interval. */
   active: LapAnalysis;
+  /** The recovery lap immediately following the active lap, or `undefined` if none exists. */
   recovery: LapAnalysis | undefined;
+  /** Heart-rate drop from active max HR to recovery min HR in bpm, or `undefined` when HR data is absent. */
   hrRecovery: number | undefined;
 }
 
+/**
+ * Summary of pace and HR drift across laps, indicating whether the athlete is
+ * fading, holding steady, or building through the session.
+ */
 export interface ProgressiveOverload {
+  /** Percentage change in pace from first to last (target) lap; positive = slower. `undefined` when pace data is unavailable. */
   paceDriftPercent: number | undefined;
+  /** Percentage change in average HR from first to last (target) lap; positive = higher HR. `undefined` when HR data is unavailable. */
   hrDriftPercent: number | undefined;
+  /** Number of laps used for the drift calculation (interval laps only, or all laps for steady-state sessions). */
   lapCount: number;
+  /** Overall trend classification derived from pace drift relative to {@link DRIFT_THRESHOLD_PERCENT}. */
   trend: 'stable' | 'fading' | 'building';
 }
 
+/** Minimum absolute pace or HR drift percentage required to classify a session as `'fading'` or `'building'`. */
+export const DRIFT_THRESHOLD_PERCENT = 3;
+
+/**
+ * Converts raw session laps into enriched {@link LapAnalysis} objects with derived pace and intensity fields.
+ *
+ * @param laps - Array of raw laps from a parsed FIT session.
+ * @returns An array of {@link LapAnalysis} records in the same order as the input laps.
+ */
 export const analyzeLaps = (laps: SessionLap[]): LapAnalysis[] => {
   if (laps.length === 0) return [];
 
@@ -55,6 +91,12 @@ export const analyzeLaps = (laps: SessionLap[]): LapAnalysis[] => {
   });
 };
 
+/**
+ * Groups active interval laps with their immediately following recovery laps and computes HR recovery drops.
+ *
+ * @param laps - Array of raw laps from a parsed FIT session.
+ * @returns An array of {@link IntervalPair} records, one per active interval lap; empty when no intervals are detected.
+ */
 export const detectIntervals = (laps: SessionLap[]): IntervalPair[] => {
   const analyzed = analyzeLaps(laps);
   if (!analyzed.some((l) => l.isInterval)) return [];
@@ -82,6 +124,12 @@ export const detectIntervals = (laps: SessionLap[]): IntervalPair[] => {
   return pairs;
 };
 
+/**
+ * Calculates pace and HR drift from the first to the last target lap and classifies the overall trend.
+ *
+ * @param laps - Array of raw laps from a parsed FIT session.
+ * @returns A {@link ProgressiveOverload} summary; `trend` is `'stable'` when drift is within {@link DRIFT_THRESHOLD_PERCENT}.
+ */
 export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverload => {
   const analyzed = analyzeLaps(laps);
   const intervalLaps = analyzed.filter((l) => l.isInterval);
@@ -107,9 +155,9 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
       : undefined;
 
   let trend: ProgressiveOverload['trend'] = 'stable';
-  if (paceDriftPercent !== undefined && paceDriftPercent > 3) {
+  if (paceDriftPercent !== undefined && paceDriftPercent > DRIFT_THRESHOLD_PERCENT) {
     trend = 'fading';
-  } else if (paceDriftPercent !== undefined && paceDriftPercent < -3) {
+  } else if (paceDriftPercent !== undefined && paceDriftPercent < -DRIFT_THRESHOLD_PERCENT) {
     trend = 'building';
   }
 

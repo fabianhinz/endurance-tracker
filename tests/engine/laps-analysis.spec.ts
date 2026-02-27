@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { analyzeLaps, detectIntervals, detectProgressiveOverload } from '../../src/engine/laps.ts';
-import type { SessionLap } from '../../src/types/index.ts';
+import type { SessionLap } from '../../src/engine/types.ts';
 
 function makeLap(overrides: Partial<SessionLap> = {}): SessionLap {
   return {

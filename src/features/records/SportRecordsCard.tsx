@@ -6,7 +6,7 @@ import { ValueSkeleton } from "../../components/ui/ValueSkeleton.tsx";
 import { SportBadge } from "../../components/ui/SportBadge.tsx";
 import { pbLabel, formatPBValue, formatDate } from "../../lib/utils.ts";
 import { PB_SLOTS } from "../../engine/records.ts";
-import type { PersonalBest, Sport } from "../../types/index.ts";
+import type { PersonalBest, Sport } from "../../engine/types.ts";
 
 const sportSubtitle: Record<Sport, string> = {
   running: "Distance records",

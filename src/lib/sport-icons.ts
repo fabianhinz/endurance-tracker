@@ -1,6 +1,6 @@
 import { Footprints, Bike, Waves } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { Sport } from "../types/index.ts";
+import type { Sport } from "../engine/types.ts";
 
 export const sportIcon: Record<Sport, LucideIcon> = {
   running: Footprints,

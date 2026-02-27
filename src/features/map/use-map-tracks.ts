@@ -4,8 +4,7 @@ import { useFiltersStore } from '../../store/filters.ts';
 import { useMapFocusStore } from '../../store/map-focus.ts';
 import { getSessionGPS } from '../../lib/indexeddb.ts';
 import { rangeToCutoff, customRangeToCutoffs } from '../../lib/time-range.ts';
-import type { SessionGPS } from '../../types/gps.ts';
-import type { Sport, TrainingSession } from '../../types/index.ts';
+import type { SessionGPS, Sport, TrainingSession } from '../../engine/types.ts';
 
 export interface MapTrack {
   sessionId: string;

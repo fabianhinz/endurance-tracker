@@ -2,13 +2,16 @@ import { describe, it, expect } from 'vitest';
 import {
   getFormMessage,
   getFormMessageDetailed,
+} from '../../src/lib/coaching-messages.ts';
+import {
   getLoadState,
   getInjuryRisk,
   ACWR_MODERATE_THRESHOLD,
   ACWR_HIGH_THRESHOLD,
   ACWR_UNDERTRAINING_THRESHOLD,
 } from '../../src/engine/coaching.ts';
-import type { CoachingRecommendation, FormStatus } from '../../src/types/index.ts';
+import type { FormStatus } from '../../src/engine/types.ts';
+import type { CoachingRecommendation } from '../../src/types/index.ts';
 
 const ALL_STATUSES: FormStatus[] = [
   'detraining',

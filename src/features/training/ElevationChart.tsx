@@ -11,7 +11,7 @@ import {
 import { useChartZoom } from "../../lib/use-chart-zoom.ts";
 import { chartTheme, formatChartTime } from "../../lib/chart-theme.ts";
 import { tokens } from "../../lib/tokens.ts";
-import type { ElevationPoint } from "../../engine/chart-data.ts";
+import type { ElevationPoint } from "../../lib/chart-data.ts";
 
 interface ElevationChartProps {
   data: ElevationPoint[];

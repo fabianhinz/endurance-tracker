@@ -25,7 +25,7 @@ import type { PickingInfo } from "@deck.gl/core";
 import type { PopupInfo } from "./MapPickPopup.tsx";
 import type { LapPopupInfo } from "./LapPickPopup.tsx";
 import type { TrackPickData } from "./use-deck-layers.ts";
-import type { GPSBounds } from "../../types/gps.ts";
+import type { GPSBounds } from "../../engine/types.ts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./map-attribution.css";
 

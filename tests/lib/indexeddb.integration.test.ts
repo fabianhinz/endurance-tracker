@@ -15,7 +15,7 @@ import {
   getRecordsForSessions,
 } from '../../src/lib/indexeddb.ts';
 import { makeCyclingRecords, makeRunningRecords, makeLaps } from '../factories/records.ts';
-import type { SessionGPS } from '../../src/types/gps.ts';
+import type { SessionGPS } from '../../src/engine/types.ts';
 
 describe('IndexedDB session records', () => {
   // Clear records between tests instead of deleting the database

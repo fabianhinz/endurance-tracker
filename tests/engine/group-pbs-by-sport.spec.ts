@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { groupPBsBySport } from "../../src/engine/records.ts";
-import type { PersonalBest } from "../../src/types/index.ts";
+import type { PersonalBest } from "../../src/engine/types.ts";
 
 const makePB = (
   sport: "running" | "cycling" | "swimming",

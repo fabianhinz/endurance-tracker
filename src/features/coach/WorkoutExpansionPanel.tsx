@@ -1,9 +1,10 @@
 import { Typography } from "../../components/ui/Typography.tsx";
 import { Button } from "../../components/ui/Button.tsx";
 import { formatDuration } from "../../lib/utils.ts";
-import { groupSteps } from "../../engine/group-steps.ts";
+import { groupSteps } from "../../lib/group-steps.ts";
 import { STEP_LABELS } from "./workout-display.ts";
-import type { PrescribedWorkout, RunningZone, WorkoutStep } from "../../types/index.ts";
+import type { RunningZone } from "../../engine/types.ts";
+import type { PrescribedWorkout, WorkoutStep } from "../../types/index.ts";
 import { X } from "lucide-react";
 
 export const WorkoutExpansionPanel = (props: {

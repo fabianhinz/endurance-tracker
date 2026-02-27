@@ -7,7 +7,7 @@ import { bulkSaveSessionData } from "../../lib/indexeddb.ts";
 import { detectNewPBs, mergePBs } from "../../engine/records.ts";
 import { mapWithConcurrency } from "../../lib/concurrency.ts";
 import { toast } from "../../components/ui/toast-store.ts";
-import type { TrainingSession, SessionRecord, SessionLap } from "../../types/index.ts";
+import type { TrainingSession, SessionRecord, SessionLap } from "../../engine/types.ts";
 
 interface ParsedFile {
   session: Omit<TrainingSession, "id" | "createdAt">;

@@ -76,7 +76,7 @@ export const formatPaceInput = (seconds: number): string => {
   return `${min}:${sec.toString().padStart(2, '0')}`;
 };
 
-import type { PersonalBest } from "../types/index.ts";
+import type { PersonalBest } from "../engine/types.ts";
 
 const POWER_WINDOW_LABELS: Record<number, string> = {
   5: "5 sec",

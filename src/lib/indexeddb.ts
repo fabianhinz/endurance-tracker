@@ -1,5 +1,4 @@
-import type { SessionRecord, SessionLap } from "../types/index.ts";
-import type { SessionGPS } from "../types/gps.ts";
+import type { SessionRecord, SessionLap, SessionGPS } from "../engine/types.ts";
 import { getDB } from "./db.ts";
 
 const groupBy = <T>(items: T[], key: (item: T) => string): Map<string, T[]> => {

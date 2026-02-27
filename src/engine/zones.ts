@@ -1,4 +1,4 @@
-import type { RunningZone, RunningZoneName } from '../types/index.ts';
+import type { RunningZone, RunningZoneName } from './types.ts';
 
 const ZONE_DEFS: {
   name: RunningZoneName;
@@ -14,6 +14,11 @@ const ZONE_DEFS: {
   { name: 'vo2max', label: 'VO2max', minPct: 0.97, maxPct: 0.86, color: '#ef4444' },
 ];
 
+/**
+ * Derives the five running training zones from a threshold pace.
+ * @param thresholdPaceSec - Lactate-threshold pace in seconds per kilometre.
+ * @returns Array of five {@link RunningZone} objects ordered from slowest (recovery) to fastest (VO2max).
+ */
 export const computeRunningZones = (thresholdPaceSec: number): RunningZone[] => {
   return ZONE_DEFS.map((def) => ({
     name: def.name,
@@ -24,6 +29,12 @@ export const computeRunningZones = (thresholdPaceSec: number): RunningZone[] => 
   }));
 };
 
+/**
+ * Returns the zone that contains the given pace, or `undefined` if none matches.
+ * @param paceSec - Current pace in seconds per kilometre.
+ * @param zones - Ordered zone array produced by {@link computeRunningZones}.
+ * @returns The matching {@link RunningZone}, or `undefined` when the pace falls outside all zones.
+ */
 export const getZoneForPace = (
   paceSec: number,
   zones: RunningZone[],
@@ -31,6 +42,11 @@ export const getZoneForPace = (
   return zones.find((z) => paceSec <= z.minPace && paceSec >= z.maxPace);
 };
 
+/**
+ * Computes the midpoint pace of a zone as a convenient representative value.
+ * @param zone - A {@link RunningZone} with `minPace` and `maxPace` in seconds per kilometre.
+ * @returns The arithmetic midpoint pace in seconds per kilometre, rounded to the nearest integer.
+ */
 export const getZoneMidPace = (zone: RunningZone): number => {
   return Math.round((zone.minPace + zone.maxPace) / 2);
 };

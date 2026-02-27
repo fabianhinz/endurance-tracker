@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Typography } from "./Typography.tsx";
 import { MetricLabel } from "./MetricLabel.tsx";
-import type { MetricId } from "../../engine/explanations.ts";
+import type { MetricId } from "../../lib/explanations.ts";
 
 interface StatItemProps {
   label: string;

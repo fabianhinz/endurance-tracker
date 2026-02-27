@@ -4,7 +4,7 @@ import {
   computePowerZoneDistribution,
   computePaceZoneDistribution,
 } from '../../src/engine/zone-distribution.ts';
-import type { SessionRecord } from '../../src/types/index.ts';
+import type { SessionRecord } from '../../src/engine/types.ts';
 
 describe('computeHrZoneDistribution', () => {
   const maxHr = 190;

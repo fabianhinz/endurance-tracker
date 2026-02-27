@@ -1,9 +1,17 @@
-import type { SessionRecord, TrainingSession } from '../types/index.ts';
+import type { SessionRecord, TrainingSession } from './types.ts';
+
+/** Minimum number of valid power+HR records required to compute Pw:Hr decoupling. */
+export const MIN_RECORDS_FOR_DECOUPLING = 10;
+/** Duration of the EF trend window in milliseconds (28 days). */
+export const FOUR_WEEKS_MS = 28 * 24 * 60 * 60 * 1000;
 
 /**
- * Calculate Efficiency Factor (EF).
- * For cycling: NP / Avg HR
- * For running: Speed (m/s) / Avg HR (as pace efficiency)
+ * Calculate Efficiency Factor (EF) for a session: NP/avgHR for cycling, speed/avgHR for running.
+ * @param normalizedPower - Session normalized power in watts; used for cycling EF.
+ * @param avgSpeed - Session average speed in m/s; used for running EF.
+ * @param avgHr - Session average heart rate in bpm.
+ * @param sport - Sport type determining which EF formula to apply; swimming always returns `undefined`.
+ * @returns EF rounded to two decimal places, or `undefined` when inputs are insufficient.
  */
 export const calculateEF = (
   normalizedPower: number | undefined,
@@ -26,9 +34,9 @@ export const calculateEF = (
 };
 
 /**
- * Calculate Pw:Hr Decoupling.
- * Compares first-half vs second-half power:HR ratio.
- * Drift < 5% = good aerobic base.
+ * Calculate Pw:Hr decoupling by comparing the first-half and second-half power-to-HR ratios; drift below 5% indicates a solid aerobic base.
+ * @param records - Full time-series session records; only records with both `power > 0` and `hr > 0` are used.
+ * @returns Decoupling percentage (positive = power dropped or HR rose in the second half), or `undefined` when fewer than `MIN_RECORDS_FOR_DECOUPLING` valid records exist.
  */
 export const calculateDecoupling = (
   records: SessionRecord[],
@@ -37,7 +45,7 @@ export const calculateDecoupling = (
     (r) => r.power !== undefined && r.power > 0 && r.hr !== undefined && r.hr > 0,
   );
 
-  if (validRecords.length < 10) return undefined;
+  if (validRecords.length < MIN_RECORDS_FOR_DECOUPLING) return undefined;
 
   const midpoint = Math.floor(validRecords.length / 2);
   const firstHalf = validRecords.slice(0, midpoint);
@@ -67,14 +75,16 @@ const calculateHalfRatio = (records: SessionRecord[]): number => {
 };
 
 /**
- * Get EF trend over recent sessions (last 4 weeks).
- * Returns array of { date, ef } for trending.
+ * Collect EF data points for completed sessions of a given sport over the last four weeks, sorted chronologically.
+ * @param sessions - All training sessions in the store; planned sessions and wrong-sport sessions are excluded.
+ * @param sport - Sport type to filter by; determines which EF formula `calculateEF` will use.
+ * @returns Array of `{ date, ef }` objects (Unix ms timestamp + EF value) covering the last `FOUR_WEEKS_MS`, with sessions missing a computable EF omitted.
  */
 export const getEFTrend = (
   sessions: TrainingSession[],
   sport: 'running' | 'cycling' | 'swimming',
 ): { date: number; ef: number }[] => {
-  const fourWeeksAgo = Date.now() - 28 * 24 * 60 * 60 * 1000;
+  const fourWeeksAgo = Date.now() - FOUR_WEEKS_MS;
 
   return sessions
     .filter((s) => s.sport === sport && s.date >= fourWeeksAgo && !s.isPlanned)

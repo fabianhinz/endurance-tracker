@@ -1,5 +1,8 @@
-import type { RaceDistance } from '../types/index.ts';
+import type { RaceDistance } from './types.ts';
 
+/**
+ * Canonical race distances in metres, keyed by the {@link RaceDistance} union type.
+ */
 export const RACE_DISTANCE_METERS: Record<RaceDistance, number> = {
   '5k': 5000,
   '10k': 10000,
@@ -15,6 +18,12 @@ const vo2FromVelocity = (v: number): number =>
 const pctVo2max = (t: number): number =>
   0.8 + 0.1894393 * Math.exp(-0.012778 * t) + 0.2989558 * Math.exp(-0.1932605 * t);
 
+/**
+ * Estimates VDOT using the Daniels/Gilbert formula from a race result.
+ * @param distanceMeters - Race distance in metres.
+ * @param timeMinutes - Finishing time in minutes.
+ * @returns VDOT value (mL/kg/min) representing the runner's current aerobic fitness.
+ */
 export const calculateVdot = (distanceMeters: number, timeMinutes: number): number => {
   const velocity = distanceMeters / timeMinutes;
   return vo2FromVelocity(velocity) / pctVo2max(timeMinutes);
@@ -30,6 +39,12 @@ const velocityFromVo2 = (vo2: number): number => {
 
 const THRESHOLD_INTENSITY = 0.88;
 
+/**
+ * Derives lactate-threshold pace in seconds per kilometre from a race result.
+ * @param distanceMeters - Race distance in metres.
+ * @param timeMinutes - Finishing time in minutes.
+ * @returns Threshold pace in seconds per kilometre, rounded to the nearest integer.
+ */
 export const thresholdPaceFromRace = (distanceMeters: number, timeMinutes: number): number => {
   const vdot = calculateVdot(distanceMeters, timeMinutes);
   const targetVo2 = THRESHOLD_INTENSITY * vdot;

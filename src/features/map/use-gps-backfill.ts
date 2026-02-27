@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSessionsStore } from '../../store/sessions.ts';
 import { useUploadProgressStore } from '../../store/upload-progress.ts';
 import { getAllSessionGPS } from '../../lib/indexeddb.ts';
-import type { SessionGPS } from '../../types/gps.ts';
+import type { SessionGPS } from '../../engine/types.ts';
 import type { WorkerMessageOut } from './gps-build.worker.ts';
 
 export const useGPSBackfill = () => {
