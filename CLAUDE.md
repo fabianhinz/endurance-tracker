@@ -31,7 +31,23 @@
 - **Delete dead code**: Exported but never-imported code should be removed immediately, not left around.
 - **Syntax & Formatting**: Defer to ESLint and Prettier. Do not waste time manually formatting code or enforcing linting rules; focus on logic.
 
-## 3. Directory Structure & Deep Context (Progressive Disclosure)
+## 3. File Naming Conventions
+
+| Category | Convention | Example |
+|---|---|---|
+| React components | PascalCase | `SessionDetail.tsx`, `ChartPreview.tsx` |
+| Hooks | camelCase with `use` prefix | `useChartZoom.ts`, `useDeckLayers.ts` |
+| Stores | camelCase | `toastStore.ts`, `mapFocus.ts` |
+| Engine modules | camelCase | `trainingEffect.ts`, `zoneDistribution.ts` |
+| Lib utilities | camelCase | `chartData.ts`, `timeRange.ts` |
+| Tests | Match source name + `.spec.ts` / `.integration.test.ts` | `trainingEffect.spec.ts` |
+| Web Workers | camelCase | `gpsBuild.worker.ts` |
+
+- Feature hooks live in `src/features/<feature>/hooks/`
+- Shared hooks live in `src/lib/hooks/`
+- No kebab-case for TypeScript files.
+
+## 4. Directory Structure & Deep Context (Progressive Disclosure)
 
 Specific guidelines for features, testing, and state management are located in their respective directories. Read these files when working in these areas:
 
@@ -39,7 +55,7 @@ Specific guidelines for features, testing, and state management are located in t
 - `@src/store/CLAUDE.md`: Rules for Zustand store scope-naming and persist middleware.
 - `@tests/CLAUDE.md`: The testing strategy (Engine/Lib vs. Integration vs. UI).
 
-## 4. Dev Workflow & Actionable Verification
+## 5. Dev Workflow & Actionable Verification
 
 > **Plan first, then build.** Create a new branch for every feature or bug fix.
 
