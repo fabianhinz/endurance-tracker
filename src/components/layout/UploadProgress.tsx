@@ -11,6 +11,7 @@ const DONE_DISMISS_MS = 4000;
 const variantBorder: Record<string, string> = {
   success: "border-status-success-strong/30",
   error: "border-status-danger-strong/30",
+  warning: "border-status-warning-strong/30",
 };
 
 export const UploadProgress = () => {

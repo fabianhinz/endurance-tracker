@@ -26,14 +26,16 @@ import { SessionChartsExplorer } from "./SessionChartsExplorer.tsx";
 import { TrainingEffectCard } from "./TrainingEffectCard.tsx";
 import { SessionRecordsCard } from "./SessionRecordsCard.tsx";
 import type { SessionRecord, SessionLap } from "../../engine/types.ts";
+
 export const SessionDetailPage = () => {
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const sessions = useSessionsStore((s) => s.sessions);
+  const session = useSessionsStore((s) =>
+    s.sessions.find((session) => session.id === params.id),
+  );
   const deleteSession = useSessionsStore((s) => s.deleteSession);
   const renameSession = useSessionsStore((s) => s.renameSession);
   const personalBests = useSessionsStore((s) => s.personalBests);
-  const session = sessions.find((s) => s.id === params.id);
   const sessionPBs = useMemo(
     () => personalBests.filter((pb) => pb.sessionId === params.id),
     [personalBests, params.id],
@@ -75,6 +77,11 @@ export const SessionDetailPage = () => {
     session.subSport && session.subSport !== "generic"
       ? formatSubSport(session.subSport)
       : null;
+
+  // no layout shift
+  if (records.length === 0) {
+    return;
+  }
 
   return (
     <div className="space-y-4">
@@ -129,11 +136,9 @@ export const SessionDetailPage = () => {
       </div>
 
       <PageGrid>
-        {records.length > 0 && (
-          <div className="md:col-span-2">
-            <TrainingEffectCard records={records} session={session} />
-          </div>
-        )}
+        <div className="md:col-span-2">
+          <TrainingEffectCard records={records} session={session} />
+        </div>
 
         <div className="md:col-span-2">
           <SessionStatsGrid session={session} laps={laps} />
@@ -145,11 +150,9 @@ export const SessionDetailPage = () => {
           </div>
         )}
 
-        {records.length > 0 && (
-          <div className="md:col-span-2">
-            <SessionChartsExplorer records={records} session={session} />
-          </div>
-        )}
+        <div className="md:col-span-2">
+          <SessionChartsExplorer records={records} session={session} />
+        </div>
       </PageGrid>
 
       <DialogRoot
