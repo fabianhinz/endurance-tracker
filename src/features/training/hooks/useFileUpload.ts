@@ -7,12 +7,14 @@ import { bulkSaveSessionData } from "../../../lib/indexeddb.ts";
 import { detectNewPBs, mergePBs } from "../../../engine/records.ts";
 import { mapWithConcurrency } from "../../../lib/concurrency.ts";
 import { toast } from "../../../components/ui/toastStore.ts";
+import { findDuplicates } from "../../../engine/fingerprint.ts";
 import type { TrainingSession, SessionRecord, SessionLap } from "../../../engine/types.ts";
 
 interface ParsedFile {
   session: Omit<TrainingSession, "id" | "createdAt">;
   records: SessionRecord[];
   laps: SessionLap[];
+  fingerprint: string;
 }
 
 const CHUNK_SIZE = 10;
@@ -86,12 +88,38 @@ export const useFileUpload = (
         }
       }
 
+      // Dedup — filter out files already in the store or duplicated within the batch
+      const existingSessions = useSessionsStore.getState().sessions;
+      const storeDups = findDuplicates(
+        parsed.map((p) => p.fingerprint),
+        existingSessions,
+      );
+      const seenInBatch = new Set<string>();
+      let duplicated = 0;
+
+      const unique = parsed.filter((p) => {
+        if (storeDups.has(p.fingerprint) || seenInBatch.has(p.fingerprint)) {
+          duplicated++;
+          return false;
+        }
+        seenInBatch.add(p.fingerprint);
+        return true;
+      });
+
+      if (duplicated > 0) {
+        toast(
+          "Duplicates skipped",
+          `${duplicated} file${duplicated !== 1 ? "s" : ""} already imported`,
+          "warning",
+        );
+      }
+
       // Phase 2 — Batch commit
       let newPBCount = 0;
 
-      if (parsed.length > 0) {
+      if (unique.length > 0) {
         try {
-          const sessionIds = addSessions(parsed.map((p) => p.session));
+          const sessionIds = addSessions(unique.map((p) => p.session));
 
           let accumulatedBests = [...personalBests];
 
@@ -100,8 +128,8 @@ export const useFileUpload = (
             laps: (SessionLap & { sessionId: string })[];
           }> = [];
 
-          for (let i = 0; i < parsed.length; i++) {
-            const entry = parsed[i];
+          for (let i = 0; i < unique.length; i++) {
+            const entry = unique[i];
             const sessionId = sessionIds[i];
 
             if (entry.records.length > 0) {
@@ -150,11 +178,15 @@ export const useFileUpload = (
         }
       }
 
-      const uploaded = parsed.length;
+      const uploaded = unique.length;
       const parts: string[] = [];
       if (uploaded > 0)
         parts.push(
           `${uploaded} session${uploaded !== 1 ? "s" : ""} uploaded`,
+        );
+      if (duplicated > 0)
+        parts.push(
+          `${duplicated} duplicate${duplicated !== 1 ? "s" : ""}`,
         );
       if (newPBCount > 0)
         parts.push(`${newPBCount} new PB${newPBCount !== 1 ? "s" : ""}`);

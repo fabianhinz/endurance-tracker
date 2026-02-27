@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { idbStorage } from "../lib/idbStorage.ts";
 
 interface LayoutState {
   dockExpanded: boolean;
@@ -21,6 +22,6 @@ export const useLayoutStore = create<LayoutState>()(
       onboardingComplete: false,
       completeOnboarding: () => set({ onboardingComplete: true, compactLayout: true }),
     }),
-    { name: "endurance-tracker-layout" },
+    { name: "store-layout", storage: createJSONStorage(() => idbStorage), skipHydration: true, version: 1 },
   ),
 );

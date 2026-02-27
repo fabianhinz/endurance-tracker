@@ -58,6 +58,7 @@ export interface TrainingSession {
   sensorWarnings: string[];
   isPlanned: boolean;
   hasDetailedRecords: boolean;
+  fingerprint?: string;
   createdAt: number;
 }
 

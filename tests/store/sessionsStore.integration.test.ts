@@ -124,7 +124,7 @@ describe('sessions store', () => {
 
     const { getDB } = await import('../../src/lib/db.ts');
     const db = await getDB();
-    const stored = await db.get('kv', 'endurance-tracker-sessions');
+    const stored = await db.get('kv', 'store-sessions');
     expect(stored).toBeDefined();
     const parsed = JSON.parse(stored!);
     expect(parsed.state.sessions).toHaveLength(1);

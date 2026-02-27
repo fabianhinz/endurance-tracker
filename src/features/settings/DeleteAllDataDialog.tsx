@@ -13,6 +13,7 @@ import { useSessionsStore } from '../../store/sessions.ts';
 import { useUserStore } from '../../store/user.ts';
 import { useCoachPlanStore } from '../../store/coachPlan.ts';
 import { useLayoutStore } from '../../store/layout.ts';
+import { useFiltersStore } from '../../store/filters.ts';
 import { clearAllRecords } from '../../lib/indexeddb.ts';
 interface DeleteAllDataDialogProps {
   open: boolean;
@@ -30,6 +31,7 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
     useUserStore.getState().resetProfile();
     useCoachPlanStore.getState().clearPlan();
     useLayoutStore.setState({ onboardingComplete: false });
+    useFiltersStore.setState({ timeRange: "all", customRange: null, prevDashboardRange: null, sportFilter: "all" });
     await clearAllRecords();
     setIsDeleting(false);
     props.onOpenChange(false);

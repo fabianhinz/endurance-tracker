@@ -3,6 +3,14 @@ import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '
 import { validateRecords } from '../engine/validation.ts';
 import { calculateSessionStress } from '../engine/stress.ts';
 import { extractSessionName } from '../lib/filename.ts';
+import { generateFingerprint } from '../engine/fingerprint.ts';
+import {
+  fitFileIdSchema,
+  fitUserProfileSchema,
+  fitRecordsSchema,
+  fitLapsSchema,
+  type FitLapInput,
+} from './fitSchemas.ts';
 
 export interface FitUserProfile {
   weight?: number;
@@ -15,6 +23,7 @@ export interface ParsedFitResult {
   records: SessionRecord[];
   laps: SessionLap[];
   fitUserProfile?: FitUserProfile;
+  fingerprint: string;
 }
 
 const mapFitSportToAppSport = (fitSport?: string): Sport => {
@@ -68,8 +77,7 @@ export const deriveMaxFromRecords = (
   return Math.max(...values);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- fit-file-parser laps lack TS types
-export const mapFitLaps = (fitLaps: any[], sessionId: string): SessionLap[] => {
+export const mapFitLaps = (fitLaps: FitLapInput[], sessionId: string): SessionLap[] => {
   return fitLaps.map((lap, index) => ({
     sessionId,
     lapIndex: lap.message_index?.value ?? index,
@@ -131,43 +139,42 @@ export const parseFitFile = async (
   const sport = mapFitSportToAppSport(fitSession?.sport);
 
   // Extract user profile from FIT file (if available)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- fit-file-parser user_profile not in TS types
-  const fitProfile = (data as any).user_profile;
-  const fitUserProfile: FitUserProfile | undefined = fitProfile
+  const profileResult = fitUserProfileSchema.safeParse(data.user_profile);
+  const fitUserProfile: FitUserProfile | undefined = profileResult.success
     ? {
-        weight: fitProfile.weight,
+        weight: profileResult.data.weight,
         gender:
-          fitProfile.gender === 'female'
+          profileResult.data.gender === 'female'
             ? 'female'
-            : fitProfile.gender === 'male'
+            : profileResult.data.gender === 'male'
               ? 'male'
               : undefined,
-        restingHeartRate: fitProfile.resting_heart_rate,
+        restingHeartRate: profileResult.data.resting_heart_rate,
       }
     : undefined;
 
   // Transform FIT records to app records
-  // Fields elapsed_time, grade, timer_time exist at runtime but not in TS types (see CLAUDE.md gotcha)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- fit-file-parser record fields not in TS types
-  const records: SessionRecord[] = fitRecords.map((r: any) => ({
-    sessionId,
-    timestamp: r.elapsed_time ?? 0,
-    hr: r.heart_rate,
-    power: r.power,
-    cadence: r.cadence,
-    speed: r.speed,
-    lat: r.position_lat,
-    lng: r.position_long,
-    elevation: r.altitude,
-    distance: r.distance,
-    grade: r.grade,
-    timerTime: r.timer_time,
-  }));
+  const recordsResult = fitRecordsSchema.safeParse(fitRecords);
+  const records: SessionRecord[] = recordsResult.success
+    ? recordsResult.data.map((r) => ({
+        sessionId,
+        timestamp: r.elapsed_time ?? 0,
+        hr: r.heart_rate,
+        power: r.power,
+        cadence: r.cadence,
+        speed: r.speed,
+        lat: r.position_lat,
+        lng: r.position_long,
+        elevation: r.altitude,
+        distance: r.distance,
+        grade: r.grade,
+        timerTime: r.timer_time,
+      }))
+    : [];
 
   // Extract laps
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- fit-file-parser laps not in TS types
-  const fitLaps = (data as any).laps ?? [];
-  const laps = mapFitLaps(fitLaps, sessionId);
+  const lapsResult = fitLapsSchema.safeParse(data.laps ?? []);
+  const laps = mapFitLaps(lapsResult.success ? lapsResult.data : [], sessionId);
 
   // Derive moving time from laps; fall back to timer time per lap when moving time is unavailable
   const movingTime = laps.length > 0
@@ -196,12 +203,21 @@ export const parseFitFile = async (
   const avgSpeed = fitSession?.avg_speed;
   const name = extractSessionName(file.name);
 
+  const fileIdResult = fitFileIdSchema.safeParse(data.file_ids?.[0]);
+  const sessionDuration = fitSession?.total_timer_time ?? fitSession?.total_elapsed_time ?? 0;
+  const sessionDistance = deriveDistanceFromRecords(records);
+
+  const fingerprint = generateFingerprint(
+    fileIdResult.success ? fileIdResult.data : undefined,
+    { sport, date: sessionDate, duration: sessionDuration, distance: sessionDistance },
+  );
+
   const session: Omit<TrainingSession, 'id' | 'createdAt'> = {
     ...(name !== undefined && { name }),
     sport,
     date: sessionDate,
-    duration: fitSession?.total_timer_time ?? fitSession?.total_elapsed_time ?? 0,
-    distance: deriveDistanceFromRecords(records),
+    duration: sessionDuration,
+    distance: sessionDistance,
     avgHr: fitSession?.avg_heart_rate,
     maxHr: fitSession?.max_heart_rate,
     avgPower: deriveAvgFromRecords(records, 'power') ?? fitSession?.avg_power,
@@ -230,7 +246,8 @@ export const parseFitFile = async (
     sensorWarnings,
     isPlanned: false,
     hasDetailedRecords: records.length > 0,
+    fingerprint,
   };
 
-  return { session, records, laps, fitUserProfile };
+  return { session, records, laps, fitUserProfile, fingerprint };
 };

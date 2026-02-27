@@ -21,7 +21,7 @@ export const useCoachPlanStore = create<CoachPlanState>()(
       clearPlan: () => set({ cachedPlan: null, cacheKey: null }),
     }),
     {
-      name: 'endurance-tracker-coach-plan',
+      name: 'store-coach-plan',
       storage: createJSONStorage(() => idbStorage),
       skipHydration: true,
       version: 1,

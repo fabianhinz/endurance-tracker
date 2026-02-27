@@ -62,7 +62,7 @@ describe('user store', () => {
 
     const { getDB } = await import('../../src/lib/db.ts');
     const db = await getDB();
-    const stored = await db.get('kv', 'endurance-tracker-user');
+    const stored = await db.get('kv', 'store-user');
     expect(stored).toBeDefined();
     const parsed = JSON.parse(stored!);
     expect(parsed.state.profile.gender).toBe('male');

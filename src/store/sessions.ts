@@ -64,7 +64,7 @@ export const useSessionsStore = create<SessionsState>()(
       clearAll: () => set({ sessions: [], personalBests: [] }),
     }),
     {
-      name: 'endurance-tracker-sessions',
+      name: 'store-sessions',
       storage: createJSONStorage(() => idbStorage),
       skipHydration: true,
       version: 1,

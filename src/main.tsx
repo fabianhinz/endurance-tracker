@@ -7,12 +7,16 @@ import { App } from './App.tsx';
 import { useUserStore } from './store/user.ts';
 import { useSessionsStore } from './store/sessions.ts';
 import { useCoachPlanStore } from './store/coachPlan.ts';
+import { useLayoutStore } from './store/layout.ts';
+import { useFiltersStore } from './store/filters.ts';
 import './index.css';
 
 const boot = async () => {
   await useUserStore.persist.rehydrate();
   await useSessionsStore.persist.rehydrate();
   await useCoachPlanStore.persist.rehydrate();
+  await useLayoutStore.persist.rehydrate();
+  await useFiltersStore.persist.rehydrate();
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

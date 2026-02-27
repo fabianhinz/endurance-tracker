@@ -3,6 +3,7 @@ import { useSessionsStore } from '../../src/store/sessions.ts';
 import { useUserStore } from '../../src/store/user.ts';
 import { useCoachPlanStore } from '../../src/store/coachPlan.ts';
 import { useLayoutStore } from '../../src/store/layout.ts';
+import { useFiltersStore } from '../../src/store/filters.ts';
 import { makeSession } from '../factories/sessions.ts';
 import { makeUserProfile } from '../factories/profiles.ts';
 import { makeCyclingRecords, makeLaps } from '../factories/records.ts';
@@ -40,7 +41,7 @@ describe('delete all data', () => {
     await saveSessionLaps(laps);
 
     // Populate IDB kv store (simulates Zustand persist)
-    await idbStorage.setItem('endurance-tracker-user', '{"state":{"profile":{}}}');
+    await idbStorage.setItem('store-user', '{"state":{"profile":{}}}');
 
     // Populate coach plan cache
     useCoachPlanStore.getState().setPlan(
@@ -48,7 +49,11 @@ describe('delete all data', () => {
       '2026-02-09:1:300',
     );
 
+    // Set non-default filters
+    useFiltersStore.setState({ timeRange: '90d', sportFilter: 'cycling' });
+
     // Verify everything is populated
+    expect(useFiltersStore.getState().timeRange).toBe('90d');
     expect(useCoachPlanStore.getState().cachedPlan).not.toBeNull();
     expect(useSessionsStore.getState().sessions).toHaveLength(1);
     expect(useSessionsStore.getState().personalBests).toHaveLength(1);
@@ -56,13 +61,14 @@ describe('delete all data', () => {
     expect(useLayoutStore.getState().onboardingComplete).toBe(true);
     expect(await getSessionRecords(sessionId)).toHaveLength(60);
     expect(await getSessionLaps(sessionId)).toHaveLength(2);
-    expect(await idbStorage.getItem('endurance-tracker-user')).not.toBeNull();
+    expect(await idbStorage.getItem('store-user')).not.toBeNull();
 
     // Perform full data wipe (same sequence as DeleteAllDataDialog.handleDelete)
     useSessionsStore.getState().clearAll();
     useUserStore.getState().resetProfile();
     useCoachPlanStore.getState().clearPlan();
     useLayoutStore.setState({ onboardingComplete: false });
+    useFiltersStore.setState({ timeRange: 'all', customRange: null, prevDashboardRange: null, sportFilter: 'all' });
     await clearAllRecords();
 
     // Verify everything is cleared
@@ -72,11 +78,14 @@ describe('delete all data', () => {
     expect(useSessionsStore.getState().personalBests).toHaveLength(0);
     expect(await getSessionRecords(sessionId)).toHaveLength(0);
     expect(await getSessionLaps(sessionId)).toHaveLength(0);
-    expect(await idbStorage.getItem('endurance-tracker-user')).toBeNull();
+    expect(await idbStorage.getItem('store-user')).toBeNull();
 
     // Verify profile is null (user returns to onboarding)
     expect(useUserStore.getState().profile).toBeNull();
     // Verify onboarding is reset
     expect(useLayoutStore.getState().onboardingComplete).toBe(false);
+    // Verify filters are reset
+    expect(useFiltersStore.getState().timeRange).toBe('all');
+    expect(useFiltersStore.getState().sportFilter).toBe('all');
   });
 });
