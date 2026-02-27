@@ -64,17 +64,17 @@ export const calculateTrainingEffect = (
   const fitnessScale = 1 + Math.max(0, Math.min(200, ctl)) / 200;
 
   // Aerobic TE: power-law mapping with diminishing returns from duration
-  const AEROBIC_K = 0.15;
-  const AEROBIC_P = 0.65;
+  const AEROBIC_K = 1.0;
+  const AEROBIC_P = 0.25;
   const aerobic = Math.max(
     0,
     Math.min(5, AEROBIC_K * Math.pow(aerobicTrimp / fitnessScale, AEROBIC_P)),
   );
 
-  // Anaerobic TE: 6-min reference at VO2max, scaled to 3.5
+  // Anaerobic TE: 6-min reference at VO2max, scaled to 2.0
   const anaerobic = Math.max(
     0,
-    Math.min(5, (anaerobicImpulse / (6 * fitnessScale)) * 3.5),
+    Math.min(5, (anaerobicImpulse / (6 * fitnessScale)) * 2.0),
   );
 
   return {
