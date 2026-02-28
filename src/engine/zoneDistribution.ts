@@ -59,6 +59,8 @@ export const computeHrZoneDistribution = (
       counts[idx]++;
     } else if (pct >= 1.0) {
       counts[counts.length - 1]++; // cap at Z5
+    } else if (pct < HR_ZONE_DEFS[0].minPct) {
+      counts[0]++; // bin sub-Z1 into Z1
     }
   }
 

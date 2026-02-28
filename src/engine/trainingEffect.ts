@@ -1,3 +1,24 @@
+// ---------------------------------------------------------------------------
+// Training Effect — TRIMP-based approximation
+// ---------------------------------------------------------------------------
+// Garmin/Firstbeat's actual Training Effect algorithm uses real-time EPOC
+// (Excess Post-exercise Oxygen Consumption) estimation derived from heartbeat
+// dynamics. That algorithm is proprietary and unpublished.
+//
+// This module approximates the same 0–5 scale using Banister TRIMP:
+//  - Aerobic TE: per-sample TRIMP accumulated via the published Banister
+//    formula, then mapped to 0–5 with a power-law (exponent 0.25) for
+//    diminishing returns from long durations.
+//  - Anaerobic TE: time above 90% HRR, loosely analogous to a ~6-minute
+//    VO2max reference duration (published range 4–8 min).
+//  - Fitness scaling: CTL-based multiplier (1.0× at CTL 0, up to 2.0× at
+//    CTL 200) so fitter athletes need harder efforts to score high.
+//
+// The output labels and 0–5 boundaries match Garmin's published scale, but
+// individual values may diverge from a Garmin device because the underlying
+// stimulus model is fundamentally different (TRIMP vs. EPOC).
+// ---------------------------------------------------------------------------
+
 import type { SessionRecord, Gender } from './types.ts';
 import { BANISTER } from './stress.ts';
 

@@ -3,8 +3,10 @@ import { calculateNormalizedPower } from './normalize.ts';
 
 /**
  * Gender-specific Banister coefficients used in the TRIMP exponential weighting formula.
- * @property male - Coefficients for male athletes: `a` (linear weight), `b` (exponential rate).
- * @property female - Coefficients for female athletes: `a` (linear weight), `b` (exponential rate).
+ * Male coefficients (a=0.64, b=1.92) are from Banister 1991 with strong consensus.
+ * Female coefficients (b=1.67) are agreed upon; the `a` coefficient varies across
+ * secondary sources (0.64 in Fellrnr/Veohtu, 0.86 in Intervals.icu and others).
+ * We use 0.86 following the majority of contemporary implementations.
  */
 export const BANISTER = {
   male: { a: 0.64, b: 1.92 },
@@ -65,10 +67,10 @@ export const calculateTRIMP = (
 
   const trimp = durationMin * deltaHrRatio * a * Math.exp(b * deltaHrRatio);
 
-  // Normalize TRIMP to approximate TSS scale (divide by ~1 hour threshold effort TRIMP)
-  // A 1-hour threshold effort for male: 60 * 1.0 * 0.64 * e^1.92 ≈ 262
-  // We normalize so that effort produces ~100 TSS
-  const normFactor = 60 * 1.0 * a * Math.exp(b) / 100;
+  // Normalize TRIMP to approximate TSS scale (divide by ~1 hour threshold effort TRIMP).
+  // Lactate threshold ≈ 88% of HR reserve (consistent with THRESHOLD_INTENSITY in vdot.ts).
+  const thresholdHrRatio = 0.88;
+  const normFactor = 60 * thresholdHrRatio * a * Math.exp(b * thresholdHrRatio) / 100;
 
   return Math.round((trimp / normFactor) * 10) / 10;
 };
@@ -92,7 +94,7 @@ export const calculateSessionStress = (
   maxHr: number,
   gender: Gender,
   ftp?: number,
-): { tss: number; stressMethod: 'tss' | 'trimp'; normalizedPower?: number } => {
+): { tss: number; stressMethod: 'tss' | 'trimp' | 'duration'; normalizedPower?: number } => {
   // Try TSS first (requires power data + FTP)
   if (ftp && ftp > 0) {
     const tssResult = calculateTSS(records, durationSec, ftp);
@@ -117,7 +119,7 @@ export const calculateSessionStress = (
   // No usable data — assign minimal stress estimate based on duration
   return {
     tss: Math.round((durationSec / 3600) * 30),
-    stressMethod: 'trimp',
+    stressMethod: 'duration',
   };
 };
 

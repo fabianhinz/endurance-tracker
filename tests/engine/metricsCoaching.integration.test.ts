@@ -19,7 +19,7 @@ describe('metrics → coaching pipeline', () => {
     const last = metrics[metrics.length - 1];
     expect(last.ctl).toBeGreaterThan(0);
     expect(last.atl).toBeGreaterThan(0);
-    // ATL reacts faster than CTL (alpha=0.25 vs alpha≈0.047)
+    // ATL reacts faster than CTL (alpha≈0.133 vs alpha≈0.024)
     expect(last.atl).toBeGreaterThan(last.ctl);
     // TSB = CTL - ATL, should be negative initially
     expect(last.tsb).toBeLessThan(0);
@@ -39,11 +39,11 @@ describe('metrics → coaching pipeline', () => {
     const metrics = computeMetrics(sessions, { endDate: lastSessionDate });
     const last = metrics[metrics.length - 1];
 
-    // CTL with alpha = 2/43: after 42 days at TSS=100, CTL ≈ 86
-    expect(last.ctl).toBeGreaterThan(75);
-    expect(last.ctl).toBeLessThan(95);
+    // CTL with Coggan alpha = 1-exp(-1/42) ≈ 0.0235: after 42 days at TSS=100, CTL ≈ 63
+    expect(last.ctl).toBeGreaterThan(55);
+    expect(last.ctl).toBeLessThan(75);
 
-    // ATL with alpha = 2/8 = 0.25: converges much faster, close to 100
+    // ATL with Coggan alpha = 1-exp(-1/7) ≈ 0.133: converges much faster, close to 100
     expect(last.atl).toBeGreaterThan(90);
     expect(last.atl).toBeLessThan(105);
   });
