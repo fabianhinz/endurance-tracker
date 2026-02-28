@@ -13,10 +13,18 @@ describe('efficiency factor & decoupling', () => {
     expect(ef).toBeCloseTo(220 / 150, 2);
   });
 
-  it('running EF = (speed * 100) / avgHR', () => {
+  it('running EF = speed / avgHR (raw speed fallback)', () => {
     const ef = calculateEF(undefined, 3.5, 150, 'running');
     expect(ef).toBeDefined();
-    expect(ef).toBeCloseTo((3.5 * 100) / 150, 2);
+    expect(ef).toBeCloseTo(3.5 / 150, 2);
+  });
+
+  it('running EF prefers NGP from GAP over raw speed', () => {
+    // GAP = 300 sec/km → NGP = 1000/300 ≈ 3.333 m/s
+    const ef = calculateEF(undefined, 2.5, 150, 'running', 300);
+    expect(ef).toBeDefined();
+    const ngp = 1000 / 300;
+    expect(ef).toBeCloseTo(ngp / 150, 2);
   });
 
   it('decoupling ~0% with stable power/HR', () => {
@@ -100,6 +108,7 @@ describe('efficiency factor & decoupling', () => {
 
     const trend = getEFTrend(sessions, 'cycling');
     expect(trend).toHaveLength(2); // only the 2 recent real sessions
+    // Cycling EF = NP / avgHR (unchanged)
     expect(trend[0].ef).toBeCloseTo(220 / 150, 2);
     expect(trend[1].ef).toBeCloseTo(225 / 148, 2);
   });

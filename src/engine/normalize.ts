@@ -1,3 +1,6 @@
+// Sources: [CogganAllen2010], [Minetti2002]
+// See src/engine/SOURCES.md for full citations.
+
 import type { SessionRecord } from './types.ts';
 
 /** Width of the rolling average window used in the normalized power calculation, in seconds. */

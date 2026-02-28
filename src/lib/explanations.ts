@@ -7,6 +7,7 @@
 export type MetricId =
   | "tss"
   | "trimp"
+  | "duration"
   | "ctl"
   | "atl"
   | "tsb"
@@ -103,6 +104,28 @@ const trimp: MetricExplanation = {
     'Session detail as the stress metric when power data is unavailable. Labeled as "estimated from heart rate".',
 };
 
+const duration: MetricExplanation = {
+  id: "duration",
+  shortLabel: "Duration",
+  friendlyName: "Duration-Based Load",
+  name: "Duration-Based Stress Estimate",
+  oneLiner:
+    "A rough stress estimate based only on session duration when no power or heart rate data is available.",
+  fullExplanation:
+    "When a session has neither power nor heart rate data, the app estimates stress at a fixed rate of 30 TSS per hour. This is a conservative placeholder that prevents the session from being invisible in your training load history, but should not be taken as an accurate measure of training stress.",
+  analogy:
+    "Think of it as a minimum charge on your training credit card — the app logs that you trained, even if it cannot measure how hard.",
+  whyItMatters:
+    "Without this fallback, sessions lacking sensor data would contribute zero to your fitness and fatigue tracking, creating gaps in your load history.",
+  range: "Fixed at 30 TSS per hour of activity.",
+  limitations:
+    "Highly inaccurate for intense or very easy sessions. A 1-hour threshold effort and a 1-hour walk both receive 30 TSS. Use a heart rate strap or power meter for meaningful load tracking.",
+  unit: "TSS-equivalent",
+  sports: ["all"],
+  displayContext:
+    'Session detail as the stress metric when no sensor data is available. Labeled as "estimated from duration".',
+};
+
 // ---------------------------------------------------------------------------
 // Load metrics (src/engine/metrics.ts)
 // ---------------------------------------------------------------------------
@@ -115,7 +138,7 @@ const ctl: MetricExplanation = {
   oneLiner: "Your fitness level built up over the past ~6 weeks of training.",
   fullExplanation:
     "CTL is a 42-day exponentially weighted moving average of daily TSS. It rises slowly when you train consistently and drops slowly when you rest. CTL represents your accumulated aerobic and muscular fitness from sustained training.",
-  formula: "CTL_today = CTL_yesterday + (TSS_today - CTL_yesterday) x (2/43)",
+  formula: "CTL_today = CTL_yesterday + (TSS_today - CTL_yesterday) x (1 - e^(-1/42))",
   analogy:
     "CTL is like your savings account balance. Each workout is a deposit. The balance grows slowly with consistent contributions and shrinks gradually if you stop depositing.",
   whyItMatters:
@@ -139,7 +162,7 @@ const atl: MetricExplanation = {
     "How much training stress you have accumulated over the past ~week.",
   fullExplanation:
     "ATL is a 7-day exponentially weighted moving average of daily TSS. It spikes after hard training blocks and drops quickly when you rest. ATL captures short-term fatigue that your body needs to recover from.",
-  formula: "ATL_today = ATL_yesterday + (TSS_today - ATL_yesterday) x (2/8)",
+  formula: "ATL_today = ATL_yesterday + (TSS_today - ATL_yesterday) x (1 - e^(-1/7))",
   analogy:
     "ATL is like your credit card bill — it reflects your recent spending (training). A big week of training runs up the bill fast. A rest week lets it settle back down.",
   whyItMatters:
@@ -268,7 +291,7 @@ const efficiencyFactor: MetricExplanation = {
     "How much output (power or speed) you get per heartbeat — higher means fitter.",
   fullExplanation:
     "Efficiency Factor measures your aerobic efficiency by dividing output (Normalized Power for cycling, speed for running) by average heart rate. A rising EF over weeks indicates improving aerobic fitness. Unlike threshold tests, EF can be tracked from regular easy and moderate sessions.",
-  formula: "Cycling: NP / avg HR. Running: (speed x 100) / avg HR",
+  formula: "Cycling: NP / avg HR. Running: NGP / avg HR (falls back to avg speed / avg HR without elevation data)",
   analogy:
     "EF is like your car's fuel efficiency (km per liter). More output for the same fuel (heartbeats) means your engine is running better.",
   whyItMatters:
@@ -694,6 +717,7 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   // Stress metrics
   tss,
   trimp,
+  duration,
   // Load metrics
   ctl,
   atl,

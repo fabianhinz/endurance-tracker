@@ -8,6 +8,7 @@ import {
 const ALL_METRIC_IDS: MetricId[] = [
   'tss',
   'trimp',
+  'duration',
   'ctl',
   'atl',
   'tsb',

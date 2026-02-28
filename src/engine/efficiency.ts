@@ -1,3 +1,6 @@
+// Sources: [CogganAllen2010], [Friel2009], [TP-EF]
+// See src/engine/SOURCES.md for full citations.
+
 import type { SessionRecord, TrainingSession } from './types.ts';
 
 /** Minimum number of valid power+HR records required to compute Pw:Hr decoupling. */
@@ -6,11 +9,15 @@ export const MIN_RECORDS_FOR_DECOUPLING = 10;
 export const FOUR_WEEKS_MS = 28 * 24 * 60 * 60 * 1000;
 
 /**
- * Calculate Efficiency Factor (EF) for a session: NP/avgHR for cycling, speed/avgHR for running.
+ * Calculate Efficiency Factor (EF) for a session.
+ * Cycling: NP / avgHR.
+ * Running: NGP / avgHR when GAP is available, falling back to raw speed / avgHR.
+ * NGP is derived from GAP (sec/km) → m/s via `1000 / gap`.
  * @param normalizedPower - Session normalized power in watts; used for cycling EF.
- * @param avgSpeed - Session average speed in m/s; used for running EF.
+ * @param avgSpeed - Session average speed in m/s; used as running EF fallback.
  * @param avgHr - Session average heart rate in bpm.
  * @param sport - Sport type determining which EF formula to apply; swimming always returns `undefined`.
+ * @param gap - Optional Grade Adjusted Pace in sec/km; when provided for running, NGP is used instead of raw speed.
  * @returns EF rounded to two decimal places, or `undefined` when inputs are insufficient.
  */
 export const calculateEF = (
@@ -18,6 +25,7 @@ export const calculateEF = (
   avgSpeed: number | undefined,
   avgHr: number | undefined,
   sport: 'running' | 'cycling' | 'swimming',
+  gap?: number,
 ): number | undefined => {
   if (!avgHr || avgHr <= 0) return undefined;
 
@@ -25,9 +33,11 @@ export const calculateEF = (
     return Math.round((normalizedPower / avgHr) * 100) / 100;
   }
 
-  if (sport === 'running' && avgSpeed && avgSpeed > 0) {
-    // Use speed/HR for running EF (higher is better)
-    return Math.round((avgSpeed * 100 / avgHr) * 100) / 100;
+  if (sport === 'running') {
+    // Prefer NGP (from GAP) over raw speed for hilly terrain accuracy
+    const speed = gap && gap > 0 ? 1000 / gap : avgSpeed;
+    if (!speed || speed <= 0) return undefined;
+    return Math.round((speed / avgHr) * 100) / 100;
   }
 
   return undefined;

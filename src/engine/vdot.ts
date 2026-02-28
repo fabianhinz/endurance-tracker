@@ -1,3 +1,6 @@
+// Sources: [DanielsGilbert1979], [Daniels2013]
+// See src/engine/SOURCES.md for full citations.
+
 import type { RaceDistance } from './types.ts';
 
 /**

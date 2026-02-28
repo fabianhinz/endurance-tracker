@@ -106,4 +106,26 @@ describe('stress pipeline: records → validate → filter → NP → TSS/TRIMP'
     const result = calculateSessionStress(records, 20, 150, 50, 190, 'male', 250);
     expect(result.stressMethod).toBe('trimp');
   });
+
+  it('duration fallback labeled as "duration", not "trimp"', () => {
+    const records = makeCyclingRecords('s6', 3600).map((r) => ({
+      ...r,
+      power: undefined,
+    }));
+    // No avgHr → triggers duration fallback
+    const result = calculateSessionStress(records, 3600, undefined, 50, 190, 'male');
+    expect(result.stressMethod).toBe('duration');
+    expect(result.tss).toBe(30); // 1 hour × 30 TSS/hour
+  });
+
+  it('TRIMP normalization uses threshold HR ratio ~0.88', () => {
+    // 1 hour at threshold (deltaHrRatio ≈ 0.88) should produce ~100 TSS
+    const restHr = 50;
+    const maxHr = 190;
+    // avgHr at 88% HRR: 50 + 0.88 * 140 = 173.2
+    const avgHr = restHr + 0.88 * (maxHr - restHr);
+    const trimp = calculateTRIMP(avgHr, 3600, restHr, maxHr, 'male');
+    expect(trimp).toBeGreaterThan(85);
+    expect(trimp).toBeLessThan(115);
+  });
 });

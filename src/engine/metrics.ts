@@ -1,14 +1,17 @@
+// Sources: [CogganAllen2010], [TP-PMC]
+// See src/engine/SOURCES.md for full citations.
+
 import type { TrainingSession, DailyMetrics } from './types.ts';
 import type { EngineFormatter } from './formatter.ts';
 import { defaultFormatter } from './formatter.ts';
 
 /**
- * EWMA (Exponentially Weighted Moving Average) step.
- * metric_today = metric_yesterday + (tss_today - metric_yesterday) * (2 / (days + 1))
+ * EWMA (Exponentially Weighted Moving Average) step using the Coggan PMC smoothing factor.
+ * alpha = 1 - e^(-1/days), matching TrainingPeaks / WKO / GoldenCheetah.
  */
 const ewmaStep = (previous: number, todayTss: number, days: number): number => {
   const safeTss = Number.isFinite(todayTss) ? todayTss : 0;
-  const alpha = 2 / (days + 1);
+  const alpha = 1 - Math.exp(-1 / days);
   const result = previous + (safeTss - previous) * alpha;
   return Number.isFinite(result) ? result : previous;
 };
