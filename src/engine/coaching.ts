@@ -1,3 +1,6 @@
+// Sources: [Gabbett2016], [Friel2009], [TP-PMC]
+// See src/engine/SOURCES.md for full citations.
+
 import type {
   FormStatus,
   InjuryRisk,

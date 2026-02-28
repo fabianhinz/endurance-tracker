@@ -1,3 +1,6 @@
+// Sources: [Ramer1972], [DouglasPeucker1973], [LiangBarsky1984]
+// See src/engine/SOURCES.md for full citations.
+
 import { encode, decode } from '@googlemaps/polyline-codec';
 import { Simplify as simplify } from 'simplify-ts';
 import type { SessionRecord, GPSPoint, GPSBounds, SessionGPS } from './types.ts';

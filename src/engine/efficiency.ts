@@ -1,3 +1,6 @@
+// Sources: [CogganAllen2010], [Friel2009], [TP-EF]
+// See src/engine/SOURCES.md for full citations.
+
 import type { SessionRecord, TrainingSession } from './types.ts';
 
 /** Minimum number of valid power+HR records required to compute Pw:Hr decoupling. */

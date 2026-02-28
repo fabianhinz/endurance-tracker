@@ -1,3 +1,6 @@
+// Sources: [Banister1991]
+// See src/engine/SOURCES.md for full citations.
+
 // ---------------------------------------------------------------------------
 // Training Effect — TRIMP-based approximation
 // ---------------------------------------------------------------------------

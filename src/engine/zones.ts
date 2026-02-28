@@ -1,3 +1,6 @@
+// Sources: [Daniels2013]
+// See src/engine/SOURCES.md for full citations.
+
 import type { RunningZone, RunningZoneName } from './types.ts';
 
 const ZONE_DEFS: {

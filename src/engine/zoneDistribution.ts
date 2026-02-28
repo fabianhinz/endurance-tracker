@@ -1,3 +1,6 @@
+// Sources: [Karvonen1957], [CogganAllen2010]
+// See src/engine/SOURCES.md for full citations.
+
 import type { SessionRecord } from './types.ts';
 import { computeRunningZones, getZoneForPace } from './zones.ts';
 import type { EngineFormatter } from './formatter.ts';
