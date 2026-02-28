@@ -1,71 +1,133 @@
 import { useMemo } from "react";
 import { useMatch } from "react-router-dom";
-import { useControl } from "react-map-gl/maplibre";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
-import { useDeckLayers } from "./hooks/useDeckLayers.ts";
 import { useHiresPaths } from "./hooks/useHiresPaths.ts";
-import { ADDITIVE_BLEND, sportTrackColor } from "./trackColors.ts";
+import {
+  ADDITIVE_BLEND,
+  ALPHA_HIGHLIGHTED,
+  getTrackWidth,
+  sportTrackColor,
+} from "./trackColors.ts";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useLayoutStore } from "../../store/layout.ts";
 import { useDeckMetricsStore } from "../../store/deckMetrics.ts";
-import type { PickingInfo } from "@deck.gl/core";
-import type { TrackPickData } from "./hooks/useDeckLayers.ts";
 import type { MapTrack } from "./hooks/useMapTracks.ts";
+import {
+  decodeCached,
+  PICK_RADIUS,
+  type TrackPickData,
+} from "./hooks/types.ts";
+import { useControl } from "react-map-gl/maplibre";
 
-export const PICK_RADIUS = 25;
-
-interface DeckGLOverlayProps {
+interface DeckGLOverlayProps extends Pick<
+  PathLayer<TrackPickData>,
+  "onClick" | "onHover"
+> {
   tracks: MapTrack[];
-  onClick?: (info: PickingInfo<TrackPickData>) => void;
-  onHover?: (info: PickingInfo<TrackPickData>) => void;
 }
 
-export const DeckGLOverlay = (props: DeckGLOverlayProps) => {
+export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const hoveredSessionId = useMapFocusStore((s) => s.hoveredSessionId);
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const hoveredPoint = useMapFocusStore((s) => s.hoveredPoint);
   const pickCircle = useMapFocusStore((s) => s.pickCircle);
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
-  const updateDeckMetrics = useDeckMetricsStore((s) => s.update);
 
   const match = useMatch("/training/:id");
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
-  const trackLayers = useDeckLayers(
+  const trackLayers = useMemo(() => {
+    const data: TrackPickData[] = props.tracks.map((t) => ({
+      sessionId: t.sessionId,
+      track: t,
+      path: decodeCached(t.sessionId, t.gps.encodedPolyline),
+    }));
+
+    let eventHandlers: Partial<
+      Pick<PathLayer<TrackPickData>, "onClick" | "onHover">
+    > = {};
+    if (onboardingComplete) {
+      eventHandlers = {
+        onClick: props.onClick,
+        onHover: props.onHover,
+      };
+    }
+
+    return [
+      new PathLayer<TrackPickData>({
+        id: "gps-tracks",
+        data,
+        getPath: (d) => d.path,
+        getColor: (d) => {
+          const [r, g, b, a] = sportTrackColor[d.track.sport];
+          let alpha = a;
+          if (hoveredSessionId && hoveredSessionId !== d.sessionId) {
+            alpha = 0;
+          } else if (highlightedSessionId === d.sessionId) {
+            alpha = ALPHA_HIGHLIGHTED;
+          }
+
+          return [r, g, b, alpha];
+        },
+        getWidth: (d) => getTrackWidth(highlightedSessionId, d.sessionId),
+        widthMinPixels: 1,
+        widthMaxPixels: 5,
+        jointRounded: true,
+        capRounded: true,
+        pickable: true,
+        updateTriggers: {
+          getColor: [highlightedSessionId, hoveredSessionId],
+          getWidth: [highlightedSessionId],
+        },
+        transitions: {
+          getColor: 150,
+          getWidth: 150,
+        },
+        parameters: ADDITIVE_BLEND,
+        ...eventHandlers,
+      }),
+    ];
+  }, [
     props.tracks,
+    props.onClick,
+    props.onHover,
+    onboardingComplete,
     highlightedSessionId,
-    onboardingComplete
-      ? {
-          onClick: props.onClick,
-          onHover: props.onHover,
-          hiddenSessionId: openedSessionId,
-        }
-      : { hiddenSessionId: openedSessionId },
-  );
+    hoveredSessionId,
+  ]);
 
   const hiresPaths = useHiresPaths(hoveredSessionId, openedSessionId, sessions);
 
   const hiresLayer = useMemo(() => {
-    if (hiresPaths.size === 0) return null;
+    if (hiresPaths.size === 0 || !openedSessionId) {
+      return;
+    }
 
-    const sportMap = new Map(sessions.map((s) => [s.id, s.sport]));
-    const data = [...hiresPaths.entries()].map(([sessionId, path]) => ({
-      sessionId,
+    const path = hiresPaths.get(openedSessionId);
+
+    const sport = sessions.find(
+      (session) => session.id === openedSessionId,
+    )?.sport;
+    if (!sport || !path) {
+      return;
+    }
+
+    const data = {
+      openedSessionId,
       path,
-      sport: sportMap.get(sessionId) ?? ("running" as const),
-    }));
+      sport,
+    };
 
-    return new PathLayer<(typeof data)[number]>({
+    return new PathLayer<typeof data>({
       id: "hires-tracks",
-      data,
+      data: [data],
       getPath: (d) => d.path,
       getColor: (d) => {
-        const base = sportTrackColor[d.sport];
-        const alpha = d.sessionId === openedSessionId ? base[3] : 0;
-        return [base[0], base[1], base[2], alpha];
+        const [r, g, b] = sportTrackColor[d.sport];
+        return [r, g, b, ALPHA_HIGHLIGHTED];
       },
       getWidth: 4,
       widthMinPixels: 1,
@@ -118,12 +180,18 @@ export const DeckGLOverlay = (props: DeckGLOverlayProps) => {
 
   const layers = useMemo(
     () => [
-      ...trackLayers,
+      ...(openedSessionId ? [] : [trackLayers]),
       ...(hiresLayer ? [hiresLayer] : []),
       ...(pickCircleLayer ? [pickCircleLayer] : []),
       ...(hoveredPointLayer ? [hoveredPointLayer] : []),
     ],
-    [trackLayers, hiresLayer, pickCircleLayer, hoveredPointLayer],
+    [
+      openedSessionId,
+      trackLayers,
+      hiresLayer,
+      pickCircleLayer,
+      hoveredPointLayer,
+    ],
   );
 
   const overlay = useControl<MapboxOverlay>(
@@ -132,7 +200,7 @@ export const DeckGLOverlay = (props: DeckGLOverlayProps) => {
   overlay.setProps({
     layers,
     pickingRadius: PICK_RADIUS,
-    _onMetrics: updateDeckMetrics,
+    _onMetrics: useDeckMetricsStore.getState().update,
   });
 
   return null;
