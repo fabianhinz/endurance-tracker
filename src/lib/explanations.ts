@@ -14,8 +14,6 @@ export type MetricId =
   | "acwr"
   | "normalizedPower"
   | "gradeAdjustedPace"
-  | "efficiencyFactor"
-  | "pwHrDecoupling"
   | "peakPower5min"
   | "peakPower20min"
   | "peakPower60min"
@@ -276,58 +274,6 @@ const gradeAdjustedPace: MetricExplanation = {
   sports: ["running"],
   displayContext:
     "Session detail for running activities with elevation data. Display alongside actual pace.",
-};
-
-// ---------------------------------------------------------------------------
-// Efficiency metrics (src/engine/efficiency.ts)
-// ---------------------------------------------------------------------------
-
-const efficiencyFactor: MetricExplanation = {
-  id: "efficiencyFactor",
-  shortLabel: "EF",
-  friendlyName: "Efficiency",
-  name: "Efficiency Factor",
-  oneLiner:
-    "How much output (power or speed) you get per heartbeat — higher means fitter.",
-  fullExplanation:
-    "Efficiency Factor measures your aerobic efficiency by dividing output (Normalized Power for cycling, speed for running) by average heart rate. A rising EF over weeks indicates improving aerobic fitness. Unlike threshold tests, EF can be tracked from regular easy and moderate sessions.",
-  formula: "Cycling: NP / avg HR. Running: NGP / avg HR (falls back to avg speed / avg HR without elevation data)",
-  analogy:
-    "EF is like your car's fuel efficiency (km per liter). More output for the same fuel (heartbeats) means your engine is running better.",
-  whyItMatters:
-    "EF is one of the best long-term aerobic fitness indicators. A steadily rising EF confirms that base training is working, without requiring maximum effort tests.",
-  range:
-    "Cycling: typically 1.0-2.0 (NP/HR). Higher = better. Running: sport-specific scaling. Track the trend over 4+ weeks, not individual values.",
-  limitations:
-    "EF is affected by day-to-day HR variability (sleep, stress, caffeine, heat). Single-session values are noisy; the trend over 4+ weeks is what matters.",
-  sports: ["cycling", "running"],
-  displayContext:
-    "Trend chart over 4-8 weeks, filtered by sport. Do not overemphasize single-session values.",
-};
-
-const pwHrDecoupling: MetricExplanation = {
-  id: "pwHrDecoupling",
-  shortLabel: "Decoupling",
-  friendlyName: "Aerobic Decoupling",
-  name: "Power-to-Heart-Rate Decoupling",
-  oneLiner:
-    "Whether your heart rate drifted up or power faded in the second half of a workout.",
-  fullExplanation:
-    "Decoupling compares the power-to-HR ratio in the first half vs. second half of a session. Less than 5% drift means your aerobic system handled the effort efficiently. Higher decoupling suggests your body worked harder to maintain the same output as the session progressed.",
-  formula:
-    "Decoupling% = ((firstHalf_Pw/HR - secondHalf_Pw/HR) / firstHalf_Pw/HR) x 100",
-  analogy:
-    "It is like checking if your car needs more gas to maintain the same speed later in a road trip. If fuel consumption stays steady, the engine is running clean. If it rises, something is laboring.",
-  whyItMatters:
-    "Decoupling below 5% over a 60-90 minute steady effort is one of the clearest signals of aerobic fitness readiness. It helps athletes decide if their base training is sufficient to move into higher-intensity phases.",
-  range:
-    "Below 5%: excellent aerobic base. 5-10%: moderate, room for improvement. Above 10%: significant drift, more base work needed.",
-  limitations:
-    "Only meaningful for steady-state aerobic sessions (zone 2-3). Interval sessions will show high decoupling by design. Requires both power and HR data. Heat and dehydration can cause cardiac drift that mimics poor decoupling.",
-  unit: "%",
-  sports: ["cycling"],
-  displayContext:
-    "Session detail for steady-state cycling sessions. Include the 5% threshold as a reference line.",
 };
 
 // ---------------------------------------------------------------------------
@@ -726,9 +672,6 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   // Normalized metrics
   normalizedPower,
   gradeAdjustedPace,
-  // Efficiency metrics
-  efficiencyFactor,
-  pwHrDecoupling,
   // Personal bests — power
   peakPower5min,
   peakPower20min,

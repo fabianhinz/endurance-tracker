@@ -53,8 +53,6 @@ export interface TrainingSession {
   minAltitude?: number;
   maxAltitude?: number;
   avgAltitude?: number;
-  ef?: number;
-  pwHrDecoupling?: number;
   gap?: number;
   tss: number;
   stressMethod: "tss" | "trimp" | "duration";

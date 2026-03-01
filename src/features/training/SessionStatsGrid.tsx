@@ -148,25 +148,6 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     });
   }
 
-  if (props.session.ef) {
-    stats.push({
-      key: "ef",
-      label: "Efficiency Factor",
-      value: props.session.ef,
-      metricId: "efficiencyFactor",
-    });
-  }
-
-  if (props.session.pwHrDecoupling !== undefined) {
-    stats.push({
-      key: "pwHrDecoupling",
-      label: "Pw:Hr Decoupling",
-      value: props.session.pwHrDecoupling,
-      unit: "%",
-      metricId: "pwHrDecoupling",
-    });
-  }
-
   const tssComparison = compareTSS(props.session.deviceTss, props.session.tss);
   if (tssComparison) {
     const confidenceClass =

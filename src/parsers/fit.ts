@@ -3,7 +3,6 @@ import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '
 import { validateRecords } from '../engine/validation.ts';
 import { calculateSessionStress } from '../engine/stress.ts';
 import { calculateGAP } from '../engine/normalize.ts';
-import { calculateEF, calculateDecoupling } from '../engine/efficiency.ts';
 import { extractSessionName } from '../lib/filename.ts';
 import { generateFingerprint } from '../engine/fingerprint.ts';
 import {
@@ -200,15 +199,6 @@ export const parseFitFile = async (
 
   // Compute advanced metrics from records
   const gap = sport === 'running' ? calculateGAP(records) : undefined;
-  const ef = calculateEF(
-    stressResult.normalizedPower ?? fitSession?.normalized_power,
-    fitSession?.avg_speed,
-    fitSession?.avg_heart_rate,
-    sport,
-    gap,
-  );
-  const pwHrDecoupling = calculateDecoupling(records);
-
   const sessionDate = fitSession?.start_time
     ? new Date(fitSession.start_time).getTime()
     : Date.now();
@@ -254,8 +244,6 @@ export const parseFitFile = async (
     minAltitude: fitSession?.min_altitude,
     maxAltitude: fitSession?.max_altitude,
     avgAltitude: fitSession?.avg_altitude,
-    ...(ef !== undefined && { ef }),
-    ...(pwHrDecoupling !== undefined && { pwHrDecoupling }),
     ...(gap !== undefined && { gap }),
     tss: stressResult.tss,
     stressMethod: stressResult.stressMethod,

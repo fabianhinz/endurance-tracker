@@ -17,8 +17,6 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 | `zoneDistribution.ts` | Coggan power zones | `[CogganAllen2010]` | Matches published zones |
 | `coaching.ts` | Gabbett ACWR (acute:chronic workload ratio) | `[Gabbett2016]` | Matches published thresholds |
 | `coaching.ts` | Friel CTL ramp-rate guidelines | `[Friel2009]`, `[TP-PMC]` | Matches published ranges |
-| `efficiency.ts` | Coggan Efficiency Factor (NP / HR) | `[CogganAllen2010]`, `[TP-EF]` | Matches published definition |
-| `efficiency.ts` | Friel Pw:Hr decoupling | `[Friel2009]` | Matches published method |
 | `zones.ts` | Daniels pace zones (% of VDOT pace) | `[Daniels2013]` | Matches published zone boundaries |
 | `trainingEffect.ts` | Banister TRIMP (used as TE input) | `[Banister1991]` | Custom 0–5 mapping (app-specific) |
 | `gps.ts` | Ramer–Douglas–Peucker simplification | `[Ramer1972]`, `[DouglasPeucker1973]` | Standard algorithm |
@@ -41,7 +39,6 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 | `[LiangBarsky1984]` | Liang, Y.D. & Barsky, B.A. (1984). "A new concept and method for line clipping." *ACM TOG*, 3(1), 1–22. |
 | `[Fellrnr]` | Fellrnr. "TRIMP." <https://fellrnr.com/wiki/TRIMP> |
 | `[TP-PMC]` | TrainingPeaks. "The Science of the Performance Manager." <https://www.trainingpeaks.com/learn/articles/the-science-of-the-performance-manager/> |
-| `[TP-EF]` | TrainingPeaks. "Efficiency Factor and Decoupling." <https://www.trainingpeaks.com/blog/efficiency-factor-and-decoupling/> |
 
 ## Custom / App-Specific Formulas (No Published Source)
 

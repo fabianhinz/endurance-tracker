@@ -15,8 +15,6 @@ const ALL_METRIC_IDS: MetricId[] = [
   'acwr',
   'normalizedPower',
   'gradeAdjustedPace',
-  'efficiencyFactor',
-  'pwHrDecoupling',
   'peakPower5min',
   'peakPower20min',
   'peakPower60min',
