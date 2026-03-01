@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useMatch } from "react-router-dom";
 import { MapboxOverlay } from "@deck.gl/mapbox";
+import type { PickingInfo } from "@deck.gl/core";
 import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { useHiresPaths } from "./hooks/useHiresPaths.ts";
 import {
@@ -21,11 +22,12 @@ import {
 } from "./hooks/types.ts";
 import { useControl } from "react-map-gl/maplibre";
 
-interface DeckGLOverlayProps extends Pick<
-  PathLayer<TrackPickData>,
-  "onClick" | "onHover"
-> {
+type PickHandler = (info: PickingInfo, event: unknown) => boolean | void;
+
+interface DeckGLOverlayProps {
   tracks: MapTrack[];
+  onClick?: PickHandler;
+  onHover?: PickHandler;
 }
 
 export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
@@ -39,22 +41,20 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const match = useMatch("/training/:id");
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
+  const eventHandlers = useMemo(
+    (): { onClick?: PickHandler; onHover?: PickHandler } =>
+      onboardingComplete
+        ? { onClick: props.onClick, onHover: props.onHover }
+        : {},
+    [onboardingComplete, props.onClick, props.onHover],
+  );
+
   const trackLayers = useMemo(() => {
     const data: TrackPickData[] = props.tracks.map((t) => ({
       sessionId: t.sessionId,
       track: t,
       path: decodeCached(t.sessionId, t.gps.encodedPolyline),
     }));
-
-    let eventHandlers: Partial<
-      Pick<PathLayer<TrackPickData>, "onClick" | "onHover">
-    > = {};
-    if (onboardingComplete) {
-      eventHandlers = {
-        onClick: props.onClick,
-        onHover: props.onHover,
-      };
-    }
 
     return [
       new PathLayer<TrackPickData>({
@@ -92,9 +92,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     ];
   }, [
     props.tracks,
-    props.onClick,
-    props.onHover,
-    onboardingComplete,
+    eventHandlers,
     highlightedSessionId,
     hoveredSessionId,
   ]);
@@ -134,13 +132,14 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       widthMaxPixels: 5,
       jointRounded: true,
       capRounded: true,
-      pickable: false,
+      pickable: true,
       updateTriggers: {
         getColor: [openedSessionId],
       },
       parameters: ADDITIVE_BLEND,
+      ...eventHandlers,
     });
-  }, [hiresPaths, openedSessionId, sessions]);
+  }, [hiresPaths, openedSessionId, sessions, eventHandlers]);
 
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) return null;

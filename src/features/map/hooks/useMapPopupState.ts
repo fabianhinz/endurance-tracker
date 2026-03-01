@@ -8,8 +8,8 @@ import type { MapRef } from "react-map-gl/maplibre";
 import type { MapTrack } from "./useMapTracks.ts";
 import type { PopupInfo } from "../MapPickPopup.tsx";
 import type { LapPopupInfo } from "../LapPickPopup.tsx";
-import { decodeCached, PICK_RADIUS, type TrackPickData } from "./types.ts";
-import type { PathLayer } from "@deck.gl/layers";
+import { decodeCached, PICK_RADIUS } from "./types.ts";
+import type { PickingInfo } from "@deck.gl/core";
 
 export const useMapPopupState = (
   mapRef: React.RefObject<MapRef | null>,
@@ -24,8 +24,8 @@ export const useMapPopupState = (
 
   const interactive = !popup && !lapPopup;
 
-  const onClick: PathLayer<TrackPickData>["onClick"] = useCallback(
-    (info) => {
+  const onClick = useCallback(
+    (info: PickingInfo) => {
       const stopPropagation = false;
 
       if (!info.object || !mapRef.current) {
@@ -80,8 +80,8 @@ export const useMapPopupState = (
     useMapFocusStore.getState().clearPickCircle();
   }, []);
 
-  const onHover: PathLayer<TrackPickData>["onHover"] = useCallback(
-    (info) => {
+  const onHover = useCallback(
+    (info: PickingInfo) => {
       const stopPropagation = false;
       setHoveringTrack(!!info.object);
       if (!popup && !lapPopup) {
