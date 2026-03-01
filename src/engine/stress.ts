@@ -1,10 +1,15 @@
+// Sources: [Banister1991], [CogganAllen2010], [Fellrnr]
+// See src/engine/SOURCES.md for full citations.
+
 import type { SessionRecord, Gender } from './types.ts';
 import { calculateNormalizedPower } from './normalize.ts';
 
 /**
  * Gender-specific Banister coefficients used in the TRIMP exponential weighting formula.
- * @property male - Coefficients for male athletes: `a` (linear weight), `b` (exponential rate).
- * @property female - Coefficients for female athletes: `a` (linear weight), `b` (exponential rate).
+ * Male coefficients (a=0.64, b=1.92) are from Banister 1991 with strong consensus.
+ * Female coefficients (b=1.67) are agreed upon; the `a` coefficient varies across
+ * secondary sources (0.64 in Fellrnr/Veohtu, 0.86 in Intervals.icu and others).
+ * We use 0.86 following the majority of contemporary implementations.
  */
 export const BANISTER = {
   male: { a: 0.64, b: 1.92 },
@@ -20,7 +25,7 @@ export const BANISTER = {
  * @param ftp - Functional Threshold Power in watts.
  * @returns Object with rounded `tss` and `normalizedPower`, or `undefined` when NP cannot be derived or FTP is invalid.
  */
-export const calculateTSS = (
+const calculateTSS = (
   records: SessionRecord[],
   durationSec: number,
   ftp: number,
@@ -49,7 +54,7 @@ export const calculateTSS = (
  * @param gender - Athlete gender used to select Banister coefficients.
  * @returns TRIMP value normalized to the TSS scale (rounded to one decimal), or `0` when HR values are physiologically invalid.
  */
-export const calculateTRIMP = (
+const calculateTRIMP = (
   avgHr: number,
   durationSec: number,
   restHr: number,
@@ -65,10 +70,10 @@ export const calculateTRIMP = (
 
   const trimp = durationMin * deltaHrRatio * a * Math.exp(b * deltaHrRatio);
 
-  // Normalize TRIMP to approximate TSS scale (divide by ~1 hour threshold effort TRIMP)
-  // A 1-hour threshold effort for male: 60 * 1.0 * 0.64 * e^1.92 ≈ 262
-  // We normalize so that effort produces ~100 TSS
-  const normFactor = 60 * 1.0 * a * Math.exp(b) / 100;
+  // Normalize TRIMP to approximate TSS scale (divide by ~1 hour threshold effort TRIMP).
+  // Lactate threshold ≈ 88% of HR reserve (consistent with THRESHOLD_INTENSITY in vdot.ts).
+  const thresholdHrRatio = 0.88;
+  const normFactor = 60 * thresholdHrRatio * a * Math.exp(b * thresholdHrRatio) / 100;
 
   return Math.round((trimp / normFactor) * 10) / 10;
 };
@@ -92,7 +97,7 @@ export const calculateSessionStress = (
   maxHr: number,
   gender: Gender,
   ftp?: number,
-): { tss: number; stressMethod: 'tss' | 'trimp'; normalizedPower?: number } => {
+): { tss: number; stressMethod: 'tss' | 'trimp' | 'duration'; normalizedPower?: number } => {
   // Try TSS first (requires power data + FTP)
   if (ftp && ftp > 0) {
     const tssResult = calculateTSS(records, durationSec, ftp);
@@ -117,53 +122,7 @@ export const calculateSessionStress = (
   // No usable data — assign minimal stress estimate based on duration
   return {
     tss: Math.round((durationSec / 3600) * 30),
-    stressMethod: 'trimp',
+    stressMethod: 'duration',
   };
 };
 
-/** Structured comparison between a device-reported TSS and the app-computed TSS. */
-export interface TSSComparison {
-  /** TSS value as reported by the recording device. */
-  deviceTss: number;
-  /** TSS value computed by the app from raw session records. */
-  computedTss: number;
-  /** Absolute difference between `deviceTss` and `computedTss`. */
-  delta: number;
-  /** Relative divergence expressed as a percentage of `deviceTss`. */
-  divergencePercent: number;
-  /** Confidence band derived from `divergencePercent`: high ≤5%, moderate ≤15%, low >15%. */
-  confidence: 'high' | 'moderate' | 'low';
-  /** Human-readable warning message emitted only when confidence is `'low'`. */
-  warning?: string;
-}
-
-/**
- * Compare device-reported TSS with app-computed TSS.
- * Returns null when deviceTss is unavailable.
- * @param deviceTss - TSS value reported by the recording device, or `undefined` when absent.
- * @param computedTss - TSS value computed by the app from raw session records.
- * @returns A `TSSComparison` object with delta, divergence percentage, and confidence rating, or `null` when `deviceTss` is not available.
- */
-export const compareTSS = (
-  deviceTss: number | undefined,
-  computedTss: number,
-): TSSComparison | null => {
-  if (deviceTss === undefined) return null;
-
-  const delta = Math.abs(deviceTss - computedTss);
-  const divergencePercent = deviceTss > 0 ? (delta / deviceTss) * 100 : 0;
-
-  let confidence: TSSComparison['confidence'];
-  let warning: string | undefined;
-
-  if (divergencePercent <= 5) {
-    confidence = 'high';
-  } else if (divergencePercent <= 15) {
-    confidence = 'moderate';
-  } else {
-    confidence = 'low';
-    warning = `TSS diverges by ${divergencePercent.toFixed(0)}% from device value — check FTP setting (device: ${deviceTss}, app: ${computedTss})`;
-  }
-
-  return { deviceTss, computedTss, delta, divergencePercent, confidence, warning };
-};

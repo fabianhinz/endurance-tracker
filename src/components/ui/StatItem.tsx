@@ -18,7 +18,7 @@ export const StatItem = (props: StatItemProps) => {
         <Typography variant="overline" as="span">
           {props.label}
         </Typography>
-        {props.metricId && <MetricLabel metricId={props.metricId} size="sm" />}
+        {props.metricId && <MetricLabel metricId={props.metricId} size="sm" contextLabel={props.label} />}
       </div>
       <Typography variant="h3" as="p">
         {props.value}

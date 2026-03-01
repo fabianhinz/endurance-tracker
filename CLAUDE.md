@@ -34,15 +34,15 @@
 
 ## 3. File Naming Conventions
 
-| Category | Convention | Example |
-|---|---|---|
-| React components | PascalCase | `SessionDetail.tsx`, `ChartPreview.tsx` |
-| Hooks | camelCase with `use` prefix | `useChartZoom.ts`, `useDeckLayers.ts` |
-| Stores | camelCase | `toastStore.ts`, `mapFocus.ts` |
-| Engine modules | camelCase | `trainingEffect.ts`, `zoneDistribution.ts` |
-| Lib utilities | camelCase | `chartData.ts`, `timeRange.ts` |
-| Tests | Match source name + `.spec.ts` / `.integration.test.ts` | `trainingEffect.spec.ts` |
-| Web Workers | camelCase | `gpsBuild.worker.ts` |
+| Category         | Convention                                              | Example                                    |
+| ---------------- | ------------------------------------------------------- | ------------------------------------------ |
+| React components | PascalCase                                              | `SessionDetail.tsx`, `ChartPreview.tsx`    |
+| Hooks            | camelCase with `use` prefix                             | `useChartZoom.ts`                          |
+| Stores           | camelCase                                               | `toastStore.ts`, `mapFocus.ts`             |
+| Engine modules   | camelCase                                               | `trainingEffect.ts`, `zoneDistribution.ts` |
+| Lib utilities    | camelCase                                               | `chartData.ts`, `timeRange.ts`             |
+| Tests            | Match source name + `.spec.ts` / `.integration.test.ts` | `trainingEffect.spec.ts`                   |
+| Web Workers      | camelCase                                               | `gpsBuild.worker.ts`                       |
 
 - Feature hooks live in `src/features/<feature>/hooks/`
 - Shared hooks live in `src/lib/hooks/`
@@ -64,6 +64,7 @@ Specific guidelines for features, testing, and state management are located in t
 1. **Plan**: Write a plan in `./plans/<feature-name>.md` detailing context, approach, files to modify, and verification steps. Review with the user before writing code.
 2. **Implement**: Write the code and the corresponding tests (happy path, edge cases, error conditions).
 3. **Verify**: Run the following suite:
+
    ```bash
    pnpm test          # vitest run
    pnpm lint --fix    # eslint

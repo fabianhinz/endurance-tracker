@@ -1,7 +1,10 @@
+// Sources: [CogganAllen2010], [Minetti2002]
+// See src/engine/SOURCES.md for full citations.
+
 import type { SessionRecord } from './types.ts';
 
 /** Width of the rolling average window used in the normalized power calculation, in seconds. */
-export const NP_ROLLING_WINDOW_SEC = 30;
+const NP_ROLLING_WINDOW_SEC = 30;
 
 /**
  * Calculate Normalized Power (NP) from time-series power data using the standard 30 s rolling-average → 4th-power → mean → 4th-root algorithm.

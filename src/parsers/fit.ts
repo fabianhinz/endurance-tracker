@@ -2,6 +2,7 @@ import FitParser from 'fit-file-parser';
 import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '../engine/types.ts';
 import { validateRecords } from '../engine/validation.ts';
 import { calculateSessionStress } from '../engine/stress.ts';
+import { calculateGAP } from '../engine/normalize.ts';
 import { extractSessionName } from '../lib/filename.ts';
 import { generateFingerprint } from '../engine/fingerprint.ts';
 import {
@@ -196,6 +197,8 @@ export const parseFitFile = async (
     hasPowerRecords ? userProfile.ftp : undefined,
   );
 
+  // Compute advanced metrics from records
+  const gap = sport === 'running' ? calculateGAP(records) : undefined;
   const sessionDate = fitSession?.start_time
     ? new Date(fitSession.start_time).getTime()
     : Date.now();
@@ -241,6 +244,7 @@ export const parseFitFile = async (
     minAltitude: fitSession?.min_altitude,
     maxAltitude: fitSession?.max_altitude,
     avgAltitude: fitSession?.avg_altitude,
+    ...(gap !== undefined && { gap }),
     tss: stressResult.tss,
     stressMethod: stressResult.stressMethod,
     sensorWarnings,

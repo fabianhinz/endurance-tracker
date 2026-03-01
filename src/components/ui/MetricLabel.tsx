@@ -19,12 +19,20 @@ interface MetricLabelProps {
   size?: "default" | "sm";
   showValue?: ReactNode;
   className?: string;
+  contextLabel?: string;
 }
 
 export const MetricLabel = (props: MetricLabelProps) => {
   const explanation = METRIC_EXPLANATIONS[props.metricId];
   const showHelp = useUserStore((s) => s.profile?.showMetricHelp ?? true);
   const size = props.size ?? "default";
+
+  const hideShortLabel =
+    size === "sm" &&
+    props.contextLabel !== undefined &&
+    explanation.shortLabel.localeCompare(props.contextLabel, undefined, {
+      sensitivity: "base",
+    }) === 0;
 
   return (
     <span className={cn("inline-flex items-center gap-1", props.className)}>
@@ -37,7 +45,7 @@ export const MetricLabel = (props: MetricLabelProps) => {
             ({explanation.shortLabel})
           </Typography>
         </>
-      ) : (
+      ) : hideShortLabel ? null : (
         <Typography variant="caption">
           {explanation.shortLabel}
         </Typography>

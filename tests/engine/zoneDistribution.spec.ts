@@ -55,6 +55,21 @@ describe('computeHrZoneDistribution', () => {
     expect(z5?.percentage).toBe(100);
   });
 
+  it('bins HR below Z1 minimum into Z1 instead of dropping', () => {
+    // HR reserve = 140, Z1 starts at 50% → 120 bpm
+    // HR of 80 → pct = (80-50)/140 ≈ 0.214, well below Z1 minPct of 0.50
+    const records: SessionRecord[] = [
+      { sessionId: 's1', timestamp: 0, hr: 80 },
+      { sessionId: 's1', timestamp: 1, hr: 90 },
+      { sessionId: 's1', timestamp: 2, hr: 100 },
+    ];
+    const result = computeHrZoneDistribution(records, maxHr, restHr);
+    const z1 = result.find((b) => b.zone === 'Z1');
+    // All 3 records should land in Z1
+    expect(z1?.seconds).toBe(3);
+    expect(z1?.percentage).toBe(100);
+  });
+
   it('includes rangeLabel with bpm range', () => {
     const records: SessionRecord[] = [
       { sessionId: 's1', timestamp: 0, hr: 150 },

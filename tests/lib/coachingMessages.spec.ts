@@ -6,9 +6,6 @@ import {
 import {
   getLoadState,
   getInjuryRisk,
-  ACWR_MODERATE_THRESHOLD,
-  ACWR_HIGH_THRESHOLD,
-  ACWR_UNDERTRAINING_THRESHOLD,
 } from '../../src/engine/coaching.ts';
 import type { FormStatus } from '../../src/engine/types.ts';
 import type { CoachingRecommendation } from '../../src/types/index.ts';
@@ -234,37 +231,37 @@ describe('getLoadState', () => {
 });
 
 describe('threshold consistency: getLoadState and getInjuryRisk agree at boundaries', () => {
-  it('ACWR at ACWR_MODERATE_THRESHOLD is low risk and sweet-spot', () => {
-    expect(getInjuryRisk(ACWR_MODERATE_THRESHOLD)).toBe('low');
-    expect(getLoadState(ACWR_MODERATE_THRESHOLD, 42)).toBe('sweet-spot');
+  it('ACWR at 1.3 is low risk and sweet-spot', () => {
+    expect(getInjuryRisk(1.3)).toBe('low');
+    expect(getLoadState(1.3, 42)).toBe('sweet-spot');
   });
 
-  it('ACWR just above ACWR_MODERATE_THRESHOLD is moderate risk and moderate-risk state', () => {
-    const above = ACWR_MODERATE_THRESHOLD + 0.01;
+  it('ACWR just above 1.3 is moderate risk and moderate-risk state', () => {
+    const above = 1.3 + 0.01;
     expect(getInjuryRisk(above)).toBe('moderate');
     expect(getLoadState(above, 42)).toBe('moderate-risk');
   });
 
-  it('ACWR at ACWR_HIGH_THRESHOLD is moderate risk and moderate-risk state', () => {
-    expect(getInjuryRisk(ACWR_HIGH_THRESHOLD)).toBe('moderate');
-    expect(getLoadState(ACWR_HIGH_THRESHOLD, 42)).toBe('moderate-risk');
+  it('ACWR at 1.5 is moderate risk and moderate-risk state', () => {
+    expect(getInjuryRisk(1.5)).toBe('moderate');
+    expect(getLoadState(1.5, 42)).toBe('moderate-risk');
   });
 
-  it('ACWR just above ACWR_HIGH_THRESHOLD is high risk and high-risk state', () => {
-    const above = ACWR_HIGH_THRESHOLD + 0.01;
+  it('ACWR just above 1.5 is high risk and high-risk state', () => {
+    const above = 1.5 + 0.01;
     expect(getInjuryRisk(above)).toBe('high');
     expect(getLoadState(above, 42)).toBe('high-risk');
   });
 
-  it('ACWR below ACWR_UNDERTRAINING_THRESHOLD is low risk and undertraining', () => {
-    const below = ACWR_UNDERTRAINING_THRESHOLD - 0.01;
+  it('ACWR below 0.8 is low risk and undertraining', () => {
+    const below = 0.8 - 0.01;
     expect(getInjuryRisk(below)).toBe('low');
     expect(getLoadState(below, 42)).toBe('undertraining');
   });
 
-  it('ACWR at ACWR_UNDERTRAINING_THRESHOLD is low risk and sweet-spot', () => {
-    expect(getInjuryRisk(ACWR_UNDERTRAINING_THRESHOLD)).toBe('low');
-    expect(getLoadState(ACWR_UNDERTRAINING_THRESHOLD, 42)).toBe('sweet-spot');
+  it('ACWR at 0.8 is low risk and sweet-spot', () => {
+    expect(getInjuryRisk(0.8)).toBe('low');
+    expect(getLoadState(0.8, 42)).toBe('sweet-spot');
   });
 });
 

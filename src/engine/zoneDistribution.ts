@@ -1,3 +1,6 @@
+// Sources: [Karvonen1957], [CogganAllen2010]
+// See src/engine/SOURCES.md for full citations.
+
 import type { SessionRecord } from './types.ts';
 import { computeRunningZones, getZoneForPace } from './zones.ts';
 import type { EngineFormatter } from './formatter.ts';
@@ -59,6 +62,8 @@ export const computeHrZoneDistribution = (
       counts[idx]++;
     } else if (pct >= 1.0) {
       counts[counts.length - 1]++; // cap at Z5
+    } else if (pct < HR_ZONE_DEFS[0].minPct) {
+      counts[0]++; // bin sub-Z1 into Z1
     }
   }
 

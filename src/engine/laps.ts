@@ -29,7 +29,7 @@ export interface LapAnalysis {
 /**
  * Pairing of one active interval lap with its optional following recovery lap.
  */
-export interface IntervalPair {
+interface IntervalPair {
   /** The active (high-intensity) lap of the interval. */
   active: LapAnalysis;
   /** The recovery lap immediately following the active lap, or `undefined` if none exists. */
@@ -42,7 +42,7 @@ export interface IntervalPair {
  * Summary of pace and HR drift across laps, indicating whether the athlete is
  * fading, holding steady, or building through the session.
  */
-export interface ProgressiveOverload {
+interface ProgressiveOverload {
   /** Percentage change in pace from first to last (target) lap; positive = slower. `undefined` when pace data is unavailable. */
   paceDriftPercent: number | undefined;
   /** Percentage change in average HR from first to last (target) lap; positive = higher HR. `undefined` when HR data is unavailable. */
@@ -54,7 +54,7 @@ export interface ProgressiveOverload {
 }
 
 /** Minimum absolute pace or HR drift percentage required to classify a session as `'fading'` or `'building'`. */
-export const DRIFT_THRESHOLD_PERCENT = 3;
+const DRIFT_THRESHOLD_PERCENT = 3;
 
 /**
  * Converts raw session laps into enriched {@link LapAnalysis} objects with derived pace and intensity fields.

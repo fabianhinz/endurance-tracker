@@ -7,30 +7,24 @@
 export type MetricId =
   | "tss"
   | "trimp"
+  | "duration"
   | "ctl"
   | "atl"
   | "tsb"
   | "acwr"
   | "normalizedPower"
   | "gradeAdjustedPace"
-  | "efficiencyFactor"
-  | "pwHrDecoupling"
-  | "peakPower5min"
-  | "peakPower20min"
-  | "peakPower60min"
-  | "peakPace5min"
-  | "peakPace20min"
-  | "peakPace60min"
-  | "formStatus"
-  | "injuryRisk"
-  | "hrValidation"
-  | "powerValidation"
-  | "speedValidation"
   | "recovery"
   | "pacingTrend"
   | "trainingZones"
   | "aerobicTE"
-  | "anaerobicTE";
+  | "anaerobicTE"
+  | "avgHr"
+  | "avgPace"
+  | "avgSpeed"
+  | "avgPower"
+  | "elevation"
+  | "cadence";
 
 export interface MetricExplanation {
   id: MetricId;
@@ -103,6 +97,28 @@ const trimp: MetricExplanation = {
     'Session detail as the stress metric when power data is unavailable. Labeled as "estimated from heart rate".',
 };
 
+const duration: MetricExplanation = {
+  id: "duration",
+  shortLabel: "Duration",
+  friendlyName: "Duration-Based Load",
+  name: "Duration-Based Stress Estimate",
+  oneLiner:
+    "A rough stress estimate based only on session duration when no power or heart rate data is available.",
+  fullExplanation:
+    "When a session has neither power nor heart rate data, the app estimates stress at a fixed rate of 30 TSS per hour. This is a conservative placeholder that prevents the session from being invisible in your training load history, but should not be taken as an accurate measure of training stress.",
+  analogy:
+    "Think of it as a minimum charge on your training credit card — the app logs that you trained, even if it cannot measure how hard.",
+  whyItMatters:
+    "Without this fallback, sessions lacking sensor data would contribute zero to your fitness and fatigue tracking, creating gaps in your load history.",
+  range: "Fixed at 30 TSS per hour of activity.",
+  limitations:
+    "Highly inaccurate for intense or very easy sessions. A 1-hour threshold effort and a 1-hour walk both receive 30 TSS. Use a heart rate strap or power meter for meaningful load tracking.",
+  unit: "TSS-equivalent",
+  sports: ["all"],
+  displayContext:
+    'Session detail as the stress metric when no sensor data is available. Labeled as "estimated from duration".',
+};
+
 // ---------------------------------------------------------------------------
 // Load metrics (src/engine/metrics.ts)
 // ---------------------------------------------------------------------------
@@ -115,7 +131,7 @@ const ctl: MetricExplanation = {
   oneLiner: "Your fitness level built up over the past ~6 weeks of training.",
   fullExplanation:
     "CTL is a 42-day exponentially weighted moving average of daily TSS. It rises slowly when you train consistently and drops slowly when you rest. CTL represents your accumulated aerobic and muscular fitness from sustained training.",
-  formula: "CTL_today = CTL_yesterday + (TSS_today - CTL_yesterday) x (2/43)",
+  formula: "CTL_today = CTL_yesterday + (TSS_today - CTL_yesterday) x (1 - e^(-1/42))",
   analogy:
     "CTL is like your savings account balance. Each workout is a deposit. The balance grows slowly with consistent contributions and shrinks gradually if you stop depositing.",
   whyItMatters:
@@ -139,7 +155,7 @@ const atl: MetricExplanation = {
     "How much training stress you have accumulated over the past ~week.",
   fullExplanation:
     "ATL is a 7-day exponentially weighted moving average of daily TSS. It spikes after hard training blocks and drops quickly when you rest. ATL captures short-term fatigue that your body needs to recover from.",
-  formula: "ATL_today = ATL_yesterday + (TSS_today - ATL_yesterday) x (2/8)",
+  formula: "ATL_today = ATL_yesterday + (TSS_today - ATL_yesterday) x (1 - e^(-1/7))",
   analogy:
     "ATL is like your credit card bill — it reflects your recent spending (training). A big week of training runs up the bill fast. A rest week lets it settle back down.",
   whyItMatters:
@@ -253,311 +269,6 @@ const gradeAdjustedPace: MetricExplanation = {
   sports: ["running"],
   displayContext:
     "Session detail for running activities with elevation data. Display alongside actual pace.",
-};
-
-// ---------------------------------------------------------------------------
-// Efficiency metrics (src/engine/efficiency.ts)
-// ---------------------------------------------------------------------------
-
-const efficiencyFactor: MetricExplanation = {
-  id: "efficiencyFactor",
-  shortLabel: "EF",
-  friendlyName: "Efficiency",
-  name: "Efficiency Factor",
-  oneLiner:
-    "How much output (power or speed) you get per heartbeat — higher means fitter.",
-  fullExplanation:
-    "Efficiency Factor measures your aerobic efficiency by dividing output (Normalized Power for cycling, speed for running) by average heart rate. A rising EF over weeks indicates improving aerobic fitness. Unlike threshold tests, EF can be tracked from regular easy and moderate sessions.",
-  formula: "Cycling: NP / avg HR. Running: (speed x 100) / avg HR",
-  analogy:
-    "EF is like your car's fuel efficiency (km per liter). More output for the same fuel (heartbeats) means your engine is running better.",
-  whyItMatters:
-    "EF is one of the best long-term aerobic fitness indicators. A steadily rising EF confirms that base training is working, without requiring maximum effort tests.",
-  range:
-    "Cycling: typically 1.0-2.0 (NP/HR). Higher = better. Running: sport-specific scaling. Track the trend over 4+ weeks, not individual values.",
-  limitations:
-    "EF is affected by day-to-day HR variability (sleep, stress, caffeine, heat). Single-session values are noisy; the trend over 4+ weeks is what matters.",
-  sports: ["cycling", "running"],
-  displayContext:
-    "Trend chart over 4-8 weeks, filtered by sport. Do not overemphasize single-session values.",
-};
-
-const pwHrDecoupling: MetricExplanation = {
-  id: "pwHrDecoupling",
-  shortLabel: "Decoupling",
-  friendlyName: "Aerobic Decoupling",
-  name: "Power-to-Heart-Rate Decoupling",
-  oneLiner:
-    "Whether your heart rate drifted up or power faded in the second half of a workout.",
-  fullExplanation:
-    "Decoupling compares the power-to-HR ratio in the first half vs. second half of a session. Less than 5% drift means your aerobic system handled the effort efficiently. Higher decoupling suggests your body worked harder to maintain the same output as the session progressed.",
-  formula:
-    "Decoupling% = ((firstHalf_Pw/HR - secondHalf_Pw/HR) / firstHalf_Pw/HR) x 100",
-  analogy:
-    "It is like checking if your car needs more gas to maintain the same speed later in a road trip. If fuel consumption stays steady, the engine is running clean. If it rises, something is laboring.",
-  whyItMatters:
-    "Decoupling below 5% over a 60-90 minute steady effort is one of the clearest signals of aerobic fitness readiness. It helps athletes decide if their base training is sufficient to move into higher-intensity phases.",
-  range:
-    "Below 5%: excellent aerobic base. 5-10%: moderate, room for improvement. Above 10%: significant drift, more base work needed.",
-  limitations:
-    "Only meaningful for steady-state aerobic sessions (zone 2-3). Interval sessions will show high decoupling by design. Requires both power and HR data. Heat and dehydration can cause cardiac drift that mimics poor decoupling.",
-  unit: "%",
-  sports: ["cycling"],
-  displayContext:
-    "Session detail for steady-state cycling sessions. Include the 5% threshold as a reference line.",
-};
-
-// ---------------------------------------------------------------------------
-// Personal bests (src/engine/records.ts)
-// ---------------------------------------------------------------------------
-
-const peakPower5min: MetricExplanation = {
-  id: "peakPower5min",
-  shortLabel: "5min Power",
-  friendlyName: "5-Min Peak Power",
-  name: "5-Minute Peak Power",
-  oneLiner:
-    "Your best sustained power over 5 minutes — strongly correlated with VO2max.",
-  fullExplanation:
-    "Peak 5-minute power is found by sliding a 5-minute window across your ride data and recording the highest average. This duration approximates VO2max power, your maximal aerobic capacity. Improvements here indicate gains in high-end aerobic fitness.",
-  analogy:
-    "Think of PBs like high scores in a video game. Beating your 5-minute high score means your top-end aerobic engine has genuinely improved.",
-  whyItMatters:
-    "The 5-minute best reflects your ceiling aerobic power. It is useful for setting interval targets and tracking VO2max-level fitness over time.",
-  range:
-    "Highly individual. Compare to your own previous bests, not to others. Track within 90-day windows for current form.",
-  limitations:
-    "Only as accurate as your power meter. Short-duration power PBs can be inflated by sprint data. The 90-day window means old PBs expire, which can feel demotivating.",
-  unit: "W",
-  sports: ["cycling"],
-  displayContext:
-    "Personal Records view. Celebrate new PBs with notifications.",
-};
-
-const peakPower20min: MetricExplanation = {
-  id: "peakPower20min",
-  shortLabel: "20min Power",
-  friendlyName: "20-Min Peak Power",
-  name: "20-Minute Peak Power",
-  oneLiner:
-    "Your best sustained power over 20 minutes — a practical FTP estimator (95% of this value).",
-  fullExplanation:
-    "Peak 20-minute power is the highest average power sustained over a 20-minute window. It is commonly used to estimate FTP by multiplying by 0.95. This duration correlates strongly with lactate threshold, the intensity you can sustain for about an hour.",
-  analogy:
-    "Your 20-minute power is the most practical test of your threshold fitness. Beating this score means your endurance engine has gotten stronger.",
-  whyItMatters:
-    "The 20-minute best is practical for estimating FTP (multiply by 0.95). It reflects meaningful fitness gains at the threshold level that translate directly to race performance.",
-  range:
-    "Multiply by 0.95 for an FTP estimate. Recreational: 150-250W, competitive amateur: 250-350W, elite: 350W+. Always compare to your own history.",
-  limitations:
-    "A true 20-minute all-out effort is rare in normal training. Most 20-minute peaks come from hard rides or intervals, which may underestimate true 20-minute capacity. Pacing matters significantly.",
-  unit: "W",
-  sports: ["cycling"],
-  displayContext: "Personal Records view. Show FTP estimate alongside.",
-};
-
-const peakPower60min: MetricExplanation = {
-  id: "peakPower60min",
-  shortLabel: "60min Power",
-  friendlyName: "60-Min Peak Power",
-  name: "60-Minute Peak Power",
-  oneLiner:
-    "Your best sustained power over 60 minutes — the gold standard for functional threshold.",
-  fullExplanation:
-    "Peak 60-minute power is the highest average power sustained over a full hour. This is the closest practical measure of true Functional Threshold Power. It is rarely tested in isolation but emerges from long races and endurance rides.",
-  analogy:
-    "Your 60-minute power is the ultimate endurance benchmark. It is the speed your engine can maintain for a full hour without blowing up.",
-  whyItMatters:
-    "The 60-minute best represents your true endurance capacity and is the gold standard for FTP. Improvements here are the most meaningful indicator of sustained fitness gains.",
-  range:
-    "Very close to actual FTP. Recreational: 130-220W, competitive: 220-300W, elite: 300W+. Compare to your own history.",
-  limitations:
-    "Rarely achieved outside dedicated tests or races. Training rides seldom include a full hour at threshold, so this PB updates less frequently than shorter durations.",
-  unit: "W",
-  sports: ["cycling"],
-  displayContext: "Personal Records view alongside other power durations.",
-};
-
-const peakPace5min: MetricExplanation = {
-  id: "peakPace5min",
-  shortLabel: "5min Pace",
-  friendlyName: "5-Min Peak Pace",
-  name: "5-Minute Peak Pace",
-  oneLiner:
-    "Your fastest sustained pace over 5 minutes — reflects your top-end aerobic speed.",
-  fullExplanation:
-    "Peak 5-minute pace is found by sliding a 5-minute window across your run data and recording the fastest sustained speed (converted to pace). This duration approximates VO2max pace. Improvements indicate gains in high-end running fitness.",
-  analogy:
-    "Your 5-minute pace PB is your running speed high score. Beating it means your legs and lungs have genuinely leveled up.",
-  whyItMatters:
-    "The 5-minute best reflects your ceiling aerobic speed. It helps set interval targets and track improvements in running economy and VO2max.",
-  range:
-    "Highly individual. Compare to your own previous bests. Track within 90-day windows for current form.",
-  limitations:
-    "GPS-derived pace can be noisy, especially in areas with poor satellite coverage. Downhill segments can produce artificially fast pace values.",
-  unit: "sec/km",
-  sports: ["running"],
-  displayContext:
-    "Personal Records view. Celebrate new PBs with notifications.",
-};
-
-const peakPace20min: MetricExplanation = {
-  id: "peakPace20min",
-  shortLabel: "20min Pace",
-  friendlyName: "20-Min Peak Pace",
-  name: "20-Minute Peak Pace",
-  oneLiner:
-    "Your fastest sustained pace over 20 minutes — a strong indicator of threshold fitness.",
-  fullExplanation:
-    "Peak 20-minute pace is the fastest average pace sustained over a 20-minute window. This correlates with lactate threshold pace for runners — the speed you can sustain for roughly an hour. It is one of the most useful benchmarks for race prediction.",
-  analogy:
-    "Your 20-minute pace is the best test of your distance-running engine. A faster score here translates directly to faster race times.",
-  whyItMatters:
-    "The 20-minute best is practical for estimating threshold pace and predicting race performance. It reflects meaningful fitness at the intensity that matters most for distance racing.",
-  range:
-    "Recreational: 6:00-7:00/km, competitive amateur: 4:30-6:00/km, elite: sub-3:30/km. Always compare to your own history.",
-  limitations:
-    "GPS accuracy matters significantly. Hilly terrain produces pace values that do not reflect true effort — use GAP for hilly comparisons.",
-  unit: "sec/km",
-  sports: ["running"],
-  displayContext: "Personal Records view. Show as formatted min:sec/km.",
-};
-
-const peakPace60min: MetricExplanation = {
-  id: "peakPace60min",
-  shortLabel: "60min Pace",
-  friendlyName: "60-Min Peak Pace",
-  name: "60-Minute Peak Pace",
-  oneLiner:
-    "Your fastest sustained pace over 60 minutes — your true endurance speed.",
-  fullExplanation:
-    "Peak 60-minute pace is the fastest average pace sustained over a full hour. This is the running equivalent of 60-minute peak power — it represents your true threshold endurance speed and is the best predictor of race performance at distances from 10K to half marathon.",
-  analogy:
-    "Your 60-minute pace is the cruise speed your running engine can maintain for a full hour. It is the ultimate test of endurance.",
-  whyItMatters:
-    "The 60-minute best is the most meaningful pace benchmark for distance runners. Improvements here directly predict faster race times.",
-  range:
-    "Very close to true threshold pace. Compare to your own history and use for race pace planning.",
-  limitations:
-    "Rarely achieved outside races or dedicated tempo runs. GPS noise accumulates over longer efforts. Terrain, wind, and temperature all affect pace without reflecting fitness changes.",
-  unit: "sec/km",
-  sports: ["running"],
-  displayContext: "Personal Records view alongside other pace durations.",
-};
-
-// ---------------------------------------------------------------------------
-// Coaching (src/engine/coaching.ts)
-// ---------------------------------------------------------------------------
-
-const formStatus: MetricExplanation = {
-  id: "formStatus",
-  shortLabel: "Form",
-  friendlyName: "Training Status",
-  name: "Form Status",
-  oneLiner:
-    "A simple label translating your TSB number into actionable training advice.",
-  fullExplanation:
-    "Form Status maps your Training Stress Balance into five zones: detraining, fresh, neutral, optimal overload, and overload. Each zone comes with a coaching recommendation to help you make smarter daily decisions about when to push and when to rest.",
-  analogy:
-    "Form Status is like a traffic light for your training. Green (fresh) means go race. Yellow (neutral/optimal) means keep training but watch your fatigue. Red (overload) means stop and recover before you break down.",
-  whyItMatters:
-    "Most athletes either train too hard for too long or take it too easy. Form Status provides a simple, actionable check-in that helps make smarter daily training decisions.",
-  range:
-    "Detraining (TSB > 25): increase volume. Fresh (5-25): race-ready. Neutral (-10 to 5): maintain. Optimal (-30 to -10): productive overload. Overload (< -30): rest recommended.",
-  limitations:
-    "Fixed thresholds do not account for individual variation, training history, or periodization phase. An athlete in a planned overreach block might intentionally push into overload territory. Treat labels as guidelines, not rules.",
-  sports: ["all"],
-  displayContext:
-    "Primary indicator on the dashboard coaching view. Use traffic-light color scheme with coaching message.",
-};
-
-const injuryRisk: MetricExplanation = {
-  id: "injuryRisk",
-  shortLabel: "Injury Risk",
-  friendlyName: "Injury Risk",
-  name: "Injury Risk Assessment",
-  oneLiner:
-    "Uses your training ramp rate to estimate whether you are increasing load safely.",
-  fullExplanation:
-    "Injury Risk is derived from your ACWR value. The sweet spot (0.8-1.3) represents a gradual, sustainable progression. Above 1.3, risk rises as your body has not had time to adapt to the increased load. These thresholds are widely used guidelines originating from load-injury research, but the evidence is more nuanced than a single study — recent meta-analyses show the relationship between ACWR and injury is moderate and varies across sports and populations.",
-  analogy:
-    "It is like speeding up on a highway on-ramp. Accelerate gradually and you merge safely. Floor it and you risk losing control. Creep too slowly and you never reach cruising speed.",
-  whyItMatters:
-    "Most training injuries are load-related, not random. Monitoring injury risk helps athletes avoid the number one controllable risk factor: doing too much too soon.",
-  range:
-    "Undertraining (ACWR < 0.8): load is well below your baseline, risking deconditioning. Sweet spot (0.8-1.3): safe, progressive loading. Elevated (1.3-1.5): ramp rate above comfortable adaptation, monitor closely. High risk (> 1.5): load spike significantly outpacing fitness, back off.",
-  limitations:
-    "Does not account for training type (high-impact running vs. low-impact cycling), individual injury history, biomechanics, or tissue-specific loading. Thresholds originate from team-sport research and are population-level averages with substantial individual variation. A recent RCT found no significant injury reduction from ACWR-based load management alone, suggesting these thresholds are best used as one input among many rather than hard rules.",
-  sports: ["all"],
-  displayContext:
-    'Coaching dashboard alongside ACWR. Use color-coded status (green/yellow/red). Frame moderate risk as "worth monitoring."',
-};
-
-// ---------------------------------------------------------------------------
-// Sensor validation (src/engine/validation.ts)
-// ---------------------------------------------------------------------------
-
-const hrValidation: MetricExplanation = {
-  id: "hrValidation",
-  shortLabel: "HR Check",
-  friendlyName: "Heart Rate Validation",
-  name: "Heart Rate Sensor Validation",
-  oneLiner:
-    "Checks your heart rate data for physically impossible values that indicate sensor errors.",
-  fullExplanation:
-    "The app flags heart rate readings above 230 bpm when they persist for more than 10 consecutive records. The highest reliably recorded human heart rates are in the 220-230 range. Sustained readings above this threshold are almost certainly sensor malfunction (common during strap reconnection or battery issues).",
-  analogy:
-    "Think of it as a spell-checker for your workout data. It cannot fix the errors, but it highlights them so you know which numbers to trust.",
-  whyItMatters:
-    "Bad HR data cascades into wrong TRIMP, wrong ATL/CTL, wrong everything. Catching sensor errors early protects the integrity of all downstream metrics.",
-  range: "Valid: 30-230 bpm. Above 230 bpm for 10+ records triggers a warning.",
-  limitations:
-    "Only catches obviously wrong data. Subtly wrong data (HR reading 10 bpm low due to poor strap contact) will pass validation but still distort metrics.",
-  sports: ["all"],
-  displayContext: "Session import/detail view. Use non-alarming warning style.",
-};
-
-const powerValidation: MetricExplanation = {
-  id: "powerValidation",
-  shortLabel: "Power Check",
-  friendlyName: "Power Validation",
-  name: "Power Sensor Validation",
-  oneLiner:
-    "Checks your power data for readings above 2500W that indicate sensor errors.",
-  fullExplanation:
-    "The app flags power readings above 2500W when they persist for more than 10 consecutive records. Elite track sprinters produce 2000-2500W in short bursts. Any sustained readings above this are almost certainly sensor error, often caused by power meter calibration issues or ANT+ interference.",
-  analogy:
-    "A data quality checkpoint that catches impossible power readings before they inflate your training metrics.",
-  whyItMatters:
-    "Inflated power data produces inflated NP, which inflates TSS, which distorts your entire fitness and fatigue picture. One bad session can throw off weeks of metrics.",
-  range:
-    "Valid: 0-2500W sustained. Above 2500W for 10+ records triggers a warning.",
-  limitations:
-    "Cannot detect subtly miscalibrated power meters (e.g., reading consistently 5% high). Athletes should periodically calibrate/zero their power meters.",
-  sports: ["cycling"],
-  displayContext: "Session import/detail view alongside other sensor warnings.",
-};
-
-const speedValidation: MetricExplanation = {
-  id: "speedValidation",
-  shortLabel: "Speed Check",
-  friendlyName: "Speed Validation",
-  name: "Speed Sensor Validation",
-  oneLiner:
-    "Checks your speed data for unrealistic values that indicate GPS errors.",
-  fullExplanation:
-    "The app flags sustained speed readings above sport-specific thresholds: 80 km/h for cycling, 25 km/h for running, 15 km/h for swimming. These thresholds are based on the upper limits of human performance. GPS glitches (tunnels, tree cover, building reflections) commonly produce impossible speed spikes.",
-  analogy:
-    "A sanity check that catches GPS glitches — like your watch thinking you teleported across the park.",
-  whyItMatters:
-    "GPS speed errors distort pace calculations, distance totals, and any pace-based personal bests. Flagging them early lets you know which session data to trust.",
-  range:
-    "Cycling: valid under 80 km/h. Running: valid under 25 km/h. Swimming: valid under 15 km/h. Exceeding for 10+ records triggers a warning.",
-  limitations:
-    "Thresholds are generous to avoid false positives. Brief GPS spikes (under 10 records) are not flagged, even though they can still affect single-point metrics. Swimming GPS data is inherently unreliable.",
-  sports: ["all"],
-  displayContext:
-    "Session import/detail view. Sport-specific threshold messaging.",
 };
 
 // ---------------------------------------------------------------------------
@@ -687,6 +398,147 @@ const anaerobicTE: MetricExplanation = {
 };
 
 // ---------------------------------------------------------------------------
+// Session stats (src/features/training/SessionStatsGrid.tsx)
+// ---------------------------------------------------------------------------
+
+const avgHr: MetricExplanation = {
+  id: "avgHr",
+  shortLabel: "Avg HR",
+  friendlyName: "Average Heart Rate",
+  name: "Average Heart Rate",
+  oneLiner:
+    "The mean heart rate across the entire session, reflecting overall cardiovascular effort.",
+  fullExplanation:
+    "Average heart rate is the arithmetic mean of all heart rate samples recorded during the session. It provides a single-number summary of cardiovascular effort. Combined with duration, it feeds into TRIMP and helps gauge whether a session was easy, moderate, or hard relative to your personal heart rate zones.",
+  analogy:
+    "Average HR is like the average speed on your car's trip computer — it smooths out all the stops and sprints into one number that summarizes the whole journey.",
+  whyItMatters:
+    "Tracking average HR across similar workouts reveals aerobic adaptation. As fitness improves, the same pace or power produces a lower average HR — one of the most reliable signs of progress.",
+  range:
+    "Zone 1–2 (easy): 50–70% of max HR. Zone 3 (tempo): 70–80%. Zone 4 (threshold): 80–90%. Zone 5 (VO2max): 90–100%. Actual values depend on individual max HR.",
+  limitations:
+    "Affected by caffeine, heat, hydration, sleep, and stress. Cardiac drift inflates average HR on longer sessions even at constant effort. Does not capture intensity variability — a session with big HR spikes and valleys can have the same average as a steady-state session.",
+  unit: "bpm",
+  sports: ["all"],
+  displayContext:
+    "Session detail stats grid. Always shown when HR data is available.",
+};
+
+const avgPace: MetricExplanation = {
+  id: "avgPace",
+  shortLabel: "Pace",
+  friendlyName: "Average Pace",
+  name: "Average Pace",
+  oneLiner:
+    "Your average time per kilometer, the primary intensity metric for running and swimming.",
+  fullExplanation:
+    "Average pace is calculated from total distance divided by total moving time, expressed as minutes and seconds per kilometer. It is the most intuitive intensity metric for runners and swimmers, directly comparable across sessions of different distances.",
+  analogy:
+    "Pace is like the price per kilogram at the grocery store — it normalizes the cost (time) by quantity (distance) so you can compare regardless of how much you bought.",
+  whyItMatters:
+    "Pace is the primary feedback loop for runners. Tracking average pace across similar sessions reveals fitness trends — getting faster at the same heart rate, or sustaining the same pace with less effort.",
+  range:
+    "Highly individual. Recreational runners: 6:00–7:30/km. Competitive amateurs: 4:30–6:00/km. Elite: sub-3:30/km. Compare to your own history and threshold pace.",
+  limitations:
+    "Pace is GPS-dependent and affected by terrain, wind, and altitude. On hilly routes, actual pace is misleading — use Grade Adjusted Pace instead. Also doesn't account for stops unless the watch uses auto-pause.",
+  unit: "min/km",
+  sports: ["running", "swimming"],
+  displayContext:
+    "Session detail stats grid for running and swimming sessions.",
+};
+
+const avgSpeed: MetricExplanation = {
+  id: "avgSpeed",
+  shortLabel: "Speed",
+  friendlyName: "Average Speed",
+  name: "Average Speed",
+  oneLiner:
+    "Your average speed in km/h, the primary intensity metric for cycling.",
+  fullExplanation:
+    "Average speed is total distance divided by total time, expressed in kilometers per hour. For cycling, speed is a more natural metric than pace because it maps directly to the experience — faster feels faster. It enables quick comparison between rides.",
+  analogy:
+    "Speed is the cyclist's speedometer reading averaged over the whole ride. It answers the simple question: how fast did I go?",
+  whyItMatters:
+    "While power is the gold standard for cycling intensity, speed provides accessible context. Comparing speed across similar routes reveals aerobic gains, equipment changes, or wind conditions.",
+  range:
+    "Recreational cycling: 20–25 km/h. Club riders: 25–32 km/h. Competitive: 32–40 km/h. Elite TT: 45+ km/h. Highly affected by terrain and wind.",
+  limitations:
+    "Speed is heavily influenced by wind, drafting, terrain, road surface, and bike setup. Two rides at the same power can differ by 10+ km/h due to conditions. Power is a far more reliable intensity metric for cycling.",
+  unit: "km/h",
+  sports: ["cycling"],
+  displayContext: "Session detail stats grid for cycling sessions.",
+};
+
+const avgPower: MetricExplanation = {
+  id: "avgPower",
+  shortLabel: "Avg Power",
+  friendlyName: "Average Power",
+  name: "Average Power",
+  oneLiner:
+    "The mean power output across the session, measuring raw mechanical work.",
+  fullExplanation:
+    "Average power is the arithmetic mean of all power meter samples during the session. It represents the raw mechanical work you produced, unweighted by variability. Compare with Normalized Power to understand how variable your effort was — a large gap between AP and NP indicates a surgy, variable effort.",
+  analogy:
+    "If Normalized Power is your fuel bill, Average Power is the odometer reading — it tells you what happened mechanically, without accounting for the extra cost of stop-and-go.",
+  whyItMatters:
+    "Average Power provides a baseline for comparing efforts. The ratio of NP to AP (Variability Index) reveals pacing quality — closer to 1.0 means steadier effort.",
+  range:
+    "Compare to your FTP. Endurance rides: 55–75% FTP. Tempo: 76–90%. Threshold: 91–105%. Above threshold for sustained rides is very hard.",
+  limitations:
+    "Average power underestimates the true physiological cost of variable efforts. A ride alternating between 100W and 300W has the same average as steady 200W but is significantly harder. Always consider NP alongside AP.",
+  unit: "W",
+  sports: ["cycling"],
+  displayContext:
+    "Session detail stats grid for cycling sessions with power data. Shown as subDetail when Normalized Power is available.",
+};
+
+const elevation: MetricExplanation = {
+  id: "elevation",
+  shortLabel: "Elevation",
+  friendlyName: "Elevation Gain",
+  name: "Elevation Gain & Loss",
+  oneLiner:
+    "Total meters climbed and descended during the session.",
+  fullExplanation:
+    "Elevation gain sums every uphill segment, while elevation loss sums every downhill segment. Together they quantify the vertical challenge of a session. On hilly routes, elevation gain is often a better predictor of effort than distance alone.",
+  analogy:
+    "Elevation gain is like counting flights of stairs — two 10km runs can feel completely different if one climbs 500m and the other is flat.",
+  whyItMatters:
+    "Elevation gain directly affects energy expenditure and pacing strategy. Tracking it helps you prepare for hilly races and understand why some sessions felt harder than the pace suggests.",
+  range:
+    "Flat: under 100m gain. Rolling: 100–300m. Hilly: 300–700m. Mountainous: 700m+. All relative to session distance.",
+  limitations:
+    "GPS-derived elevation is noisy (±3–10m per sample). Barometric altimeters are more accurate but drift with weather changes. Small undulations may be filtered out by smoothing algorithms, underestimating true gain.",
+  unit: "m",
+  sports: ["all"],
+  displayContext:
+    "Session detail stats grid. Shows gain/loss as primary value with altitude range as subDetail.",
+};
+
+const cadence: MetricExplanation = {
+  id: "cadence",
+  shortLabel: "Cadence",
+  friendlyName: "Cadence",
+  name: "Average Cadence",
+  oneLiner:
+    "Your average steps or revolutions per minute during the session.",
+  fullExplanation:
+    "Cadence measures the rhythm of your movement — steps per minute for running, revolutions per minute for cycling. It is recorded by footpods, power meters, or wrist-based accelerometers. Optimal cadence varies by sport, intensity, and individual biomechanics.",
+  analogy:
+    "Cadence is like the RPM gauge in a car. Too low and you're lugging the engine; too high and you're over-revving. The sweet spot depends on the conditions and your engine.",
+  whyItMatters:
+    "For runners, higher cadence (170–180 spm) is associated with lower injury risk and better running economy. For cyclists, cadence affects fatigue distribution between cardiovascular and muscular systems.",
+  range:
+    "Running: 160–180+ spm (elite often 180+). Cycling: 80–100 rpm (varies by terrain and effort). Lower cadence = more muscular load, higher cadence = more cardiovascular load.",
+  limitations:
+    "Wrist-based cadence detection can be inaccurate, especially at low speeds. Optimal cadence is individual — forcing a specific cadence that doesn't match your biomechanics can increase injury risk.",
+  unit: "rpm",
+  sports: ["all"],
+  displayContext:
+    "Session detail stats grid when cadence data is available.",
+};
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 
@@ -694,6 +546,7 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   // Stress metrics
   tss,
   trimp,
+  duration,
   // Load metrics
   ctl,
   atl,
@@ -702,24 +555,6 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   // Normalized metrics
   normalizedPower,
   gradeAdjustedPace,
-  // Efficiency metrics
-  efficiencyFactor,
-  pwHrDecoupling,
-  // Personal bests — power
-  peakPower5min,
-  peakPower20min,
-  peakPower60min,
-  // Personal bests — pace
-  peakPace5min,
-  peakPace20min,
-  peakPace60min,
-  // Coaching
-  formStatus,
-  injuryRisk,
-  // Validation
-  hrValidation,
-  powerValidation,
-  speedValidation,
   // Session analysis
   recovery,
   pacingTrend,
@@ -728,4 +563,11 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   // Training Effect
   aerobicTE,
   anaerobicTE,
+  // Session stats
+  avgHr,
+  avgPace,
+  avgSpeed,
+  avgPower,
+  elevation,
+  cadence,
 };

@@ -53,8 +53,9 @@ export interface TrainingSession {
   minAltitude?: number;
   maxAltitude?: number;
   avgAltitude?: number;
+  gap?: number;
   tss: number;
-  stressMethod: "tss" | "trimp";
+  stressMethod: "tss" | "trimp" | "duration";
   sensorWarnings: string[];
   isPlanned: boolean;
   hasDetailedRecords: boolean;
