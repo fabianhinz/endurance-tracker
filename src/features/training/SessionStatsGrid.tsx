@@ -15,7 +15,6 @@ import {
   detectIntervals,
   detectProgressiveOverload,
 } from "../../engine/laps.ts";
-import { compareTSS } from "../../engine/stress.ts";
 import type { TrainingSession, SessionLap } from "../../engine/types.ts";
 
 interface SessionStatsGridProps {
@@ -99,46 +98,53 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     label: "Avg HR",
     value: props.session.avgHr ?? "--",
     unit: props.session.avgHr ? "bpm" : undefined,
+    metricId: "avgHr",
   });
 
-  // Row 3: Avg Pace (running) & Avg Speed
-  if (props.session.avgPace) {
+  // Row 3: Sport-aware pace/speed (single card)
+  if (props.session.sport === "cycling") {
+    if (props.session.avgSpeed ?? (props.session.distance > 0 && props.session.duration > 0)) {
+      stats.push({
+        key: "avgSpeed",
+        label: "Avg Speed",
+        value: formatSpeed(props.session.avgSpeed ?? props.session.distance / props.session.duration),
+        metricId: "avgSpeed",
+      });
+    }
+  } else if (props.session.avgPace) {
     stats.push({
       key: "avgPace",
       label: "Avg Pace",
       value: formatPace(props.session.avgPace),
+      metricId: "avgPace",
     });
   }
 
-  if (props.session.avgSpeed ?? (props.session.distance > 0 && props.session.duration > 0)) {
+  // Row 4: Merged power card (NP primary when both exist)
+  if (props.session.normalizedPower && props.session.avgPower) {
     stats.push({
-      key: "avgSpeed",
-      label: "Avg Speed",
-      value: formatSpeed(props.session.avgSpeed ?? props.session.distance / props.session.duration),
-    });
-  }
-
-  // Row 4: Avg Power & Normalized Power
-  if (props.session.avgPower) {
-    stats.push({
-      key: "avgPower",
-      label: "Avg Power",
-      value: props.session.avgPower,
-      unit: "W",
-    });
-  }
-
-  if (props.session.normalizedPower) {
-    stats.push({
-      key: "np",
+      key: "power",
       label: "Norm. Power",
       value: props.session.normalizedPower,
       unit: "W",
       metricId: "normalizedPower",
+      subDetail: (
+        <Typography variant="caption" as="p">
+          avg {props.session.avgPower}W
+        </Typography>
+      ),
+    });
+  } else if (props.session.avgPower) {
+    stats.push({
+      key: "power",
+      label: "Avg Power",
+      value: props.session.avgPower,
+      unit: "W",
+      metricId: "avgPower",
     });
   }
 
-  // Row 4b: GAP, EF, Pw:Hr Decoupling, TSS Comparison
+  // Row 4b: GAP
   if (props.session.gap && props.session.sport === "running") {
     stats.push({
       key: "gap",
@@ -148,45 +154,33 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     });
   }
 
-  const tssComparison = compareTSS(props.session.deviceTss, props.session.tss);
-  if (tssComparison) {
-    const confidenceClass =
-      tssComparison.confidence === "high"
-        ? "text-status-success"
-        : tssComparison.confidence === "low"
-          ? "text-status-warning"
-          : "text-text-secondary";
-    stats.push({
-      key: "tssComparison",
-      label: "TSS Comparison",
-      value: `${tssComparison.divergencePercent.toFixed(0)}% divergence`,
-      subDetail: (
-        <Typography
-          variant="caption"
-          as="p"
-          className={confidenceClass}
-        >
-          {tssComparison.confidence} confidence
-        </Typography>
-      ),
-    });
-  }
-
-  // Row 5: Elevation & Cadence
+  // Row 5: Elevation (absorbs altitude range) & Cadence
   if (
     props.session.elevationGain !== undefined &&
     props.session.elevationGain > 0
   ) {
+    const elevationSubParts: React.ReactNode[] = [];
+    if (
+      props.session.elevationLoss !== undefined &&
+      props.session.elevationLoss > 0
+    ) {
+      elevationSubParts.push(`-${props.session.elevationLoss}m`);
+    }
+    if (props.session.minAltitude !== undefined) {
+      elevationSubParts.push(
+        `${Math.round(props.session.minAltitude)} — ${Math.round(props.session.maxAltitude!)}m`,
+      );
+    }
     stats.push({
       key: "elevation",
       label: "Elevation",
       value: `+${props.session.elevationGain}`,
       unit: "m",
+      metricId: "elevation",
       subDetail:
-        props.session.elevationLoss !== undefined &&
-        props.session.elevationLoss > 0 ? (
+        elevationSubParts.length > 0 ? (
           <Typography variant="caption" as="p">
-            -{props.session.elevationLoss}m
+            {elevationSubParts.join(" · ")}
           </Typography>
         ) : undefined,
     });
@@ -198,24 +192,11 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       label: "Cadence",
       value: props.session.avgCadence,
       unit: "rpm",
+      metricId: "cadence",
     });
   }
 
-  // Row 6: Altitude & Pacing Trend
-  if (props.session.minAltitude !== undefined) {
-    stats.push({
-      key: "altitude",
-      label: "Altitude",
-      value: `${Math.round(props.session.minAltitude)} — ${Math.round(props.session.maxAltitude!)}`,
-      unit: "m",
-      subDetail: (
-        <Typography variant="caption" as="p">
-          avg {Math.round(props.session.avgAltitude!)}m
-        </Typography>
-      ),
-    });
-  }
-
+  // Row 6: Pacing Trend
   if (overload.lapCount >= 3) {
     const trend = TREND_META[overload.trend];
     stats.push({
@@ -238,7 +219,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     });
   }
 
-  // Row 7: Recovery & Calories
+  // Row 7: Recovery
   if (intervalPairsWithHr.length > 0) {
     stats.push({
       key: "recovery",
@@ -254,15 +235,6 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
           {recoveryMeta.label}
         </Typography>
       ),
-    });
-  }
-
-  if (props.session.calories) {
-    stats.push({
-      key: "calories",
-      label: "Calories",
-      value: props.session.calories,
-      unit: "kcal",
     });
   }
 

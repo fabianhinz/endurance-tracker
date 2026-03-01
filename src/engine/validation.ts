@@ -1,23 +1,23 @@
 import type { SessionRecord, Sport } from './types.ts';
 
 /** Maximum physiologically plausible heart rate in bpm before a reading is considered a sensor error. */
-export const MAX_VALID_HR = 230;
+const MAX_VALID_HR = 230;
 
 /** Number of out-of-range readings that must be sustained before a sensor warning is emitted. */
-export const SUSTAINED_ERROR_THRESHOLD = 10;
+const SUSTAINED_ERROR_THRESHOLD = 10;
 
 /** Maximum physiologically plausible power output in watts before a reading is considered a sensor error. */
-export const MAX_VALID_POWER = 2500;
+const MAX_VALID_POWER = 2500;
 
 /** Maximum plausible speed in km/h for each sport, used to detect GPS or speed-sensor errors. */
-export const MAX_SPEED_KMH: Record<Sport, number> = {
+const MAX_SPEED_KMH: Record<Sport, number> = {
   cycling: 80,
   running: 25,
   swimming: 15,
 };
 
 /** A warning produced when a sensor metric contains sustained implausible values. */
-export interface SensorWarning {
+interface SensorWarning {
   /** The name of the data field that triggered the warning (e.g. `'hr'`, `'power'`, `'speed'`). */
   field: string;
   /** Human-readable description of the anomaly detected. */

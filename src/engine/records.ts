@@ -3,7 +3,7 @@ import type { SessionRecord, PersonalBest, PBCategory, Sport } from './types.ts'
 /**
  * Rolling power-window durations (in seconds) used for peak-power PB detection.
  */
-export const POWER_WINDOWS = [
+const POWER_WINDOWS = [
   { seconds: 5 },
   { seconds: 60 },
   { seconds: 300 },
@@ -14,7 +14,7 @@ export const POWER_WINDOWS = [
 /**
  * Target distances (in metres) used for fastest-distance PB detection in running.
  */
-export const RUNNING_DISTANCES = [
+const RUNNING_DISTANCES = [
   { meters: 1000 },
   { meters: 5000 },
   { meters: 10000 },
@@ -25,7 +25,7 @@ export const RUNNING_DISTANCES = [
 /**
  * Target distances (in metres) used for fastest-distance PB detection in swimming.
  */
-export const SWIMMING_DISTANCES = [
+const SWIMMING_DISTANCES = [
   { meters: 100 },
   { meters: 400 },
   { meters: 1000 },
@@ -91,7 +91,7 @@ const findPeakAverage = (values: number[], windowSize: number): number => {
  * @param records - Time-series session records, each optionally containing a `power` field in watts.
  * @returns Map keyed by window duration in seconds, valued by peak average power in watts; windows with no data are omitted.
  */
-export const extractPeakPower = (
+const extractPeakPower = (
   records: SessionRecord[],
 ): Map<number, number> => {
   const powerData = records
@@ -115,7 +115,7 @@ export const extractPeakPower = (
  * @param targets - Array of distance targets (in metres) to find best times for.
  * @returns Map keyed by target distance in metres, valued by fastest elapsed time in seconds; targets not covered by the data are omitted.
  */
-export const extractFastestDistances = (
+const extractFastestDistances = (
   records: SessionRecord[],
   targets: ReadonlyArray<{ meters: number }>,
 ): Map<number, number> => {
@@ -161,7 +161,7 @@ interface SessionPeak {
  * @param sessionMeta - Optional session-level metadata providing total distance and elevation gain.
  * @returns Array of peaks, each carrying its category, window, raw value, and whether a higher value is better.
  */
-export const extractSessionPeaks = (
+const extractSessionPeaks = (
   sport: Sport,
   records: SessionRecord[],
   sessionMeta?: { distance: number; elevationGain?: number },

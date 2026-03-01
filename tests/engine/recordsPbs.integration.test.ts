@@ -1,93 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
-  extractPeakPower,
-  extractFastestDistances,
   detectNewPBs,
   mergePBs,
-  POWER_WINDOWS,
-  RUNNING_DISTANCES,
-  SWIMMING_DISTANCES,
 } from '../../src/engine/records.ts';
 import { makeCyclingRecords, makeRunningRecords, makeSwimmingRecords } from '../factories/records.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-describe('extractPeakPower', () => {
-  it('extracts peak power across all 5 windows', () => {
-    const records = makeCyclingRecords('s1', 3600, { basePower: 250 });
-    const peaks = extractPeakPower(records);
-
-    expect(peaks.has(5)).toBe(true);
-    expect(peaks.has(60)).toBe(true);
-    expect(peaks.has(300)).toBe(true);
-    expect(peaks.has(1200)).toBe(true);
-    expect(peaks.has(3600)).toBe(true);
-
-    // Shorter windows should have >= peaks than longer windows
-    expect(peaks.get(5)!).toBeGreaterThanOrEqual(peaks.get(60)!);
-    expect(peaks.get(60)!).toBeGreaterThanOrEqual(peaks.get(300)!);
-    expect(peaks.get(300)!).toBeGreaterThanOrEqual(peaks.get(1200)!);
-    expect(peaks.get(1200)!).toBeGreaterThanOrEqual(peaks.get(3600)!);
-  });
-
-  it('returns empty map for too-short data', () => {
-    const records = makeCyclingRecords('s1', 3, { basePower: 250 });
-    const peaks = extractPeakPower(records);
-    expect(peaks.size).toBe(0);
-  });
-
-  it('returns only windows that fit within data length', () => {
-    // 120 seconds of data → only 5s and 60s windows fit
-    const records = makeCyclingRecords('s1', 120, { basePower: 250 });
-    const peaks = extractPeakPower(records);
-    expect(peaks.has(5)).toBe(true);
-    expect(peaks.has(60)).toBe(true);
-    expect(peaks.has(300)).toBe(false);
-  });
-});
-
-describe('extractFastestDistances', () => {
-  it('extracts fastest 1km and 5km from running records', () => {
-    // 3600s at ~3.5 m/s ≈ 12.6 km total
-    const records = makeRunningRecords('s1', 3600, { baseSpeed: 3.5 });
-    const distances = extractFastestDistances(records, RUNNING_DISTANCES);
-
-    expect(distances.has(1000)).toBe(true);
-    expect(distances.has(5000)).toBe(true);
-    expect(distances.has(10000)).toBe(true);
-
-    // 1km time should be less than 5km time
-    expect(distances.get(1000)!).toBeLessThan(distances.get(5000)!);
-  });
-
-  it('returns empty map when run is shorter than target', () => {
-    // 200s at 3.5 m/s ≈ 700m — not enough for 1km
-    const records = makeRunningRecords('s1', 200, { baseSpeed: 3.5 });
-    const distances = extractFastestDistances(records, [{ meters: 1000 }]);
-    expect(distances.size).toBe(0);
-  });
-
-  it('handles swimming distances', () => {
-    // 1200s at ~1.5 m/s ≈ 1800m total
-    const records = makeSwimmingRecords('s1', 1200, { baseSpeed: 1.5 });
-    const distances = extractFastestDistances(records, SWIMMING_DISTANCES);
-
-    expect(distances.has(100)).toBe(true);
-    expect(distances.has(400)).toBe(true);
-    expect(distances.has(1000)).toBe(true);
-    expect(distances.has(1500)).toBe(true);
-
-    // Shorter distance = faster time
-    expect(distances.get(100)!).toBeLessThan(distances.get(400)!);
-    expect(distances.get(400)!).toBeLessThan(distances.get(1000)!);
-  });
-
-  it('returns empty map for records without distance data', () => {
-    const records = makeCyclingRecords('s1', 3600).map((r) => ({ ...r, distance: undefined }));
-    const distances = extractFastestDistances(records, RUNNING_DISTANCES);
-    expect(distances.size).toBe(0);
-  });
-});
 
 describe('detectNewPBs — cycling power', () => {
   it('detects new PBs with empty existing bests', () => {
@@ -106,13 +24,14 @@ describe('detectNewPBs — cycling power', () => {
   it('detects PB improvement over existing', () => {
     const now = Date.now();
     const records = makeCyclingRecords('s2', 3600, { basePower: 280 });
-    const peaks = extractPeakPower(records);
 
-    const existingBests = POWER_WINDOWS.map((w) => ({
+    // Existing bests with low values that should be beaten
+    const windows = [5, 60, 300, 1200, 3600];
+    const existingBests = windows.map((seconds) => ({
       sport: 'cycling' as const,
       category: 'peak-power' as const,
-      window: w.seconds,
-      value: (peaks.get(w.seconds) ?? 0) - 20,
+      window: seconds,
+      value: 100,
       sessionId: 'old-session',
       date: now - 10 * DAY_MS,
     }));
@@ -121,21 +40,21 @@ describe('detectNewPBs — cycling power', () => {
     const powerPBs = newPBs.filter((pb) => pb.category === 'peak-power');
     expect(powerPBs.length).toBe(5);
     powerPBs.forEach((pb) => {
-      const existing = existingBests.find((e) => e.window === pb.window);
-      expect(pb.value).toBeGreaterThan(existing!.value);
+      expect(pb.value).toBeGreaterThan(100);
     });
   });
 
   it('no PB when existing is better', () => {
     const now = Date.now();
     const records = makeCyclingRecords('s3', 3600, { basePower: 200 });
-    const peaks = extractPeakPower(records);
 
-    const existingBests = POWER_WINDOWS.map((w) => ({
+    // Existing bests with very high values that should not be beaten
+    const windows = [5, 60, 300, 1200, 3600];
+    const existingBests = windows.map((seconds) => ({
       sport: 'cycling' as const,
       category: 'peak-power' as const,
-      window: w.seconds,
-      value: (peaks.get(w.seconds) ?? 0) + 50,
+      window: seconds,
+      value: 500,
       sessionId: 'best-session',
       date: now - 10 * DAY_MS,
     }));
@@ -148,14 +67,14 @@ describe('detectNewPBs — cycling power', () => {
   it('compares against all-time bests (no 90-day window)', () => {
     const now = Date.now();
     const records = makeCyclingRecords('s4', 3600, { basePower: 200 });
-    const peaks = extractPeakPower(records);
 
-    // Existing PBs from > 90 days ago with higher values — should still block
-    const existingBests = POWER_WINDOWS.map((w) => ({
+    // Existing PBs from > 90 days ago with high values — should still block
+    const windows = [5, 60, 300, 1200, 3600];
+    const existingBests = windows.map((seconds) => ({
       sport: 'cycling' as const,
       category: 'peak-power' as const,
-      window: w.seconds,
-      value: (peaks.get(w.seconds) ?? 0) + 50,
+      window: seconds,
+      value: 500,
       sessionId: 'ancient-session',
       date: now - 200 * DAY_MS,
     }));

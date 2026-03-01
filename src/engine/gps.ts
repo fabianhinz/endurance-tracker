@@ -10,7 +10,7 @@ import type { SessionRecord, GPSPoint, GPSBounds, SessionGPS } from './types.ts'
  * @param records - Raw time-series records from a parsed FIT file.
  * @returns Array of `{lat, lng}` objects containing only geographically valid coordinates.
  */
-export const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
+const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
   records.reduce<GPSPoint[]>((acc, r) => {
     if (
       r.lat != null &&
@@ -53,7 +53,7 @@ export const extractPathFromRecords = (
  * @param tolerance - Maximum allowed deviation in degrees (default `0.00005`).
  * @returns Simplified array of GPS points; returns the original array unchanged when it has fewer than 3 points.
  */
-export const simplifyTrack = (
+const simplifyTrack = (
   points: GPSPoint[],
   tolerance = 0.00005,
 ): GPSPoint[] => {
@@ -70,7 +70,7 @@ export const simplifyTrack = (
  * @param points - GPS points to encode.
  * @returns Polyline-encoded string representing the track.
  */
-export const encodeTrack = (points: GPSPoint[]): string =>
+const encodeTrack = (points: GPSPoint[]): string =>
   encode(points.map((p) => [p.lat, p.lng]));
 
 /**
@@ -78,7 +78,7 @@ export const encodeTrack = (points: GPSPoint[]): string =>
  * @param points - GPS points to compute bounds for.
  * @returns `GPSBounds` with `minLat`, `maxLat`, `minLng`, and `maxLng`.
  */
-export const computeBounds = (points: GPSPoint[]): GPSBounds => {
+const computeBounds = (points: GPSPoint[]): GPSBounds => {
   let minLat = Infinity;
   let maxLat = -Infinity;
   let minLng = Infinity;
@@ -137,7 +137,7 @@ export const boundsOverlap = (a: GPSBounds, b: GPSBounds): boolean =>
  * @param boundsArray - Array of bounding boxes to merge.
  * @returns Union `GPSBounds`, or `null` when `boundsArray` is empty.
  */
-export const unionBounds = (boundsArray: GPSBounds[]): GPSBounds | null => {
+const unionBounds = (boundsArray: GPSBounds[]): GPSBounds | null => {
   if (boundsArray.length === 0) return null;
   let minLat = Infinity;
   let maxLat = -Infinity;
@@ -203,7 +203,7 @@ export const segmentIntersectsBounds = (
  * @param b - Bounding box to find the center of.
  * @returns `GPSPoint` at the midpoint of the box's latitude and longitude extents.
  */
-export const boundsCenter = (b: GPSBounds): GPSPoint => ({
+const boundsCenter = (b: GPSBounds): GPSPoint => ({
   lat: (b.minLat + b.maxLat) / 2,
   lng: (b.minLng + b.maxLng) / 2,
 });
@@ -214,7 +214,7 @@ export const boundsCenter = (b: GPSBounds): GPSPoint => ({
  * @param b - Second GPS point.
  * @returns Scalar distance in degrees adjusted for longitude compression at the midpoint latitude.
  */
-export const scaledDistDeg = (a: GPSPoint, b: GPSPoint): number => {
+const scaledDistDeg = (a: GPSPoint, b: GPSPoint): number => {
   const dLat = a.lat - b.lat;
   const dLng = (a.lng - b.lng) * Math.cos(((a.lat + b.lat) / 2) * (Math.PI / 180));
   return Math.sqrt(dLat * dLat + dLng * dLng);

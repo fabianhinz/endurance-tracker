@@ -31,6 +31,12 @@ const ALL_METRIC_IDS: MetricId[] = [
   'trainingZones',
   'aerobicTE',
   'anaerobicTE',
+  'avgHr',
+  'avgPace',
+  'avgSpeed',
+  'avgPower',
+  'elevation',
+  'cadence',
 ];
 
 const REQUIRED_FIELDS: (keyof MetricExplanation)[] = [

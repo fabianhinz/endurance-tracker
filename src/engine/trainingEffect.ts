@@ -26,7 +26,7 @@ import type { SessionRecord, Gender } from './types.ts';
 import { BANISTER } from './stress.ts';
 
 /** Human-readable label and semantic color token for a training effect score. */
-export type TrainingEffectLabel = {
+type TrainingEffectLabel = {
   /** Descriptive name for the training effect band (e.g. "Improving"). */
   label: string;
   /** Tailwind color token representing the intensity of the training effect. */

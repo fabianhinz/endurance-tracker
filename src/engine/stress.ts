@@ -25,7 +25,7 @@ export const BANISTER = {
  * @param ftp - Functional Threshold Power in watts.
  * @returns Object with rounded `tss` and `normalizedPower`, or `undefined` when NP cannot be derived or FTP is invalid.
  */
-export const calculateTSS = (
+const calculateTSS = (
   records: SessionRecord[],
   durationSec: number,
   ftp: number,
@@ -54,7 +54,7 @@ export const calculateTSS = (
  * @param gender - Athlete gender used to select Banister coefficients.
  * @returns TRIMP value normalized to the TSS scale (rounded to one decimal), or `0` when HR values are physiologically invalid.
  */
-export const calculateTRIMP = (
+const calculateTRIMP = (
   avgHr: number,
   durationSec: number,
   restHr: number,
@@ -126,49 +126,3 @@ export const calculateSessionStress = (
   };
 };
 
-/** Structured comparison between a device-reported TSS and the app-computed TSS. */
-export interface TSSComparison {
-  /** TSS value as reported by the recording device. */
-  deviceTss: number;
-  /** TSS value computed by the app from raw session records. */
-  computedTss: number;
-  /** Absolute difference between `deviceTss` and `computedTss`. */
-  delta: number;
-  /** Relative divergence expressed as a percentage of `deviceTss`. */
-  divergencePercent: number;
-  /** Confidence band derived from `divergencePercent`: high ≤5%, moderate ≤15%, low >15%. */
-  confidence: 'high' | 'moderate' | 'low';
-  /** Human-readable warning message emitted only when confidence is `'low'`. */
-  warning?: string;
-}
-
-/**
- * Compare device-reported TSS with app-computed TSS.
- * Returns null when deviceTss is unavailable.
- * @param deviceTss - TSS value reported by the recording device, or `undefined` when absent.
- * @param computedTss - TSS value computed by the app from raw session records.
- * @returns A `TSSComparison` object with delta, divergence percentage, and confidence rating, or `null` when `deviceTss` is not available.
- */
-export const compareTSS = (
-  deviceTss: number | undefined,
-  computedTss: number,
-): TSSComparison | null => {
-  if (deviceTss === undefined) return null;
-
-  const delta = Math.abs(deviceTss - computedTss);
-  const divergencePercent = deviceTss > 0 ? (delta / deviceTss) * 100 : 0;
-
-  let confidence: TSSComparison['confidence'];
-  let warning: string | undefined;
-
-  if (divergencePercent <= 5) {
-    confidence = 'high';
-  } else if (divergencePercent <= 15) {
-    confidence = 'moderate';
-  } else {
-    confidence = 'low';
-    warning = `TSS diverges by ${divergencePercent.toFixed(0)}% from device value — check FTP setting (device: ${deviceTss}, app: ${computedTss})`;
-  }
-
-  return { deviceTss, computedTss, delta, divergencePercent, confidence, warning };
-};

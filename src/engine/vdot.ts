@@ -27,7 +27,7 @@ const pctVo2max = (t: number): number =>
  * @param timeMinutes - Finishing time in minutes.
  * @returns VDOT value (mL/kg/min) representing the runner's current aerobic fitness.
  */
-export const calculateVdot = (distanceMeters: number, timeMinutes: number): number => {
+const calculateVdot = (distanceMeters: number, timeMinutes: number): number => {
   const velocity = distanceMeters / timeMinutes;
   return vo2FromVelocity(velocity) / pctVo2max(timeMinutes);
 };

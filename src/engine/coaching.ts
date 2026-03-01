@@ -12,13 +12,13 @@ import type {
 // ---------------------------------------------------------------------------
 
 /** TSB above this value indicates detraining risk. */
-export const TSB_DETRAINING = 25;
+const TSB_DETRAINING = 25;
 /** TSB at or above this value indicates a fresh/race-ready state. */
-export const TSB_FRESH = 5;
+const TSB_FRESH = 5;
 /** TSB at or above this value indicates a neutral training balance. */
-export const TSB_NEUTRAL = -10;
+const TSB_NEUTRAL = -10;
 /** TSB at or above this value indicates productive overload. */
-export const TSB_OPTIMAL = -30;
+const TSB_OPTIMAL = -30;
 
 /**
  * Classify athlete readiness from Training Stress Balance.
@@ -38,20 +38,20 @@ export const getFormStatus = (tsb: number): FormStatus => {
 // ---------------------------------------------------------------------------
 
 /** ACWR below this value flags undertraining. */
-export const ACWR_UNDERTRAINING_THRESHOLD = 0.8;
+const ACWR_UNDERTRAINING_THRESHOLD = 0.8;
 /** ACWR above this value flags moderate injury risk. */
-export const ACWR_MODERATE_THRESHOLD = 1.3;
+const ACWR_MODERATE_THRESHOLD = 1.3;
 /** ACWR above this value flags high injury risk. */
-export const ACWR_HIGH_THRESHOLD = 1.5;
+const ACWR_HIGH_THRESHOLD = 1.5;
 
 // ---------------------------------------------------------------------------
 // Data maturity thresholds (days)
 // ---------------------------------------------------------------------------
 
 /** Minimum days of data before metrics are considered meaningful. */
-export const DATA_MATURITY_MIN_DAYS = 21;
+const DATA_MATURITY_MIN_DAYS = 21;
 /** Days of data required for full coaching confidence. */
-export const DATA_MATURITY_FULL_DAYS = 28;
+const DATA_MATURITY_FULL_DAYS = 28;
 
 /**
  * Classify training load state from ACWR and data history length.

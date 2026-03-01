@@ -29,7 +29,13 @@ export type MetricId =
   | "pacingTrend"
   | "trainingZones"
   | "aerobicTE"
-  | "anaerobicTE";
+  | "anaerobicTE"
+  | "avgHr"
+  | "avgPace"
+  | "avgSpeed"
+  | "avgPower"
+  | "elevation"
+  | "cadence";
 
 export interface MetricExplanation {
   id: MetricId;
@@ -656,6 +662,147 @@ const anaerobicTE: MetricExplanation = {
 };
 
 // ---------------------------------------------------------------------------
+// Session stats (src/features/training/SessionStatsGrid.tsx)
+// ---------------------------------------------------------------------------
+
+const avgHr: MetricExplanation = {
+  id: "avgHr",
+  shortLabel: "Avg HR",
+  friendlyName: "Average Heart Rate",
+  name: "Average Heart Rate",
+  oneLiner:
+    "The mean heart rate across the entire session, reflecting overall cardiovascular effort.",
+  fullExplanation:
+    "Average heart rate is the arithmetic mean of all heart rate samples recorded during the session. It provides a single-number summary of cardiovascular effort. Combined with duration, it feeds into TRIMP and helps gauge whether a session was easy, moderate, or hard relative to your personal heart rate zones.",
+  analogy:
+    "Average HR is like the average speed on your car's trip computer — it smooths out all the stops and sprints into one number that summarizes the whole journey.",
+  whyItMatters:
+    "Tracking average HR across similar workouts reveals aerobic adaptation. As fitness improves, the same pace or power produces a lower average HR — one of the most reliable signs of progress.",
+  range:
+    "Zone 1–2 (easy): 50–70% of max HR. Zone 3 (tempo): 70–80%. Zone 4 (threshold): 80–90%. Zone 5 (VO2max): 90–100%. Actual values depend on individual max HR.",
+  limitations:
+    "Affected by caffeine, heat, hydration, sleep, and stress. Cardiac drift inflates average HR on longer sessions even at constant effort. Does not capture intensity variability — a session with big HR spikes and valleys can have the same average as a steady-state session.",
+  unit: "bpm",
+  sports: ["all"],
+  displayContext:
+    "Session detail stats grid. Always shown when HR data is available.",
+};
+
+const avgPace: MetricExplanation = {
+  id: "avgPace",
+  shortLabel: "Pace",
+  friendlyName: "Average Pace",
+  name: "Average Pace",
+  oneLiner:
+    "Your average time per kilometer, the primary intensity metric for running and swimming.",
+  fullExplanation:
+    "Average pace is calculated from total distance divided by total moving time, expressed as minutes and seconds per kilometer. It is the most intuitive intensity metric for runners and swimmers, directly comparable across sessions of different distances.",
+  analogy:
+    "Pace is like the price per kilogram at the grocery store — it normalizes the cost (time) by quantity (distance) so you can compare regardless of how much you bought.",
+  whyItMatters:
+    "Pace is the primary feedback loop for runners. Tracking average pace across similar sessions reveals fitness trends — getting faster at the same heart rate, or sustaining the same pace with less effort.",
+  range:
+    "Highly individual. Recreational runners: 6:00–7:30/km. Competitive amateurs: 4:30–6:00/km. Elite: sub-3:30/km. Compare to your own history and threshold pace.",
+  limitations:
+    "Pace is GPS-dependent and affected by terrain, wind, and altitude. On hilly routes, actual pace is misleading — use Grade Adjusted Pace instead. Also doesn't account for stops unless the watch uses auto-pause.",
+  unit: "min/km",
+  sports: ["running", "swimming"],
+  displayContext:
+    "Session detail stats grid for running and swimming sessions.",
+};
+
+const avgSpeed: MetricExplanation = {
+  id: "avgSpeed",
+  shortLabel: "Speed",
+  friendlyName: "Average Speed",
+  name: "Average Speed",
+  oneLiner:
+    "Your average speed in km/h, the primary intensity metric for cycling.",
+  fullExplanation:
+    "Average speed is total distance divided by total time, expressed in kilometers per hour. For cycling, speed is a more natural metric than pace because it maps directly to the experience — faster feels faster. It enables quick comparison between rides.",
+  analogy:
+    "Speed is the cyclist's speedometer reading averaged over the whole ride. It answers the simple question: how fast did I go?",
+  whyItMatters:
+    "While power is the gold standard for cycling intensity, speed provides accessible context. Comparing speed across similar routes reveals aerobic gains, equipment changes, or wind conditions.",
+  range:
+    "Recreational cycling: 20–25 km/h. Club riders: 25–32 km/h. Competitive: 32–40 km/h. Elite TT: 45+ km/h. Highly affected by terrain and wind.",
+  limitations:
+    "Speed is heavily influenced by wind, drafting, terrain, road surface, and bike setup. Two rides at the same power can differ by 10+ km/h due to conditions. Power is a far more reliable intensity metric for cycling.",
+  unit: "km/h",
+  sports: ["cycling"],
+  displayContext: "Session detail stats grid for cycling sessions.",
+};
+
+const avgPower: MetricExplanation = {
+  id: "avgPower",
+  shortLabel: "Avg Power",
+  friendlyName: "Average Power",
+  name: "Average Power",
+  oneLiner:
+    "The mean power output across the session, measuring raw mechanical work.",
+  fullExplanation:
+    "Average power is the arithmetic mean of all power meter samples during the session. It represents the raw mechanical work you produced, unweighted by variability. Compare with Normalized Power to understand how variable your effort was — a large gap between AP and NP indicates a surgy, variable effort.",
+  analogy:
+    "If Normalized Power is your fuel bill, Average Power is the odometer reading — it tells you what happened mechanically, without accounting for the extra cost of stop-and-go.",
+  whyItMatters:
+    "Average Power provides a baseline for comparing efforts. The ratio of NP to AP (Variability Index) reveals pacing quality — closer to 1.0 means steadier effort.",
+  range:
+    "Compare to your FTP. Endurance rides: 55–75% FTP. Tempo: 76–90%. Threshold: 91–105%. Above threshold for sustained rides is very hard.",
+  limitations:
+    "Average power underestimates the true physiological cost of variable efforts. A ride alternating between 100W and 300W has the same average as steady 200W but is significantly harder. Always consider NP alongside AP.",
+  unit: "W",
+  sports: ["cycling"],
+  displayContext:
+    "Session detail stats grid for cycling sessions with power data. Shown as subDetail when Normalized Power is available.",
+};
+
+const elevation: MetricExplanation = {
+  id: "elevation",
+  shortLabel: "Elevation",
+  friendlyName: "Elevation Gain",
+  name: "Elevation Gain & Loss",
+  oneLiner:
+    "Total meters climbed and descended during the session.",
+  fullExplanation:
+    "Elevation gain sums every uphill segment, while elevation loss sums every downhill segment. Together they quantify the vertical challenge of a session. On hilly routes, elevation gain is often a better predictor of effort than distance alone.",
+  analogy:
+    "Elevation gain is like counting flights of stairs — two 10km runs can feel completely different if one climbs 500m and the other is flat.",
+  whyItMatters:
+    "Elevation gain directly affects energy expenditure and pacing strategy. Tracking it helps you prepare for hilly races and understand why some sessions felt harder than the pace suggests.",
+  range:
+    "Flat: under 100m gain. Rolling: 100–300m. Hilly: 300–700m. Mountainous: 700m+. All relative to session distance.",
+  limitations:
+    "GPS-derived elevation is noisy (±3–10m per sample). Barometric altimeters are more accurate but drift with weather changes. Small undulations may be filtered out by smoothing algorithms, underestimating true gain.",
+  unit: "m",
+  sports: ["all"],
+  displayContext:
+    "Session detail stats grid. Shows gain/loss as primary value with altitude range as subDetail.",
+};
+
+const cadence: MetricExplanation = {
+  id: "cadence",
+  shortLabel: "Cadence",
+  friendlyName: "Cadence",
+  name: "Average Cadence",
+  oneLiner:
+    "Your average steps or revolutions per minute during the session.",
+  fullExplanation:
+    "Cadence measures the rhythm of your movement — steps per minute for running, revolutions per minute for cycling. It is recorded by footpods, power meters, or wrist-based accelerometers. Optimal cadence varies by sport, intensity, and individual biomechanics.",
+  analogy:
+    "Cadence is like the RPM gauge in a car. Too low and you're lugging the engine; too high and you're over-revving. The sweet spot depends on the conditions and your engine.",
+  whyItMatters:
+    "For runners, higher cadence (170–180 spm) is associated with lower injury risk and better running economy. For cyclists, cadence affects fatigue distribution between cardiovascular and muscular systems.",
+  range:
+    "Running: 160–180+ spm (elite often 180+). Cycling: 80–100 rpm (varies by terrain and effort). Lower cadence = more muscular load, higher cadence = more cardiovascular load.",
+  limitations:
+    "Wrist-based cadence detection can be inaccurate, especially at low speeds. Optimal cadence is individual — forcing a specific cadence that doesn't match your biomechanics can increase injury risk.",
+  unit: "rpm",
+  sports: ["all"],
+  displayContext:
+    "Session detail stats grid when cadence data is available.",
+};
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 
@@ -695,4 +842,11 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   // Training Effect
   aerobicTE,
   anaerobicTE,
+  // Session stats
+  avgHr,
+  avgPace,
+  avgSpeed,
+  avgPower,
+  elevation,
+  cadence,
 };
