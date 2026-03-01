@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { useUserStore } from '../../src/store/user.ts';
 import { useSessionsStore } from '../../src/store/sessions.ts';
-import { computeMetrics, getCurrentMetrics } from '../../src/engine/metrics.ts';
+import { computeMetrics } from '../../src/engine/metrics.ts';
 import { getCoachingRecommendation } from '../../src/lib/coachingMessages.ts';
 import { detectNewPBs } from '../../src/engine/records.ts';
 import { makeUserProfile } from '../factories/profiles.ts';
@@ -34,7 +34,7 @@ describe('store + engine integration (no React)', () => {
     const metrics = computeMetrics(sessions);
     expect(metrics.length).toBeGreaterThan(0);
 
-    const current = getCurrentMetrics(sessions);
+    const current = computeMetrics(sessions).at(-1);
     expect(current).toBeDefined();
     expect(current!.ctl).toBeGreaterThan(0);
     expect(current!.atl).toBeGreaterThan(0);

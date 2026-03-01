@@ -1,5 +1,6 @@
 import type { SessionRecord } from '../engine/types.ts';
 import { gradeAdjustedPaceFactor } from '../engine/normalize.ts';
+import { filterValidPower } from '../engine/validation.ts';
 
 export interface TimeSeriesPoint {
   time: number;
@@ -66,8 +67,7 @@ export const prepareHrData = (records: SessionRecord[]): HrPoint[] =>
     }));
 
 export const preparePowerData = (records: SessionRecord[]): PowerPoint[] =>
-  records
-    .filter((r) => r.power !== undefined && r.power > 0)
+  filterValidPower(records)
     .map((r) => ({
       time: toMinutes(r.timestamp),
       power: Math.round(r.power!),

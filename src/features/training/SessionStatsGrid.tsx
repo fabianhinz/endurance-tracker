@@ -15,6 +15,7 @@ import {
   detectIntervals,
   detectProgressiveOverload,
 } from "../../engine/laps.ts";
+import { compareTSS } from "../../engine/stress.ts";
 import type { TrainingSession, SessionLap } from "../../engine/types.ts";
 
 interface SessionStatsGridProps {
@@ -134,6 +135,59 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       value: props.session.normalizedPower,
       unit: "W",
       metricId: "normalizedPower",
+    });
+  }
+
+  // Row 4b: GAP, EF, Pw:Hr Decoupling, TSS Comparison
+  if (props.session.gap && props.session.sport === "running") {
+    stats.push({
+      key: "gap",
+      label: "Grade Adj. Pace",
+      value: formatPace(props.session.gap),
+      metricId: "gradeAdjustedPace",
+    });
+  }
+
+  if (props.session.ef) {
+    stats.push({
+      key: "ef",
+      label: "Efficiency Factor",
+      value: props.session.ef,
+      metricId: "efficiencyFactor",
+    });
+  }
+
+  if (props.session.pwHrDecoupling !== undefined) {
+    stats.push({
+      key: "pwHrDecoupling",
+      label: "Pw:Hr Decoupling",
+      value: props.session.pwHrDecoupling,
+      unit: "%",
+      metricId: "pwHrDecoupling",
+    });
+  }
+
+  const tssComparison = compareTSS(props.session.deviceTss, props.session.tss);
+  if (tssComparison) {
+    const confidenceClass =
+      tssComparison.confidence === "high"
+        ? "text-status-success"
+        : tssComparison.confidence === "low"
+          ? "text-status-warning"
+          : "text-text-secondary";
+    stats.push({
+      key: "tssComparison",
+      label: "TSS Comparison",
+      value: `${tssComparison.divergencePercent.toFixed(0)}% divergence`,
+      subDetail: (
+        <Typography
+          variant="caption"
+          as="p"
+          className={confidenceClass}
+        >
+          {tssComparison.confidence} confidence
+        </Typography>
+      ),
     });
   }
 

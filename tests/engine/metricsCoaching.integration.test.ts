@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeMetrics, getCurrentMetrics } from '../../src/engine/metrics.ts';
+import { computeMetrics } from '../../src/engine/metrics.ts';
 import { getCoachingRecommendation } from '../../src/lib/coachingMessages.ts';
 import { getFormStatus, getInjuryRisk } from '../../src/engine/coaching.ts';
 import { makeSession } from '../factories/sessions.ts';
@@ -86,7 +86,7 @@ describe('metrics → coaching pipeline', () => {
       }),
     );
 
-    const current = getCurrentMetrics(sessions);
+    const current = computeMetrics(sessions).at(-1);
     expect(current).toBeDefined();
     expect(current!.tsb).toBeLessThan(-30);
 
@@ -108,7 +108,7 @@ describe('metrics → coaching pipeline', () => {
       }),
     );
 
-    const current = getCurrentMetrics(sessions);
+    const current = computeMetrics(sessions).at(-1);
     expect(current).toBeDefined();
     expect(current!.tsb).toBeGreaterThan(25);
 
@@ -157,7 +157,7 @@ describe('metrics → coaching pipeline', () => {
     const metrics = computeMetrics([]);
     expect(metrics).toEqual([]);
 
-    const current = getCurrentMetrics([]);
+    const current = computeMetrics([]).at(-1);
     expect(current).toBeUndefined();
 
     const coaching = getCoachingRecommendation(undefined, 0);

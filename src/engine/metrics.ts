@@ -112,14 +112,3 @@ export const computeMetrics = (
   return metrics;
 };
 
-/**
- * Return the most recent `DailyMetrics` entry (today's CTL/ATL/TSB/ACWR snapshot) for the given sessions.
- * @param sessions - All training sessions in the store; passed directly to `computeMetrics` with default options.
- * @returns The last element of the computed metrics array, or `undefined` when there are no sessions.
- */
-export const getCurrentMetrics = (
-  sessions: TrainingSession[],
-): DailyMetrics | undefined => {
-  const metrics = computeMetrics(sessions);
-  return metrics.length > 0 ? metrics[metrics.length - 1] : undefined;
-};
