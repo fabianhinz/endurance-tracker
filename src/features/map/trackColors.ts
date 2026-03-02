@@ -16,6 +16,13 @@ export const sportTrackColor: Record<Sport, [number, number, number, number]> =
     swimming: [34, 211, 238, 80],
   };
 
+export const sportMarkerColor: Record<Sport, [number, number, number, number]> =
+  {
+    running: [74, 222, 128, 255],
+    cycling: [96, 165, 250, 255],
+    swimming: [34, 211, 238, 255],
+  };
+
 export const ALPHA_HIGHLIGHTED = 200;
 
 const WIDTH_DEFAULT = 1;

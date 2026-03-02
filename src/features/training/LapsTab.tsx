@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Timer, Heart, Zap } from "lucide-react";
 import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
@@ -6,7 +6,10 @@ import { ToggleGroup, ToggleGroupItem } from "../../components/ui/ToggleGroup.ts
 import { analyzeLaps, enrichAllLaps } from "../../engine/laps.ts";
 import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
 import { computeDynamicLaps, SPLIT_PRESETS } from "../../engine/dynamicLaps.ts";
+import { computeLapMarkers } from "../../engine/lapMarkers.ts";
+import type { LapMarkerMode } from "../../engine/lapMarkers.ts";
 import { useLapOptionsStore } from "../../store/lapOptions.ts";
+import { useMapFocusStore } from "../../store/mapFocus.ts";
 import {
   prepareLapSplitsData,
   prepareLapHrData,
@@ -85,6 +88,29 @@ export const LapsTab = (props: LapsTabProps) => {
     () => prepareLapPowerData(enrichments),
     [enrichments],
   );
+
+  const setLapMarkers = useMapFocusStore((s) => s.setLapMarkers);
+  const clearLapMarkers = useMapFocusStore((s) => s.clearLapMarkers);
+
+  const markerMode = useMemo((): LapMarkerMode | undefined => {
+    if (isDynamic) {
+      return { kind: 'dynamic', splitDistanceMetres: splitDistance };
+    }
+    if (props.laps.length > 0) {
+      return { kind: 'device', laps: props.laps, sessionStartMs: props.laps[0].startTime };
+    }
+    return undefined;
+  }, [isDynamic, splitDistance, props.laps]);
+
+  useEffect(() => {
+    if (markerMode) {
+      const markers = computeLapMarkers(props.records, markerMode);
+      setLapMarkers(markers);
+    } else {
+      clearLapMarkers();
+    }
+    return () => clearLapMarkers();
+  }, [props.records, markerMode, setLapMarkers, clearLapMarkers]);
 
   const toggleValue = splitDistance !== undefined ? String(splitDistance) : "device";
 

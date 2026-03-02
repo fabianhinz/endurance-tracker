@@ -23,6 +23,7 @@ describe("useMapFocusStore", () => {
       focusedSport: null,
       hoveredPoint: null,
       pickCircle: null,
+      lapMarkers: [],
     });
   });
 
@@ -108,6 +109,36 @@ describe("useMapFocusStore", () => {
     useMapFocusStore.getState().setPickCircle([10.5, 48.2]);
     useMapFocusStore.getState().clearPickCircle();
     expect(useMapFocusStore.getState().pickCircle).toBeNull();
+  });
+
+  it("defaults lapMarkers to empty array", () => {
+    expect(useMapFocusStore.getState().lapMarkers).toEqual([]);
+  });
+
+  it("setLapMarkers stores markers", () => {
+    const markers = [
+      { lapIndex: 0, position: [11.0, 48.0] as [number, number], label: "1" },
+      { lapIndex: 1, position: [11.1, 48.1] as [number, number], label: "2" },
+    ];
+    useMapFocusStore.getState().setLapMarkers(markers);
+    expect(useMapFocusStore.getState().lapMarkers).toEqual(markers);
+  });
+
+  it("clearLapMarkers resets to empty array", () => {
+    useMapFocusStore.getState().setLapMarkers([
+      { lapIndex: 0, position: [11.0, 48.0] as [number, number], label: "1" },
+    ]);
+    useMapFocusStore.getState().clearLapMarkers();
+    expect(useMapFocusStore.getState().lapMarkers).toEqual([]);
+  });
+
+  it("setOpenedSession(null) also clears lapMarkers", () => {
+    useMapFocusStore.getState().setOpenedSession("abc-123");
+    useMapFocusStore.getState().setLapMarkers([
+      { lapIndex: 0, position: [11.0, 48.0] as [number, number], label: "1" },
+    ]);
+    useMapFocusStore.getState().setOpenedSession(null);
+    expect(useMapFocusStore.getState().lapMarkers).toEqual([]);
   });
 
 });
