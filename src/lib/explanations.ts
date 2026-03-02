@@ -357,9 +357,9 @@ const aerobicTE: MetricExplanation = {
   oneLiner:
     "How much this session improved your aerobic endurance, on a 0–5 scale.",
   fullExplanation:
-    "Aerobic Training Effect uses per-sample Banister TRIMP — accumulating heart rate impulse across every second of the session rather than using session-average HR. The raw TRIMP is then scaled by your chronic fitness level (CTL) so the same workout produces a smaller TE as you get fitter. The result maps to a 0–5 scale matching the industry standard used by Garmin, COROS, and Suunto.",
+    "Aerobic Training Effect uses per-sample Banister TRIMP [Banister1991] — accumulating heart rate impulse across every second of the session. The raw TRIMP is divided by a reference value (1 hour at lactate threshold per [Karvonen1957] and [Swain1998]) and raised to a sub-linear power (0.25 per [Wenger1986]) to model diminishing returns from extended duration. The result is scaled by your chronic fitness level (CTL) so the same workout produces a smaller TE as you get fitter. The anchor point ensures that 1 hour at lactate threshold (88% HRR) produces TE 3.0 (Improving).",
   formula:
-    "For each record: TRIMP += dt × HRR × a × exp(b × HRR). Reference = 1-hour threshold effort. TE = clamp(TRIMP / (reference × fitnessScale) × 3, 0, 5)",
+    "For each record: TRIMP += dt × HRR × a × exp(b × HRR). trimpRef = 60 × LT_HRR × a × exp(b × LT_HRR). TE = clamp(3.0 × (TRIMP / (trimpRef × fitnessScale))^0.25, 0, 5)",
   analogy:
     "Think of Aerobic TE like a receipt for your workout. A score of 2 means you kept the lights on (maintaining fitness). A score of 4 means you made a serious deposit in your endurance bank account.",
   whyItMatters:
@@ -381,9 +381,9 @@ const anaerobicTE: MetricExplanation = {
   oneLiner:
     "How much this session stressed your anaerobic (high-intensity) energy system, on a 0–5 scale.",
   fullExplanation:
-    "Anaerobic Training Effect measures accumulated time and intensity above the VO2max threshold (90% of heart rate reserve). Only the portion of each second spent above that threshold counts. Like Aerobic TE, the result is scaled by chronic fitness so fitter athletes need harder efforts to score high.",
+    "Anaerobic Training Effect measures accumulated time and intensity above the second ventilatory threshold (VT2 at 90% HRR per [Swain1998], [Stagno2007], [ACSM2018]). The impulse above VT2 is normalized by the available anaerobic range (1.0 − VT2_HRR). The result is anchored so that 6 minutes at VO2max ([Billat1999] mean tlim) produces TE 3.0 (Improving). Like Aerobic TE, the result is scaled by chronic fitness so fitter athletes need harder efforts to score high.",
   formula:
-    "For each record with HRR > 0.9: impulse += dt × (HRR − 0.9) / 0.1. Reference = 10 min at VO2max. TE = clamp(impulse / (10 × fitnessScale) × 3, 0, 5)",
+    "For each record with HRR > 0.90: impulse += dt × (HRR − 0.90) / (1.0 − 0.90). TE = clamp(3.0 × impulse / (6.0 × fitnessScale), 0, 5)",
   analogy:
     "Anaerobic TE is like measuring how many times you redlined your engine during a drive. A low score means you cruised. A high score means you spent serious time in the red zone.",
   whyItMatters:

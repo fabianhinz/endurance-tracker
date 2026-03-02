@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from "recharts";
-import { chartTheme } from "../../lib/chartTheme.ts";
+import { avgDomain, chartTheme } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
 import type { LapPowerPoint } from "../../lib/lapChartData.ts";
 
@@ -16,17 +16,21 @@ interface LapPowerChartProps {
   data: LapPowerPoint[];
   mode: "compact" | "expanded";
   syncId?: string;
+  onActiveLapChange?: (lapIndex: number | null) => void;
 }
 
 export const LapPowerChart = (props: LapPowerChartProps) => {
   const compact = props.mode === "compact";
-  const angleTicks = props.data.length > 20;
-
+  const yDomain = avgDomain(props.data.map((d) => d.avgPower));
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart
         data={props.data}
         syncId={compact ? props.syncId : undefined}
+        onMouseMove={(state) => {
+          props.onActiveLapChange?.(Number(state.activeTooltipIndex ?? 0));
+        }}
+        onMouseLeave={() => props.onActiveLapChange?.(null)}
       >
         {!compact && (
           <CartesianGrid
@@ -36,29 +40,30 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
         )}
         <XAxis
           dataKey="lap"
+          ticks={compact ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean) : undefined}
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={chartTheme.axisLine}
-          angle={angleTicks ? -45 : 0}
-          textAnchor={angleTicks ? "end" : "middle"}
-          height={angleTicks ? 50 : 30}
-          interval={compact ? "preserveStartEnd" : 0}
         />
         <YAxis
+          domain={yDomain}
+          allowDataOverflow
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={false}
           tickCount={compact ? 3 : undefined}
-          tickFormatter={(v: number) =>
-            compact ? `${v}` : `${v} W`
-          }
+          tickFormatter={(v: number) => (compact ? `${v}` : `${v} W`)}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           cursor={{ fill: `${tokens.accent}14` }}
-          formatter={(_value: number | undefined, _name: string | undefined, entry: { payload?: LapPowerPoint }) => {
+          formatter={(
+            _value: number | undefined,
+            _name: string | undefined,
+            entry: { payload?: LapPowerPoint },
+          ) => {
             const p = entry.payload;
             if (!p) return [`-- W`, "Avg Power"];
             return [

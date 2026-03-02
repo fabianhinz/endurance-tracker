@@ -260,6 +260,7 @@ describe('enrichLapFromRecords', () => {
     expect(result.minPower).toBeUndefined();
     expect(result.maxPower).toBeUndefined();
     expect(result.minCadence).toBeUndefined();
+    expect(result.minHr).toBeUndefined();
   });
 
   it('excludes zero-speed records from minSpeed', () => {
@@ -292,6 +293,69 @@ describe('enrichLapFromRecords', () => {
     ];
     const result = enrichLapFromRecords(0, records);
     expect(result.minSpeed).toBeUndefined();
+  });
+
+  it('computes minHr from per-second records', () => {
+    const records: SessionRecord[] = Array.from({ length: 20 }, (_, i) => ({
+      sessionId: 'test',
+      timestamp: i,
+      hr: 130 + i,
+    }));
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minHr).toBeDefined();
+    expect(result.minHr).toBe(130);
+  });
+
+  it('returns true minimum for power (zero excluded by pre-filter)', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, power: 0 },
+      ...Array.from({ length: 19 }, (_, i) => ({
+        sessionId: 'test',
+        timestamp: i + 1,
+        power: 180 + i * 2,
+      })),
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // The 0W record is excluded by the > 0 filter; true min is 180
+    expect(result.minPower).toBe(180);
+  });
+
+  it('returns true minimum HR including outliers', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, hr: 50 }, // sensor glitch — now included as true min
+      ...Array.from({ length: 20 }, (_, i) => ({
+        sessionId: 'test',
+        timestamp: i + 1,
+        hr: 140 + i,
+      })),
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // sorted: [50, 140, 141, ..., 159] — true min is 50
+    expect(result.minHr).toBe(50);
+  });
+
+  it('excludes zero-power coasting from minPower', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, power: 0 },
+      { sessionId: 'test', timestamp: 1, power: 0 },
+      { sessionId: 'test', timestamp: 2, power: 150 },
+      { sessionId: 'test', timestamp: 3, power: 200 },
+      { sessionId: 'test', timestamp: 4, power: 180 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // Zero-power records filtered out; remaining: [150, 180, 200]
+    expect(result.minPower).toBe(150);
+  });
+
+  it('excludes zero-cadence from minCadence', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, cadence: 0 },
+      { sessionId: 'test', timestamp: 1, cadence: 70 },
+      { sessionId: 'test', timestamp: 2, cadence: 80 },
+      { sessionId: 'test', timestamp: 3, cadence: 85 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minCadence).toBe(70);
   });
 });
 

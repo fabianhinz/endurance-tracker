@@ -194,6 +194,7 @@ export interface LapRecordEnrichment {
   minPower: number | undefined;
   maxPower: number | undefined;
   minCadence: number | undefined;
+  minHr: number | undefined;
 }
 
 /**
@@ -220,9 +221,14 @@ export const filterRecordsByLap = (
 /**
  * Computes per-record enrichment metrics for a single lap's worth of records.
  *
- * - `minSpeed`: minimum non-zero speed in m/s across the records.
+ * Min values are the true minimum from pre-filtered arrays (zeros and
+ * below-threshold values already excluded). Outlier handling is deferred
+ * to the presentation layer (chart Y-axis domain clamping).
+ *
+ * - `minSpeed`: minimum non-zero speed in m/s above {@link MIN_SPEED_MS}.
  * - `avgPower` / `minPower` / `maxPower`: power statistics in watts.
- * - `minCadence`: minimum cadence value.
+ * - `minCadence`: minimum non-zero cadence value.
+ * - `minHr`: minimum non-zero heart rate from per-second records.
  */
 export const enrichLapFromRecords = (
   lapIndex: number,
@@ -230,16 +236,23 @@ export const enrichLapFromRecords = (
 ): LapRecordEnrichment => {
   const MIN_SPEED_MS = 0.5; // ~33:20/km, below any reasonable running/cycling pace
   const speeds = records.map((r) => r.speed).filter((s): s is number => s !== undefined && s > MIN_SPEED_MS);
-  const powers = records.map((r) => r.power).filter((p): p is number => p !== undefined);
-  const cadences = records.map((r) => r.cadence).filter((c): c is number => c !== undefined);
+  const powers = records.map((r) => r.power).filter((p): p is number => p !== undefined && p > 0);
+  const cadences = records.map((r) => r.cadence).filter((c): c is number => c !== undefined && c > 0);
+  const hrs = records.map((r) => r.hr).filter((h): h is number => h !== undefined && h > 0);
 
-  const minSpeed = speeds.length > 0 ? Math.min(...speeds) : undefined;
+  speeds.sort((a, b) => a - b);
+  powers.sort((a, b) => a - b);
+  cadences.sort((a, b) => a - b);
+  hrs.sort((a, b) => a - b);
+
+  const minSpeed = speeds.length > 0 ? speeds[0] : undefined;
   const avgPower = powers.length > 0 ? Math.round(powers.reduce((a, b) => a + b, 0) / powers.length) : undefined;
-  const minPower = powers.length > 0 ? Math.min(...powers) : undefined;
-  const maxPower = powers.length > 0 ? Math.max(...powers) : undefined;
-  const minCadence = cadences.length > 0 ? Math.min(...cadences) : undefined;
+  const minPower = powers.length > 0 ? powers[0] : undefined;
+  const maxPower = powers.length > 0 ? powers[powers.length - 1] : undefined;
+  const minCadence = cadences.length > 0 ? cadences[0] : undefined;
+  const minHr = hrs.length > 0 ? hrs[0] : undefined;
 
-  return { lapIndex, minSpeed, avgPower, minPower, maxPower, minCadence };
+  return { lapIndex, minSpeed, avgPower, minPower, maxPower, minCadence, minHr };
 };
 
 /**

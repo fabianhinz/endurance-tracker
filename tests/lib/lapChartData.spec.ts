@@ -4,8 +4,7 @@ import {
   prepareLapHrData,
   prepareLapPowerData,
 } from '../../src/lib/lapChartData.ts';
-import { analyzeLaps, enrichAllLaps } from '../../src/engine/laps.ts';
-import type { LapRecordEnrichment } from '../../src/engine/laps.ts';
+import { analyzeLaps, enrichAllLaps, type LapRecordEnrichment } from '../../src/engine/laps.ts';
 import { makeLaps, makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
 
 describe('prepareLapSplitsData', () => {
@@ -148,6 +147,33 @@ describe('prepareLapHrData', () => {
   it('returns empty for empty laps', () => {
     expect(prepareLapHrData([])).toHaveLength(0);
   });
+
+  it('prefers enrichment minHr over FIT summary minHr', () => {
+    const laps = makeLaps('s1', 1);
+    laps[0].avgHr = 150;
+    laps[0].minHr = 80; // unrealistic FIT summary value
+    laps[0].maxHr = 170;
+    const analysis = analyzeLaps(laps);
+    const enrichments: LapRecordEnrichment[] = [
+      { lapIndex: 0, minSpeed: undefined, avgPower: undefined, minPower: undefined, maxPower: undefined, minCadence: undefined, minHr: 138 },
+    ];
+    const result = prepareLapHrData(analysis, enrichments);
+    expect(result[0].minHr).toBe(138);
+    expect(result[0].hrRange).toEqual([138, 170]);
+  });
+
+  it('falls back to FIT summary minHr when enrichment has no minHr', () => {
+    const laps = makeLaps('s1', 1);
+    laps[0].avgHr = 150;
+    laps[0].minHr = 130;
+    laps[0].maxHr = 170;
+    const analysis = analyzeLaps(laps);
+    const enrichments: LapRecordEnrichment[] = [
+      { lapIndex: 0, minSpeed: undefined, avgPower: undefined, minPower: undefined, maxPower: undefined, minCadence: undefined, minHr: undefined },
+    ];
+    const result = prepareLapHrData(analysis, enrichments);
+    expect(result[0].minHr).toBe(130);
+  });
 });
 
 describe('prepareLapPowerData', () => {
@@ -167,8 +193,8 @@ describe('prepareLapPowerData', () => {
 
   it('filters out enrichments without power data', () => {
     const enrichments: LapRecordEnrichment[] = [
-      { lapIndex: 0, minSpeed: 3.0, avgPower: 200, minPower: 180, maxPower: 240, minCadence: 80 },
-      { lapIndex: 1, minSpeed: 3.2, avgPower: undefined, minPower: undefined, maxPower: undefined, minCadence: 82 },
+      { lapIndex: 0, minSpeed: 3.0, avgPower: 200, minPower: 180, maxPower: 240, minCadence: 80, minHr: 135 },
+      { lapIndex: 1, minSpeed: 3.2, avgPower: undefined, minPower: undefined, maxPower: undefined, minCadence: 82, minHr: 140 },
     ];
     const result = prepareLapPowerData(enrichments);
     expect(result).toHaveLength(1);

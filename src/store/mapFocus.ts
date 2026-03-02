@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { SessionLap, Sport } from "../engine/types.ts";
+import type { LapMarker } from "../engine/lapMarkers.ts";
 
 interface MapFocusState {
   openedSessionId: string | null;
@@ -16,6 +17,12 @@ interface MapFocusState {
   pickCircle: [number, number] | null;
   setPickCircle: (center: [number, number]) => void;
   clearPickCircle: () => void;
+  lapMarkers: LapMarker[];
+  setLapMarkers: (markers: LapMarker[]) => void;
+  clearLapMarkers: () => void;
+  hoveredLapIndex: number | null;
+  setHoveredLapIndex: (index: number) => void;
+  clearHoveredLapIndex: () => void;
 }
 
 export const useMapFocusStore = create<MapFocusState>()((set) => ({
@@ -23,7 +30,7 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
   setOpenedSession: (id) =>
     set(
       id === null
-        ? { openedSessionId: null, focusedLaps: [], focusedSport: null, hoveredPoint: null }
+        ? { openedSessionId: null, focusedLaps: [], focusedSport: null, hoveredPoint: null, lapMarkers: [], hoveredLapIndex: null }
         : { openedSessionId: id },
     ),
   hoveredSessionId: null,
@@ -38,4 +45,10 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
   pickCircle: null,
   setPickCircle: (center) => set({ pickCircle: center }),
   clearPickCircle: () => set({ pickCircle: null }),
+  lapMarkers: [],
+  setLapMarkers: (markers) => set({ lapMarkers: markers }),
+  clearLapMarkers: () => set({ lapMarkers: [] }),
+  hoveredLapIndex: null,
+  setHoveredLapIndex: (index) => set({ hoveredLapIndex: index }),
+  clearHoveredLapIndex: () => set({ hoveredLapIndex: null }),
 }));

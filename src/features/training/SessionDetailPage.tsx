@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
@@ -34,7 +34,13 @@ import { SessionRecordsCard } from "./SessionRecordsCard.tsx";
 import { LapsTab } from "./LapsTab.tsx";
 import type { SessionRecord, SessionLap } from "../../engine/types.ts";
 
+const validTabs = new Set(["overview", "laps"]);
+
 export const SessionDetailPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawTab = searchParams.get("tab");
+  const tab = rawTab && validTabs.has(rawTab) ? rawTab : "overview";
+
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
   const session = useSessionsStore((s) =>
@@ -84,6 +90,10 @@ export const SessionDetailPage = () => {
     session.subSport && session.subSport !== "generic"
       ? formatSubSport(session.subSport)
       : null;
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
 
   // no layout shift
   if (records.length === 0) {
@@ -142,7 +152,7 @@ export const SessionDetailPage = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="overview">
+      <Tabs defaultValue="overview" value={tab} onValueChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="laps">Laps</TabsTrigger>

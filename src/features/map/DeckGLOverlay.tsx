@@ -2,14 +2,16 @@ import { useMemo } from "react";
 import { useMatch } from "react-router-dom";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import type { PickingInfo } from "@deck.gl/core";
-import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
+import { PathLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 import { useHiresPaths } from "./hooks/useHiresPaths.ts";
 import {
   ADDITIVE_BLEND,
   ALPHA_HIGHLIGHTED,
   getTrackWidth,
+  sportMarkerColor,
   sportTrackColor,
 } from "./trackColors.ts";
+import type { LapMarker } from "../../engine/lapMarkers.ts";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useLayoutStore } from "../../store/layout.ts";
@@ -35,6 +37,9 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const hoveredPoint = useMapFocusStore((s) => s.hoveredPoint);
   const pickCircle = useMapFocusStore((s) => s.pickCircle);
+  const lapMarkers = useMapFocusStore((s) => s.lapMarkers);
+  const focusedSport = useMapFocusStore((s) => s.focusedSport);
+  const hoveredLapIndex = useMapFocusStore((s) => s.hoveredLapIndex);
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
 
@@ -90,12 +95,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
         ...eventHandlers,
       }),
     ];
-  }, [
-    props.tracks,
-    eventHandlers,
-    highlightedSessionId,
-    hoveredSessionId,
-  ]);
+  }, [props.tracks, eventHandlers, highlightedSessionId, hoveredSessionId]);
 
   const hiresPaths = useHiresPaths(hoveredSessionId, openedSessionId, sessions);
 
@@ -177,12 +177,57 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     });
   }, [hoveredPoint]);
 
+  const lapMarkerLayers = useMemo(() => {
+    if (lapMarkers.length === 0 || !focusedSport) return [];
+    const fill = sportMarkerColor[focusedSport];
+    const [r, g, b] = sportTrackColor[focusedSport];
+    return lapMarkers.flatMap((marker) => {
+      const lineAlpha =
+        hoveredLapIndex != null
+          ? marker.lapIndex === hoveredLapIndex
+            ? 255
+            : 0
+          : 0;
+      return [
+        new ScatterplotLayer<LapMarker>({
+          id: `lap-marker-circle-${marker.lapIndex}`,
+          data: [marker],
+          getPosition: (d) => d.position,
+          getRadius: 12,
+          radiusUnits: "pixels",
+          getFillColor: fill,
+          filled: true,
+          stroked: true,
+          getLineColor: [r, g, b, lineAlpha],
+          lineWidthUnits: "pixels" as const,
+          getLineWidth: 4,
+          pickable: false,
+          updateTriggers: {
+            getLineColor: [hoveredLapIndex],
+          },
+        }),
+        new TextLayer<LapMarker>({
+          id: `lap-marker-label-${marker.lapIndex}`,
+          data: [marker],
+          getPosition: (d) => d.position,
+          getText: (d) => d.label,
+          getSize: 12,
+          getColor: [0, 0, 0, 255],
+          getTextAnchor: "middle",
+          getAlignmentBaseline: "center",
+          pickable: false,
+        }),
+      ];
+    });
+  }, [lapMarkers, focusedSport, hoveredLapIndex]);
+
   const layers = useMemo(
     () => [
       ...(openedSessionId ? [] : [trackLayers]),
       ...(hiresLayer ? [hiresLayer] : []),
       ...(pickCircleLayer ? [pickCircleLayer] : []),
       ...(hoveredPointLayer ? [hoveredPointLayer] : []),
+      ...lapMarkerLayers,
     ],
     [
       openedSessionId,
@@ -190,6 +235,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       hiresLayer,
       pickCircleLayer,
       hoveredPointLayer,
+      lapMarkerLayers,
     ],
   );
 

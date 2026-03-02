@@ -31,10 +31,7 @@ interface ZoneDistributionChartProps {
   mode?: "compact" | "expanded";
 }
 
-const ZoneBarChart = (props: {
-  data: ZoneBucket[];
-  compact: boolean;
-}) => (
+const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
   <ResponsiveContainer width="100%" height="100%">
     <BarChart
       data={props.data}
@@ -42,29 +39,36 @@ const ZoneBarChart = (props: {
       barCategoryGap={props.compact ? "20%" : undefined}
     >
       {!props.compact && (
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke={chartTheme.grid.stroke}
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />
       )}
-      <XAxis type="number" tick={chartTheme.tick} tickLine={false} axisLine={chartTheme.axisLine} tickFormatter={(v: number) => `${v}%`} />
-      <YAxis type="category" dataKey="label" tick={chartTheme.tick} tickLine={false} axisLine={false} width={140} />
-      {!props.compact && (
-        <RechartsTooltip
-          contentStyle={chartTheme.tooltip.contentStyle}
-          labelStyle={chartTheme.tooltip.labelStyle}
-          itemStyle={{ color: tokens.textPrimary }}
-          isAnimationActive={chartTheme.tooltip.isAnimationActive}
-          cursor={{ fill: `${tokens.accent}14` }}
-          formatter={(value: number | undefined, _name: string | undefined, entry: { payload?: ZoneBucket }) =>
-            [`${value ?? 0}% · ${entry.payload?.rangeLabel ?? ""}`, "Time"]
-          }
-        />
-      )}
-      <Bar
-        dataKey="percentage"
-        name="Time"
-      >
+      <XAxis
+        type="number"
+        tick={chartTheme.tick}
+        tickLine={false}
+        axisLine={chartTheme.axisLine}
+        tickFormatter={(v: number) => `${v}%`}
+      />
+      <YAxis
+        type="category"
+        dataKey="label"
+        tick={chartTheme.tick}
+        tickLine={false}
+        axisLine={false}
+        width={140}
+      />
+      <RechartsTooltip
+        contentStyle={chartTheme.tooltip.contentStyle}
+        labelStyle={chartTheme.tooltip.labelStyle}
+        itemStyle={{ color: tokens.textPrimary }}
+        isAnimationActive={chartTheme.tooltip.isAnimationActive}
+        cursor={{ fill: `${tokens.accent}14` }}
+        formatter={(
+          value: number | undefined,
+          _name: string | undefined,
+          entry: { payload?: ZoneBucket },
+        ) => [`${value ?? 0}% · ${entry.payload?.rangeLabel ?? ""}`, "Time"]}
+      />
+      <Bar dataKey="percentage" name="Time">
         {props.data.map((entry, index) => (
           <Cell key={index} fill={entry.color} />
         ))}
@@ -109,15 +113,16 @@ export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   );
 
   return (
-    <Tabs value={resolvedTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+    <Tabs
+      value={resolvedTab}
+      onValueChange={setActiveTab}
+      className="h-full flex flex-col"
+    >
       {tabs.length > 1 && tabsTriggers}
       <div className="flex-1">
         {tabs.map((tab) => (
           <TabsContent key={tab.key} value={tab.key} className="mt-0 h-full">
-            <ZoneBarChart
-              data={tab.data}
-              compact={isCompact}
-            />
+            <ZoneBarChart data={tab.data} compact={isCompact} />
           </TabsContent>
         ))}
       </div>

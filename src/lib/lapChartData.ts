@@ -94,11 +94,17 @@ export const prepareLapPowerData = (
       powerRange: [e.minPower!, e.maxPower!] as [number, number],
     }));
 
-export const prepareLapHrData = (laps: LapAnalysis[]): LapHrPoint[] =>
-  laps
+export const prepareLapHrData = (
+  laps: LapAnalysis[],
+  enrichments?: LapRecordEnrichment[],
+): LapHrPoint[] => {
+  const enrichmentMap = new Map(enrichments?.map((e) => [e.lapIndex, e]));
+
+  return laps
     .filter((l) => l.avgHr !== undefined)
     .map((l) => {
-      const minHr = l.minHr ?? l.avgHr!;
+      const enrichment = enrichmentMap.get(l.lapIndex);
+      const minHr = enrichment?.minHr ?? l.minHr ?? l.avgHr!;
       const maxHr = l.maxHr ?? l.avgHr!;
       return {
         lap: `Lap ${l.lapIndex + 1}`,
@@ -108,3 +114,4 @@ export const prepareLapHrData = (laps: LapAnalysis[]): LapHrPoint[] =>
         hrRange: [minHr, maxHr] as [number, number],
       };
     });
+};
