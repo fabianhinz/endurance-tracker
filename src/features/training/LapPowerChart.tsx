@@ -68,12 +68,12 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
           }}
         />
         <Area
-          dataKey="avgPower"
-          name="Avg Power"
+          dataKey="powerRange"
           type="monotone"
-          stroke="none"
           fill={tokens.chartPower}
           fillOpacity={0.15}
+          stroke="none"
+          tooltipType="none"
           dot={false}
         />
         <Line
@@ -82,22 +82,6 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
           type="monotone"
           stroke={tokens.chartPower}
           strokeWidth={2}
-          dot={false}
-        />
-        <Line
-          dataKey="minPower"
-          name="Min Power"
-          type="monotone"
-          stroke={`${tokens.chartPower}80`}
-          strokeWidth={1}
-          dot={false}
-        />
-        <Line
-          dataKey="maxPower"
-          name="Max Power"
-          type="monotone"
-          stroke={`${tokens.chartPower}80`}
-          strokeWidth={1}
           dot={false}
         />
       </ComposedChart>

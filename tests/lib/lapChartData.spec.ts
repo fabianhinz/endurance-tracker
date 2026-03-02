@@ -18,6 +18,9 @@ describe('prepareLapSplitsData', () => {
     expect(result[0]).toHaveProperty('speed');
     expect(result[0]).toHaveProperty('maxPace');
     expect(result[0]).toHaveProperty('maxSpeed');
+    // Without enrichments, range fields are undefined
+    expect(result[0].paceRange).toBeUndefined();
+    expect(result[0].speedRange).toBeUndefined();
   });
 
   it('labels laps sequentially', () => {
@@ -65,7 +68,7 @@ describe('prepareLapSplitsData', () => {
     expect(prepareLapSplitsData([])).toHaveLength(0);
   });
 
-  it('populates minSpeed/minPace from enrichments', () => {
+  it('populates minSpeed/minPace and range fields from enrichments', () => {
     const laps = makeLaps('s1', 5);
     const records = makeRunningRecords('s1', 1500);
     const analysis = analyzeLaps(laps);
@@ -78,6 +81,13 @@ describe('prepareLapSplitsData', () => {
       expect(r.minPace).toBeDefined();
       expect(r.minSpeed!).toBeGreaterThan(0);
       expect(r.minPace!).toBeGreaterThan(0);
+      // Range fields populated when min data exists
+      expect(r.paceRange).toBeDefined();
+      expect(r.paceRange![0]).toBe(r.maxPace);
+      expect(r.paceRange![1]).toBe(r.minPace);
+      expect(r.speedRange).toBeDefined();
+      expect(r.speedRange![0]).toBe(r.minSpeed);
+      expect(r.speedRange![1]).toBe(r.maxSpeed);
     });
   });
 
@@ -92,13 +102,14 @@ describe('prepareLapSplitsData', () => {
 });
 
 describe('prepareLapHrData', () => {
-  it('groups avg/min/max HR per lap', () => {
+  it('groups avg/min/max HR per lap with hrRange', () => {
     const analysis = analyzeLaps(makeLaps('s1', 4));
     const result = prepareLapHrData(analysis);
     expect(result).toHaveLength(4);
     expect(result[0]).toHaveProperty('avgHr');
     expect(result[0]).toHaveProperty('minHr');
     expect(result[0]).toHaveProperty('maxHr');
+    expect(result[0].hrRange).toEqual([result[0].minHr, result[0].maxHr]);
   });
 
   it('uses avgHr as fallback for missing min/max', () => {
@@ -110,6 +121,7 @@ describe('prepareLapHrData', () => {
     const result = prepareLapHrData(analysis);
     expect(result[0].minHr).toBe(150);
     expect(result[0].maxHr).toBe(150);
+    expect(result[0].hrRange).toEqual([150, 150]);
   });
 
   it('filters out laps without HR data', () => {
@@ -126,7 +138,7 @@ describe('prepareLapHrData', () => {
 });
 
 describe('prepareLapPowerData', () => {
-  it('produces power points from cycling enrichments', () => {
+  it('produces power points from cycling enrichments with powerRange', () => {
     const laps = makeLaps('s1', 5);
     const records = makeCyclingRecords('s1', 1500);
     const enrichments = enrichAllLaps(laps, records);
@@ -136,6 +148,7 @@ describe('prepareLapPowerData', () => {
       expect(p.avgPower).toBeDefined();
       expect(p.minPower).toBeLessThanOrEqual(p.avgPower);
       expect(p.maxPower).toBeGreaterThanOrEqual(p.avgPower);
+      expect(p.powerRange).toEqual([p.minPower, p.maxPower]);
     });
   });
 

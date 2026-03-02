@@ -25,8 +25,8 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
   const dataKey = props.isRunning ? "pace" : "speed";
   const angleTicks = props.data.length > 20;
   const fill = props.isRunning ? tokens.chartPace : tokens.chartSpeed;
-  const hasMinData = props.data.some(
-    (d) => (props.isRunning ? d.minPace : d.minSpeed) !== undefined,
+  const hasRangeData = props.data.some(
+    (d) => (props.isRunning ? d.paceRange : d.speedRange) !== undefined,
   );
 
   return (
@@ -72,22 +72,34 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           cursor={{ fill: `${tokens.accent}14` }}
-          formatter={(value: number | undefined) => [
-            props.isRunning
-              ? formatPace(value ?? 0)
-              : `${value ?? 0} km/h`,
-            props.isRunning ? "Pace" : "Speed",
-          ]}
+          formatter={(_value: number | undefined, _name: string | undefined, entry: { payload?: LapSplitPoint }) => {
+            const p = entry.payload;
+            if (!p) return [props.isRunning ? "-- /km" : "-- km/h", props.isRunning ? "Pace" : "Speed"];
+            if (props.isRunning) {
+              const avg = formatPace(p.pace);
+              if (p.minPace !== undefined) {
+                return [`${avg} (${formatPaceInput(p.minPace)}–${formatPaceInput(p.maxPace)})`, "Pace"];
+              }
+              return [avg, "Pace"];
+            }
+            const avg = `${p.speed} km/h`;
+            if (p.minSpeed !== undefined) {
+              return [`${avg} (${p.minSpeed}–${p.maxSpeed})`, "Speed"];
+            }
+            return [avg, "Speed"];
+          }}
         />
-        <Area
-          dataKey={dataKey}
-          name={props.isRunning ? "Pace" : "Speed"}
-          type="monotone"
-          stroke="none"
-          fill={fill}
-          fillOpacity={0.15}
-          dot={false}
-        />
+        {hasRangeData && (
+          <Area
+            dataKey={props.isRunning ? "paceRange" : "speedRange"}
+            type="monotone"
+            fill={fill}
+            fillOpacity={0.15}
+            stroke="none"
+            tooltipType="none"
+            dot={false}
+          />
+        )}
         <Line
           dataKey={dataKey}
           name={props.isRunning ? "Pace" : "Speed"}
@@ -96,25 +108,6 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           strokeWidth={2}
           dot={false}
         />
-        <Line
-          dataKey={props.isRunning ? "maxPace" : "maxSpeed"}
-          name={props.isRunning ? "Fastest Pace" : "Max Speed"}
-          type="monotone"
-          stroke={`${fill}80`}
-          strokeWidth={1}
-          dot={false}
-        />
-        {hasMinData && (
-          <Line
-            dataKey={props.isRunning ? "minPace" : "minSpeed"}
-            name={props.isRunning ? "Slowest Pace" : "Min Speed"}
-            type="monotone"
-            stroke={`${fill}50`}
-            strokeWidth={1}
-            strokeDasharray="4 3"
-            dot={false}
-          />
-        )}
       </ComposedChart>
     </ResponsiveContainer>
   );

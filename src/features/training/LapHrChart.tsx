@@ -68,12 +68,12 @@ export const LapHrChart = (props: LapHrChartProps) => {
           }}
         />
         <Area
-          dataKey="avgHr"
-          name="Avg HR"
+          dataKey="hrRange"
           type="monotone"
-          stroke="none"
           fill={tokens.chartHr}
           fillOpacity={0.15}
+          stroke="none"
+          tooltipType="none"
           dot={false}
         />
         <Line
@@ -82,22 +82,6 @@ export const LapHrChart = (props: LapHrChartProps) => {
           type="monotone"
           stroke={tokens.chartHr}
           strokeWidth={2}
-          dot={false}
-        />
-        <Line
-          dataKey="minHr"
-          name="Min HR"
-          type="monotone"
-          stroke={`${tokens.chartHr}80`}
-          strokeWidth={1}
-          dot={false}
-        />
-        <Line
-          dataKey="maxHr"
-          name="Max HR"
-          type="monotone"
-          stroke={`${tokens.chartHr}80`}
-          strokeWidth={1}
           dot={false}
         />
       </ComposedChart>

@@ -8,6 +8,8 @@ export interface LapSplitPoint {
   maxSpeed: number; // km/h
   minPace: number | undefined; // sec/km (from min speed enrichment)
   minSpeed: number | undefined; // km/h
+  paceRange: [number, number] | undefined; // [maxPace, minPace] (fast→slow for reversed axis)
+  speedRange: [number, number] | undefined; // [minSpeed, maxSpeed]
 }
 
 export interface LapHrPoint {
@@ -15,6 +17,7 @@ export interface LapHrPoint {
   avgHr: number;
   minHr: number;
   maxHr: number;
+  hrRange: [number, number]; // [minHr, maxHr]
 }
 
 export interface LapPowerPoint {
@@ -22,6 +25,7 @@ export interface LapPowerPoint {
   avgPower: number;
   minPower: number;
   maxPower: number;
+  powerRange: [number, number]; // [minPower, maxPower]
 }
 
 export const prepareLapSplitsData = (
@@ -62,6 +66,12 @@ export const prepareLapSplitsData = (
         maxSpeed: maxSpeedKmh,
         minPace,
         minSpeed: minSpeedKmh,
+        paceRange:
+          minPace !== undefined ? [maxPace, minPace] : undefined,
+        speedRange:
+          minSpeedKmh !== undefined
+            ? [minSpeedKmh, maxSpeedKmh]
+            : undefined,
       };
     });
 };
@@ -81,14 +91,20 @@ export const prepareLapPowerData = (
       avgPower: e.avgPower!,
       minPower: e.minPower!,
       maxPower: e.maxPower!,
+      powerRange: [e.minPower!, e.maxPower!] as [number, number],
     }));
 
 export const prepareLapHrData = (laps: LapAnalysis[]): LapHrPoint[] =>
   laps
     .filter((l) => l.avgHr !== undefined)
-    .map((l) => ({
-      lap: `Lap ${l.lapIndex + 1}`,
-      avgHr: l.avgHr!,
-      minHr: l.minHr ?? l.avgHr!,
-      maxHr: l.maxHr ?? l.avgHr!,
-    }));
+    .map((l) => {
+      const minHr = l.minHr ?? l.avgHr!;
+      const maxHr = l.maxHr ?? l.avgHr!;
+      return {
+        lap: `Lap ${l.lapIndex + 1}`,
+        avgHr: l.avgHr!,
+        minHr,
+        maxHr,
+        hrRange: [minHr, maxHr] as [number, number],
+      };
+    });
