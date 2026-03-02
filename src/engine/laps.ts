@@ -219,26 +219,16 @@ export const filterRecordsByLap = (
 };
 
 /**
- * Returns the value at the given percentile from a **pre-sorted** array.
- * Uses the ceiling-rank method: `sorted[ceil(length * p) - 1]`.
- */
-const percentile = (sorted: number[], p: number): number =>
-  sorted[Math.max(0, Math.ceil(sorted.length * p) - 1)];
-
-/** 5th percentile — excludes brief sensor outliers while capturing actual low effort. */
-const P5 = 0.05;
-
-/**
  * Computes per-record enrichment metrics for a single lap's worth of records.
  *
- * All min values use the 5th percentile (P5) instead of `Math.min()` to
- * exclude single-sample outliers from sensor dropouts and initialization
- * artifacts.
+ * Min values are the true minimum from pre-filtered arrays (zeros and
+ * below-threshold values already excluded). Outlier handling is deferred
+ * to the presentation layer (chart Y-axis domain clamping).
  *
- * - `minSpeed`: P5 non-zero speed in m/s across the records.
+ * - `minSpeed`: minimum non-zero speed in m/s above {@link MIN_SPEED_MS}.
  * - `avgPower` / `minPower` / `maxPower`: power statistics in watts.
- * - `minCadence`: P5 cadence value.
- * - `minHr`: P5 heart rate derived from per-second records.
+ * - `minCadence`: minimum non-zero cadence value.
+ * - `minHr`: minimum non-zero heart rate from per-second records.
  */
 export const enrichLapFromRecords = (
   lapIndex: number,
@@ -255,12 +245,12 @@ export const enrichLapFromRecords = (
   cadences.sort((a, b) => a - b);
   hrs.sort((a, b) => a - b);
 
-  const minSpeed = speeds.length > 0 ? percentile(speeds, P5) : undefined;
+  const minSpeed = speeds.length > 0 ? speeds[0] : undefined;
   const avgPower = powers.length > 0 ? Math.round(powers.reduce((a, b) => a + b, 0) / powers.length) : undefined;
-  const minPower = powers.length > 0 ? percentile(powers, P5) : undefined;
+  const minPower = powers.length > 0 ? powers[0] : undefined;
   const maxPower = powers.length > 0 ? powers[powers.length - 1] : undefined;
-  const minCadence = cadences.length > 0 ? percentile(cadences, P5) : undefined;
-  const minHr = hrs.length > 0 ? percentile(hrs, P5) : undefined;
+  const minCadence = cadences.length > 0 ? cadences[0] : undefined;
+  const minHr = hrs.length > 0 ? hrs[0] : undefined;
 
   return { lapIndex, minSpeed, avgPower, minPower, maxPower, minCadence, minHr };
 };

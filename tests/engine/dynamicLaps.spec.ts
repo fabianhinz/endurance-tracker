@@ -116,7 +116,7 @@ describe('computeDynamicLaps', () => {
     });
   });
 
-  it('enrichments include minHr from P5 percentile', () => {
+  it('enrichments include minHr from records', () => {
     const records = makeRunningRecords('test', 1000);
     const result = computeDynamicLaps(records, 1000);
     result.enrichments.forEach((e) => {

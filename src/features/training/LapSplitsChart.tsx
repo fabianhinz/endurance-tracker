@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from "recharts";
-import { chartTheme } from "../../lib/chartTheme.ts";
+import { avgDomain, chartTheme } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
 import { formatPace, formatPaceInput } from "../../lib/utils.ts";
 import type { LapSplitPoint } from "../../lib/lapChartData.ts";
@@ -27,6 +27,9 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
   const fill = props.isRunning ? tokens.chartPace : tokens.chartSpeed;
   const hasRangeData = props.data.some(
     (d) => (props.isRunning ? d.paceRange : d.speedRange) !== undefined,
+  );
+  const yDomain = avgDomain(
+    props.data.map((d) => (props.isRunning ? d.pace : d.speed)),
   );
 
   return (
@@ -53,6 +56,7 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           axisLine={chartTheme.axisLine}
         />
         <YAxis
+          domain={yDomain}
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={false}

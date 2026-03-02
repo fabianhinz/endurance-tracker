@@ -303,12 +303,10 @@ describe('enrichLapFromRecords', () => {
     }));
     const result = enrichLapFromRecords(0, records);
     expect(result.minHr).toBeDefined();
-    // P5 of 20 values: ceil(20*0.05)-1 = 0 → sorted[0] = 130
     expect(result.minHr).toBe(130);
   });
 
-  it('P5 excludes single-sample outliers for power', () => {
-    // 19 records at 200W + 1 outlier at 0W (filtered by > 0 pre-filter)
+  it('returns true minimum for power (zero excluded by pre-filter)', () => {
     const records: SessionRecord[] = [
       { sessionId: 'test', timestamp: 0, power: 0 },
       ...Array.from({ length: 19 }, (_, i) => ({
@@ -318,15 +316,13 @@ describe('enrichLapFromRecords', () => {
       })),
     ];
     const result = enrichLapFromRecords(0, records);
-    // The 0W record is excluded by the > 0 filter
-    // P5 of 19 values [180,182,...,216]: ceil(19*0.05)-1 = 0 → 180
+    // The 0W record is excluded by the > 0 filter; true min is 180
     expect(result.minPower).toBe(180);
   });
 
-  it('P5 excludes single-sample outliers for HR', () => {
-    // 20 normal HR values + 1 artificially low outlier
+  it('returns true minimum HR including outliers', () => {
     const records: SessionRecord[] = [
-      { sessionId: 'test', timestamp: 0, hr: 50 }, // sensor glitch
+      { sessionId: 'test', timestamp: 0, hr: 50 }, // sensor glitch — now included as true min
       ...Array.from({ length: 20 }, (_, i) => ({
         sessionId: 'test',
         timestamp: i + 1,
@@ -334,11 +330,8 @@ describe('enrichLapFromRecords', () => {
       })),
     ];
     const result = enrichLapFromRecords(0, records);
-    // sorted: [50, 140, 141, ..., 159] (21 values)
-    // P5: ceil(21*0.05)-1 = 1-1 = 0 → still 50 for 21 values
-    // But with more normal samples, the outlier impact is reduced.
-    // For 21 values: ceil(21*0.05) = ceil(1.05) = 2, index 1 → 140
-    expect(result.minHr).toBe(140);
+    // sorted: [50, 140, 141, ..., 159] — true min is 50
+    expect(result.minHr).toBe(50);
   });
 
   it('excludes zero-power coasting from minPower', () => {

@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from "recharts";
-import { chartTheme } from "../../lib/chartTheme.ts";
+import { avgDomain, chartTheme } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
 import type { LapHrPoint } from "../../lib/lapChartData.ts";
 
@@ -21,6 +21,7 @@ interface LapHrChartProps {
 
 export const LapHrChart = (props: LapHrChartProps) => {
   const compact = props.mode === "compact";
+  const yDomain = avgDomain(props.data.map((d) => d.avgHr));
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart
@@ -45,6 +46,7 @@ export const LapHrChart = (props: LapHrChartProps) => {
           axisLine={chartTheme.axisLine}
         />
         <YAxis
+          domain={yDomain}
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={false}
