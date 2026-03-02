@@ -271,6 +271,28 @@ describe('enrichLapFromRecords', () => {
     const result = enrichLapFromRecords(0, records);
     expect(result.minSpeed).toBe(3.5);
   });
+
+  it('excludes near-zero speeds below MIN_SPEED_MS threshold', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, speed: 0.01 },
+      { sessionId: 'test', timestamp: 1, speed: 0.3 },
+      { sessionId: 'test', timestamp: 2, speed: 2.5 },
+      { sessionId: 'test', timestamp: 3, speed: 3.0 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // speeds 0.01 and 0.3 are below 0.5 m/s threshold
+    expect(result.minSpeed).toBe(2.5);
+  });
+
+  it('returns undefined minSpeed when all speeds are below threshold', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, speed: 0.1 },
+      { sessionId: 'test', timestamp: 1, speed: 0.2 },
+      { sessionId: 'test', timestamp: 2, speed: 0.4 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minSpeed).toBeUndefined();
+  });
 });
 
 describe('enrichAllLaps', () => {

@@ -10,7 +10,8 @@ import { makeLaps, makeCyclingRecords, makeRunningRecords } from '../factories/r
 
 describe('prepareLapSplitsData', () => {
   it('converts laps to split points with pace, speed, and max values', () => {
-    const analysis = analyzeLaps(makeLaps('s1', 5));
+    const laps = makeLaps('s1', 5).map((l) => ({ ...l, intensity: 'active' as const }));
+    const analysis = analyzeLaps(laps);
     const result = prepareLapSplitsData(analysis);
     expect(result).toHaveLength(5);
     expect(result[0]).toHaveProperty('lap');
@@ -24,13 +25,14 @@ describe('prepareLapSplitsData', () => {
   });
 
   it('labels laps sequentially', () => {
-    const analysis = analyzeLaps(makeLaps('s1', 3));
+    const laps = makeLaps('s1', 3).map((l) => ({ ...l, intensity: 'active' as const }));
+    const analysis = analyzeLaps(laps);
     const result = prepareLapSplitsData(analysis);
     expect(result.map((r) => r.lap)).toEqual(['Lap 1', 'Lap 2', 'Lap 3']);
   });
 
   it('filters out laps with zero distance', () => {
-    const laps = makeLaps('s1', 3);
+    const laps = makeLaps('s1', 3).map((l) => ({ ...l, intensity: 'active' as const }));
     laps[1].distance = 0;
     const analysis = analyzeLaps(laps);
     const result = prepareLapSplitsData(analysis);
@@ -38,14 +40,15 @@ describe('prepareLapSplitsData', () => {
   });
 
   it('derives speed from paceSecPerKm consistently with pace', () => {
-    const analysis = analyzeLaps(makeLaps('s1', 1));
+    const laps = makeLaps('s1', 1).map((l) => ({ ...l, intensity: 'active' as const }));
+    const analysis = analyzeLaps(laps);
     const result = prepareLapSplitsData(analysis);
     // pace is sec/km, speed is km/h = 3600 / pace
     expect(result[0].speed).toBeCloseTo(3600 / result[0].pace, 1);
   });
 
   it('derives maxSpeed and maxPace from LapAnalysis.maxSpeed', () => {
-    const laps = makeLaps('s1', 1);
+    const laps = makeLaps('s1', 1).map((l) => ({ ...l, intensity: 'active' as const }));
     // makeLaps sets maxSpeed to 4.0 m/s for the first lap
     const analysis = analyzeLaps(laps);
     const result = prepareLapSplitsData(analysis);
@@ -56,7 +59,7 @@ describe('prepareLapSplitsData', () => {
   });
 
   it('falls back to avg values when maxSpeed is undefined', () => {
-    const laps = makeLaps('s1', 1);
+    const laps = makeLaps('s1', 1).map((l) => ({ ...l, intensity: 'active' as const }));
     laps[0].maxSpeed = undefined;
     const analysis = analyzeLaps(laps);
     const result = prepareLapSplitsData(analysis);
@@ -68,8 +71,17 @@ describe('prepareLapSplitsData', () => {
     expect(prepareLapSplitsData([])).toHaveLength(0);
   });
 
-  it('populates minSpeed/minPace and range fields from enrichments', () => {
+  it('excludes rest laps from splits data', () => {
     const laps = makeLaps('s1', 5);
+    // makeLaps sets intensity 'rest' at indices 0, 3 — so 3 active laps
+    const analysis = analyzeLaps(laps);
+    const result = prepareLapSplitsData(analysis);
+    expect(result).toHaveLength(3);
+    expect(result.map((r) => r.lap)).toEqual(['Lap 2', 'Lap 3', 'Lap 5']);
+  });
+
+  it('populates minSpeed/minPace and range fields from enrichments', () => {
+    const laps = makeLaps('s1', 5).map((l) => ({ ...l, intensity: 'active' as const }));
     const records = makeRunningRecords('s1', 1500);
     const analysis = analyzeLaps(laps);
     const enrichments = enrichAllLaps(laps, records);
@@ -92,7 +104,8 @@ describe('prepareLapSplitsData', () => {
   });
 
   it('leaves minSpeed/minPace undefined without enrichments', () => {
-    const analysis = analyzeLaps(makeLaps('s1', 3));
+    const laps = makeLaps('s1', 3).map((l) => ({ ...l, intensity: 'active' as const }));
+    const analysis = analyzeLaps(laps);
     const result = prepareLapSplitsData(analysis);
     result.forEach((r) => {
       expect(r.minSpeed).toBeUndefined();

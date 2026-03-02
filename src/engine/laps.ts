@@ -228,7 +228,8 @@ export const enrichLapFromRecords = (
   lapIndex: number,
   records: SessionRecord[],
 ): LapRecordEnrichment => {
-  const speeds = records.map((r) => r.speed).filter((s): s is number => s !== undefined && s > 0);
+  const MIN_SPEED_MS = 0.5; // ~33:20/km, below any reasonable running/cycling pace
+  const speeds = records.map((r) => r.speed).filter((s): s is number => s !== undefined && s > MIN_SPEED_MS);
   const powers = records.map((r) => r.power).filter((p): p is number => p !== undefined);
   const cadences = records.map((r) => r.cadence).filter((c): c is number => c !== undefined);
 

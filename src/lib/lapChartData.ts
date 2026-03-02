@@ -35,7 +35,7 @@ export const prepareLapSplitsData = (
   const enrichmentMap = new Map(enrichments?.map((e) => [e.lapIndex, e]));
 
   return laps
-    .filter((l) => l.paceSecPerKm !== undefined)
+    .filter((l) => l.paceSecPerKm !== undefined && l.intensity === 'active')
     .map((l) => {
       const speed = Math.round((3600 / l.paceSecPerKm!) * 10) / 10;
       const maxSpeedKmh =
