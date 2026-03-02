@@ -120,10 +120,6 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const isEmpty = isDynamic ? analysis.length === 0 : props.laps.length === 0;
 
-  const handleTabChange = (value: string) => {
-    setSearchParams({ tab: value });
-  };
-
   return (
     <div className="space-y-3">
       <SplitDistanceCard
