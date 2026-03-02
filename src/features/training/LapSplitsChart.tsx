@@ -24,7 +24,6 @@ interface LapSplitsChartProps {
 export const LapSplitsChart = (props: LapSplitsChartProps) => {
   const compact = props.mode === "compact";
   const dataKey = props.isRunning ? "pace" : "speed";
-  const angleTicks = props.data.length > 20;
   const fill = props.isRunning ? tokens.chartPace : tokens.chartSpeed;
   const hasRangeData = props.data.some(
     (d) => (props.isRunning ? d.paceRange : d.speedRange) !== undefined,
@@ -48,13 +47,10 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
         )}
         <XAxis
           dataKey="lap"
+          ticks={compact ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean) : undefined}
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={chartTheme.axisLine}
-          angle={angleTicks ? -45 : 0}
-          textAnchor={angleTicks ? "end" : "middle"}
-          height={angleTicks ? 50 : 30}
-          interval={compact ? "preserveStartEnd" : 0}
         />
         <YAxis
           tick={chartTheme.tick}

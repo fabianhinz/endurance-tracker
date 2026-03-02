@@ -21,8 +21,6 @@ interface LapPowerChartProps {
 
 export const LapPowerChart = (props: LapPowerChartProps) => {
   const compact = props.mode === "compact";
-  const angleTicks = props.data.length > 20;
-
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart
@@ -41,13 +39,10 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
         )}
         <XAxis
           dataKey="lap"
+          ticks={compact ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean) : undefined}
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={chartTheme.axisLine}
-          angle={angleTicks ? -45 : 0}
-          textAnchor={angleTicks ? "end" : "middle"}
-          height={angleTicks ? 50 : 30}
-          interval={compact ? "preserveStartEnd" : 0}
         />
         <YAxis
           tick={chartTheme.tick}
