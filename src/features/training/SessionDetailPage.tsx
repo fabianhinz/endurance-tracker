@@ -8,6 +8,12 @@ import { Button } from "../../components/ui/Button.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
 import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../../components/ui/Tabs.tsx";
+import {
   DialogRoot,
   DialogContent,
   DialogTitle,
@@ -25,6 +31,7 @@ import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
 import { SessionChartsExplorer } from "./SessionChartsExplorer.tsx";
 import { TrainingEffectCard } from "./TrainingEffectCard.tsx";
 import { SessionRecordsCard } from "./SessionRecordsCard.tsx";
+import { LapsTab } from "./LapsTab.tsx";
 import type { SessionRecord, SessionLap } from "../../engine/types.ts";
 
 export const SessionDetailPage = () => {
@@ -135,25 +142,38 @@ export const SessionDetailPage = () => {
         </div>
       </div>
 
-      <PageGrid>
-        <div className="md:col-span-2">
-          <TrainingEffectCard records={records} session={session} />
-        </div>
+      <Tabs defaultValue="overview">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="laps">Laps</TabsTrigger>
+        </TabsList>
 
-        <div className="md:col-span-2">
-          <SessionStatsGrid session={session} laps={laps} />
-        </div>
+        <TabsContent value="overview">
+          <PageGrid>
+            <div className="md:col-span-2">
+              <TrainingEffectCard records={records} session={session} />
+            </div>
 
-        {sessionPBs.length > 0 && (
-          <div className="md:col-span-2">
-            <SessionRecordsCard sessionPBs={sessionPBs} />
-          </div>
-        )}
+            <div className="md:col-span-2">
+              <SessionStatsGrid session={session} laps={laps} />
+            </div>
 
-        <div className="md:col-span-2">
-          <SessionChartsExplorer records={records} session={session} />
-        </div>
-      </PageGrid>
+            {sessionPBs.length > 0 && (
+              <div className="md:col-span-2">
+                <SessionRecordsCard sessionPBs={sessionPBs} />
+              </div>
+            )}
+
+            <div className="md:col-span-2">
+              <SessionChartsExplorer records={records} session={session} />
+            </div>
+          </PageGrid>
+        </TabsContent>
+
+        <TabsContent value="laps">
+          <LapsTab laps={laps} session={session} />
+        </TabsContent>
+      </Tabs>
 
       <DialogRoot
         open={showRenameDialog}

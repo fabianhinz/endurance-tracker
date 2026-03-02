@@ -10,6 +10,10 @@ export interface LapAnalysis {
   paceSecPerKm: number | undefined;
   /** Average heart rate in bpm, or `undefined` when the device did not record HR. */
   avgHr: number | undefined;
+  /** Minimum heart rate in bpm during the lap, or `undefined` when not recorded. */
+  minHr: number | undefined;
+  /** Maximum heart rate in bpm during the lap, or `undefined` when not recorded. */
+  maxHr: number | undefined;
   /** Average cadence in rpm/spm, or `undefined` when not recorded. */
   avgCadence: number | undefined;
   /** Total lap distance in metres. */
@@ -80,6 +84,8 @@ export const analyzeLaps = (laps: SessionLap[]): LapAnalysis[] => {
       lapIndex: lap.lapIndex,
       paceSecPerKm,
       avgHr: lap.avgHr,
+      minHr: lap.minHr,
+      maxHr: lap.maxHr,
       avgCadence: lap.avgCadence,
       distance: lap.distance,
       duration: lap.totalTimerTime,

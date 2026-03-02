@@ -11,6 +11,7 @@ import {
 import { useChartZoom } from "../../lib/hooks/useChartZoom.ts";
 import { chartTheme, formatChartTime } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
+import { formatPaceTick } from "../../lib/utils.ts";
 import type { GAPPoint } from "../../lib/chartData.ts";
 
 interface GradeAdjustedPaceChartProps {
@@ -20,12 +21,6 @@ interface GradeAdjustedPaceChartProps {
   onZoomComplete?: (from: string | number, to: string | number) => void;
   onZoomReset?: () => void;
 }
-
-const formatPace = (minPerKm: number): string => {
-  const mins = Math.floor(minPerKm);
-  const secs = Math.round((minPerKm - mins) * 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-};
 
 export const GradeAdjustedPaceChart = (
   props: GradeAdjustedPaceChartProps,
@@ -64,7 +59,7 @@ export const GradeAdjustedPaceChart = (
           axisLine={false}
           reversed
           tickCount={compact ? 3 : undefined}
-          tickFormatter={formatPace}
+          tickFormatter={formatPaceTick}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}
@@ -72,7 +67,7 @@ export const GradeAdjustedPaceChart = (
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
           formatter={(v: number | undefined, name: string | undefined) => [
-            v !== undefined ? formatPace(v) : "",
+            v !== undefined ? formatPaceTick(v) : "",
             name ?? "",
           ]}
         />

@@ -76,6 +76,13 @@ export const formatPaceInput = (seconds: number): string => {
   return `${min}:${sec.toString().padStart(2, '0')}`;
 };
 
+/** Format decimal min/km to mm:ss (for time-series pace chart axes/tooltips). */
+export const formatPaceTick = (minPerKm: number): string => {
+  const mins = Math.floor(minPerKm);
+  const secs = Math.round((minPerKm - mins) * 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
 import type { PersonalBest } from "../engine/types.ts";
 
 const POWER_WINDOW_LABELS: Record<number, string> = {
