@@ -1,18 +1,16 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Timer, Heart, Zap } from "lucide-react";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
-import { Slider } from "../../components/ui/Slider.tsx";
-import { Switch } from "../../components/ui/Switch.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { analyzeLaps, enrichAllLaps } from "../../engine/laps.ts";
 import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
 import { computeDynamicLaps } from "../../engine/dynamicLaps.ts";
 import { computeLapMarkers } from "../../engine/lapMarkers.ts";
 import type { LapMarkerMode } from "../../engine/lapMarkers.ts";
-import type { Sport } from "../../engine/types.ts";
-import { useLapOptionsStore } from "../../store/lapOptions.ts";
+import {
+  DEFAULT_CUSTOM_DISTANCE,
+  useLapOptionsStore,
+} from "../../store/lapOptions.ts";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
 import {
   prepareLapSplitsData,
@@ -24,6 +22,7 @@ import { LapSplitsChart } from "./LapSplitsChart.tsx";
 import { LapHrChart } from "./LapHrChart.tsx";
 import { LapPowerChart } from "./LapPowerChart.tsx";
 import { LapDetailTable } from "./LapDetailTable.tsx";
+import { SplitDistanceCard } from "./SplitDistanceCard.tsx";
 import type {
   SessionLap,
   SessionRecord,
@@ -38,52 +37,12 @@ interface LapsTabProps {
 
 const SYNC_ID = "laps-detail";
 
-const DEFAULT_CUSTOM_DISTANCE: Record<Sport, number> = {
-  running: 1000,
-  cycling: 5000,
-  swimming: 500,
-};
-
-const formatDistanceKm = (metres: number): string => {
-  const km = metres / 1000;
-  return km % 1 === 0 ? `${km} km` : `${km.toFixed(1)} km`;
-};
-
 export const LapsTab = (props: LapsTabProps) => {
   const isRunning = props.session.sport === "running";
   const sport = props.session.sport;
 
   const splitDistance = useLapOptionsStore((s) => s.splitDistance[sport]);
-  const lastCustomDistance = useLapOptionsStore(
-    (s) => s.lastCustomDistance[sport],
-  );
-  const setLapSplitDistance = useLapOptionsStore((s) => s.setLapSplitDistance);
-
-  const isDynamic = splitDistance !== undefined;
-  const isDevice = !isDynamic;
-  const maxKm = Math.max(1, Math.ceil((props.session.distance ?? 0) / 1000));
-  const sliderValueKm = isDynamic
-    ? splitDistance / 1000
-    : (lastCustomDistance ?? DEFAULT_CUSTOM_DISTANCE[sport]) / 1000;
-
-  const handleDeviceToggle = useCallback(
-    (checked: boolean) => {
-      if (checked) {
-        setLapSplitDistance(sport, undefined);
-      } else {
-        const restored = lastCustomDistance ?? DEFAULT_CUSTOM_DISTANCE[sport];
-        setLapSplitDistance(sport, restored);
-      }
-    },
-    [sport, lastCustomDistance, setLapSplitDistance],
-  );
-
-  const handleSliderChange = useCallback(
-    (value: number[]) => {
-      setLapSplitDistance(sport, Math.round(value[0] * 1000));
-    },
-    [sport, setLapSplitDistance],
-  );
+  const isDynamic = useLapOptionsStore((s) => s.useDeviceLaps[sport] ?? true);
 
   const deviceAnalysis = useMemo(() => analyzeLaps(props.laps), [props.laps]);
   const deviceEnrichments = useMemo(
@@ -93,8 +52,13 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const dynamicResult = useMemo(
     () =>
-      isDynamic ? computeDynamicLaps(props.records, splitDistance) : undefined,
-    [props.records, splitDistance, isDynamic],
+      isDynamic
+        ? computeDynamicLaps(
+            props.records,
+            splitDistance ?? DEFAULT_CUSTOM_DISTANCE[sport],
+          )
+        : undefined,
+    [props.records, splitDistance, isDynamic, sport],
   );
 
   const analysis: LapAnalysis[] = isDynamic
@@ -129,7 +93,10 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const markerMode = useMemo((): LapMarkerMode | undefined => {
     if (isDynamic) {
-      return { kind: "dynamic", splitDistanceMetres: splitDistance };
+      return {
+        kind: "dynamic",
+        splitDistanceMetres: splitDistance ?? DEFAULT_CUSTOM_DISTANCE[sport],
+      };
     }
     if (props.laps.length > 0) {
       return {
@@ -139,7 +106,7 @@ export const LapsTab = (props: LapsTabProps) => {
       };
     }
     return undefined;
-  }, [isDynamic, splitDistance, props.laps]);
+  }, [isDynamic, splitDistance, sport, props.laps]);
 
   useEffect(() => {
     if (markerMode) {
@@ -153,51 +120,16 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const isEmpty = isDynamic ? analysis.length === 0 : props.laps.length === 0;
 
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
+
   return (
     <div className="space-y-3">
-      <Card
-        footer={
-          <Typography variant="caption" color="tertiary" as="p">
-            Custom splits divide the route into equal-distance segments. Device
-            uses the laps recorded by your watch or bike computer.
-          </Typography>
-        }
-      >
-        <CardHeader
-          title="Split Distance"
-          subtitle={
-            isDevice
-              ? "Using device-recorded laps"
-              : `${formatDistanceKm(splitDistance)} splits`
-          }
-          actions={
-            <div className="flex items-center gap-2">
-              <Typography variant="caption" color="tertiary">
-                Device
-              </Typography>
-              <Switch checked={isDevice} onCheckedChange={handleDeviceToggle} />
-            </div>
-          }
-        />
-        <div className="space-y-2">
-          <Slider
-            value={[sliderValueKm]}
-            onValueChange={handleSliderChange}
-            min={0.1}
-            max={maxKm}
-            step={0.1}
-            disabled={isDevice}
-          />
-          <div className="flex justify-between">
-            <Typography variant="caption" color="quaternary">
-              0.1 km
-            </Typography>
-            <Typography variant="caption" color="quaternary">
-              {maxKm} km
-            </Typography>
-          </div>
-        </div>
-      </Card>
+      <SplitDistanceCard
+        sport={sport}
+        maxKm={Math.max(1, Math.ceil((props.session.distance ?? 0) / 1000))}
+      />
 
       {isEmpty ? (
         <Typography variant="body" color="tertiary">

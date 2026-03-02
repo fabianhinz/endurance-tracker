@@ -1,6 +1,11 @@
 import { useSearchParams } from "react-router-dom";
 import { SessionList } from "./SessionList.tsx";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/Tabs.tsx";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../../components/ui/Tabs.tsx";
 import { usePBsForRange } from "../../hooks/usePBsForRange.ts";
 import { SportRecordsCard } from "../records/SportRecordsCard.tsx";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
@@ -16,7 +21,7 @@ export const TrainingPage = () => {
   const pbsResult = usePBsForRange();
 
   const handleTabChange = (value: string) => {
-    setSearchParams({ tab: value }, { replace: true });
+    setSearchParams({ tab: value });
   };
 
   return (
