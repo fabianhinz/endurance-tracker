@@ -1,14 +1,10 @@
-import { useCallback, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Card } from "../../components/ui/Card.tsx";
 import { CardHeader } from "../../components/ui/CardHeader.tsx";
 import { Slider } from "../../components/ui/Slider.tsx";
 import { Switch } from "../../components/ui/Switch.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import type { Sport } from "../../engine/types.ts";
-import {
-  DEFAULT_CUSTOM_DISTANCE,
-  useLapOptionsStore,
-} from "../../store/lapOptions.ts";
 
 const formatDistanceKm = (metres: number): string => {
   const km = metres / 1000;
@@ -18,39 +14,25 @@ const formatDistanceKm = (metres: number): string => {
 interface SplitDistanceCardProps {
   sport: Sport;
   maxKm: number;
+  isDevice: boolean;
+  splitDistance: number;
+  onDeviceToggle: (checked: boolean) => void;
+  onSplitDistanceChange: (distance: number) => void;
 }
 
 export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
-  const isDevice = useLapOptionsStore(
-    (s) => s.useDeviceLaps[props.sport] ?? true,
-  );
-  const setLapSplitDistance = useLapOptionsStore((s) => s.setLapSplitDistance);
-  const setUseDeviceLaps = useLapOptionsStore((s) => s.setUseDeviceLaps);
-
   const [, startTransition] = useTransition();
   const [localSliderKm, setLocalSliderKm] = useState(
-    () =>
-      (useLapOptionsStore.getState().splitDistance[props.sport] ??
-        DEFAULT_CUSTOM_DISTANCE[props.sport]) / 1000,
+    () => props.splitDistance / 1000,
   );
 
-  const handleDeviceToggle = useCallback(
-    (checked: boolean) => {
-      setUseDeviceLaps(props.sport, checked);
-    },
-    [props.sport, setUseDeviceLaps],
-  );
-
-  const handleSliderChange = useCallback(
-    (value: number[]) => {
-      const km = value[0];
-      setLocalSliderKm(km);
-      startTransition(() => {
-        setLapSplitDistance(props.sport, Math.round(km * 1000));
-      });
-    },
-    [props.sport, setLapSplitDistance, startTransition],
-  );
+  const handleSliderChange = (value: number[]) => {
+    const km = value[0];
+    setLocalSliderKm(km);
+    startTransition(() => {
+      props.onSplitDistanceChange(Math.round(km * 1000));
+    });
+  };
 
   return (
     <Card
@@ -64,7 +46,7 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
       <CardHeader
         title="Split Distance"
         subtitle={
-          isDevice
+          props.isDevice
             ? "Using device-recorded laps"
             : `${formatDistanceKm(Math.round(localSliderKm * 1000))} splits`
         }
@@ -73,7 +55,10 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
             <Typography variant="caption" color="tertiary">
               Device
             </Typography>
-            <Switch checked={isDevice} onCheckedChange={handleDeviceToggle} />
+            <Switch
+              checked={props.isDevice}
+              onCheckedChange={props.onDeviceToggle}
+            />
           </div>
         }
       />
@@ -84,7 +69,7 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
           min={1}
           max={props.maxKm}
           step={0.5}
-          disabled={isDevice}
+          disabled={props.isDevice}
         />
         <div className="flex justify-between">
           <Typography variant="caption" color="quaternary">

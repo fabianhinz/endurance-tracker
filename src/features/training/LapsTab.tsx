@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Timer, Heart, Zap } from "lucide-react";
 import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
 import { analyzeLaps, enrichAllLaps } from "../../engine/laps.ts";
@@ -6,10 +6,7 @@ import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
 import { computeDynamicLaps } from "../../engine/dynamicLaps.ts";
 import { computeLapMarkers } from "../../engine/lapMarkers.ts";
 import type { LapMarkerMode } from "../../engine/lapMarkers.ts";
-import {
-  DEFAULT_CUSTOM_DISTANCE,
-  useLapOptionsStore,
-} from "../../store/lapOptions.ts";
+import { DEFAULT_CUSTOM_DISTANCE } from "../../store/lapOptions.ts";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
 import {
   prepareLapSplitsData,
@@ -40,9 +37,9 @@ export const LapsTab = (props: LapsTabProps) => {
   const isRunning = props.session.sport === "running";
   const sport = props.session.sport;
 
-  const splitDistance = useLapOptionsStore((s) => s.splitDistance[sport]);
-  const useDeviceDefaults = useLapOptionsStore(
-    (s) => s.useDeviceLaps[sport] ?? true,
+  const [isDevice, setIsDevice] = useState(true);
+  const [splitDistance, setSplitDistance] = useState(
+    () => DEFAULT_CUSTOM_DISTANCE[sport],
   );
 
   const deviceAnalysis = useMemo(() => analyzeLaps(props.laps), [props.laps]);
@@ -53,19 +50,16 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const dynamicResult = useMemo(
     () =>
-      useDeviceDefaults
+      isDevice
         ? undefined
-        : computeDynamicLaps(
-            props.records,
-            splitDistance ?? DEFAULT_CUSTOM_DISTANCE[sport],
-          ),
-    [props.records, splitDistance, useDeviceDefaults, sport],
+        : computeDynamicLaps(props.records, splitDistance),
+    [props.records, splitDistance, isDevice],
   );
 
-  const analysis: LapAnalysis[] = useDeviceDefaults
+  const analysis: LapAnalysis[] = isDevice
     ? deviceAnalysis
     : dynamicResult!.analysis;
-  const enrichments: LapRecordEnrichment[] = useDeviceDefaults
+  const enrichments: LapRecordEnrichment[] = isDevice
     ? deviceEnrichments
     : dynamicResult!.enrichments;
 
@@ -106,7 +100,7 @@ export const LapsTab = (props: LapsTabProps) => {
   );
 
   const markerMode = useMemo((): LapMarkerMode | undefined => {
-    if (useDeviceDefaults) {
+    if (isDevice) {
       return {
         kind: "device",
         laps: props.laps,
@@ -115,9 +109,9 @@ export const LapsTab = (props: LapsTabProps) => {
     }
     return {
       kind: "dynamic",
-      splitDistanceMetres: splitDistance ?? DEFAULT_CUSTOM_DISTANCE[sport],
+      splitDistanceMetres: splitDistance,
     };
-  }, [props.laps, splitDistance, sport, useDeviceDefaults]);
+  }, [props.laps, splitDistance, isDevice]);
 
   useEffect(() => {
     if (markerMode) {
@@ -137,6 +131,10 @@ export const LapsTab = (props: LapsTabProps) => {
       <SplitDistanceCard
         sport={sport}
         maxKm={Math.max(1, Math.ceil((props.session.distance ?? 0) / 1000))}
+        isDevice={isDevice}
+        splitDistance={splitDistance}
+        onDeviceToggle={setIsDevice}
+        onSplitDistanceChange={setSplitDistance}
       />
 
       {hrData.length > 0 && (

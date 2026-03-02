@@ -9,7 +9,6 @@ import { useSessionsStore } from './store/sessions.ts';
 import { useCoachPlanStore } from './store/coachPlan.ts';
 import { useLayoutStore } from './store/layout.ts';
 import { useFiltersStore } from './store/filters.ts';
-import { useLapOptionsStore } from './store/lapOptions.ts';
 import './index.css';
 
 const boot = async () => {
@@ -18,7 +17,6 @@ const boot = async () => {
   await useCoachPlanStore.persist.rehydrate();
   await useLayoutStore.persist.rehydrate();
   await useFiltersStore.persist.rehydrate();
-  await useLapOptionsStore.persist.rehydrate();
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
