@@ -3,7 +3,9 @@ import {
   calculateTrainingEffect,
   getTrainingEffectLabel,
   getTrainingEffectSummary,
+  LT_HRR,
 } from '../../src/engine/trainingEffect.ts';
+import type { SessionRecord } from '../../src/engine/types.ts';
 import { makeRunningRecords, makeCyclingRecords } from '../factories/records.ts';
 
 describe('calculateTrainingEffect', () => {
@@ -19,6 +21,33 @@ describe('calculateTrainingEffect', () => {
       hr: undefined,
     }));
     expect(calculateTrainingEffect(records, 190, 50, 'male', 0)).toBeUndefined();
+  });
+
+  it('1hr at exactly LT → aerobic TE 3.0 (reference anchor)', () => {
+    const maxHr = 190;
+    const restHr = 50;
+    const ltHr = restHr + LT_HRR * (maxHr - restHr);
+    const records: SessionRecord[] = Array.from({ length: 3600 }, (_, i) => ({
+      sessionId: 's1',
+      timestamp: i,
+      hr: ltHr,
+    }));
+    const result = calculateTrainingEffect(records, maxHr, restHr, 'male', 0);
+    expect(result).toBeDefined();
+    expect(result!.aerobic).toBe(3.0);
+  });
+
+  it('6min at exactly VO2max → anaerobic TE 3.0 (reference anchor)', () => {
+    const maxHr = 190;
+    const restHr = 50;
+    const records: SessionRecord[] = Array.from({ length: 360 }, (_, i) => ({
+      sessionId: 's1',
+      timestamp: i,
+      hr: maxHr, // 100% HRR
+    }));
+    const result = calculateTrainingEffect(records, maxHr, restHr, 'male', 0);
+    expect(result).toBeDefined();
+    expect(result!.anaerobic).toBe(3.0);
   });
 
   it('computes aerobic TE > 0 for a 1-hour running session with HR data', () => {
@@ -69,11 +98,13 @@ describe('calculateTrainingEffect', () => {
     expect(lowFitness!.aerobic).toBeGreaterThan(highFitness!.aerobic);
   });
 
-  it('gender affects the result due to different Banister constants', () => {
-    const records = makeRunningRecords('s1', 3600, { baseHr: 155 });
+  it('gender affects the result due to different Banister b-coefficients', () => {
+    // Low intensity maximizes gender divergence: b-coefficient difference
+    // (1.92 vs 1.67) is amplified when HRR is far from the LT anchor point
+    const records = makeRunningRecords('s1', 3600, { baseHr: 95 });
 
-    const male = calculateTrainingEffect(records, 190, 50, 'male', 50);
-    const female = calculateTrainingEffect(records, 190, 50, 'female', 50);
+    const male = calculateTrainingEffect(records, 190, 50, 'male', 0);
+    const female = calculateTrainingEffect(records, 190, 50, 'female', 0);
 
     expect(male).toBeDefined();
     expect(female).toBeDefined();
@@ -160,13 +191,13 @@ describe('calculateTrainingEffect', () => {
   });
 
   describe('calibration regression — anaerobic TE', () => {
-    it('10-min intervals at HRR≈0.93 at CTL=0 → anaerobic TE 1.5–3.0', () => {
+    it('10-min intervals at HRR≈0.93 at CTL=0 → anaerobic TE 2.5–4.5', () => {
       // baseHr=180 → HRR≈0.93 with maxHr=190, restHr=50
       const records = makeRunningRecords('s1', 600, { baseHr: 180 });
       const result = calculateTrainingEffect(records, 190, 50, 'male', 0);
       expect(result).toBeDefined();
-      expect(result!.anaerobic).toBeGreaterThanOrEqual(1.5);
-      expect(result!.anaerobic).toBeLessThanOrEqual(3.0);
+      expect(result!.anaerobic).toBeGreaterThanOrEqual(2.5);
+      expect(result!.anaerobic).toBeLessThanOrEqual(4.5);
     });
   });
 });

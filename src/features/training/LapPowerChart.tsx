@@ -47,6 +47,7 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
         />
         <YAxis
           domain={yDomain}
+          allowDataOverflow
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={false}

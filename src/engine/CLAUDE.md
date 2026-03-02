@@ -7,3 +7,4 @@
 - **Units**: seconds (duration), metres (distance), sec/km (pace), m/s (speed), watts (power), bpm (HR), unix ms (timestamps only).
 - **Constants**: `UPPER_SNAKE_CASE`, exported, declared at file top. Lookup tables as `Record<>` or `Map<>`.
 - **Formatter injection**: Display formatting via the `EngineFormatter` strategy interface, defaulting to `defaultFormatter`. Never hardcode locale-specific formatting.
+- **Citations**: Every formula or constant derived from published science must have a `@see [SourceKey]` JSDoc tag. When adding or modifying engine modules, update `SOURCES.md` with any new citations and ensure the module appears in the Validation Summary table.

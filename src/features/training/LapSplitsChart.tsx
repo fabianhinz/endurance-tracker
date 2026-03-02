@@ -57,6 +57,7 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
         />
         <YAxis
           domain={yDomain}
+          allowDataOverflow
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={false}

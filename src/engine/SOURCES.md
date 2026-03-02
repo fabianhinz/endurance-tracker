@@ -18,7 +18,9 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 | `coaching.ts` | Gabbett ACWR (acute:chronic workload ratio) | `[Gabbett2016]` | Matches published thresholds |
 | `coaching.ts` | Friel CTL ramp-rate guidelines | `[Friel2009]`, `[TP-PMC]` | Matches published ranges |
 | `zones.ts` | Daniels pace zones (% of VDOT pace) | `[Daniels2013]` | Matches published zone boundaries |
-| `trainingEffect.ts` | Banister TRIMP (used as TE input) | `[Banister1991]` | Custom 0–5 mapping (app-specific) |
+| `trainingEffect.ts` | Aerobic TE: Banister TRIMP → reference-anchored power-law | `[Banister1991]`, `[Karvonen1957]`, `[Swain1998]`, `[Wenger1986]` | Derived from published reference values |
+| `trainingEffect.ts` | Anaerobic TE: time above VT2 → reference-anchored linear | `[Billat1999]`, `[Swain1998]`, `[Stagno2007]`, `[ACSM2018]` | Derived from published reference values |
+| `trainingEffect.ts` | Fitness scaling: CTL-based divisor | `[CogganAllen2010]`, `[Friel2009]` | Matches published CTL ranges |
 | `gps.ts` | Ramer–Douglas–Peucker simplification | `[Ramer1972]`, `[DouglasPeucker1973]` | Standard algorithm |
 | `gps.ts` | Liang–Barsky line clipping | `[LiangBarsky1984]` | Standard algorithm |
 
@@ -37,6 +39,11 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 | `[Ramer1972]` | Ramer, U. (1972). "An iterative procedure for the polygonal approximation of plane curves." *CGIP*, 1(3), 244–256. |
 | `[DouglasPeucker1973]` | Douglas, D. & Peucker, T. (1973). "Algorithms for the reduction of the number of points." *Cartographica*, 10(2), 112–122. |
 | `[LiangBarsky1984]` | Liang, Y.D. & Barsky, B.A. (1984). "A new concept and method for line clipping." *ACM TOG*, 3(1), 1–22. |
+| `[Swain1998]` | Swain, D.P. et al. (1998). "Target heart rates for the development of cardiorespiratory fitness." *Med. Sci. Sports Exerc.*, 30(1), 112–116. |
+| `[Billat1999]` | Billat, V.L. et al. (1999). "Interval training at VO2max: effects on aerobic performance and overtraining markers." *Med. Sci. Sports Exerc.*, 31(1), 156–163. |
+| `[Wenger1986]` | Wenger, H.A. & Bell, G.J. (1986). "The interactions of intensity, frequency and duration of exercise training in altering cardiorespiratory fitness." *Sports Med.*, 3(5), 346–356. |
+| `[Stagno2007]` | Stagno, K.M. et al. (2007). "Quantifying training load in rugby union." *Int. J. Sports Physiol. Perform.*, 2(1), 10–19. |
+| `[ACSM2018]` | American College of Sports Medicine. (2018). *ACSM's Guidelines for Exercise Testing and Prescription*, 10th ed. Wolters Kluwer. |
 | `[Fellrnr]` | Fellrnr. "TRIMP." <https://fellrnr.com/wiki/TRIMP> |
 | `[TP-PMC]` | TrainingPeaks. "The Science of the Performance Manager." <https://www.trainingpeaks.com/learn/articles/the-science-of-the-performance-manager/> |
 
@@ -44,7 +51,6 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 
 These are explicitly **not** from published literature:
 
-- **`trainingEffect.ts`** — Training Effect 0–5 mapping uses a power-law curve (exponent 0.25) and CTL-based fitness scaling. Inspired by the Banister TRIMP input but the mapping itself is app-specific.
 - **`fingerprint.ts`** — Session deduplication heuristic.
 - **`downsample.ts`** — Chart downsampling heuristic.
 - **`laps.ts`** — Lap analysis logic.

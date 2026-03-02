@@ -1,4 +1,4 @@
-import { tokens } from './tokens';
+import { tokens } from "./tokens";
 
 export const formatChartTime = (minutes: number): string => {
   const m = Math.floor(minutes);
@@ -13,7 +13,7 @@ export const formatChartTime = (minutes: number): string => {
 export const avgDomain = (values: number[]): [number, number] => {
   const min = Math.min(...values);
   const max = Math.max(...values);
-  const padding = Math.max(1, Math.round((max - min) * 0.1));
+  const padding = Math.round((max - min) * 0.2);
   return [min - padding, max + padding];
 };
 
@@ -23,10 +23,10 @@ export const chartTheme = {
   grid: { stroke: tokens.border },
   tooltip: {
     contentStyle: {
-      backgroundColor: 'rgba(17, 19, 24, 0.85)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      backgroundColor: "rgba(17, 19, 24, 0.85)",
+      border: "1px solid rgba(255, 255, 255, 0.1)",
       borderRadius: tokens.radiusMd,
-      fontSize: '12px',
+      fontSize: "12px",
     },
     labelStyle: { color: tokens.textSecondary },
     isAnimationActive: false,

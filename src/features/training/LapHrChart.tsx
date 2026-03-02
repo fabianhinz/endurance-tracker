@@ -47,6 +47,7 @@ export const LapHrChart = (props: LapHrChartProps) => {
         />
         <YAxis
           domain={yDomain}
+          allowDataOverflow
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={false}
