@@ -10,11 +10,12 @@ import {
   formatPace,
   formatSpeed,
 } from "../../lib/utils.ts";
-import type { LapAnalysis } from "../../engine/laps.ts";
+import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
 
 interface LapDetailTableProps {
   laps: LapAnalysis[];
   isRunning: boolean;
+  enrichments?: Map<number, LapRecordEnrichment>;
 }
 
 const COLLAPSED_COUNT = 6;
@@ -41,6 +42,9 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
     (l) => l.avgCadence !== undefined,
   );
   const hasElevation = props.laps.some((l) => l.elevationGain > 0);
+  const hasPower = props.enrichments
+    ? [...props.enrichments.values()].some((e) => e.avgPower !== undefined)
+    : false;
 
   return (
     <div className={cn(glassClass, "rounded-2xl shadow-lg overflow-hidden")}>
@@ -82,6 +86,11 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
               <th className="px-3 py-2 text-right font-medium">
                 Avg HR
               </th>
+              {hasPower && (
+                <th className="px-3 py-2 text-right font-medium">
+                  Power
+                </th>
+              )}
               {hasCadence && (
                 <th className="px-3 py-2 text-right font-medium">
                   Cadence
@@ -118,6 +127,13 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
                 <td className="px-3 py-1.5 text-right">
                   {lap.avgHr !== undefined ? `${lap.avgHr}` : "--"}
                 </td>
+                {hasPower && (
+                  <td className="px-3 py-1.5 text-right">
+                    {props.enrichments?.get(lap.lapIndex)?.avgPower !== undefined
+                      ? `${props.enrichments.get(lap.lapIndex)!.avgPower} W`
+                      : "--"}
+                  </td>
+                )}
                 {hasCadence && (
                   <td className="px-3 py-1.5 text-right">
                     {lap.avgCadence !== undefined

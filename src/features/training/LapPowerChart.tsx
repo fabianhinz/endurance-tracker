@@ -10,24 +10,17 @@ import {
 } from "recharts";
 import { chartTheme } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
-import { formatPace, formatPaceInput } from "../../lib/utils.ts";
-import type { LapSplitPoint } from "../../lib/lapChartData.ts";
+import type { LapPowerPoint } from "../../lib/lapChartData.ts";
 
-interface LapSplitsChartProps {
-  data: LapSplitPoint[];
+interface LapPowerChartProps {
+  data: LapPowerPoint[];
   mode: "compact" | "expanded";
-  isRunning: boolean;
   syncId?: string;
 }
 
-export const LapSplitsChart = (props: LapSplitsChartProps) => {
+export const LapPowerChart = (props: LapPowerChartProps) => {
   const compact = props.mode === "compact";
-  const dataKey = props.isRunning ? "pace" : "speed";
   const angleTicks = props.data.length > 20;
-  const fill = props.isRunning ? tokens.chartPace : tokens.chartSpeed;
-  const hasMinData = props.data.some(
-    (d) => (props.isRunning ? d.minPace : d.minSpeed) !== undefined,
-  );
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -56,15 +49,8 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           tickLine={false}
           axisLine={false}
           tickCount={compact ? 3 : undefined}
-          reversed={props.isRunning}
           tickFormatter={(v: number) =>
-            props.isRunning
-              ? compact
-                ? formatPaceInput(v)
-                : formatPace(v)
-              : compact
-                ? `${v}`
-                : `${v} km/h`
+            compact ? `${v}` : `${v} W`
           }
         />
         <RechartsTooltip
@@ -72,49 +58,48 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           cursor={{ fill: `${tokens.accent}14` }}
-          formatter={(value: number | undefined) => [
-            props.isRunning
-              ? formatPace(value ?? 0)
-              : `${value ?? 0} km/h`,
-            props.isRunning ? "Pace" : "Speed",
-          ]}
+          formatter={(_value: number | undefined, _name: string | undefined, entry: { payload?: LapPowerPoint }) => {
+            const p = entry.payload;
+            if (!p) return [`-- W`, "Avg Power"];
+            return [
+              `${p.avgPower} W (${p.minPower}–${p.maxPower})`,
+              "Avg Power",
+            ];
+          }}
         />
         <Area
-          dataKey={dataKey}
-          name={props.isRunning ? "Pace" : "Speed"}
+          dataKey="avgPower"
+          name="Avg Power"
           type="monotone"
           stroke="none"
-          fill={fill}
+          fill={tokens.chartPower}
           fillOpacity={0.15}
           dot={false}
         />
         <Line
-          dataKey={dataKey}
-          name={props.isRunning ? "Pace" : "Speed"}
+          dataKey="avgPower"
+          name="Avg Power"
           type="monotone"
-          stroke={fill}
+          stroke={tokens.chartPower}
           strokeWidth={2}
           dot={false}
         />
         <Line
-          dataKey={props.isRunning ? "maxPace" : "maxSpeed"}
-          name={props.isRunning ? "Fastest Pace" : "Max Speed"}
+          dataKey="minPower"
+          name="Min Power"
           type="monotone"
-          stroke={`${fill}80`}
+          stroke={`${tokens.chartPower}80`}
           strokeWidth={1}
           dot={false}
         />
-        {hasMinData && (
-          <Line
-            dataKey={props.isRunning ? "minPace" : "minSpeed"}
-            name={props.isRunning ? "Slowest Pace" : "Min Speed"}
-            type="monotone"
-            stroke={`${fill}50`}
-            strokeWidth={1}
-            strokeDasharray="4 3"
-            dot={false}
-          />
-        )}
+        <Line
+          dataKey="maxPower"
+          name="Max Power"
+          type="monotone"
+          stroke={`${tokens.chartPower}80`}
+          strokeWidth={1}
+          dot={false}
+        />
       </ComposedChart>
     </ResponsiveContainer>
   );

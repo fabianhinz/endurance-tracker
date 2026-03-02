@@ -1,24 +1,29 @@
 import { useMemo } from "react";
-import { Timer, Heart } from "lucide-react";
+import { Timer, Heart, Zap } from "lucide-react";
 import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
-import { analyzeLaps } from "../../engine/laps.ts";
+import { analyzeLaps, enrichAllLaps } from "../../engine/laps.ts";
+import type { LapRecordEnrichment } from "../../engine/laps.ts";
 import {
   prepareLapSplitsData,
   prepareLapHrData,
+  prepareLapPowerData,
 } from "../../lib/lapChartData.ts";
 import { tokens } from "../../lib/tokens.ts";
 import { LapSplitsChart } from "./LapSplitsChart.tsx";
 import { LapHrChart } from "./LapHrChart.tsx";
+import { LapPowerChart } from "./LapPowerChart.tsx";
 import { LapDetailTable } from "./LapDetailTable.tsx";
 import type {
   SessionLap,
+  SessionRecord,
   TrainingSession,
 } from "../../engine/types.ts";
 
 interface LapsTabProps {
   laps: SessionLap[];
   session: TrainingSession;
+  records: SessionRecord[];
 }
 
 const SYNC_ID = "laps-detail";
@@ -30,13 +35,25 @@ export const LapsTab = (props: LapsTabProps) => {
     () => analyzeLaps(props.laps),
     [props.laps],
   );
+  const enrichments = useMemo(
+    () => enrichAllLaps(props.laps, props.records),
+    [props.laps, props.records],
+  );
+  const enrichmentMap = useMemo(
+    () => new Map<number, LapRecordEnrichment>(enrichments.map((e) => [e.lapIndex, e])),
+    [enrichments],
+  );
   const splitsData = useMemo(
-    () => prepareLapSplitsData(analysis),
-    [analysis],
+    () => prepareLapSplitsData(analysis, enrichments),
+    [analysis, enrichments],
   );
   const hrData = useMemo(
     () => prepareLapHrData(analysis),
     [analysis],
+  );
+  const powerData = useMemo(
+    () => prepareLapPowerData(enrichments),
+    [enrichments],
   );
 
   if (props.laps.length === 0) {
@@ -82,7 +99,23 @@ export const LapsTab = (props: LapsTabProps) => {
         </ChartPreviewCard>
       )}
 
-      <LapDetailTable laps={analysis} isRunning={isRunning} />
+      {powerData.length > 0 && (
+        <ChartPreviewCard
+          title="Power per Lap"
+          icon={Zap}
+          color={tokens.chartPower}
+        >
+          {(mode) => (
+            <LapPowerChart
+              data={powerData}
+              mode={mode}
+              syncId={SYNC_ID}
+            />
+          )}
+        </ChartPreviewCard>
+      )}
+
+      <LapDetailTable laps={analysis} isRunning={isRunning} enrichments={enrichmentMap} />
     </div>
   );
 };

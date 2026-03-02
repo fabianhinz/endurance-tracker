@@ -1,6 +1,7 @@
 import {
   ComposedChart,
   Area,
+  Line,
   XAxis,
   YAxis,
   ResponsiveContainer,
@@ -69,10 +70,34 @@ export const LapHrChart = (props: LapHrChartProps) => {
         <Area
           dataKey="avgHr"
           name="Avg HR"
-          type="step"
+          type="monotone"
           stroke="none"
           fill={tokens.chartHr}
-          fillOpacity={1}
+          fillOpacity={0.15}
+          dot={false}
+        />
+        <Line
+          dataKey="avgHr"
+          name="Avg HR"
+          type="monotone"
+          stroke={tokens.chartHr}
+          strokeWidth={2}
+          dot={false}
+        />
+        <Line
+          dataKey="minHr"
+          name="Min HR"
+          type="monotone"
+          stroke={`${tokens.chartHr}80`}
+          strokeWidth={1}
+          dot={false}
+        />
+        <Line
+          dataKey="maxHr"
+          name="Max HR"
+          type="monotone"
+          stroke={`${tokens.chartHr}80`}
+          strokeWidth={1}
           dot={false}
         />
       </ComposedChart>

@@ -171,7 +171,7 @@ export const SessionDetailPage = () => {
         </TabsContent>
 
         <TabsContent value="laps">
-          <LapsTab laps={laps} session={session} />
+          <LapsTab laps={laps} session={session} records={records} />
         </TabsContent>
       </Tabs>
 
