@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { analyzeLaps, detectIntervals, detectProgressiveOverload } from '../../src/engine/laps.ts';
-import type { SessionLap } from '../../src/engine/types.ts';
+import {
+  analyzeLaps,
+  detectIntervals,
+  detectProgressiveOverload,
+  filterRecordsByLap,
+  enrichLapFromRecords,
+  enrichAllLaps,
+} from '../../src/engine/laps.ts';
+import type { SessionLap, SessionRecord } from '../../src/engine/types.ts';
+import { makeLaps, makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
 
 function makeLap(overrides: Partial<SessionLap> = {}): SessionLap {
   return {
@@ -169,5 +177,156 @@ describe('detectProgressiveOverload', () => {
     const result = detectProgressiveOverload(laps);
     expect(result.lapCount).toBe(2);
     expect(result.paceDriftPercent).toBeDefined();
+  });
+});
+
+describe('filterRecordsByLap', () => {
+  it('returns records within lap bounds', () => {
+    const lap = makeLap({ startTime: 0, endTime: 300_000 });
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0 },
+      { sessionId: 'test', timestamp: 150 },
+      { sessionId: 'test', timestamp: 299 },
+      { sessionId: 'test', timestamp: 300 }, // excluded (endTime boundary)
+      { sessionId: 'test', timestamp: 500 },
+    ];
+    const result = filterRecordsByLap(records, lap, 0);
+    expect(result).toHaveLength(3);
+    expect(result.map((r) => r.timestamp)).toEqual([0, 150, 299]);
+  });
+
+  it('handles non-zero session start (ms-to-seconds conversion)', () => {
+    const sessionStartMs = 1_000_000;
+    const lap = makeLap({
+      startTime: sessionStartMs + 300_000,
+      endTime: sessionStartMs + 600_000,
+    });
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 200 },
+      { sessionId: 'test', timestamp: 300 }, // lap start
+      { sessionId: 'test', timestamp: 450 },
+      { sessionId: 'test', timestamp: 599 },
+      { sessionId: 'test', timestamp: 600 }, // excluded
+    ];
+    const result = filterRecordsByLap(records, lap, sessionStartMs);
+    expect(result).toHaveLength(3);
+    expect(result.map((r) => r.timestamp)).toEqual([300, 450, 599]);
+  });
+
+  it('returns empty for empty records', () => {
+    const lap = makeLap({ startTime: 0, endTime: 300_000 });
+    expect(filterRecordsByLap([], lap, 0)).toHaveLength(0);
+  });
+
+  it('returns empty when no records fall within the lap', () => {
+    const lap = makeLap({ startTime: 0, endTime: 300_000 });
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 400 },
+      { sessionId: 'test', timestamp: 500 },
+    ];
+    expect(filterRecordsByLap(records, lap, 0)).toHaveLength(0);
+  });
+});
+
+describe('enrichLapFromRecords', () => {
+  it('computes power metrics from cycling records', () => {
+    const records = makeCyclingRecords('test', 100);
+    const result = enrichLapFromRecords(0, records);
+    expect(result.lapIndex).toBe(0);
+    expect(result.avgPower).toBeDefined();
+    expect(result.minPower).toBeDefined();
+    expect(result.maxPower).toBeDefined();
+    expect(result.minPower!).toBeLessThanOrEqual(result.avgPower!);
+    expect(result.maxPower!).toBeGreaterThanOrEqual(result.avgPower!);
+  });
+
+  it('computes minSpeed from running records', () => {
+    const records = makeRunningRecords('test', 100);
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minSpeed).toBeDefined();
+    expect(result.minSpeed!).toBeGreaterThan(0);
+    // running records don't have power
+    expect(result.avgPower).toBeUndefined();
+  });
+
+  it('returns undefined fields when data is absent', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0 },
+      { sessionId: 'test', timestamp: 1 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minSpeed).toBeUndefined();
+    expect(result.avgPower).toBeUndefined();
+    expect(result.minPower).toBeUndefined();
+    expect(result.maxPower).toBeUndefined();
+    expect(result.minCadence).toBeUndefined();
+  });
+
+  it('excludes zero-speed records from minSpeed', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, speed: 0 },
+      { sessionId: 'test', timestamp: 1, speed: 3.5 },
+      { sessionId: 'test', timestamp: 2, speed: 4.0 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minSpeed).toBe(3.5);
+  });
+
+  it('excludes near-zero speeds below MIN_SPEED_MS threshold', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, speed: 0.01 },
+      { sessionId: 'test', timestamp: 1, speed: 0.3 },
+      { sessionId: 'test', timestamp: 2, speed: 2.5 },
+      { sessionId: 'test', timestamp: 3, speed: 3.0 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // speeds 0.01 and 0.3 are below 0.5 m/s threshold
+    expect(result.minSpeed).toBe(2.5);
+  });
+
+  it('returns undefined minSpeed when all speeds are below threshold', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, speed: 0.1 },
+      { sessionId: 'test', timestamp: 1, speed: 0.2 },
+      { sessionId: 'test', timestamp: 2, speed: 0.4 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minSpeed).toBeUndefined();
+  });
+});
+
+describe('enrichAllLaps', () => {
+  it('enriches each lap with correct record slice (cycling)', () => {
+    const laps = makeLaps('test', 5);
+    // makeLaps: 300s per lap → total 1500s. Generate matching records.
+    const records = makeCyclingRecords('test', 1500);
+    const result = enrichAllLaps(laps, records);
+    expect(result).toHaveLength(5);
+    result.forEach((e, i) => {
+      expect(e.lapIndex).toBe(i);
+      expect(e.avgPower).toBeDefined();
+    });
+  });
+
+  it('enriches each lap with correct record slice (running)', () => {
+    const laps = makeLaps('test', 5);
+    const records = makeRunningRecords('test', 1500);
+    const result = enrichAllLaps(laps, records);
+    expect(result).toHaveLength(5);
+    result.forEach((e, i) => {
+      expect(e.lapIndex).toBe(i);
+      expect(e.minSpeed).toBeDefined();
+      expect(e.avgPower).toBeUndefined();
+    });
+  });
+
+  it('returns empty for empty laps', () => {
+    const records = makeCyclingRecords('test', 100);
+    expect(enrichAllLaps([], records)).toHaveLength(0);
+  });
+
+  it('returns empty for empty records', () => {
+    const laps = makeLaps('test', 3);
+    expect(enrichAllLaps(laps, [])).toHaveLength(0);
   });
 });

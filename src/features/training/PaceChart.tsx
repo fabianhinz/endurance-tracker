@@ -11,6 +11,7 @@ import {
 import { useChartZoom } from "../../lib/hooks/useChartZoom.ts";
 import { chartTheme, formatChartTime } from "../../lib/chartTheme.ts";
 import { tokens } from "../../lib/tokens.ts";
+import { formatPaceTick } from "../../lib/utils.ts";
 import type { PacePoint } from "../../lib/chartData.ts";
 
 interface PaceChartProps {
@@ -20,12 +21,6 @@ interface PaceChartProps {
   onZoomComplete?: (from: string | number, to: string | number) => void;
   onZoomReset?: () => void;
 }
-
-const formatPace = (minPerKm: number): string => {
-  const mins = Math.floor(minPerKm);
-  const secs = Math.round((minPerKm - mins) * 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-};
 
 export const PaceChart = (props: PaceChartProps) => {
   const compact = props.mode === "compact";
@@ -62,14 +57,14 @@ export const PaceChart = (props: PaceChartProps) => {
           axisLine={false}
           reversed
           tickCount={compact ? 3 : undefined}
-          tickFormatter={formatPace}
+          tickFormatter={formatPaceTick}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
-          formatter={(v: number | undefined) => [v !== undefined ? formatPace(v) : "", "Pace"]}
+          formatter={(v: number | undefined) => [v !== undefined ? formatPaceTick(v) : "", "Pace"]}
         />
         <Line
           yAxisId="left"

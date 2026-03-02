@@ -1,4 +1,4 @@
-import type { SessionLap } from './types.ts';
+import type { SessionLap, SessionRecord } from './types.ts';
 
 /**
  * Derived metrics for a single lap computed from raw {@link SessionLap} data.
@@ -10,6 +10,10 @@ export interface LapAnalysis {
   paceSecPerKm: number | undefined;
   /** Average heart rate in bpm, or `undefined` when the device did not record HR. */
   avgHr: number | undefined;
+  /** Minimum heart rate in bpm during the lap, or `undefined` when not recorded. */
+  minHr: number | undefined;
+  /** Maximum heart rate in bpm during the lap, or `undefined` when not recorded. */
+  maxHr: number | undefined;
   /** Average cadence in rpm/spm, or `undefined` when not recorded. */
   avgCadence: number | undefined;
   /** Total lap distance in metres. */
@@ -22,6 +26,8 @@ export interface LapAnalysis {
   elevationGain: number;
   /** Intensity label as reported by the device (e.g. `'active'`, `'rest'`). */
   intensity: string;
+  /** Maximum speed in m/s during the lap, or `undefined` when not recorded. */
+  maxSpeed: number | undefined;
   /** `true` when the session contains rest laps and this lap is classified as active. */
   isInterval: boolean;
 }
@@ -80,11 +86,14 @@ export const analyzeLaps = (laps: SessionLap[]): LapAnalysis[] => {
       lapIndex: lap.lapIndex,
       paceSecPerKm,
       avgHr: lap.avgHr,
+      minHr: lap.minHr,
+      maxHr: lap.maxHr,
       avgCadence: lap.avgCadence,
       distance: lap.distance,
       duration: lap.totalTimerTime,
       movingTime: duration,
       elevationGain: lap.totalAscent ?? 0,
+      maxSpeed: lap.maxSpeed,
       intensity: lap.intensity ?? 'active',
       isInterval: hasRestLaps && lap.intensity === 'active',
     };
@@ -167,4 +176,85 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
     lapCount: targetLaps.length,
     trend,
   };
+};
+
+// ---------------------------------------------------------------------------
+// Per-record lap enrichment
+// ---------------------------------------------------------------------------
+
+/**
+ * Metrics derived from correlating per-second {@link SessionRecord} data with
+ * a single lap's time range. Fields are `undefined` when the underlying sensor
+ * data is absent in the records.
+ */
+export interface LapRecordEnrichment {
+  lapIndex: number;
+  minSpeed: number | undefined;
+  avgPower: number | undefined;
+  minPower: number | undefined;
+  maxPower: number | undefined;
+  minCadence: number | undefined;
+}
+
+/**
+ * Filters records that fall within a lap's elapsed-time range.
+ *
+ * Lap timestamps are unix ms; record timestamps are elapsed seconds from session start.
+ * `sessionStartMs` (typically `laps[0].startTime`) is used as the zero-point to
+ * convert lap boundaries to elapsed seconds before filtering.
+ *
+ * Inclusion: `lapStartSec <= record.timestamp < lapEndSec`.
+ */
+export const filterRecordsByLap = (
+  records: SessionRecord[],
+  lap: SessionLap,
+  sessionStartMs: number,
+): SessionRecord[] => {
+  const lapStartSec = (lap.startTime - sessionStartMs) / 1000;
+  const lapEndSec = (lap.endTime - sessionStartMs) / 1000;
+  return records.filter(
+    (r) => r.timestamp >= lapStartSec && r.timestamp < lapEndSec,
+  );
+};
+
+/**
+ * Computes per-record enrichment metrics for a single lap's worth of records.
+ *
+ * - `minSpeed`: minimum non-zero speed in m/s across the records.
+ * - `avgPower` / `minPower` / `maxPower`: power statistics in watts.
+ * - `minCadence`: minimum cadence value.
+ */
+export const enrichLapFromRecords = (
+  lapIndex: number,
+  records: SessionRecord[],
+): LapRecordEnrichment => {
+  const MIN_SPEED_MS = 0.5; // ~33:20/km, below any reasonable running/cycling pace
+  const speeds = records.map((r) => r.speed).filter((s): s is number => s !== undefined && s > MIN_SPEED_MS);
+  const powers = records.map((r) => r.power).filter((p): p is number => p !== undefined);
+  const cadences = records.map((r) => r.cadence).filter((c): c is number => c !== undefined);
+
+  const minSpeed = speeds.length > 0 ? Math.min(...speeds) : undefined;
+  const avgPower = powers.length > 0 ? Math.round(powers.reduce((a, b) => a + b, 0) / powers.length) : undefined;
+  const minPower = powers.length > 0 ? Math.min(...powers) : undefined;
+  const maxPower = powers.length > 0 ? Math.max(...powers) : undefined;
+  const minCadence = cadences.length > 0 ? Math.min(...cadences) : undefined;
+
+  return { lapIndex, minSpeed, avgPower, minPower, maxPower, minCadence };
+};
+
+/**
+ * Batch enrichment: filters records into each lap's time range and computes
+ * per-record metrics for every lap.
+ */
+export const enrichAllLaps = (
+  laps: SessionLap[],
+  records: SessionRecord[],
+): LapRecordEnrichment[] => {
+  if (laps.length === 0 || records.length === 0) return [];
+
+  const sessionStartMs = laps[0].startTime;
+  return laps.map((lap) => {
+    const lapRecords = filterRecordsByLap(records, lap, sessionStartMs);
+    return enrichLapFromRecords(lap.lapIndex, lapRecords);
+  });
 };

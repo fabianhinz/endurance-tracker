@@ -36,26 +36,28 @@ export const MetricLabel = (props: MetricLabelProps) => {
 
   return (
     <span className={cn("inline-flex items-center gap-1", props.className)}>
-      {size === "default" ? (
-        <>
-          <Typography variant="label">
-            {explanation.friendlyName}
+      <span className="hidden sm:contents">
+        {size === "default" ? (
+          <>
+            <Typography variant="label">
+              {explanation.friendlyName}
+            </Typography>
+            <Typography variant="caption" color="quaternary">
+              ({explanation.shortLabel})
+            </Typography>
+          </>
+        ) : hideShortLabel ? null : (
+          <Typography variant="caption">
+            {explanation.shortLabel}
           </Typography>
-          <Typography variant="caption" color="quaternary">
-            ({explanation.shortLabel})
-          </Typography>
-        </>
-      ) : hideShortLabel ? null : (
-        <Typography variant="caption">
-          {explanation.shortLabel}
-        </Typography>
-      )}
+        )}
 
-      {props.showValue && (
-        <Typography variant="emphasis" as="span">
-          {props.showValue}
-        </Typography>
-      )}
+        {props.showValue && (
+          <Typography variant="emphasis" as="span">
+            {props.showValue}
+          </Typography>
+        )}
+      </span>
 
       {showHelp && (
         <PopoverRoot>

@@ -103,7 +103,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
             <Typography
               variant="overline"
               as="p"
-              className={TE_TEXT[aerobicLabel.color]}
+              className={`whitespace-nowrap ${TE_TEXT[aerobicLabel.color]}`}
             >
               {aerobicLabel.label}
             </Typography>
@@ -133,7 +133,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
             <Typography
               variant="overline"
               as="p"
-              className={TE_TEXT[anaerobicLabel.color]}
+              className={`whitespace-nowrap ${TE_TEXT[anaerobicLabel.color]}`}
             >
               {anaerobicLabel.label}
             </Typography>

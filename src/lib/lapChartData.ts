@@ -1,10 +1,15 @@
-import type { SessionLap } from '../engine/types.ts';
+import type { LapAnalysis, LapRecordEnrichment } from '../engine/laps.ts';
 
 export interface LapSplitPoint {
   lap: string;
-  pace: number; // min/km
+  pace: number; // sec/km
   speed: number; // km/h
-  intensity: string;
+  maxPace: number; // sec/km (from max speed)
+  maxSpeed: number; // km/h
+  minPace: number | undefined; // sec/km (from min speed enrichment)
+  minSpeed: number | undefined; // km/h
+  paceRange: [number, number] | undefined; // [maxPace, minPace] (fast→slow for reversed axis)
+  speedRange: [number, number] | undefined; // [minSpeed, maxSpeed]
 }
 
 export interface LapHrPoint {
@@ -12,61 +17,94 @@ export interface LapHrPoint {
   avgHr: number;
   minHr: number;
   maxHr: number;
+  hrRange: [number, number]; // [minHr, maxHr]
 }
 
-export interface HrRecoveryPoint {
-  label: string;
-  drop: number;
-  color: string;
+export interface LapPowerPoint {
+  lap: string;
+  avgPower: number;
+  minPower: number;
+  maxPower: number;
+  powerRange: [number, number]; // [minPower, maxPower]
 }
 
-export const prepareLapSplitsData = (laps: SessionLap[]): LapSplitPoint[] =>
-  laps
-    .filter((lap) => lap.distance > 0 && lap.avgSpeed > 0)
-    .map((lap) => ({
-      lap: `Lap ${lap.lapIndex + 1}`,
-      pace: Math.round(((1000 / lap.avgSpeed) / 60) * 100) / 100, // min/km
-      speed: Math.round(lap.avgSpeed * 3.6 * 10) / 10, // km/h
-      intensity: lap.intensity ?? 'active',
-    }));
+export const prepareLapSplitsData = (
+  laps: LapAnalysis[],
+  enrichments?: LapRecordEnrichment[],
+): LapSplitPoint[] => {
+  const enrichmentMap = new Map(enrichments?.map((e) => [e.lapIndex, e]));
 
-export const prepareLapHrData = (laps: SessionLap[]): LapHrPoint[] =>
-  laps
-    .filter((lap) => lap.avgHr !== undefined)
-    .map((lap) => ({
-      lap: `Lap ${lap.lapIndex + 1}`,
-      avgHr: lap.avgHr!,
-      minHr: lap.minHr ?? lap.avgHr!,
-      maxHr: lap.maxHr ?? lap.avgHr!,
-    }));
+  return laps
+    .filter((l) => l.paceSecPerKm !== undefined && l.intensity === 'active')
+    .map((l) => {
+      const speed = Math.round((3600 / l.paceSecPerKm!) * 10) / 10;
+      const maxSpeedKmh =
+        l.maxSpeed !== undefined
+          ? Math.round(l.maxSpeed * 3.6 * 10) / 10
+          : speed;
+      const maxPace =
+        l.maxSpeed !== undefined && l.maxSpeed > 0
+          ? 1000 / l.maxSpeed
+          : l.paceSecPerKm!;
 
-/**
- * Detect interval pairs: active lap followed by rest lap.
- * HR recovery = active maxHr - rest minHr.
- */
-export const prepareHrRecoveryData = (laps: SessionLap[]): HrRecoveryPoint[] => {
-  const pairs: HrRecoveryPoint[] = [];
+      const enrichment = enrichmentMap.get(l.lapIndex);
+      const minSpeedMs = enrichment?.minSpeed;
+      const minSpeedKmh =
+        minSpeedMs !== undefined
+          ? Math.round(minSpeedMs * 3.6 * 10) / 10
+          : undefined;
+      const minPace =
+        minSpeedMs !== undefined && minSpeedMs > 0
+          ? 1000 / minSpeedMs
+          : undefined;
 
-  for (let i = 0; i < laps.length - 1; i++) {
-    const active = laps[i];
-    const rest = laps[i + 1];
-
-    if (
-      active.intensity === 'active' &&
-      rest.intensity === 'rest' &&
-      active.maxHr !== undefined &&
-      rest.minHr !== undefined
-    ) {
-      const drop = active.maxHr - rest.minHr;
-      const color = drop > 25 ? '#4ade80' : drop >= 15 ? '#facc15' : '#f87171';
-
-      pairs.push({
-        label: `Rep ${pairs.length + 1}`,
-        drop,
-        color,
-      });
-    }
-  }
-
-  return pairs;
+      return {
+        lap: `Lap ${l.lapIndex + 1}`,
+        pace: l.paceSecPerKm!,
+        speed,
+        maxPace,
+        maxSpeed: maxSpeedKmh,
+        minPace,
+        minSpeed: minSpeedKmh,
+        paceRange:
+          minPace !== undefined ? [maxPace, minPace] : undefined,
+        speedRange:
+          minSpeedKmh !== undefined
+            ? [minSpeedKmh, maxSpeedKmh]
+            : undefined,
+      };
+    });
 };
+
+export const prepareLapPowerData = (
+  enrichments: LapRecordEnrichment[],
+): LapPowerPoint[] =>
+  enrichments
+    .filter(
+      (e) =>
+        e.avgPower !== undefined &&
+        e.minPower !== undefined &&
+        e.maxPower !== undefined,
+    )
+    .map((e) => ({
+      lap: `Lap ${e.lapIndex + 1}`,
+      avgPower: e.avgPower!,
+      minPower: e.minPower!,
+      maxPower: e.maxPower!,
+      powerRange: [e.minPower!, e.maxPower!] as [number, number],
+    }));
+
+export const prepareLapHrData = (laps: LapAnalysis[]): LapHrPoint[] =>
+  laps
+    .filter((l) => l.avgHr !== undefined)
+    .map((l) => {
+      const minHr = l.minHr ?? l.avgHr!;
+      const maxHr = l.maxHr ?? l.avgHr!;
+      return {
+        lap: `Lap ${l.lapIndex + 1}`,
+        avgHr: l.avgHr!,
+        minHr,
+        maxHr,
+        hrRange: [minHr, maxHr] as [number, number],
+      };
+    });
