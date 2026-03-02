@@ -1,4 +1,4 @@
-import type { Sport, SessionRecord } from './types.ts';
+import type { SessionRecord } from './types.ts';
 import type { LapAnalysis, LapRecordEnrichment } from './laps.ts';
 import { enrichLapFromRecords } from './laps.ts';
 
@@ -6,12 +6,6 @@ export interface DynamicLapResult {
   analysis: LapAnalysis[];
   enrichments: LapRecordEnrichment[];
 }
-
-export const SPLIT_PRESETS: Record<Sport, number[]> = {
-  running: [1000, 2000, 5000],
-  cycling: [5000, 10000, 20000],
-  swimming: [],
-};
 
 /**
  * Computes distance-based split laps from raw session records.

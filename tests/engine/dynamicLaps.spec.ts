@@ -1,21 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { computeDynamicLaps, SPLIT_PRESETS } from '../../src/engine/dynamicLaps.ts';
+import { computeDynamicLaps } from '../../src/engine/dynamicLaps.ts';
 import type { SessionRecord } from '../../src/engine/types.ts';
 import { makeRunningRecords, makeCyclingRecords } from '../factories/records.ts';
-
-describe('SPLIT_PRESETS', () => {
-  it('has running presets', () => {
-    expect(SPLIT_PRESETS.running).toEqual([1000, 2000, 5000]);
-  });
-
-  it('has cycling presets', () => {
-    expect(SPLIT_PRESETS.cycling).toEqual([5000, 10000, 20000]);
-  });
-
-  it('has empty swimming presets', () => {
-    expect(SPLIT_PRESETS.swimming).toEqual([]);
-  });
-});
 
 describe('computeDynamicLaps', () => {
   it('returns empty for empty records', () => {
