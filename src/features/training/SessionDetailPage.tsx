@@ -154,10 +154,6 @@ export const SessionDetailPage = () => {
               <TrainingEffectCard records={records} session={session} />
             </div>
 
-            <div className="md:col-span-2">
-              <SessionStatsGrid session={session} laps={laps} />
-            </div>
-
             {sessionPBs.length > 0 && (
               <div className="md:col-span-2">
                 <SessionRecordsCard sessionPBs={sessionPBs} />
@@ -166,6 +162,10 @@ export const SessionDetailPage = () => {
 
             <div className="md:col-span-2">
               <SessionChartsExplorer records={records} session={session} />
+            </div>
+
+            <div className="md:col-span-2">
+              <SessionStatsGrid session={session} laps={laps} />
             </div>
           </PageGrid>
         </TabsContent>
