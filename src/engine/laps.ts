@@ -194,6 +194,7 @@ export interface LapRecordEnrichment {
   minPower: number | undefined;
   maxPower: number | undefined;
   minCadence: number | undefined;
+  minHr: number | undefined;
 }
 
 /**
@@ -218,11 +219,26 @@ export const filterRecordsByLap = (
 };
 
 /**
+ * Returns the value at the given percentile from a **pre-sorted** array.
+ * Uses the ceiling-rank method: `sorted[ceil(length * p) - 1]`.
+ */
+const percentile = (sorted: number[], p: number): number =>
+  sorted[Math.max(0, Math.ceil(sorted.length * p) - 1)];
+
+/** 5th percentile — excludes brief sensor outliers while capturing actual low effort. */
+const P5 = 0.05;
+
+/**
  * Computes per-record enrichment metrics for a single lap's worth of records.
  *
- * - `minSpeed`: minimum non-zero speed in m/s across the records.
+ * All min values use the 5th percentile (P5) instead of `Math.min()` to
+ * exclude single-sample outliers from sensor dropouts and initialization
+ * artifacts.
+ *
+ * - `minSpeed`: P5 non-zero speed in m/s across the records.
  * - `avgPower` / `minPower` / `maxPower`: power statistics in watts.
- * - `minCadence`: minimum cadence value.
+ * - `minCadence`: P5 cadence value.
+ * - `minHr`: P5 heart rate derived from per-second records.
  */
 export const enrichLapFromRecords = (
   lapIndex: number,
@@ -230,16 +246,23 @@ export const enrichLapFromRecords = (
 ): LapRecordEnrichment => {
   const MIN_SPEED_MS = 0.5; // ~33:20/km, below any reasonable running/cycling pace
   const speeds = records.map((r) => r.speed).filter((s): s is number => s !== undefined && s > MIN_SPEED_MS);
-  const powers = records.map((r) => r.power).filter((p): p is number => p !== undefined);
-  const cadences = records.map((r) => r.cadence).filter((c): c is number => c !== undefined);
+  const powers = records.map((r) => r.power).filter((p): p is number => p !== undefined && p > 0);
+  const cadences = records.map((r) => r.cadence).filter((c): c is number => c !== undefined && c > 0);
+  const hrs = records.map((r) => r.hr).filter((h): h is number => h !== undefined && h > 0);
 
-  const minSpeed = speeds.length > 0 ? Math.min(...speeds) : undefined;
+  speeds.sort((a, b) => a - b);
+  powers.sort((a, b) => a - b);
+  cadences.sort((a, b) => a - b);
+  hrs.sort((a, b) => a - b);
+
+  const minSpeed = speeds.length > 0 ? percentile(speeds, P5) : undefined;
   const avgPower = powers.length > 0 ? Math.round(powers.reduce((a, b) => a + b, 0) / powers.length) : undefined;
-  const minPower = powers.length > 0 ? Math.min(...powers) : undefined;
-  const maxPower = powers.length > 0 ? Math.max(...powers) : undefined;
-  const minCadence = cadences.length > 0 ? Math.min(...cadences) : undefined;
+  const minPower = powers.length > 0 ? percentile(powers, P5) : undefined;
+  const maxPower = powers.length > 0 ? powers[powers.length - 1] : undefined;
+  const minCadence = cadences.length > 0 ? percentile(cadences, P5) : undefined;
+  const minHr = hrs.length > 0 ? percentile(hrs, P5) : undefined;
 
-  return { lapIndex, minSpeed, avgPower, minPower, maxPower, minCadence };
+  return { lapIndex, minSpeed, avgPower, minPower, maxPower, minCadence, minHr };
 };
 
 /**

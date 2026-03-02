@@ -260,6 +260,7 @@ describe('enrichLapFromRecords', () => {
     expect(result.minPower).toBeUndefined();
     expect(result.maxPower).toBeUndefined();
     expect(result.minCadence).toBeUndefined();
+    expect(result.minHr).toBeUndefined();
   });
 
   it('excludes zero-speed records from minSpeed', () => {
@@ -292,6 +293,76 @@ describe('enrichLapFromRecords', () => {
     ];
     const result = enrichLapFromRecords(0, records);
     expect(result.minSpeed).toBeUndefined();
+  });
+
+  it('computes minHr from per-second records', () => {
+    const records: SessionRecord[] = Array.from({ length: 20 }, (_, i) => ({
+      sessionId: 'test',
+      timestamp: i,
+      hr: 130 + i,
+    }));
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minHr).toBeDefined();
+    // P5 of 20 values: ceil(20*0.05)-1 = 0 → sorted[0] = 130
+    expect(result.minHr).toBe(130);
+  });
+
+  it('P5 excludes single-sample outliers for power', () => {
+    // 19 records at 200W + 1 outlier at 0W (filtered by > 0 pre-filter)
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, power: 0 },
+      ...Array.from({ length: 19 }, (_, i) => ({
+        sessionId: 'test',
+        timestamp: i + 1,
+        power: 180 + i * 2,
+      })),
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // The 0W record is excluded by the > 0 filter
+    // P5 of 19 values [180,182,...,216]: ceil(19*0.05)-1 = 0 → 180
+    expect(result.minPower).toBe(180);
+  });
+
+  it('P5 excludes single-sample outliers for HR', () => {
+    // 20 normal HR values + 1 artificially low outlier
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, hr: 50 }, // sensor glitch
+      ...Array.from({ length: 20 }, (_, i) => ({
+        sessionId: 'test',
+        timestamp: i + 1,
+        hr: 140 + i,
+      })),
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // sorted: [50, 140, 141, ..., 159] (21 values)
+    // P5: ceil(21*0.05)-1 = 1-1 = 0 → still 50 for 21 values
+    // But with more normal samples, the outlier impact is reduced.
+    // For 21 values: ceil(21*0.05) = ceil(1.05) = 2, index 1 → 140
+    expect(result.minHr).toBe(140);
+  });
+
+  it('excludes zero-power coasting from minPower', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, power: 0 },
+      { sessionId: 'test', timestamp: 1, power: 0 },
+      { sessionId: 'test', timestamp: 2, power: 150 },
+      { sessionId: 'test', timestamp: 3, power: 200 },
+      { sessionId: 'test', timestamp: 4, power: 180 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    // Zero-power records filtered out; remaining: [150, 180, 200]
+    expect(result.minPower).toBe(150);
+  });
+
+  it('excludes zero-cadence from minCadence', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 'test', timestamp: 0, cadence: 0 },
+      { sessionId: 'test', timestamp: 1, cadence: 70 },
+      { sessionId: 'test', timestamp: 2, cadence: 80 },
+      { sessionId: 'test', timestamp: 3, cadence: 85 },
+    ];
+    const result = enrichLapFromRecords(0, records);
+    expect(result.minCadence).toBe(70);
   });
 });
 

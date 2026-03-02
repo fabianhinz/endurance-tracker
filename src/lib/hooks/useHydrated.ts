@@ -4,6 +4,7 @@ import { useSessionsStore } from '../../store/sessions.ts';
 import { useCoachPlanStore } from '../../store/coachPlan.ts';
 import { useLayoutStore } from '../../store/layout.ts';
 import { useFiltersStore } from '../../store/filters.ts';
+import { useLapOptionsStore } from '../../store/lapOptions.ts';
 
 const subscribe = (cb: () => void): (() => void) => {
   const unsubs = [
@@ -12,6 +13,7 @@ const subscribe = (cb: () => void): (() => void) => {
     useCoachPlanStore.persist.onFinishHydration(cb),
     useLayoutStore.persist.onFinishHydration(cb),
     useFiltersStore.persist.onFinishHydration(cb),
+    useLapOptionsStore.persist.onFinishHydration(cb),
   ];
   return () => unsubs.forEach((u) => u());
 };
@@ -22,7 +24,8 @@ const getSnapshot = (): boolean => {
     useSessionsStore.persist.hasHydrated() &&
     useCoachPlanStore.persist.hasHydrated() &&
     useLayoutStore.persist.hasHydrated() &&
-    useFiltersStore.persist.hasHydrated()
+    useFiltersStore.persist.hasHydrated() &&
+    useLapOptionsStore.persist.hasHydrated()
   );
 };
 
