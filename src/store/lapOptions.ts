@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Sport } from '../engine/types.ts';
-import { idbStorage } from '../lib/idbStorage.ts';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { Sport } from "../engine/types.ts";
+import { idbStorage } from "../lib/idbStorage.ts";
 
 export const DEFAULT_CUSTOM_DISTANCE: Record<Sport, number> = {
   running: 1000,
@@ -30,6 +30,11 @@ export const useLapOptionsStore = create<LapOptionsState>()(
           useDeviceLaps: { ...state.useDeviceLaps, [sport]: useDevice },
         })),
     }),
-    { name: 'store-lap-options', storage: createJSONStorage(() => idbStorage), skipHydration: true, version: 1 },
+    {
+      name: "store-lap-options",
+      storage: createJSONStorage(() => idbStorage),
+      skipHydration: true,
+      version: 1,
+    },
   ),
 );

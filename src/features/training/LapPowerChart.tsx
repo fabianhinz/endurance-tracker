@@ -16,6 +16,7 @@ interface LapPowerChartProps {
   data: LapPowerPoint[];
   mode: "compact" | "expanded";
   syncId?: string;
+  onActiveLapChange?: (lapIndex: number | null) => void;
 }
 
 export const LapPowerChart = (props: LapPowerChartProps) => {
@@ -27,6 +28,10 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
       <ComposedChart
         data={props.data}
         syncId={compact ? props.syncId : undefined}
+        onMouseMove={(state) => {
+          props.onActiveLapChange?.(Number(state.activeTooltipIndex ?? 0));
+        }}
+        onMouseLeave={() => props.onActiveLapChange?.(null)}
       >
         {!compact && (
           <CartesianGrid
@@ -49,16 +54,18 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
           tickLine={false}
           axisLine={false}
           tickCount={compact ? 3 : undefined}
-          tickFormatter={(v: number) =>
-            compact ? `${v}` : `${v} W`
-          }
+          tickFormatter={(v: number) => (compact ? `${v}` : `${v} W`)}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           cursor={{ fill: `${tokens.accent}14` }}
-          formatter={(_value: number | undefined, _name: string | undefined, entry: { payload?: LapPowerPoint }) => {
+          formatter={(
+            _value: number | undefined,
+            _name: string | undefined,
+            entry: { payload?: LapPowerPoint },
+          ) => {
             const p = entry.payload;
             if (!p) return [`-- W`, "Avg Power"];
             return [

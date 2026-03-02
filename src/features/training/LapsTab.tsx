@@ -1,7 +1,6 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Timer, Heart, Zap } from "lucide-react";
 import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
 import { analyzeLaps, enrichAllLaps } from "../../engine/laps.ts";
 import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
 import { computeDynamicLaps } from "../../engine/dynamicLaps.ts";
@@ -42,7 +41,9 @@ export const LapsTab = (props: LapsTabProps) => {
   const sport = props.session.sport;
 
   const splitDistance = useLapOptionsStore((s) => s.splitDistance[sport]);
-  const isDynamic = useLapOptionsStore((s) => s.useDeviceLaps[sport] ?? true);
+  const useDeviceDefaults = useLapOptionsStore(
+    (s) => s.useDeviceLaps[sport] ?? true,
+  );
 
   const deviceAnalysis = useMemo(() => analyzeLaps(props.laps), [props.laps]);
   const deviceEnrichments = useMemo(
@@ -52,21 +53,21 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const dynamicResult = useMemo(
     () =>
-      isDynamic
-        ? computeDynamicLaps(
+      useDeviceDefaults
+        ? undefined
+        : computeDynamicLaps(
             props.records,
             splitDistance ?? DEFAULT_CUSTOM_DISTANCE[sport],
-          )
-        : undefined,
-    [props.records, splitDistance, isDynamic, sport],
+          ),
+    [props.records, splitDistance, useDeviceDefaults, sport],
   );
 
-  const analysis: LapAnalysis[] = isDynamic
-    ? dynamicResult!.analysis
-    : deviceAnalysis;
-  const enrichments: LapRecordEnrichment[] = isDynamic
-    ? dynamicResult!.enrichments
-    : deviceEnrichments;
+  const analysis: LapAnalysis[] = useDeviceDefaults
+    ? deviceAnalysis
+    : dynamicResult!.analysis;
+  const enrichments: LapRecordEnrichment[] = useDeviceDefaults
+    ? deviceEnrichments
+    : dynamicResult!.enrichments;
 
   const enrichmentMap = useMemo(
     () =>
@@ -90,23 +91,33 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const setLapMarkers = useMapFocusStore((s) => s.setLapMarkers);
   const clearLapMarkers = useMapFocusStore((s) => s.clearLapMarkers);
+  const setHoveredLapIndex = useMapFocusStore((s) => s.setHoveredLapIndex);
+  const clearHoveredLapIndex = useMapFocusStore((s) => s.clearHoveredLapIndex);
+
+  const handleActiveLapChange = useCallback(
+    (lapIndex: number | null) => {
+      if (lapIndex != null) {
+        setHoveredLapIndex(lapIndex);
+      } else {
+        clearHoveredLapIndex();
+      }
+    },
+    [setHoveredLapIndex, clearHoveredLapIndex],
+  );
 
   const markerMode = useMemo((): LapMarkerMode | undefined => {
-    if (isDynamic) {
-      return {
-        kind: "dynamic",
-        splitDistanceMetres: splitDistance ?? DEFAULT_CUSTOM_DISTANCE[sport],
-      };
-    }
-    if (props.laps.length > 0) {
+    if (useDeviceDefaults) {
       return {
         kind: "device",
         laps: props.laps,
         sessionStartMs: props.laps[0].startTime,
       };
     }
-    return undefined;
-  }, [isDynamic, splitDistance, sport, props.laps]);
+    return {
+      kind: "dynamic",
+      splitDistanceMetres: splitDistance ?? DEFAULT_CUSTOM_DISTANCE[sport],
+    };
+  }, [props.laps, splitDistance, sport, useDeviceDefaults]);
 
   useEffect(() => {
     if (markerMode) {
@@ -115,10 +126,11 @@ export const LapsTab = (props: LapsTabProps) => {
     } else {
       clearLapMarkers();
     }
-    return () => clearLapMarkers();
-  }, [props.records, markerMode, setLapMarkers, clearLapMarkers]);
-
-  const isEmpty = isDynamic ? analysis.length === 0 : props.laps.length === 0;
+    return () => {
+      clearLapMarkers();
+      clearHoveredLapIndex();
+    };
+  }, [props.records, markerMode, setLapMarkers, clearLapMarkers, clearHoveredLapIndex]);
 
   return (
     <div className="space-y-3">
@@ -127,62 +139,51 @@ export const LapsTab = (props: LapsTabProps) => {
         maxKm={Math.max(1, Math.ceil((props.session.distance ?? 0) / 1000))}
       />
 
-      {isEmpty ? (
-        <Typography variant="body" color="tertiary">
-          {isDynamic
-            ? "No distance data available in records for split computation."
-            : "No lap data available for this session."}
-        </Typography>
-      ) : (
-        <>
-          {hrData.length > 0 && (
-            <ChartPreviewCard
-              title="Heart Rate per Lap"
-              icon={Heart}
-              color={tokens.chartHr}
-            >
-              {(mode) => (
-                <LapHrChart data={hrData} mode={mode} syncId={SYNC_ID} />
-              )}
-            </ChartPreviewCard>
-          )}
-
-          {powerData.length > 0 && (
-            <ChartPreviewCard
-              title="Power per Lap"
-              icon={Zap}
-              color={tokens.chartPower}
-            >
-              {(mode) => (
-                <LapPowerChart data={powerData} mode={mode} syncId={SYNC_ID} />
-              )}
-            </ChartPreviewCard>
-          )}
-
-          {splitsData.length > 0 && (
-            <ChartPreviewCard
-              title={isRunning ? "Pace per Lap" : "Speed per Lap"}
-              icon={Timer}
-              color={isRunning ? tokens.chartPace : tokens.chartSpeed}
-            >
-              {(mode) => (
-                <LapSplitsChart
-                  data={splitsData}
-                  mode={mode}
-                  isRunning={isRunning}
-                  syncId={SYNC_ID}
-                />
-              )}
-            </ChartPreviewCard>
-          )}
-
-          <LapDetailTable
-            laps={analysis}
-            isRunning={isRunning}
-            enrichments={enrichmentMap}
-          />
-        </>
+      {hrData.length > 0 && (
+        <ChartPreviewCard
+          title="Heart Rate per Lap"
+          icon={Heart}
+          color={tokens.chartHr}
+        >
+          {(mode) => <LapHrChart data={hrData} mode={mode} syncId={SYNC_ID} onActiveLapChange={handleActiveLapChange} />}
+        </ChartPreviewCard>
       )}
+
+      {powerData.length > 0 && (
+        <ChartPreviewCard
+          title="Power per Lap"
+          icon={Zap}
+          color={tokens.chartPower}
+        >
+          {(mode) => (
+            <LapPowerChart data={powerData} mode={mode} syncId={SYNC_ID} onActiveLapChange={handleActiveLapChange} />
+          )}
+        </ChartPreviewCard>
+      )}
+
+      {splitsData.length > 0 && (
+        <ChartPreviewCard
+          title={isRunning ? "Pace per Lap" : "Speed per Lap"}
+          icon={Timer}
+          color={isRunning ? tokens.chartPace : tokens.chartSpeed}
+        >
+          {(mode) => (
+            <LapSplitsChart
+              data={splitsData}
+              mode={mode}
+              isRunning={isRunning}
+              syncId={SYNC_ID}
+              onActiveLapChange={handleActiveLapChange}
+            />
+          )}
+        </ChartPreviewCard>
+      )}
+
+      <LapDetailTable
+        laps={analysis}
+        isRunning={isRunning}
+        enrichments={enrichmentMap}
+      />
     </div>
   );
 };

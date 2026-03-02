@@ -16,6 +16,7 @@ interface LapHrChartProps {
   data: LapHrPoint[];
   mode: "compact" | "expanded";
   syncId?: string;
+  onActiveLapChange?: (lapIndex: number | null) => void;
 }
 
 export const LapHrChart = (props: LapHrChartProps) => {
@@ -27,6 +28,10 @@ export const LapHrChart = (props: LapHrChartProps) => {
       <ComposedChart
         data={props.data}
         syncId={compact ? props.syncId : undefined}
+        onMouseMove={(state) => {
+          props.onActiveLapChange?.(Number(state.activeTooltipIndex ?? 0));
+        }}
+        onMouseLeave={() => props.onActiveLapChange?.(null)}
       >
         {!compact && (
           <CartesianGrid
@@ -49,22 +54,21 @@ export const LapHrChart = (props: LapHrChartProps) => {
           tickLine={false}
           axisLine={false}
           tickCount={compact ? 3 : undefined}
-          tickFormatter={(v: number) =>
-            compact ? `${v}` : `${v} bpm`
-          }
+          tickFormatter={(v: number) => (compact ? `${v}` : `${v} bpm`)}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           cursor={{ fill: `${tokens.accent}14` }}
-          formatter={(_value: number | undefined, _name: string | undefined, entry: { payload?: LapHrPoint }) => {
+          formatter={(
+            _value: number | undefined,
+            _name: string | undefined,
+            entry: { payload?: LapHrPoint },
+          ) => {
             const p = entry.payload;
             if (!p) return [`-- bpm`, "Avg HR"];
-            return [
-              `${p.avgHr} bpm (${p.minHr}–${p.maxHr})`,
-              "Avg HR",
-            ];
+            return [`${p.avgHr} bpm (${p.minHr}–${p.maxHr})`, "Avg HR"];
           }}
         />
         <Area

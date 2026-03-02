@@ -18,6 +18,7 @@ interface LapSplitsChartProps {
   mode: "compact" | "expanded";
   isRunning: boolean;
   syncId?: string;
+  onActiveLapChange?: (lapIndex: number | null) => void;
 }
 
 export const LapSplitsChart = (props: LapSplitsChartProps) => {
@@ -34,6 +35,10 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
       <ComposedChart
         data={props.data}
         syncId={compact ? props.syncId : undefined}
+        onMouseMove={(state) => {
+          props.onActiveLapChange?.(Number(state.activeTooltipIndex ?? 0));
+        }}
+        onMouseLeave={() => props.onActiveLapChange?.(null)}
       >
         {!compact && (
           <CartesianGrid
@@ -72,13 +77,24 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           cursor={{ fill: `${tokens.accent}14` }}
-          formatter={(_value: number | undefined, _name: string | undefined, entry: { payload?: LapSplitPoint }) => {
+          formatter={(
+            _value: number | undefined,
+            _name: string | undefined,
+            entry: { payload?: LapSplitPoint },
+          ) => {
             const p = entry.payload;
-            if (!p) return [props.isRunning ? "-- /km" : "-- km/h", props.isRunning ? "Pace" : "Speed"];
+            if (!p)
+              return [
+                props.isRunning ? "-- /km" : "-- km/h",
+                props.isRunning ? "Pace" : "Speed",
+              ];
             if (props.isRunning) {
               const avg = formatPace(p.pace);
               if (p.minPace !== undefined) {
-                return [`${avg} (${formatPaceInput(p.minPace)}–${formatPaceInput(p.maxPace)})`, "Pace"];
+                return [
+                  `${avg} (${formatPaceInput(p.minPace)}–${formatPaceInput(p.maxPace)})`,
+                  "Pace",
+                ];
               }
               return [avg, "Pace"];
             }

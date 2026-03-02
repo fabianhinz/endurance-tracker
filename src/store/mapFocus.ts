@@ -20,6 +20,9 @@ interface MapFocusState {
   lapMarkers: LapMarker[];
   setLapMarkers: (markers: LapMarker[]) => void;
   clearLapMarkers: () => void;
+  hoveredLapIndex: number | null;
+  setHoveredLapIndex: (index: number) => void;
+  clearHoveredLapIndex: () => void;
 }
 
 export const useMapFocusStore = create<MapFocusState>()((set) => ({
@@ -27,7 +30,7 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
   setOpenedSession: (id) =>
     set(
       id === null
-        ? { openedSessionId: null, focusedLaps: [], focusedSport: null, hoveredPoint: null, lapMarkers: [] }
+        ? { openedSessionId: null, focusedLaps: [], focusedSport: null, hoveredPoint: null, lapMarkers: [], hoveredLapIndex: null }
         : { openedSessionId: id },
     ),
   hoveredSessionId: null,
@@ -45,4 +48,7 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
   lapMarkers: [],
   setLapMarkers: (markers) => set({ lapMarkers: markers }),
   clearLapMarkers: () => set({ lapMarkers: [] }),
+  hoveredLapIndex: null,
+  setHoveredLapIndex: (index) => set({ hoveredLapIndex: index }),
+  clearHoveredLapIndex: () => set({ hoveredLapIndex: null }),
 }));

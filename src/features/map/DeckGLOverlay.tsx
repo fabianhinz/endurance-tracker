@@ -39,6 +39,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const pickCircle = useMapFocusStore((s) => s.pickCircle);
   const lapMarkers = useMapFocusStore((s) => s.lapMarkers);
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
+  const hoveredLapIndex = useMapFocusStore((s) => s.hoveredLapIndex);
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
 
@@ -179,34 +180,46 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const lapMarkerLayers = useMemo(() => {
     if (lapMarkers.length === 0 || !focusedSport) return [];
     const fill = sportMarkerColor[focusedSport];
-    return lapMarkers.flatMap((marker) => [
-      new ScatterplotLayer<LapMarker>({
-        id: `lap-marker-circle-${marker.lapIndex}`,
-        data: [marker],
-        getPosition: (d) => d.position,
-        getRadius: 12,
-        radiusUnits: "pixels",
-        getFillColor: fill,
-        filled: true,
-        stroked: true,
-        getLineColor: sportTrackColor[focusedSport],
-        lineWidthUnits: "pixels" as const,
-        getLineWidth: 3,
-        pickable: false,
-      }),
-      new TextLayer<LapMarker>({
-        id: `lap-marker-label-${marker.lapIndex}`,
-        data: [marker],
-        getPosition: (d) => d.position,
-        getText: (d) => d.label,
-        getSize: 12,
-        getColor: [0, 0, 0, 255],
-        getTextAnchor: "middle",
-        getAlignmentBaseline: "center",
-        pickable: false,
-      }),
-    ]);
-  }, [lapMarkers, focusedSport]);
+    const [r, g, b] = sportTrackColor[focusedSport];
+    return lapMarkers.flatMap((marker) => {
+      const lineAlpha =
+        hoveredLapIndex != null
+          ? marker.lapIndex === hoveredLapIndex
+            ? 255
+            : 0
+          : 0;
+      return [
+        new ScatterplotLayer<LapMarker>({
+          id: `lap-marker-circle-${marker.lapIndex}`,
+          data: [marker],
+          getPosition: (d) => d.position,
+          getRadius: 12,
+          radiusUnits: "pixels",
+          getFillColor: fill,
+          filled: true,
+          stroked: true,
+          getLineColor: [r, g, b, lineAlpha],
+          lineWidthUnits: "pixels" as const,
+          getLineWidth: 4,
+          pickable: false,
+          updateTriggers: {
+            getLineColor: [hoveredLapIndex],
+          },
+        }),
+        new TextLayer<LapMarker>({
+          id: `lap-marker-label-${marker.lapIndex}`,
+          data: [marker],
+          getPosition: (d) => d.position,
+          getText: (d) => d.label,
+          getSize: 12,
+          getColor: [0, 0, 0, 255],
+          getTextAnchor: "middle",
+          getAlignmentBaseline: "center",
+          pickable: false,
+        }),
+      ];
+    });
+  }, [lapMarkers, focusedSport, hoveredLapIndex]);
 
   const layers = useMemo(
     () => [
