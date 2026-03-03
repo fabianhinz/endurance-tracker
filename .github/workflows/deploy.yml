@@ -27,6 +27,8 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+      - name: Generate Paraglide messages
+        run: npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/paraglide
       - run: pnpm build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
