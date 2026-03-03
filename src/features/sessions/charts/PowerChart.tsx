@@ -74,7 +74,7 @@ export const PowerChart = (props: PowerChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
-          labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
+          labelFormatter={(v) => formatChartTime(Number(v))}
         />
         <Line
           yAxisId="left"

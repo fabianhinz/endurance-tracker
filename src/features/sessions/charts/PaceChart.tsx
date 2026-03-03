@@ -76,7 +76,7 @@ export const PaceChart = (props: PaceChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
-          labelFormatter={(v) => `${formatChartTime(Number(v))} min`}
+          labelFormatter={(v) => formatChartTime(Number(v))}
           formatter={(v: number | undefined) => [v !== undefined ? formatPaceTick(v) : '', 'Pace']}
         />
         <Line
