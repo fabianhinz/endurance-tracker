@@ -26,10 +26,7 @@ export const ListItem = (props: ListItemProps) => {
   const content = (
     <>
       <div className="min-w-0">
-        <Typography
-          variant={small ? 'caption' : 'body1'}
-          color="textSecondary"
-        >
+        <Typography variant={small ? 'caption' : 'body1'} color="textSecondary">
           {props.primary}
         </Typography>
         {props.secondary && (

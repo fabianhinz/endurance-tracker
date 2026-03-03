@@ -69,4 +69,5 @@ Specific guidelines for features, testing, and state management are located in t
    pnpm test          # vitest run
    pnpm lint --fix    # eslint
    pnpm typecheck     # tsc --noEmit
+   pnpm format        # prettier
    ```

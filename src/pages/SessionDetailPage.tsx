@@ -106,11 +106,7 @@ export const SessionDetailPage = () => {
           <Typography variant="h2" as="h1">
             {session.name ?? formatDate(session.date)}
           </Typography>
-          {session.name && (
-            <Typography variant="caption">
-              {formatDate(session.date)}
-            </Typography>
-          )}
+          {session.name && <Typography variant="caption">{formatDate(session.date)}</Typography>}
         </div>
         <div className="flex flex-grow justify-end flex-wrap gap-3">
           <SportChip sport={session.sport} />

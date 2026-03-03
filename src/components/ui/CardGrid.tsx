@@ -30,9 +30,7 @@ export const CardGrid = (props: CardGridProps) => {
           </Typography>
           {needsToggle && (
             <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
-              <Typography variant="caption">
-                ({totalCount})
-              </Typography>
+              <Typography variant="caption">({totalCount})</Typography>
               <ChevronRight
                 className={cn('size-4 transition-transform', expanded && 'rotate-90')}
               />

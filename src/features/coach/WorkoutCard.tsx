@@ -22,9 +22,7 @@ export const WorkoutCard = (props: WorkoutCardProps) => {
       )}
       onClick={isRest ? undefined : props.onToggle}
     >
-      <Typography variant="caption">
-        {props.workout.dayLabel.slice(0, 3)}
-      </Typography>
+      <Typography variant="caption">{props.workout.dayLabel.slice(0, 3)}</Typography>
 
       <Icon size={20} className="text-text-secondary" />
 
