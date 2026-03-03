@@ -90,9 +90,7 @@ export const PaceEstimatorDialog = (props: PaceEstimatorDialogProps) => {
     <DialogRoot open={props.open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogTitle>{m.ui_pace_est_title()}</DialogTitle>
-        <DialogDescription>
-          {m.ui_pace_est_desc()}
-        </DialogDescription>
+        <DialogDescription>{m.ui_pace_est_desc()}</DialogDescription>
 
         <div className="mt-4 flex flex-col gap-3">
           <div>
@@ -112,7 +110,9 @@ export const PaceEstimatorDialog = (props: PaceEstimatorDialogProps) => {
           </div>
 
           <div>
-            <Label>{m.ui_pace_est_race_time({ format: usesLongFormat(distance) ? 'h:mm:ss' : 'mm:ss' })}</Label>
+            <Label>
+              {m.ui_pace_est_race_time({ format: usesLongFormat(distance) ? 'h:mm:ss' : 'mm:ss' })}
+            </Label>
             <Input
               type="text"
               placeholder={usesLongFormat(distance) ? '1:45:00' : '20:00'}

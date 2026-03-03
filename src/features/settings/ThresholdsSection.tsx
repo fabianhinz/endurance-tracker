@@ -294,7 +294,8 @@ export const ThresholdsSection = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label htmlFor="thresh-ftp">
-              {m.ui_thresholds_ftp()} <span className="text-text-quaternary font-normal">{m.ui_thresholds_optional()}</span>
+              {m.ui_thresholds_ftp()}{' '}
+              <span className="text-text-quaternary font-normal">{m.ui_thresholds_optional()}</span>
             </Label>
             <Input
               id="thresh-ftp"

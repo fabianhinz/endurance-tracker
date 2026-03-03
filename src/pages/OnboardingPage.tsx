@@ -25,9 +25,10 @@ export const OnboardingPage = () => {
         <ActionPromptCard
           title={m.ui_onboarding_all_set()}
           description={m.ui_onboarding_all_set_desc({
-            sessionCount: sessionCount === 1
-              ? m.ui_count_sessions_one()
-              : m.ui_count_sessions_other({ count: String(sessionCount) }),
+            sessionCount:
+              sessionCount === 1
+                ? m.ui_count_sessions_one()
+                : m.ui_count_sessions_other({ count: String(sessionCount) }),
           })}
         >
           <Button onClick={completeOnboarding}>

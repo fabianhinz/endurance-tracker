@@ -62,7 +62,10 @@ export const CoachPage = () => {
         <Card>
           <CardHeader
             title={m.ui_coach_weekly_plan()}
-            subtitle={m.ui_coach_weekly_plan_subtitle({ weekOf: coach.plan!.weekOf, tss: String(coach.plan!.totalEstimatedTss) })}
+            subtitle={m.ui_coach_weekly_plan_subtitle({
+              weekOf: coach.plan!.weekOf,
+              tss: String(coach.plan!.totalEstimatedTss),
+            })}
           />
           <WeeklyPlanTimeline plan={coach.plan!} zones={coach.zones} />
         </Card>

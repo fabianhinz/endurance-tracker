@@ -60,11 +60,11 @@ export const SettingsPage = () => {
           <Card>
             <CardHeader title={m.ui_settings_display()} />
             <List className="space-y-4">
-              <ListItem primary={m.ui_settings_language()} secondary={m.ui_settings_language_desc()}>
-                <SelectRoot
-                  value={getLocale()}
-                  onValueChange={(v) => setLocale(v as Locale)}
-                >
+              <ListItem
+                primary={m.ui_settings_language()}
+                secondary={m.ui_settings_language_desc()}
+              >
+                <SelectRoot value={getLocale()} onValueChange={(v) => setLocale(v as Locale)}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
                   </SelectTrigger>
@@ -92,7 +92,10 @@ export const SettingsPage = () => {
               >
                 <Switch checked={compactLayout} onCheckedChange={toggleCompactLayout} />
               </ListItem>
-              <ListItem primary={m.ui_settings_expanded_dock()} secondary={m.ui_settings_expanded_dock_desc()}>
+              <ListItem
+                primary={m.ui_settings_expanded_dock()}
+                secondary={m.ui_settings_expanded_dock_desc()}
+              >
                 <Switch checked={dockExpanded} onCheckedChange={toggleDock} />
               </ListItem>
             </List>

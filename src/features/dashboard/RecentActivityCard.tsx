@@ -115,7 +115,10 @@ export const RecentActivityCard = () => {
                       <ValueSkeleton />
                     ) : (
                       <>
-                        <Typography variant="subtitle1" color={hero ? 'textPrimary' : 'textQuaternary'}>
+                        <Typography
+                          variant="subtitle1"
+                          color={hero ? 'textPrimary' : 'textQuaternary'}
+                        >
                           {hero ? formatPBValue(hero) : '--'}
                         </Typography>
                         <Typography variant="caption" as="p" className={hero ? '' : 'invisible'}>

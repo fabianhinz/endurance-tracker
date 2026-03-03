@@ -103,8 +103,7 @@ export const Dock = () => {
   const customRange = useFiltersStore((s) => s.customRange);
 
   const SportIcon = sportFilter === 'all' ? Activity : sportIcon[sportFilter];
-  const sportLabel =
-    sportOptions.find((o) => o.value === sportFilter)?.label ?? sportFilter;
+  const sportLabel = sportOptions.find((o) => o.value === sportFilter)?.label ?? sportFilter;
 
   const timeLabel =
     timeRange === 'custom' && customRange

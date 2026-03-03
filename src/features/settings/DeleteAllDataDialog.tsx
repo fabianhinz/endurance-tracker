@@ -60,17 +60,16 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
         }}
       >
         <DialogTitle>{m.ui_delete_dialog_title()}</DialogTitle>
-        <DialogDescription>
-          {m.ui_delete_dialog_desc()}
-        </DialogDescription>
+        <DialogDescription>{m.ui_delete_dialog_desc()}</DialogDescription>
 
         <div className="mt-4">
           <Typography variant="body1" color="textSecondary">
             {m.ui_delete_dialog_count({
-              summary: (sessionCount === 1
-                ? m.ui_count_sessions_one()
-                : m.ui_count_sessions_other({ count: String(sessionCount) }))
-                + (hasProfile ? ` ${m.ui_delete_dialog_and_profile()}` : ''),
+              summary:
+                (sessionCount === 1
+                  ? m.ui_count_sessions_one()
+                  : m.ui_count_sessions_other({ count: String(sessionCount) })) +
+                (hasProfile ? ` ${m.ui_delete_dialog_and_profile()}` : ''),
             })}
           </Typography>
         </div>
