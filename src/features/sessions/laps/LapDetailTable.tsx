@@ -45,7 +45,7 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
         </Typography>
         {needsToggle && (
           <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
-            <Typography variant="caption" color="secondary">
+            <Typography variant="caption" color="textSecondary">
               ({props.laps.length})
             </Typography>
             <ChevronRight className={cn('size-4 transition-transform', expanded && 'rotate-90')} />

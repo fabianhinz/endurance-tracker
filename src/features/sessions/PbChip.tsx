@@ -8,7 +8,7 @@ export const PbChip = (props: { pb: PersonalBest }) => {
   return (
     <div className="inline-flex items-center gap-2 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-3 py-1.5">
       <Icon size={14} className="text-yellow-400" />
-      <Typography variant="caption" color="primary">
+      <Typography variant="caption" color="textPrimary">
         {pbLabel(props.pb)}{' '}
         <span className="text-yellow-400 font-medium">{formatPBValue(props.pb)}</span>
       </Typography>

@@ -231,7 +231,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
             Sensor Warnings
           </Typography>
           {props.session.sensorWarnings.map((w, i) => (
-            <Typography key={i} variant="body" className="text-status-warning/80 mt-1">
+            <Typography key={i} variant="body1" className="text-status-warning/80 mt-1">
               {w}
             </Typography>
           ))}

@@ -80,7 +80,7 @@ export const SessionDetailPage = () => {
 
   if (!session) {
     return (
-      <Typography variant="body" color="tertiary">
+      <Typography variant="body1" color="textTertiary">
         Session not found.
       </Typography>
     );
@@ -106,7 +106,7 @@ export const SessionDetailPage = () => {
             {session.name ?? formatDate(session.date)}
           </Typography>
           {session.name && (
-            <Typography variant="caption" color="tertiary">
+            <Typography variant="caption" color="textTertiary">
               {formatDate(session.date)}
             </Typography>
           )}
@@ -116,7 +116,7 @@ export const SessionDetailPage = () => {
           {subSportLabel && (
             <Typography
               variant="caption"
-              color="quaternary"
+              color="textQuaternary"
               className="flex items-center rounded-md bg-white/10 px-2 py-0.5"
             >
               {subSportLabel}

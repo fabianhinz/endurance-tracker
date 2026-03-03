@@ -13,10 +13,10 @@ interface ActionPromptCardProps {
 export const ActionPromptCard = (props: ActionPromptCardProps) => {
   return (
     <Card className={cn('flex flex-col items-center justify-center py-12 gap-4', props.className)}>
-      <Typography variant="h2" color="primary">
+      <Typography variant="h2" color="textPrimary">
         {props.title}
       </Typography>
-      <Typography variant="body" color="tertiary" className="text-center max-w-md">
+      <Typography variant="body1" color="textTertiary" className="text-center max-w-md">
         {props.description}
       </Typography>
       {props.children}

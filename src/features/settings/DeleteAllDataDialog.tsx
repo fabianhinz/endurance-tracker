@@ -66,7 +66,7 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
         </DialogDescription>
 
         <div className="mt-4">
-          <Typography variant="body" color="secondary">
+          <Typography variant="body1" color="textSecondary">
             {sessionCount} {sessionCount === 1 ? 'session' : 'sessions'}
             {hasProfile ? ' and your profile' : ''} will be deleted.
           </Typography>

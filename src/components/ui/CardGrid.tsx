@@ -30,7 +30,7 @@ export const CardGrid = (props: CardGridProps) => {
           </Typography>
           {needsToggle && (
             <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
-              <Typography variant="caption" color="secondary">
+              <Typography variant="caption" color="textSecondary">
                 ({totalCount})
               </Typography>
               <ChevronRight

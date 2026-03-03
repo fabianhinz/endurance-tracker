@@ -32,8 +32,8 @@ export const MetricLabel = (props: MetricLabelProps) => {
       <span className="hidden sm:contents">
         {size === 'default' ? (
           <>
-            <Typography variant="label">{explanation.friendlyName}</Typography>
-            <Typography variant="caption" color="quaternary">
+            <Typography variant="subtitle2">{explanation.friendlyName}</Typography>
+            <Typography variant="caption" color="textQuaternary">
               ({explanation.shortLabel})
             </Typography>
           </>
@@ -42,7 +42,7 @@ export const MetricLabel = (props: MetricLabelProps) => {
         )}
 
         {props.showValue && (
-          <Typography variant="emphasis" as="span">
+          <Typography variant="subtitle1" as="span">
             {props.showValue}
           </Typography>
         )}

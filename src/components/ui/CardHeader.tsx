@@ -18,7 +18,7 @@ export const CardHeader = (props: CardHeaderProps) => {
     <div>
       {titleContent}
       {props.subtitle && (
-        <Typography variant="caption" color="quaternary" as="p" className="mt-0.5">
+        <Typography variant="caption" color="textQuaternary" as="p" className="mt-0.5">
           {props.subtitle}
         </Typography>
       )}

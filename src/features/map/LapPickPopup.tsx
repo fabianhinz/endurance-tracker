@@ -43,11 +43,11 @@ const LapPickItem = (props: LapPickItemProps) => {
 
   return (
     <div className="flex items-center gap-3 rounded-lg px-3 py-2">
-      <Typography variant="emphasis" className="w-5 shrink-0 text-center" tabularNums>
+      <Typography variant="subtitle1" className="w-5 shrink-0 text-center" tabularNums>
         {props.lap.lapIndex + 1}
       </Typography>
       <div className="flex-1 min-w-0">
-        <Typography variant="emphasis" tabularNums>
+        <Typography variant="subtitle1" tabularNums>
           {formatDistance(props.lap.distance)}
         </Typography>
         <Typography variant="caption" as="p" tabularNums>

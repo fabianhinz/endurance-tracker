@@ -35,7 +35,7 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
   return (
     <Card
       footer={
-        <Typography variant="caption" color="tertiary" as="p">
+        <Typography variant="caption" color="textTertiary" as="p">
           Custom splits divide the route into equal-distance segments. Device uses the laps recorded
           by your watch or bike computer.
         </Typography>
@@ -50,7 +50,7 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
         }
         actions={
           <div className="flex items-center gap-2">
-            <Typography variant="caption" color="tertiary">
+            <Typography variant="caption" color="textTertiary">
               Device
             </Typography>
             <Switch checked={props.isDevice} onCheckedChange={props.onDeviceToggle} />
@@ -67,10 +67,10 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
           disabled={props.isDevice}
         />
         <div className="flex justify-between">
-          <Typography variant="caption" color="quaternary">
+          <Typography variant="caption" color="textQuaternary">
             1 km
           </Typography>
-          <Typography variant="caption" color="quaternary">
+          <Typography variant="caption" color="textQuaternary">
             {props.maxKm} km
           </Typography>
         </div>

@@ -16,10 +16,10 @@ export const WorkoutExpansionPanel = (props: {
     <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <Typography variant="body" color="primary" className="font-medium">
+          <Typography variant="body1" color="textPrimary" className="font-medium">
             {props.workout.title}
           </Typography>
-          <Typography variant="caption" color="tertiary">
+          <Typography variant="caption" color="textTertiary">
             {props.workout.dayLabel} — {props.workout.date}
           </Typography>
         </div>
@@ -61,10 +61,10 @@ const StepRow = (props: { step: WorkoutStep; zones: RunningZone[]; showRepeat: b
         className="w-2.5 h-2.5 rounded-full shrink-0"
         style={{ backgroundColor: zone?.color ?? '#888' }}
       />
-      <Typography variant="caption" color="secondary" className="w-16 shrink-0">
+      <Typography variant="caption" color="textSecondary" className="w-16 shrink-0">
         {STEP_LABELS[props.step.type] ?? props.step.type}
       </Typography>
-      <Typography variant="caption" color="tertiary" className="grow-1 text-right">
+      <Typography variant="caption" color="textTertiary" className="grow-1 text-right">
         {formatDuration(props.step.durationSec)}
       </Typography>
     </div>

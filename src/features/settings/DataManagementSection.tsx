@@ -49,7 +49,7 @@ export const DataManagementSection = () => {
                 : undefined
             }
           >
-            <Typography variant="body">{sessionCount}</Typography>
+            <Typography variant="body1">{sessionCount}</Typography>
           </ListItem>
           <ListItem
             primary="Stored FIT files"
@@ -59,11 +59,11 @@ export const DataManagementSection = () => {
                 : undefined
             }
           >
-            <Typography variant="body">{fitFileCount ?? '...'}</Typography>
+            <Typography variant="body1">{fitFileCount ?? '...'}</Typography>
           </ListItem>
           {storageEstimate && (
             <ListItem primary="Estimated storage used">
-              <Typography variant="body">{storageEstimate}</Typography>
+              <Typography variant="body1">{storageEstimate}</Typography>
             </ListItem>
           )}
         </List>

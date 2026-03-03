@@ -49,7 +49,7 @@ export const SportRecordsCard = (props: {
               className={`flex items-center gap-3 rounded-lg px-3 py-2${pb && !props.loading ? ' transition-colors hover:bg-white/10' : ''}`}
             >
               <div className="flex-1 min-w-0">
-                <Typography variant="body" color={pb ? 'primary' : 'secondary'}>
+                <Typography variant="body1" color={pb ? 'textPrimary' : 'textSecondary'}>
                   {label}
                 </Typography>
               </div>
@@ -58,7 +58,7 @@ export const SportRecordsCard = (props: {
                   <ValueSkeleton />
                 ) : (
                   <>
-                    <Typography variant="emphasis" color={pb ? 'primary' : 'quaternary'}>
+                    <Typography variant="subtitle1" color={pb ? 'textPrimary' : 'textQuaternary'}>
                       {pb ? formatPBValue(pb) : '--'}
                     </Typography>
                     <Typography variant="caption" as="p" className={pb ? '' : 'invisible'}>

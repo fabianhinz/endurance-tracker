@@ -70,7 +70,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
   return (
     <Card
       footer={
-        <Typography variant="caption" color="tertiary" as="p">
+        <Typography variant="caption" color="textTertiary" as="p">
           {summary}
         </Typography>
       }

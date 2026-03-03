@@ -22,7 +22,7 @@ export const WorkoutCard = (props: WorkoutCardProps) => {
       )}
       onClick={isRest ? undefined : props.onToggle}
     >
-      <Typography variant="caption" color="tertiary" className="font-medium">
+      <Typography variant="caption" color="textTertiary" className="font-medium">
         {props.workout.dayLabel.slice(0, 3)}
       </Typography>
 
@@ -30,7 +30,7 @@ export const WorkoutCard = (props: WorkoutCardProps) => {
 
       <Typography
         variant="caption"
-        color="secondary"
+        color="textSecondary"
         className="text-center text-[11px] leading-tight min-h-[2em]"
       >
         {props.workout.title}

@@ -103,7 +103,7 @@ export const RecentActivityCard = () => {
                 >
                   <SportBadge sport={sport} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <Typography variant="body" className="capitalize">
+                    <Typography variant="body1" className="capitalize">
                       {sport}
                     </Typography>
                     <Typography variant="caption" as="p" className={hero ? '' : 'invisible'}>
@@ -115,7 +115,7 @@ export const RecentActivityCard = () => {
                       <ValueSkeleton />
                     ) : (
                       <>
-                        <Typography variant="emphasis" color={hero ? 'primary' : 'quaternary'}>
+                        <Typography variant="subtitle1" color={hero ? 'textPrimary' : 'textQuaternary'}>
                           {hero ? formatPBValue(hero) : '--'}
                         </Typography>
                         <Typography variant="caption" as="p" className={hero ? '' : 'invisible'}>
