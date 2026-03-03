@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import type { SessionLap, Sport } from "@/engine/types.ts";
-import type { LapMarker } from "@/engine/lapMarkers.ts";
+import { create } from 'zustand';
+import type { SessionLap, Sport } from '@/engine/types.ts';
+import type { LapMarker } from '@/engine/lapMarkers.ts';
 
 interface MapFocusState {
   openedSessionId: string | null;
@@ -30,7 +30,14 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
   setOpenedSession: (id) =>
     set(
       id === null
-        ? { openedSessionId: null, focusedLaps: [], focusedSport: null, hoveredPoint: null, lapMarkers: [], hoveredLapIndex: null }
+        ? {
+            openedSessionId: null,
+            focusedLaps: [],
+            focusedSport: null,
+            hoveredPoint: null,
+            lapMarkers: [],
+            hoveredLapIndex: null,
+          }
         : { openedSessionId: id },
     ),
   hoveredSessionId: null,

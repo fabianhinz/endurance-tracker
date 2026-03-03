@@ -38,25 +38,15 @@ export const prepareLapSplitsData = (
     .filter((l) => l.paceSecPerKm !== undefined && l.intensity === 'active')
     .map((l) => {
       const speed = Math.round((3600 / l.paceSecPerKm!) * 10) / 10;
-      const maxSpeedKmh =
-        l.maxSpeed !== undefined
-          ? Math.round(l.maxSpeed * 3.6 * 10) / 10
-          : speed;
+      const maxSpeedKmh = l.maxSpeed !== undefined ? Math.round(l.maxSpeed * 3.6 * 10) / 10 : speed;
       const maxPace =
-        l.maxSpeed !== undefined && l.maxSpeed > 0
-          ? 1000 / l.maxSpeed
-          : l.paceSecPerKm!;
+        l.maxSpeed !== undefined && l.maxSpeed > 0 ? 1000 / l.maxSpeed : l.paceSecPerKm!;
 
       const enrichment = enrichmentMap.get(l.lapIndex);
       const minSpeedMs = enrichment?.minSpeed;
       const minSpeedKmh =
-        minSpeedMs !== undefined
-          ? Math.round(minSpeedMs * 3.6 * 10) / 10
-          : undefined;
-      const minPace =
-        minSpeedMs !== undefined && minSpeedMs > 0
-          ? 1000 / minSpeedMs
-          : undefined;
+        minSpeedMs !== undefined ? Math.round(minSpeedMs * 3.6 * 10) / 10 : undefined;
+      const minPace = minSpeedMs !== undefined && minSpeedMs > 0 ? 1000 / minSpeedMs : undefined;
 
       return {
         lap: `Lap ${l.lapIndex + 1}`,
@@ -66,26 +56,15 @@ export const prepareLapSplitsData = (
         maxSpeed: maxSpeedKmh,
         minPace,
         minSpeed: minSpeedKmh,
-        paceRange:
-          minPace !== undefined ? [maxPace, minPace] : undefined,
-        speedRange:
-          minSpeedKmh !== undefined
-            ? [minSpeedKmh, maxSpeedKmh]
-            : undefined,
+        paceRange: minPace !== undefined ? [maxPace, minPace] : undefined,
+        speedRange: minSpeedKmh !== undefined ? [minSpeedKmh, maxSpeedKmh] : undefined,
       };
     });
 };
 
-export const prepareLapPowerData = (
-  enrichments: LapRecordEnrichment[],
-): LapPowerPoint[] =>
+export const prepareLapPowerData = (enrichments: LapRecordEnrichment[]): LapPowerPoint[] =>
   enrichments
-    .filter(
-      (e) =>
-        e.avgPower !== undefined &&
-        e.minPower !== undefined &&
-        e.maxPower !== undefined,
-    )
+    .filter((e) => e.avgPower !== undefined && e.minPower !== undefined && e.maxPower !== undefined)
     .map((e) => ({
       lap: `Lap ${e.lapIndex + 1}`,
       avgPower: e.avgPower!,

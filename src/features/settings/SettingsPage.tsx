@@ -7,12 +7,7 @@ import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { List, ListItem } from '@/components/ui/List.tsx';
 import { Switch } from '@/components/ui/Switch.tsx';
 import { PageGrid } from '@/components/ui/PageGrid.tsx';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from '@/components/ui/Tabs.tsx';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
 import { ThresholdsSection } from './ThresholdsSection.tsx';
 import { DataManagementSection } from './DataManagementSection.tsx';
 
@@ -64,19 +59,10 @@ export const SettingsPage = () => {
                 primary="Compact layout"
                 secondary="Single-column layout and shift content right to reveal more of the map"
               >
-                <Switch
-                  checked={compactLayout}
-                  onCheckedChange={toggleCompactLayout}
-                />
+                <Switch checked={compactLayout} onCheckedChange={toggleCompactLayout} />
               </ListItem>
-              <ListItem
-                primary="Expanded dock"
-                secondary="Show labels beneath dock icons"
-              >
-                <Switch
-                  checked={dockExpanded}
-                  onCheckedChange={toggleDock}
-                />
+              <ListItem primary="Expanded dock" secondary="Show labels beneath dock icons">
+                <Switch checked={dockExpanded} onCheckedChange={toggleDock} />
               </ListItem>
             </List>
           </Card>

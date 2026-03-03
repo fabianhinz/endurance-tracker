@@ -1,8 +1,8 @@
-import type { WorkoutStep } from "@/types/index.ts";
+import type { WorkoutStep } from '@/types/index.ts';
 
 export type GroupedStep =
-  | { kind: "single"; step: WorkoutStep }
-  | { kind: "interval"; repeat: number; steps: WorkoutStep[] };
+  | { kind: 'single'; step: WorkoutStep }
+  | { kind: 'interval'; repeat: number; steps: WorkoutStep[] };
 
 export const groupSteps = (steps: WorkoutStep[]): GroupedStep[] => {
   const result: GroupedStep[] = [];
@@ -10,22 +10,17 @@ export const groupSteps = (steps: WorkoutStep[]): GroupedStep[] => {
   while (i < steps.length) {
     const current = steps[i];
     const next = steps[i + 1];
-    if (
-      next &&
-      current.repeat &&
-      current.repeat > 1 &&
-      current.repeat === next.repeat
-    ) {
+    if (next && current.repeat && current.repeat > 1 && current.repeat === next.repeat) {
       const group: WorkoutStep[] = [current];
       let j = i + 1;
       while (j < steps.length && steps[j].repeat === current.repeat) {
         group.push(steps[j]);
         j++;
       }
-      result.push({ kind: "interval", repeat: current.repeat, steps: group });
+      result.push({ kind: 'interval', repeat: current.repeat, steps: group });
       i = j;
     } else {
-      result.push({ kind: "single", step: current });
+      result.push({ kind: 'single', step: current });
       i++;
     }
   }

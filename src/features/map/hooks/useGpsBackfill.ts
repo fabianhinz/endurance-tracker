@@ -23,9 +23,7 @@ export const useGPSBackfill = () => {
       const existingGPS = await getAllSessionGPS();
       const processedIds = new Set(existingGPS.map((g) => g.sessionId));
 
-      const missing = sessions.filter(
-        (s) => s.hasDetailedRecords && !processedIds.has(s.id),
-      );
+      const missing = sessions.filter((s) => s.hasDetailedRecords && !processedIds.has(s.id));
 
       if (missing.length === 0) {
         setGpsData(existingGPS);
@@ -36,10 +34,7 @@ export const useGPSBackfill = () => {
       setProcessed(0);
       setTotal(missing.length);
 
-      worker = new Worker(
-        new URL('../gpsBuild.worker.ts', import.meta.url),
-        { type: 'module' },
-      );
+      worker = new Worker(new URL('../gpsBuild.worker.ts', import.meta.url), { type: 'module' });
 
       worker.onmessage = (e: MessageEvent<WorkerMessageOut>) => {
         if (e.data.type === 'progress') {

@@ -34,7 +34,7 @@ const calculateTSS = (
   if (np === undefined || ftp <= 0) return undefined;
 
   const intensityFactor = np / ftp;
-  const tss = (durationSec * np * intensityFactor) / (ftp * 3600) * 100;
+  const tss = ((durationSec * np * intensityFactor) / (ftp * 3600)) * 100;
 
   return {
     tss: Math.round(tss * 10) / 10,
@@ -73,7 +73,7 @@ const calculateTRIMP = (
   // Normalize TRIMP to approximate TSS scale (divide by ~1 hour threshold effort TRIMP).
   // Lactate threshold ≈ 88% of HR reserve (consistent with THRESHOLD_INTENSITY in vdot.ts).
   const thresholdHrRatio = 0.88;
-  const normFactor = 60 * thresholdHrRatio * a * Math.exp(b * thresholdHrRatio) / 100;
+  const normFactor = (60 * thresholdHrRatio * a * Math.exp(b * thresholdHrRatio)) / 100;
 
   return Math.round((trimp / normFactor) * 10) / 10;
 };
@@ -125,4 +125,3 @@ export const calculateSessionStress = (
     stressMethod: 'duration',
   };
 };
-

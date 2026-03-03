@@ -112,10 +112,7 @@ export const calculateTrainingEffect = (
 
     hasHr = true;
     const hrr = Math.max(0, Math.min(1, (record.hr - restHr) / hrRange));
-    const dt =
-      prevTimestamp !== undefined
-        ? (record.timestamp - prevTimestamp) / 60
-        : 1 / 60; // assume 1s for first record
+    const dt = prevTimestamp !== undefined ? (record.timestamp - prevTimestamp) / 60 : 1 / 60; // assume 1s for first record
     prevTimestamp = record.timestamp;
 
     if (dt <= 0) continue;
@@ -125,7 +122,7 @@ export const calculateTrainingEffect = (
 
     // Anaerobic impulse: intensity above VT2, normalized by (1.0 - VT2_HRR)
     if (hrr > VT2_HRR) {
-      anaerobicImpulse += dt * (hrr - VT2_HRR) / (1.0 - VT2_HRR);
+      anaerobicImpulse += (dt * (hrr - VT2_HRR)) / (1.0 - VT2_HRR);
     }
   }
 
@@ -138,20 +135,13 @@ export const calculateTrainingEffect = (
   const trimpRef = computeTrimpRef(coeff);
   const aerobic = Math.max(
     0,
-    Math.min(
-      5,
-      TE_IMPROVING *
-        Math.pow(aerobicTrimp / (trimpRef * fitnessScale), DIMINISHING_P),
-    ),
+    Math.min(5, TE_IMPROVING * Math.pow(aerobicTrimp / (trimpRef * fitnessScale), DIMINISHING_P)),
   );
 
   // Anaerobic TE: reference-anchored linear scaling
   const anaerobic = Math.max(
     0,
-    Math.min(
-      5,
-      (TE_IMPROVING * anaerobicImpulse) / (T_LIM_VO2MAX * fitnessScale),
-    ),
+    Math.min(5, (TE_IMPROVING * anaerobicImpulse) / (T_LIM_VO2MAX * fitnessScale)),
   );
 
   return {
@@ -180,22 +170,16 @@ export const getTrainingEffectLabel = (te: number): TrainingEffectLabel => {
  * @param anaerobic - Anaerobic training effect score (0–5).
  * @returns A single sentence describing the dominant physiological stimulus of the session.
  */
-export const getTrainingEffectSummary = (
-  aerobic: number,
-  anaerobic: number,
-): string => {
+export const getTrainingEffectSummary = (aerobic: number, anaerobic: number): string => {
   if (aerobic < 1.0 && anaerobic < 1.0) return 'Too easy to stimulate adaptation';
   if (aerobic >= 4.0 && anaerobic >= 4.0)
     return 'Extreme session — both aerobic and anaerobic systems pushed hard';
-  if (aerobic >= 3.0 && anaerobic < 2.0)
-    return 'Steady aerobic effort — improved endurance base';
+  if (aerobic >= 3.0 && anaerobic < 2.0) return 'Steady aerobic effort — improved endurance base';
   if (anaerobic >= 3.0 && aerobic < 2.0)
     return 'High-intensity session — anaerobic capacity stimulus';
   if (aerobic >= 3.0 && anaerobic >= 2.0)
     return 'Mixed-intensity effort — both energy systems challenged';
-  if (aerobic >= 2.0 && anaerobic < 1.0)
-    return 'Easy aerobic maintenance — good recovery day';
-  if (aerobic >= 2.0)
-    return 'Moderate effort — maintaining fitness with some intensity';
+  if (aerobic >= 2.0 && anaerobic < 1.0) return 'Easy aerobic maintenance — good recovery day';
+  if (aerobic >= 2.0) return 'Moderate effort — maintaining fitness with some intensity';
   return 'Light effort — minor training stimulus';
 };

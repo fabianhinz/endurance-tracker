@@ -7,20 +7,20 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-} from "recharts";
-import { avgDomain, chartTheme } from "@/lib/chartTheme.ts";
-import { tokens } from "@/lib/tokens.ts";
-import type { LapHrPoint } from "@/lib/lapChartData.ts";
+} from 'recharts';
+import { avgDomain, chartTheme } from '@/lib/chartTheme.ts';
+import { tokens } from '@/lib/tokens.ts';
+import type { LapHrPoint } from '@/lib/lapChartData.ts';
 
 interface LapHrChartProps {
   data: LapHrPoint[];
-  mode: "compact" | "expanded";
+  mode: 'compact' | 'expanded';
   syncId?: string;
   onActiveLapChange?: (lapIndex: number | null) => void;
 }
 
 export const LapHrChart = (props: LapHrChartProps) => {
-  const compact = props.mode === "compact";
+  const compact = props.mode === 'compact';
   const yDomain = avgDomain(props.data.map((d) => d.avgHr));
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -32,15 +32,14 @@ export const LapHrChart = (props: LapHrChartProps) => {
         }}
         onMouseLeave={() => props.onActiveLapChange?.(null)}
       >
-        {!compact && (
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke={chartTheme.grid.stroke}
-          />
-        )}
+        {!compact && <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />}
         <XAxis
           dataKey="lap"
-          ticks={compact ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean) : undefined}
+          ticks={
+            compact
+              ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean)
+              : undefined
+          }
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={chartTheme.axisLine}
@@ -65,8 +64,8 @@ export const LapHrChart = (props: LapHrChartProps) => {
             entry: { payload?: LapHrPoint },
           ) => {
             const p = entry.payload;
-            if (!p) return [`-- bpm`, "Avg HR"];
-            return [`${p.avgHr} bpm (${p.minHr}–${p.maxHr})`, "Avg HR"];
+            if (!p) return [`-- bpm`, 'Avg HR'];
+            return [`${p.avgHr} bpm (${p.minHr}–${p.maxHr})`, 'Avg HR'];
           }}
         />
         <Area

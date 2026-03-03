@@ -5,19 +5,19 @@ describe('thresholdPaceFromRace', () => {
   it('5K in 20:00 → threshold pace ~4:10-4:20/km', () => {
     const pace = thresholdPaceFromRace(5000, 20);
     expect(pace).toBeGreaterThanOrEqual(250); // 4:10
-    expect(pace).toBeLessThanOrEqual(260);    // 4:20
+    expect(pace).toBeLessThanOrEqual(260); // 4:20
   });
 
   it('10K in 45:00 → threshold pace ~4:30-4:45/km', () => {
     const pace = thresholdPaceFromRace(10000, 45);
     expect(pace).toBeGreaterThanOrEqual(270); // ~4:30
-    expect(pace).toBeLessThanOrEqual(285);    // ~4:45
+    expect(pace).toBeLessThanOrEqual(285); // ~4:45
   });
 
   it('marathon in 3:30:00 → threshold pace ~4:40-4:55/km', () => {
     const pace = thresholdPaceFromRace(42195, 210);
     expect(pace).toBeGreaterThanOrEqual(280); // ~4:40
-    expect(pace).toBeLessThanOrEqual(295);    // ~4:55
+    expect(pace).toBeLessThanOrEqual(295); // ~4:55
   });
 
   it('returns an integer (sec/km)', () => {

@@ -7,7 +7,12 @@ import type { TrainingSession } from '@/engine/types.ts';
 // ---------------------------------------------------------------------------
 
 describe('generateFingerprint', () => {
-  const fallback = { sport: 'running' as const, date: 1700000000000, duration: 3600, distance: 10000 };
+  const fallback = {
+    sport: 'running' as const,
+    date: 1700000000000,
+    duration: 3600,
+    distance: 10000,
+  };
 
   it('uses serial_number + time_created when both are present', () => {
     const fp = generateFingerprint(
@@ -20,18 +25,12 @@ describe('generateFingerprint', () => {
 
   it('handles time_created as a Date object', () => {
     const date = new Date('2024-06-01T08:00:00Z');
-    const fp = generateFingerprint(
-      { serial_number: 99, time_created: date },
-      fallback,
-    );
+    const fp = generateFingerprint({ serial_number: 99, time_created: date }, fallback);
     expect(fp).toBe(`99:${date.getTime()}`);
   });
 
   it('falls back when serial_number is missing', () => {
-    const fp = generateFingerprint(
-      { time_created: '2024-01-15T10:30:00Z' },
-      fallback,
-    );
+    const fp = generateFingerprint({ time_created: '2024-01-15T10:30:00Z' }, fallback);
     expect(fp).toBe('running:1700000000000:3600:10000');
   });
 

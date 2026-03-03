@@ -3,10 +3,7 @@ import { computeLapMarkers } from '@/engine/lapMarkers.ts';
 import type { LapMarkerMode } from '@/engine/lapMarkers.ts';
 import type { SessionLap, SessionRecord } from '@/engine/types.ts';
 
-const makeRecord = (
-  overrides: Partial<SessionRecord> = {},
-  index = 0,
-): SessionRecord => ({
+const makeRecord = (overrides: Partial<SessionRecord> = {}, index = 0): SessionRecord => ({
   sessionId: 's1',
   timestamp: index,
   lat: 48.0 + index * 0.001,
@@ -155,9 +152,7 @@ describe('computeLapMarkers', () => {
   describe('dynamic mode', () => {
     it('places markers at distance boundaries', () => {
       // 5 records: distances 0, 500, 1000, 1500, 2000
-      const records = Array.from({ length: 5 }, (_, i) =>
-        makeRecord({ distance: i * 500 }, i),
-      );
+      const records = Array.from({ length: 5 }, (_, i) => makeRecord({ distance: i * 500 }, i));
       const mode: LapMarkerMode = {
         kind: 'dynamic',
         splitDistanceMetres: 1000,

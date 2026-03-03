@@ -1,5 +1,11 @@
 import type { DailyMetrics, FormStatus, RunningZone, RunningZoneName } from '@/engine/types.ts';
-import type { PrescribedWorkout, WeeklyPlan, WorkoutStep, WorkoutType, PlanContext } from '@/types/index.ts';
+import type {
+  PrescribedWorkout,
+  WeeklyPlan,
+  WorkoutStep,
+  WorkoutType,
+  PlanContext,
+} from '@/types/index.ts';
 import { toDateString } from './utils.ts';
 import { getFormStatus, getInjuryRisk, getLoadState } from '@/engine/coaching.ts';
 import { getZoneMidPace } from '@/engine/zones.ts';
@@ -65,10 +71,7 @@ const buildWorkout = (
     case 'long-run':
       return {
         title: '90min Long Run',
-        steps: [
-          step('work', 75 * 60, 'easy', zones),
-          step('work', 15 * 60, 'tempo', zones),
-        ],
+        steps: [step('work', 75 * 60, 'easy', zones), step('work', 15 * 60, 'tempo', zones)],
       };
     case 'tempo':
       return {
@@ -125,7 +128,7 @@ export const estimateWorkoutDistance = (
     if (!zone) continue;
     const midPace = getZoneMidPace(zone); // sec/km
     const reps = s.repeat ?? 1;
-    meters += (s.durationSec * reps / midPace) * 1000;
+    meters += ((s.durationSec * reps) / midPace) * 1000;
   }
   return Math.round(meters);
 };
@@ -136,10 +139,34 @@ type WeekTemplate = WorkoutType[];
 
 const WEEK_TEMPLATES: Record<FormStatus | 'no-data', WeekTemplate> = {
   overload: ['rest', 'recovery', 'rest', 'recovery', 'rest', 'easy', 'easy'],
-  optimal: ['easy', 'threshold-intervals', 'recovery', 'vo2max-intervals', 'tempo', 'rest', 'long-run'],
+  optimal: [
+    'easy',
+    'threshold-intervals',
+    'recovery',
+    'vo2max-intervals',
+    'tempo',
+    'rest',
+    'long-run',
+  ],
   neutral: ['easy', 'threshold-intervals', 'recovery', 'tempo', 'easy', 'rest', 'long-run'],
-  fresh: ['easy', 'vo2max-intervals', 'recovery', 'threshold-intervals', 'tempo', 'rest', 'long-run'],
-  detraining: ['easy', 'vo2max-intervals', 'recovery', 'threshold-intervals', 'tempo', 'easy', 'long-run'],
+  fresh: [
+    'easy',
+    'vo2max-intervals',
+    'recovery',
+    'threshold-intervals',
+    'tempo',
+    'rest',
+    'long-run',
+  ],
+  detraining: [
+    'easy',
+    'vo2max-intervals',
+    'recovery',
+    'threshold-intervals',
+    'tempo',
+    'easy',
+    'long-run',
+  ],
   'no-data': ['rest', 'easy', 'rest', 'easy', 'easy', 'easy', 'easy'],
 };
 
@@ -191,7 +218,11 @@ const upgradeForUndertraining = (template: WeekTemplate): WeekTemplate => {
   return result;
 };
 
-const applyLoadGuards = (template: WeekTemplate, acwr: number, dataMaturityDays: number): WeekTemplate => {
+const applyLoadGuards = (
+  template: WeekTemplate,
+  acwr: number,
+  dataMaturityDays: number,
+): WeekTemplate => {
   const state = getLoadState(acwr, dataMaturityDays);
   switch (state) {
     case 'immature':

@@ -14,9 +14,7 @@ export const useHiresPaths = (
   const [snapshot, setSnapshot] = useState(() => new Map(pathCache));
 
   useEffect(() => {
-    const ids = [hoveredSessionId, openedSessionId].filter(
-      (id): id is string => id != null,
-    );
+    const ids = [hoveredSessionId, openedSessionId].filter((id): id is string => id != null);
 
     for (const id of ids) {
       if (pathCache.has(id) || loading.has(id)) continue;

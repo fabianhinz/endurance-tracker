@@ -1,17 +1,17 @@
-import { useCallback } from "react";
-import { useUserStore } from "@/store/user.ts";
-import { useSessionsStore } from "@/store/sessions.ts";
-import { useUploadProgressStore } from "@/store/uploadProgress.ts";
-import { parseFitFile } from "@/parsers/fit.ts";
-import { bulkSaveSessionData, saveFitFile } from "@/lib/indexeddb.ts";
-import { detectNewPBs, mergePBs } from "@/engine/records.ts";
-import { mapWithConcurrency } from "@/lib/concurrency.ts";
-import { toast } from "@/components/ui/toastStore.ts";
-import { findDuplicates } from "@/engine/fingerprint.ts";
-import type { TrainingSession, SessionRecord, SessionLap } from "@/engine/types.ts";
+import { useCallback } from 'react';
+import { useUserStore } from '@/store/user.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useUploadProgressStore } from '@/store/uploadProgress.ts';
+import { parseFitFile } from '@/parsers/fit.ts';
+import { bulkSaveSessionData, saveFitFile } from '@/lib/indexeddb.ts';
+import { detectNewPBs, mergePBs } from '@/engine/records.ts';
+import { mapWithConcurrency } from '@/lib/concurrency.ts';
+import { toast } from '@/components/ui/toastStore.ts';
+import { findDuplicates } from '@/engine/fingerprint.ts';
+import type { TrainingSession, SessionRecord, SessionLap } from '@/engine/types.ts';
 
 interface ParsedFile {
-  session: Omit<TrainingSession, "id" | "createdAt">;
+  session: Omit<TrainingSession, 'id' | 'createdAt'>;
   records: SessionRecord[];
   laps: SessionLap[];
   fingerprint: string;
@@ -21,9 +21,7 @@ interface ParsedFile {
 
 const CHUNK_SIZE = 10;
 
-export const useFileUpload = (
-  inputRef: React.RefObject<HTMLInputElement | null>,
-) => {
+export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>) => {
   const profile = useUserStore((s) => s.profile);
   const addSessions = useSessionsStore((s) => s.addSessions);
   const personalBests = useSessionsStore((s) => s.personalBests);
@@ -48,17 +46,17 @@ export const useFileUpload = (
       let failed = 0;
 
       for (const file of fileArray) {
-        if (file.name.toLowerCase().endsWith(".fit")) {
+        if (file.name.toLowerCase().endsWith('.fit')) {
           fitFiles.push(file);
         } else {
-          toast("Invalid file", `${file.name} is not a .FIT file`, "error");
+          toast('Invalid file', `${file.name} is not a .FIT file`, 'error');
           failed++;
         }
       }
 
       if (fitFiles.length === 0) {
         if (failed > 0) {
-          toast(`${failed} failed`, undefined, "error");
+          toast(`${failed} failed`, undefined, 'error');
         }
         return;
       }
@@ -84,11 +82,11 @@ export const useFileUpload = (
 
       const parsed: ParsedFile[] = [];
       for (const result of settled) {
-        if (result.status === "fulfilled") {
+        if (result.status === 'fulfilled') {
           parsed.push(result.value);
         } else {
-          console.error("Parse error:", result.reason);
-          toast("Parse failed", "Could not parse FIT file", "error");
+          console.error('Parse error:', result.reason);
+          toast('Parse failed', 'Could not parse FIT file', 'error');
           failed++;
         }
       }
@@ -136,9 +134,7 @@ export const useFileUpload = (
               }));
 
               const lapsWithId =
-                entry.laps.length > 0
-                  ? entry.laps.map((l) => ({ ...l, sessionId }))
-                  : [];
+                entry.laps.length > 0 ? entry.laps.map((l) => ({ ...l, sessionId })) : [];
 
               idbEntries.push({
                 records: recordsWithId,
@@ -174,34 +170,36 @@ export const useFileUpload = (
             updatePersonalBests(accumulatedBests);
           }
         } catch (err) {
-          console.error("Save error:", err);
-          toast("Save failed", "Could not save sessions to database", "error");
+          console.error('Save error:', err);
+          toast('Save failed', 'Could not save sessions to database', 'error');
         }
       }
 
       const uploaded = unique.length;
       const parts: string[] = [];
-      if (uploaded > 0)
-        parts.push(
-          `${uploaded} session${uploaded !== 1 ? "s" : ""} uploaded`,
-        );
-      if (duplicated > 0)
-        parts.push(
-          `${duplicated} duplicate${duplicated !== 1 ? "s" : ""}`,
-        );
-      if (newPBCount > 0)
-        parts.push(`${newPBCount} new PB${newPBCount !== 1 ? "s" : ""}`);
+      if (uploaded > 0) parts.push(`${uploaded} session${uploaded !== 1 ? 's' : ''} uploaded`);
+      if (duplicated > 0) parts.push(`${duplicated} duplicate${duplicated !== 1 ? 's' : ''}`);
+      if (newPBCount > 0) parts.push(`${newPBCount} new PB${newPBCount !== 1 ? 's' : ''}`);
       if (failed > 0) parts.push(`${failed} failed`);
       if (parts.length > 0) {
         finishProgress(
-          parts.join(", "),
-          failed > 0 ? "error" : uploaded === 0 ? "warning" : "success",
+          parts.join(', '),
+          failed > 0 ? 'error' : uploaded === 0 ? 'warning' : 'success',
         );
       }
 
-      if (inputRef.current) inputRef.current.value = "";
+      if (inputRef.current) inputRef.current.value = '';
     },
-    [profile, addSessions, personalBests, updatePersonalBests, inputRef, startUpload, advance, finishProgress],
+    [
+      profile,
+      addSessions,
+      personalBests,
+      updatePersonalBests,
+      inputRef,
+      startUpload,
+      advance,
+      finishProgress,
+    ],
   );
 
   return { uploading, profile, triggerUpload, handleFiles };

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
 const POPUP_WIDTH = 380;
 const POPUP_HEIGHT = 300;
@@ -19,11 +19,7 @@ export interface PopupPosition {
   flipY: boolean;
 }
 
-export const computePopupPosition = (
-  x: number,
-  y: number,
-  safeZone: SafeZone,
-): PopupPosition => {
+export const computePopupPosition = (x: number, y: number, safeZone: SafeZone): PopupPosition => {
   const safeWidth = safeZone.right - safeZone.left;
   const safeHeight = safeZone.bottom - safeZone.top;
 
@@ -61,17 +57,14 @@ export const computePopupPosition = (
   return { left, top, flipX, flipY };
 };
 
-export const usePopupPosition = (
-  x: number,
-  y: number,
-): React.CSSProperties => {
+export const usePopupPosition = (x: number, y: number): React.CSSProperties => {
   return useMemo(() => {
     const dock = document.querySelector<HTMLElement>('[data-layout="dock"]');
     const main = document.querySelector<HTMLElement>('[data-layout="main"]');
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
 
     const safeZone: SafeZone = { left: 0, top: 0, right: vw, bottom: vh };
 
@@ -92,14 +85,14 @@ export const usePopupPosition = (
     const pos = computePopupPosition(x, y, safeZone);
 
     const transforms: string[] = [];
-    if (pos.flipX) transforms.push("translateX(-100%)");
-    if (pos.flipY) transforms.push("translateY(-100%)");
+    if (pos.flipX) transforms.push('translateX(-100%)');
+    if (pos.flipY) transforms.push('translateY(-100%)');
 
     return {
-      position: "fixed" as const,
+      position: 'fixed' as const,
       left: pos.left,
       top: pos.top,
-      ...(transforms.length > 0 && { transform: transforms.join(" ") }),
+      ...(transforms.length > 0 && { transform: transforms.join(' ') }),
       zIndex: 50,
     };
   }, [x, y]);

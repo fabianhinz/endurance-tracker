@@ -36,10 +36,7 @@ export const makeGPSRunningRecords = (
 /**
  * Generate indoor records with no GPS data (lat/lng undefined).
  */
-export const makeIndoorRecords = (
-  sessionId: string,
-  count: number,
-): SessionRecord[] => {
+export const makeIndoorRecords = (sessionId: string, count: number): SessionRecord[] => {
   const records: SessionRecord[] = [];
   for (let i = 0; i < count; i++) {
     records.push({

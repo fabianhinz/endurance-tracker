@@ -1,6 +1,6 @@
 export type SettledResult<R> =
-  | { status: "fulfilled"; value: R }
-  | { status: "rejected"; reason: unknown };
+  | { status: 'fulfilled'; value: R }
+  | { status: 'rejected'; reason: unknown };
 
 export const mapWithConcurrency = async <T, R>(
   items: T[],
@@ -16,18 +16,15 @@ export const mapWithConcurrency = async <T, R>(
       const i = nextIndex++;
       try {
         const value = await fn(items[i]);
-        results[i] = { status: "fulfilled", value };
+        results[i] = { status: 'fulfilled', value };
       } catch (reason) {
-        results[i] = { status: "rejected", reason };
+        results[i] = { status: 'rejected', reason };
       }
       onSettle?.();
     }
   };
 
-  const workers = Array.from(
-    { length: Math.min(concurrency, items.length) },
-    () => worker(),
-  );
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => worker());
   await Promise.all(workers);
 
   return results;

@@ -64,32 +64,27 @@ const RISK_MESSAGES: Record<FormStatus, Record<Exclude<InjuryRisk, 'low'>, strin
   detraining: {
     moderate:
       'Your fitness is declining, and your training ramp rate is elevated. Avoid jumping back in too aggressively — a moderate, progressive return to training is safer than a sudden spike.',
-    high:
-      'Your fitness is declining and your recent load spike is in the high-risk zone. Back off immediately. Rebuild volume gradually over 2-3 weeks rather than trying to make up for lost time.',
+    high: 'Your fitness is declining and your recent load spike is in the high-risk zone. Back off immediately. Rebuild volume gradually over 2-3 weeks rather than trying to make up for lost time.',
   },
   fresh: {
     moderate:
       'You are well-rested, but your training has ramped up faster than usual. You can still perform well, but monitor for early signs of strain. Avoid stacking another big increase this week.',
-    high:
-      'You are rested, but your load has spiked sharply — putting you at elevated injury risk. Scale back intensity or volume this week. Being fresh does not protect against a load spike.',
+    high: 'You are rested, but your load has spiked sharply — putting you at elevated injury risk. Scale back intensity or volume this week. Being fresh does not protect against a load spike.',
   },
   neutral: {
     moderate:
       'Your readiness is balanced, but your training ramp rate is above the safe zone. Hold steady or slightly reduce this week to let your body catch up before pushing further.',
-    high:
-      'Your readiness is balanced, but your load has increased dangerously fast. Reduce volume or intensity for the next few days. A sharp ramp at any readiness level raises injury risk.',
+    high: 'Your readiness is balanced, but your load has increased dangerously fast. Reduce volume or intensity for the next few days. A sharp ramp at any readiness level raises injury risk.',
   },
   optimal: {
     moderate:
       'You are in a productive training phase, and your load ramp is moderately elevated. This is a fine line — keep pushing, but do not stack another big increase on top. Listen to your body.',
-    high:
-      'You are training hard and your load has spiked into the danger zone. The combination of high fatigue and rapid ramp-up is the highest-risk scenario. Take a recovery day now.',
+    high: 'You are training hard and your load has spiked into the danger zone. The combination of high fatigue and rapid ramp-up is the highest-risk scenario. Take a recovery day now.',
   },
   overload: {
     moderate:
       'You are carrying deep fatigue and your load ramp is elevated. Your body is under significant stress. Easy days or complete rest are strongly recommended before resuming hard training.',
-    high:
-      'You are deeply fatigued with a dangerous load spike. This is the highest-risk state — injury likelihood is significantly elevated. Rest immediately and do not resume hard training until fatigue subsides.',
+    high: 'You are deeply fatigued with a dangerous load spike. This is the highest-risk state — injury likelihood is significantly elevated. Rest immediately and do not resume hard training until fatigue subsides.',
   },
 };
 

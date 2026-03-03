@@ -1,11 +1,11 @@
-import { Typography } from "@/components/ui/Typography.tsx";
-import { Button } from "@/components/ui/Button.tsx";
-import { formatDuration } from "@/lib/utils.ts";
-import { groupSteps } from "@/lib/groupSteps.ts";
-import { STEP_LABELS } from "./workoutDisplay.ts";
-import type { RunningZone } from "@/engine/types.ts";
-import type { PrescribedWorkout, WorkoutStep } from "@/types/index.ts";
-import { X } from "lucide-react";
+import { Typography } from '@/components/ui/Typography.tsx';
+import { Button } from '@/components/ui/Button.tsx';
+import { formatDuration } from '@/lib/utils.ts';
+import { groupSteps } from '@/lib/groupSteps.ts';
+import { STEP_LABELS } from './workoutDisplay.ts';
+import type { RunningZone } from '@/engine/types.ts';
+import type { PrescribedWorkout, WorkoutStep } from '@/types/index.ts';
+import { X } from 'lucide-react';
 
 export const WorkoutExpansionPanel = (props: {
   workout: PrescribedWorkout;
@@ -23,12 +23,7 @@ export const WorkoutExpansionPanel = (props: {
             {props.workout.dayLabel} — {props.workout.date}
           </Typography>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Close"
-          onClick={props.onClose}
-        >
+        <Button variant="ghost" size="icon" aria-label="Close" onClick={props.onClose}>
           <X size={16} />
         </Button>
       </div>
@@ -36,13 +31,8 @@ export const WorkoutExpansionPanel = (props: {
       {props.workout.steps.length > 0 && (
         <div className="space-y-2">
           {groupSteps(props.workout.steps).map((group, gi) =>
-            group.kind === "single" ? (
-              <StepRow
-                key={gi}
-                step={group.step}
-                zones={props.zones}
-                showRepeat
-              />
+            group.kind === 'single' ? (
+              <StepRow key={gi} step={group.step} zones={props.zones} showRepeat />
             ) : (
               <fieldset
                 key={gi}
@@ -52,12 +42,7 @@ export const WorkoutExpansionPanel = (props: {
                   {group.repeat}×
                 </legend>
                 {group.steps.map((s, si) => (
-                  <StepRow
-                    key={si}
-                    step={s}
-                    zones={props.zones}
-                    showRepeat={false}
-                  />
+                  <StepRow key={si} step={s} zones={props.zones} showRepeat={false} />
                 ))}
               </fieldset>
             ),
@@ -68,26 +53,18 @@ export const WorkoutExpansionPanel = (props: {
   );
 };
 
-const StepRow = (props: {
-  step: WorkoutStep;
-  zones: RunningZone[];
-  showRepeat: boolean;
-}) => {
+const StepRow = (props: { step: WorkoutStep; zones: RunningZone[]; showRepeat: boolean }) => {
   const zone = props.zones.find((z) => z.name === props.step.zone);
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-white/5">
       <span
         className="w-2.5 h-2.5 rounded-full shrink-0"
-        style={{ backgroundColor: zone?.color ?? "#888" }}
+        style={{ backgroundColor: zone?.color ?? '#888' }}
       />
       <Typography variant="caption" color="secondary" className="w-16 shrink-0">
         {STEP_LABELS[props.step.type] ?? props.step.type}
       </Typography>
-      <Typography
-        variant="caption"
-        color="tertiary"
-        className="grow-1 text-right"
-      >
+      <Typography variant="caption" color="tertiary" className="grow-1 text-right">
         {formatDuration(props.step.durationSec)}
       </Typography>
     </div>

@@ -2,25 +2,26 @@
 // Engine-owned types — all pure data definitions used by engine functions
 // ---------------------------------------------------------------------------
 
-export type Sport = "running" | "cycling" | "swimming";
-export type Gender = "male" | "female" | "other";
+export type Sport = 'running' | 'cycling' | 'swimming';
+export type Gender = 'male' | 'female' | 'other';
 
-export type FormStatus =
-  | "detraining"
-  | "fresh"
-  | "neutral"
-  | "optimal"
-  | "overload";
+export type FormStatus = 'detraining' | 'fresh' | 'neutral' | 'optimal' | 'overload';
 
-export type InjuryRisk = "low" | "moderate" | "high";
+export type InjuryRisk = 'low' | 'moderate' | 'high';
 
-export type LoadState = "immature" | "transitioning" | "high-risk" | "moderate-risk" | "undertraining" | "sweet-spot";
+export type LoadState =
+  | 'immature'
+  | 'transitioning'
+  | 'high-risk'
+  | 'moderate-risk'
+  | 'undertraining'
+  | 'sweet-spot';
 
-export type RunningZoneName = "recovery" | "easy" | "tempo" | "threshold" | "vo2max";
+export type RunningZoneName = 'recovery' | 'easy' | 'tempo' | 'threshold' | 'vo2max';
 
-export type RaceDistance = "5k" | "10k" | "half-marathon" | "marathon";
+export type RaceDistance = '5k' | '10k' | 'half-marathon' | 'marathon';
 
-export type PBCategory = "peak-power" | "fastest-distance" | "longest" | "most-elevation";
+export type PBCategory = 'peak-power' | 'fastest-distance' | 'longest' | 'most-elevation';
 
 // ---------------------------------------------------------------------------
 // Interfaces
@@ -55,7 +56,7 @@ export interface TrainingSession {
   avgAltitude?: number;
   gap?: number;
   tss: number;
-  stressMethod: "tss" | "trimp" | "duration";
+  stressMethod: 'tss' | 'trimp' | 'duration';
   sensorWarnings: string[];
   isPlanned: boolean;
   hasDetailedRecords: boolean;

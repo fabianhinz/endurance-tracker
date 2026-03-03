@@ -7,43 +7,56 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ReferenceArea,
-} from "recharts";
-import { useChartZoom } from "@/lib/hooks/useChartZoom.ts";
-import { chartTheme, formatChartTime } from "@/lib/chartTheme.ts";
-import { tokens } from "@/lib/tokens.ts";
-import type { CadencePoint } from "@/lib/chartData.ts";
+} from 'recharts';
+import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
+import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
+import { tokens } from '@/lib/tokens.ts';
+import type { CadencePoint } from '@/lib/chartData.ts';
 
 interface CadenceChartProps {
   data: CadencePoint[];
-  mode?: "compact" | "expanded";
+  mode?: 'compact' | 'expanded';
   onActiveTimeChange?: (time: number | null) => void;
   onZoomComplete?: (from: string | number, to: string | number) => void;
   onZoomReset?: () => void;
 }
 
 export const CadenceChart = (props: CadenceChartProps) => {
-  const compact = props.mode === "compact";
-  const zoom = useChartZoom({ data: props.data, xKey: "time", onZoomComplete: props.onZoomComplete, onZoomReset: props.onZoomReset });
+  const compact = props.mode === 'compact';
+  const zoom = useChartZoom({
+    data: props.data,
+    xKey: 'time',
+    onZoomComplete: props.onZoomComplete,
+    onZoomReset: props.onZoomReset,
+  });
 
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
-        syncId={compact ? "session-detail" : undefined}
+        syncId={compact ? 'session-detail' : undefined}
         data={zoom.zoomedData}
         onMouseDown={zoom.onMouseDown}
-        onMouseMove={(e) => { zoom.onMouseMove(e); if (compact && props.onActiveTimeChange && e.activeLabel != null) props.onActiveTimeChange(Number(e.activeLabel)); }}
+        onMouseMove={(e) => {
+          zoom.onMouseMove(e);
+          if (compact && props.onActiveTimeChange && e.activeLabel != null)
+            props.onActiveTimeChange(Number(e.activeLabel));
+        }}
         onMouseUp={zoom.onMouseUp}
-        onMouseLeave={compact && props.onActiveTimeChange ? () => props.onActiveTimeChange!(null) : undefined}
+        onMouseLeave={
+          compact && props.onActiveTimeChange ? () => props.onActiveTimeChange!(null) : undefined
+        }
       >
-        {!compact && (
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke={chartTheme.grid.stroke}
-          />
-        )}
+        {!compact && <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />}
         <XAxis
           dataKey="time"
-          ticks={compact ? [zoom.zoomedData[0]?.time ?? 0, zoom.zoomedData[zoom.zoomedData.length - 1]?.time ?? 0] : undefined}
+          ticks={
+            compact
+              ? [
+                  zoom.zoomedData[0]?.time ?? 0,
+                  zoom.zoomedData[zoom.zoomedData.length - 1]?.time ?? 0,
+                ]
+              : undefined
+          }
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={chartTheme.axisLine}
@@ -55,7 +68,7 @@ export const CadenceChart = (props: CadenceChartProps) => {
           tickLine={false}
           axisLine={false}
           tickCount={compact ? 3 : undefined}
-          tickFormatter={(v: number) => compact ? `${v}` : `${v} rpm`}
+          tickFormatter={(v: number) => (compact ? `${v}` : `${v} rpm`)}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}

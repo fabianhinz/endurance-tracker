@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Zap,
@@ -10,67 +10,60 @@ import {
   Activity,
   Clock,
   HeartPulse,
-} from "lucide-react";
-import { useFileUpload } from "@/features/training/hooks/useFileUpload.ts";
-import { cn } from "@/lib/utils.ts";
-import { cardClass } from "@/components/ui/Card.tsx";
-import { useSlideIndicator } from "@/components/ui/SlideIndicator.tsx";
-import { useLayoutStore } from "@/store/layout.ts";
-import { useFiltersStore } from "@/store/filters.ts";
-import { Button } from "@/components/ui/Button.tsx";
-import { DockRevealPanel } from "./DockRevealPanel.tsx";
-import { DockFilterOptions } from "./DockFilterOptions.tsx";
-import { sportIcon } from "@/lib/sportIcons.ts";
+} from 'lucide-react';
+import { useFileUpload } from '@/features/training/hooks/useFileUpload.ts';
+import { cn } from '@/lib/utils.ts';
+import { cardClass } from '@/components/ui/Card.tsx';
+import { useSlideIndicator } from '@/components/ui/SlideIndicator.tsx';
+import { useLayoutStore } from '@/store/layout.ts';
+import { useFiltersStore } from '@/store/filters.ts';
+import { Button } from '@/components/ui/Button.tsx';
+import { DockRevealPanel } from './DockRevealPanel.tsx';
+import { DockFilterOptions } from './DockFilterOptions.tsx';
+import { sportIcon } from '@/lib/sportIcons.ts';
 import {
   type TimeRange,
   timeRangeOptions,
   rangeLabelMap,
   formatCustomRangeDuration,
-} from "@/lib/timeRange.ts";
-import type { Sport } from "@/engine/types.ts";
+} from '@/lib/timeRange.ts';
+import type { Sport } from '@/engine/types.ts';
 
 const tabs = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/training", label: "Training", icon: Zap },
-  { to: "/coach", label: "Coach", icon: HeartPulse },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/training', label: 'Training', icon: Zap },
+  { to: '/coach', label: 'Coach', icon: HeartPulse },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 const sportOptions = [
-  { value: "all", label: "All" },
-  { value: "running", label: "Run" },
-  { value: "cycling", label: "Cycle" },
-  { value: "swimming", label: "Swim" },
+  { value: 'all', label: 'All' },
+  { value: 'running', label: 'Run' },
+  { value: 'cycling', label: 'Cycle' },
+  { value: 'swimming', label: 'Swim' },
 ];
 
 const dockItemMiniClass =
-  "w-12 md:w-10 h-10 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary";
+  'w-12 md:w-10 h-10 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary';
 
 const dockItemMaxiClass =
-  "w-14 md:w-16 h-14 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5";
+  'w-14 md:w-16 h-14 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5';
 
 const revealItemClass =
-  "w-12 md:w-10 h-12 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5";
+  'w-12 md:w-10 h-12 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5';
 
-type DockRevealLayer = "menu" | "sport-filter" | "time-filter";
+type DockRevealLayer = 'menu' | 'sport-filter' | 'time-filter';
 
 export const Dock = () => {
   const location = useLocation();
   const activeIndex = tabs.findIndex((tab) =>
-    tab.to === "/"
-      ? location.pathname === "/"
-      : location.pathname.startsWith(tab.to),
+    tab.to === '/' ? location.pathname === '/' : location.pathname.startsWith(tab.to),
   );
   const dockBarRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLElement | null)[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dockExpanded = useLayoutStore((s) => s.dockExpanded);
-  const indicatorElement = useSlideIndicator(
-    dockBarRef,
-    tabRefs,
-    activeIndex,
-    dockExpanded,
-  );
+  const indicatorElement = useSlideIndicator(dockBarRef, tabRefs, activeIndex, dockExpanded);
   const upload = useFileUpload(fileInputRef);
 
   const [revealStack, setRevealStack] = useState<DockRevealLayer[]>([]);
@@ -92,16 +85,12 @@ export const Dock = () => {
   );
 
   const toggleMaxiFilter = useCallback((layer: DockRevealLayer) => {
-    setRevealStack((prev) =>
-      prev.length === 1 && prev[0] === layer ? [] : [layer],
-    );
+    setRevealStack((prev) => (prev.length === 1 && prev[0] === layer ? [] : [layer]));
   }, []);
 
   const toggleMiniFilter = useCallback((layer: DockRevealLayer) => {
     setRevealStack((prev) =>
-      prev.includes(layer)
-        ? prev.filter((l) => l !== layer)
-        : ["menu" as const, layer],
+      prev.includes(layer) ? prev.filter((l) => l !== layer) : ['menu' as const, layer],
     );
   }, []);
 
@@ -112,25 +101,23 @@ export const Dock = () => {
   const setTimeRange = useFiltersStore((s) => s.setTimeRange);
   const customRange = useFiltersStore((s) => s.customRange);
 
-  const SportIcon = sportFilter === "all" ? Activity : sportIcon[sportFilter];
+  const SportIcon = sportFilter === 'all' ? Activity : sportIcon[sportFilter];
   const sportLabel =
-    sportFilter === "all"
-      ? "All"
-      : sportFilter.charAt(0).toUpperCase() + sportFilter.slice(1);
+    sportFilter === 'all' ? 'All' : sportFilter.charAt(0).toUpperCase() + sportFilter.slice(1);
 
   const timeLabel =
-    timeRange === "custom" && customRange
+    timeRange === 'custom' && customRange
       ? formatCustomRangeDuration(customRange)
       : rangeLabelMap[timeRange];
 
   const timeFilterOptions =
-    timeRange === "custom" && customRange
+    timeRange === 'custom' && customRange
       ? [
           ...timeRangeOptions,
           {
-            value: "custom",
+            value: 'custom',
             label: formatCustomRangeDuration(customRange),
-            variant: "accent" as const,
+            variant: 'accent' as const,
           },
         ]
       : timeRangeOptions;
@@ -138,12 +125,12 @@ export const Dock = () => {
   // Escape key handler — pop top layer
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && revealStack.length > 0) {
+      if (e.key === 'Escape' && revealStack.length > 0) {
         setRevealStack((prev) => prev.slice(0, -1));
       }
     };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [revealStack.length]);
 
   return (
@@ -152,40 +139,37 @@ export const Dock = () => {
         data-layout="dock"
         className={cn(
           cardClass,
-          "fixed z-50 md:flex-row md:items-center",
-          "border-0 border-t rounded-none shadow-none bottom-0 inset-x-0",
-          "md:border md:rounded-2xl md:shadow-lg md:inset-x-auto md:bottom-auto md:left-3 md:top-1/2 md:-translate-y-1/2",
-          "transition-all duration-300",
+          'fixed z-50 md:flex-row md:items-center',
+          'border-0 border-t rounded-none shadow-none bottom-0 inset-x-0',
+          'md:border md:rounded-2xl md:shadow-lg md:inset-x-auto md:bottom-auto md:left-3 md:top-1/2 md:-translate-y-1/2',
+          'transition-all duration-300',
         )}
       >
         {/* Filter options panels (Level C) — top on mobile, rightmost on desktop */}
-        <DockRevealPanel open={isOpen("sport-filter")} className="md:order-3">
+        <DockRevealPanel open={isOpen('sport-filter')} className="md:order-3">
           <DockFilterOptions
             options={sportOptions}
             value={sportFilter}
             onValueChange={(v) => {
-              setSportFilter(v as Sport | "all");
-              closeFrom("sport-filter");
+              setSportFilter(v as Sport | 'all');
+              closeFrom('sport-filter');
             }}
           />
         </DockRevealPanel>
 
-        <DockRevealPanel open={isOpen("time-filter")} className="md:order-3">
+        <DockRevealPanel open={isOpen('time-filter')} className="md:order-3">
           <DockFilterOptions
             options={timeFilterOptions}
             value={timeRange}
             onValueChange={(v) => {
               setTimeRange(v as TimeRange);
-              closeFrom("time-filter");
+              closeFrom('time-filter');
             }}
           />
         </DockRevealPanel>
 
         {/* Mini dock menu panel (Level B) — between dock bar and filters on desktop */}
-        <DockRevealPanel
-          open={isOpen("menu") && !dockExpanded}
-          className="md:order-2"
-        >
+        <DockRevealPanel open={isOpen('menu') && !dockExpanded} className="md:order-2">
           <Button
             variant="ghost"
             size="icon"
@@ -193,7 +177,7 @@ export const Dock = () => {
             disabled={upload.uploading || !upload.profile}
             onClick={() => {
               upload.triggerUpload();
-              closeFrom("menu");
+              closeFrom('menu');
             }}
             aria-label="Upload .FIT files"
           >
@@ -205,9 +189,9 @@ export const Dock = () => {
             size="icon"
             className={cn(
               revealItemClass,
-              isOpen("sport-filter") && "bg-white/10 text-text-primary",
+              isOpen('sport-filter') && 'bg-white/10 text-text-primary',
             )}
-            onClick={() => toggleMiniFilter("sport-filter")}
+            onClick={() => toggleMiniFilter('sport-filter')}
             aria-label="Sport filter"
           >
             <SportIcon size={20} strokeWidth={1.5} />
@@ -218,9 +202,9 @@ export const Dock = () => {
             size="icon"
             className={cn(
               revealItemClass,
-              isOpen("time-filter") && "bg-white/10 text-text-primary",
+              isOpen('time-filter') && 'bg-white/10 text-text-primary',
             )}
-            onClick={() => toggleMiniFilter("time-filter")}
+            onClick={() => toggleMiniFilter('time-filter')}
             aria-label="Time range filter"
           >
             <Clock size={20} strokeWidth={1.5} />
@@ -242,31 +226,29 @@ export const Dock = () => {
                 tabRefs.current[i] = el;
               }}
               to={tab.to}
-              end={tab.to === "/"}
+              end={tab.to === '/'}
               onClick={closeAll}
               aria-label={tab.label}
               className={({ isActive }) =>
                 cn(
-                  "relative flex items-center justify-center rounded-lg transition-all duration-300 overflow-hidden",
-                  dockExpanded ? dockItemMaxiClass : "w-12 md:w-10 h-10",
+                  'relative flex items-center justify-center rounded-lg transition-all duration-300 overflow-hidden',
+                  dockExpanded ? dockItemMaxiClass : 'w-12 md:w-10 h-10',
                   isActive
-                    ? "text-text-primary"
-                    : "text-text-tertiary hover:bg-white/10 hover:text-text-primary",
+                    ? 'text-text-primary'
+                    : 'text-text-tertiary hover:bg-white/10 hover:text-text-primary',
                 )
               }
             >
               <tab.icon size={20} strokeWidth={1.5} />
-              {dockExpanded && (
-                <span className="text-[10px] leading-none">{tab.label}</span>
-              )}
+              {dockExpanded && <span className="text-[10px] leading-none">{tab.label}</span>}
             </NavLink>
           ))}
 
           {/* Separator */}
           <div
             className={cn(
-              "bg-white/10 shrink-0 transition-all duration-300",
-              "w-px h-6 mx-1 md:w-6 md:h-px md:my-1 md:mx-0",
+              'bg-white/10 shrink-0 transition-all duration-300',
+              'w-px h-6 mx-1 md:w-6 md:h-px md:my-1 md:mx-0',
             )}
           />
 
@@ -278,15 +260,13 @@ export const Dock = () => {
                 size="icon"
                 className={cn(
                   dockItemMaxiClass,
-                  isOpen("sport-filter") && "bg-white/10 text-text-primary",
+                  isOpen('sport-filter') && 'bg-white/10 text-text-primary',
                 )}
-                onClick={() => toggleMaxiFilter("sport-filter")}
+                onClick={() => toggleMaxiFilter('sport-filter')}
                 aria-label="Sport filter"
               >
                 <SportIcon size={20} strokeWidth={1.5} />
-                <span className="text-[10px] leading-none truncate max-w-14">
-                  {sportLabel}
-                </span>
+                <span className="text-[10px] leading-none truncate max-w-14">{sportLabel}</span>
               </Button>
 
               <Button
@@ -294,22 +274,20 @@ export const Dock = () => {
                 size="icon"
                 className={cn(
                   dockItemMaxiClass,
-                  isOpen("time-filter") && "bg-white/10 text-text-primary",
+                  isOpen('time-filter') && 'bg-white/10 text-text-primary',
                 )}
-                onClick={() => toggleMaxiFilter("time-filter")}
+                onClick={() => toggleMaxiFilter('time-filter')}
                 aria-label="Time range filter"
               >
                 <Clock size={20} strokeWidth={1.5} />
-                <span className="text-[10px] leading-none truncate max-w-14">
-                  {timeLabel}
-                </span>
+                <span className="text-[10px] leading-none truncate max-w-14">{timeLabel}</span>
               </Button>
 
               {/* Separator */}
               <div
                 className={cn(
-                  "bg-white/10 shrink-0 transition-all duration-300",
-                  "w-px h-6 mx-1 md:w-6 md:h-px md:my-1 md:mx-0",
+                  'bg-white/10 shrink-0 transition-all duration-300',
+                  'w-px h-6 mx-1 md:w-6 md:h-px md:my-1 md:mx-0',
                 )}
               />
 
@@ -324,21 +302,16 @@ export const Dock = () => {
                 <Upload size={20} strokeWidth={1.5} />
                 <span className="text-[10px] leading-none">Upload</span>
               </Button>
-
             </>
           ) : (
             <Button
               variant="ghost"
               size="icon"
               className={dockItemMiniClass}
-              onClick={() =>
-                setRevealStack((prev) =>
-                  prev.includes("menu") ? [] : ["menu"],
-                )
-              }
-              aria-label={isOpen("menu") ? "Close menu" : "More actions"}
+              onClick={() => setRevealStack((prev) => (prev.includes('menu') ? [] : ['menu']))}
+              aria-label={isOpen('menu') ? 'Close menu' : 'More actions'}
             >
-              {isOpen("menu") ? (
+              {isOpen('menu') ? (
                 <X size={20} strokeWidth={1.5} />
               ) : (
                 <Ellipsis size={20} strokeWidth={1.5} />
@@ -360,11 +333,7 @@ export const Dock = () => {
 
       {/* Backdrop — closes reveals on click, purely in React's event system */}
       {revealStack.length > 0 && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={closeAll}
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 z-40" onClick={closeAll} aria-hidden="true" />
       )}
     </>
   );

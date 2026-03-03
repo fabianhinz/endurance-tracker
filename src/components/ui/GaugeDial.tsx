@@ -36,19 +36,10 @@ export const GaugeDial = (props: GaugeDialProps) => {
   return (
     <svg viewBox="0 0 200 115" className="w-full h-full">
       {props.zones.map((zone, i) => {
-        const fromAngle = valueToAngle(
-          Math.max(zone.from, props.min),
-          props.min,
-          props.max,
-        );
-        const toAngle = valueToAngle(
-          Math.min(zone.to, props.max),
-          props.min,
-          props.max,
-        );
+        const fromAngle = valueToAngle(Math.max(zone.from, props.min), props.min, props.max);
+        const toAngle = valueToAngle(Math.min(zone.to, props.max), props.min, props.max);
         const adjFrom = i > 0 ? fromAngle - GAP_RAD / 2 : fromAngle;
-        const adjTo =
-          i < props.zones.length - 1 ? toAngle + GAP_RAD / 2 : toAngle;
+        const adjTo = i < props.zones.length - 1 ? toAngle + GAP_RAD / 2 : toAngle;
 
         if (adjFrom <= adjTo) return null;
 

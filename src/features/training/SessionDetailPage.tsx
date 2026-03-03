@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Ellipsis, Pencil, Trash2 } from "lucide-react";
-import { useSessionsStore } from "@/store/sessions.ts";
-import { useMapFocusStore } from "@/store/mapFocus.ts";
+import { useEffect, useMemo, useState } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
 import {
   getSessionRecords,
   getSessionLaps,
@@ -10,49 +10,42 @@ import {
   deleteSessionLaps,
   deleteSessionGPS,
   deleteFitFile,
-} from "@/lib/indexeddb.ts";
-import { Button } from "@/components/ui/Button.tsx";
-import { Typography } from "@/components/ui/Typography.tsx";
-import { PageGrid } from "@/components/ui/PageGrid.tsx";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/Tabs.tsx";
+} from '@/lib/indexeddb.ts';
+import { Button } from '@/components/ui/Button.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import { PageGrid } from '@/components/ui/PageGrid.tsx';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
 import {
   DialogRoot,
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/Dialog.tsx";
+} from '@/components/ui/Dialog.tsx';
 import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/DropdownMenu.tsx";
-import { formatDate, formatSubSport } from "@/lib/utils.ts";
-import { SportChip } from "@/components/ui/SportChip.tsx";
-import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
-import { SessionChartsExplorer } from "./SessionChartsExplorer.tsx";
-import { TrainingEffectCard } from "./TrainingEffectCard.tsx";
-import { SessionRecordsCard } from "./SessionRecordsCard.tsx";
-import { LapsTab } from "./LapsTab.tsx";
-import type { SessionRecord, SessionLap } from "@/engine/types.ts";
+} from '@/components/ui/DropdownMenu.tsx';
+import { formatDate, formatSubSport } from '@/lib/utils.ts';
+import { SportChip } from '@/components/ui/SportChip.tsx';
+import { SessionStatsGrid } from './SessionStatsGrid.tsx';
+import { SessionChartsExplorer } from './SessionChartsExplorer.tsx';
+import { TrainingEffectCard } from './TrainingEffectCard.tsx';
+import { SessionRecordsCard } from './SessionRecordsCard.tsx';
+import { LapsTab } from './LapsTab.tsx';
+import type { SessionRecord, SessionLap } from '@/engine/types.ts';
 
-const validTabs = new Set(["overview", "laps"]);
+const validTabs = new Set(['overview', 'laps']);
 
 export const SessionDetailPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const rawTab = searchParams.get("tab");
-  const tab = rawTab && validTabs.has(rawTab) ? rawTab : "overview";
+  const rawTab = searchParams.get('tab');
+  const tab = rawTab && validTabs.has(rawTab) ? rawTab : 'overview';
 
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const session = useSessionsStore((s) =>
-    s.sessions.find((session) => session.id === params.id),
-  );
+  const session = useSessionsStore((s) => s.sessions.find((session) => session.id === params.id));
   const deleteSession = useSessionsStore((s) => s.deleteSession);
   const renameSession = useSessionsStore((s) => s.renameSession);
   const personalBests = useSessionsStore((s) => s.personalBests);
@@ -64,7 +57,7 @@ export const SessionDetailPage = () => {
   const [laps, setLaps] = useState<SessionLap[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
-  const [nameInput, setNameInput] = useState("");
+  const [nameInput, setNameInput] = useState('');
 
   useEffect(() => {
     if (params.id && session?.hasDetailedRecords) {
@@ -94,9 +87,7 @@ export const SessionDetailPage = () => {
   }
 
   const subSportLabel =
-    session.subSport && session.subSport !== "generic"
-      ? formatSubSport(session.subSport)
-      : null;
+    session.subSport && session.subSport !== 'generic' ? formatSubSport(session.subSport) : null;
 
   const handleTabChange = (value: string) => {
     setSearchParams({ tab: value });
@@ -200,15 +191,13 @@ export const SessionDetailPage = () => {
       >
         <DialogContent>
           <DialogTitle>Rename Session</DialogTitle>
-          <DialogDescription>
-            Enter a new name for this session.
-          </DialogDescription>
+          <DialogDescription>Enter a new name for this session.</DialogDescription>
           <input
             type="text"
             value={nameInput}
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && nameInput.trim()) {
+              if (e.key === 'Enter' && nameInput.trim()) {
                 renameSession(session.id, nameInput.trim());
                 setShowRenameDialog(false);
               }
@@ -217,10 +206,7 @@ export const SessionDetailPage = () => {
             autoFocus
           />
           <div className="mt-4 flex justify-end gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => setShowRenameDialog(false)}
-            >
+            <Button variant="secondary" onClick={() => setShowRenameDialog(false)}>
               Cancel
             </Button>
             <Button
@@ -246,14 +232,11 @@ export const SessionDetailPage = () => {
         <DialogContent>
           <DialogTitle>Delete Session</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the {session.sport} session from{" "}
+            Are you sure you want to delete the {session.sport} session from{' '}
             {formatDate(session.date)}? This action cannot be undone.
           </DialogDescription>
           <div className="mt-4 flex justify-end gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => setShowDeleteDialog(false)}
-            >
+            <Button variant="secondary" onClick={() => setShowDeleteDialog(false)}>
               Cancel
             </Button>
             <Button
@@ -261,7 +244,7 @@ export const SessionDetailPage = () => {
               onClick={async () => {
                 deleteSession(session.id);
                 setShowDeleteDialog(false);
-                navigate("/training");
+                navigate('/training');
                 await Promise.all([
                   deleteSessionRecords(session.id),
                   deleteSessionLaps(session.id),

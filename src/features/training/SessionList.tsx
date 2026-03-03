@@ -1,14 +1,10 @@
-import { useMemo } from "react";
-import { useSessionsStore } from "@/store/sessions.ts";
-import { useFiltersStore } from "@/store/filters.ts";
-import { useMapFocusStore } from "@/store/mapFocus.ts";
-import { useHoverIntent } from "@/hooks/useHoverIntent.ts";
-import { SessionItem } from "@/components/ui/SessionItem.tsx";
-import {
-  type TimeRange,
-  rangeToCutoff,
-  customRangeToCutoffs,
-} from "@/lib/timeRange.ts";
+import { useMemo } from 'react';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useFiltersStore } from '@/store/filters.ts';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
+import { SessionItem } from '@/components/ui/SessionItem.tsx';
+import { type TimeRange, rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
 
 export const SessionList = () => {
   const sessions = useSessionsStore((s) => s.sessions);
@@ -21,15 +17,15 @@ export const SessionList = () => {
   const filtered = useMemo(() => {
     let list: typeof sessions;
 
-    if (timeRange === "custom" && customRange) {
+    if (timeRange === 'custom' && customRange) {
       const bounds = customRangeToCutoffs(customRange);
       list = sessions.filter((s) => !s.isPlanned && s.date >= bounds.from && s.date <= bounds.to);
     } else {
-      const cutoff = rangeToCutoff(timeRange as Exclude<TimeRange, "custom">);
+      const cutoff = rangeToCutoff(timeRange as Exclude<TimeRange, 'custom'>);
       list = sessions.filter((s) => !s.isPlanned && s.date >= cutoff);
     }
 
-    if (sportFilter !== "all") {
+    if (sportFilter !== 'all') {
       list = list.filter((s) => s.sport === sportFilter);
     }
     return list.sort((a, b) => b.date - a.date);

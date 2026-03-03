@@ -31,7 +31,12 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
     useUserStore.getState().resetProfile();
     useCoachPlanStore.getState().clearPlan();
     useLayoutStore.setState({ onboardingComplete: false });
-    useFiltersStore.setState({ timeRange: "all", customRange: null, prevDashboardRange: null, sportFilter: "all" });
+    useFiltersStore.setState({
+      timeRange: 'all',
+      customRange: null,
+      prevDashboardRange: null,
+      sportFilter: 'all',
+    });
     await clearAllRecords();
     setIsDeleting(false);
     props.onOpenChange(false);
@@ -45,12 +50,19 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
 
   return (
     <DialogRoot open={props.open} onOpenChange={handleOpenChange}>
-      <DialogContent onEscapeKeyDown={(e) => { if (isDeleting) e.preventDefault(); }} onPointerDownOutside={(e) => { if (isDeleting) e.preventDefault(); }}>
+      <DialogContent
+        onEscapeKeyDown={(e) => {
+          if (isDeleting) e.preventDefault();
+        }}
+        onPointerDownOutside={(e) => {
+          if (isDeleting) e.preventDefault();
+        }}
+      >
         <DialogTitle>Delete All Data</DialogTitle>
         <DialogDescription>
-          This will permanently delete everything: all training sessions, personal
-          bests, lap data, time-series records, and your profile (name, thresholds,
-          preferences). This action cannot be undone.
+          This will permanently delete everything: all training sessions, personal bests, lap data,
+          time-series records, and your profile (name, thresholds, preferences). This action cannot
+          be undone.
         </DialogDescription>
 
         <div className="mt-4">

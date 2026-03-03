@@ -143,10 +143,10 @@ describe('metrics → coaching pipeline', () => {
   });
 
   it('ACWR thresholds: <0.8 low, 0.8–1.3 low, 1.3–1.5 moderate, >1.5 high', () => {
-    expect(getInjuryRisk(0.5)).toBe('low');    // undertraining
-    expect(getInjuryRisk(0.8)).toBe('low');    // sweet spot boundary
-    expect(getInjuryRisk(1.0)).toBe('low');    // sweet spot
-    expect(getInjuryRisk(1.3)).toBe('low');    // upper sweet spot boundary
+    expect(getInjuryRisk(0.5)).toBe('low'); // undertraining
+    expect(getInjuryRisk(0.8)).toBe('low'); // sweet spot boundary
+    expect(getInjuryRisk(1.0)).toBe('low'); // sweet spot
+    expect(getInjuryRisk(1.3)).toBe('low'); // upper sweet spot boundary
     expect(getInjuryRisk(1.4)).toBe('moderate');
     expect(getInjuryRisk(1.5)).toBe('moderate');
     expect(getInjuryRisk(1.6)).toBe('high');
@@ -209,7 +209,9 @@ describe('metrics → coaching pipeline', () => {
 
     const endDate = sameDay;
     const combinedMetrics = computeMetrics([session1, session2], { endDate });
-    const singleMetrics = computeMetrics([makeSession({ id: 'single', date: sameDay, tss: 100 })], { endDate });
+    const singleMetrics = computeMetrics([makeSession({ id: 'single', date: sameDay, tss: 100 })], {
+      endDate,
+    });
 
     const combinedLast = combinedMetrics[combinedMetrics.length - 1];
     const singleLast = singleMetrics[singleMetrics.length - 1];

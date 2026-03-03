@@ -5,9 +5,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /**
  * Create a single training session with sensible defaults.
  */
-export function makeSession(
-  overrides?: Partial<TrainingSession>,
-): TrainingSession {
+export function makeSession(overrides?: Partial<TrainingSession>): TrainingSession {
   return {
     id: `session-${Date.now()}`,
     sport: 'cycling',

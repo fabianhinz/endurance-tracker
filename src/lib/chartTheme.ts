@@ -1,9 +1,9 @@
-import { tokens } from "./tokens";
+import { tokens } from './tokens';
 
 export const formatChartTime = (minutes: number): string => {
   const m = Math.floor(minutes);
   const s = Math.round((minutes - m) * 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
+  return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
 /**
@@ -23,10 +23,10 @@ export const chartTheme = {
   grid: { stroke: tokens.border },
   tooltip: {
     contentStyle: {
-      backgroundColor: "rgba(17, 19, 24, 0.85)",
-      border: "1px solid rgba(255, 255, 255, 0.1)",
+      backgroundColor: 'rgba(17, 19, 24, 0.85)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
       borderRadius: tokens.radiusMd,
-      fontSize: "12px",
+      fontSize: '12px',
     },
     labelStyle: { color: tokens.textSecondary },
     isAnimationActive: false,

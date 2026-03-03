@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { validateRecords, filterValidPower } from '@/engine/validation.ts';
 import { calculateNormalizedPower } from '@/engine/normalize.ts';
 import { calculateSessionStress } from '@/engine/stress.ts';
-import { makeCyclingRecords, makeRunningRecords, makeInvalidRecords } from '@tests/factories/records.ts';
+import {
+  makeCyclingRecords,
+  makeRunningRecords,
+  makeInvalidRecords,
+} from '@tests/factories/records.ts';
 
 describe('stress pipeline: records → validate → filter → NP → TSS/TRIMP', () => {
   it('full cycling pipeline: 3600 records → TSS ~100 for IF ~1.0', () => {

@@ -1,11 +1,11 @@
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle } from 'lucide-react';
 import {
   DialogRoot,
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/Dialog.tsx";
-import { Button } from "@/components/ui/Button.tsx";
+} from '@/components/ui/Dialog.tsx';
+import { Button } from '@/components/ui/Button.tsx';
 
 interface ReimportDialogProps {
   open: boolean;
@@ -37,9 +37,8 @@ export const ReimportDialog = (props: ReimportDialogProps) => {
       >
         <DialogTitle>Reimport All Sessions</DialogTitle>
         <DialogDescription>
-          This will re-parse all stored FIT files using your current thresholds.
-          TSS, zones, laps, and personal bests will be recalculated. Existing
-          session data will be overwritten.
+          This will re-parse all stored FIT files using your current thresholds. TSS, zones, laps,
+          and personal bests will be recalculated. Existing session data will be overwritten.
         </DialogDescription>
 
         <div className="flex gap-3 justify-end pt-4">
@@ -63,7 +62,7 @@ export const ReimportDialog = (props: ReimportDialogProps) => {
                 Reimporting...
               </span>
             ) : (
-              "Reimport All"
+              'Reimport All'
             )}
           </Button>
         </div>

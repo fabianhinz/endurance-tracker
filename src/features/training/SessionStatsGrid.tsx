@@ -1,21 +1,12 @@
-import { useMemo } from "react";
-import { Card } from "@/components/ui/Card.tsx";
-import { CardGrid } from "@/components/ui/CardGrid.tsx";
-import { StatItem } from "@/components/ui/StatItem.tsx";
-import { Typography } from "@/components/ui/Typography.tsx";
-import {
-  cn,
-  formatDuration,
-  formatDistance,
-  formatPace,
-  formatSpeed,
-} from "@/lib/utils.ts";
-import { METRIC_EXPLANATIONS } from "@/lib/explanations.ts";
-import {
-  detectIntervals,
-  detectProgressiveOverload,
-} from "@/engine/laps.ts";
-import type { TrainingSession, SessionLap } from "@/engine/types.ts";
+import { useMemo } from 'react';
+import { Card } from '@/components/ui/Card.tsx';
+import { CardGrid } from '@/components/ui/CardGrid.tsx';
+import { StatItem } from '@/components/ui/StatItem.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import { cn, formatDuration, formatDistance, formatPace, formatSpeed } from '@/lib/utils.ts';
+import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
+import { detectIntervals, detectProgressiveOverload } from '@/engine/laps.ts';
+import type { TrainingSession, SessionLap } from '@/engine/types.ts';
 
 interface SessionStatsGridProps {
   session: TrainingSession;
@@ -24,110 +15,103 @@ interface SessionStatsGridProps {
 
 const TREND_META = {
   stable: {
-    label: "Stable",
-    className: "text-text-secondary",
+    label: 'Stable',
+    className: 'text-text-secondary',
   },
   fading: {
-    label: "Fading",
-    className: "text-status-warning",
+    label: 'Fading',
+    className: 'text-status-warning',
   },
   building: {
-    label: "Building",
-    className: "text-status-success",
+    label: 'Building',
+    className: 'text-status-success',
   },
 } as const;
 
 export const SessionStatsGrid = (props: SessionStatsGridProps) => {
-  const intervals = useMemo(
-    () => detectIntervals(props.laps),
-    [props.laps],
-  );
-  const overload = useMemo(
-    () => detectProgressiveOverload(props.laps),
-    [props.laps],
-  );
+  const intervals = useMemo(() => detectIntervals(props.laps), [props.laps]);
+  const overload = useMemo(() => detectProgressiveOverload(props.laps), [props.laps]);
 
-  const intervalPairsWithHr = intervals.filter(
-    (p) => p.hrRecovery !== undefined,
-  );
+  const intervalPairsWithHr = intervals.filter((p) => p.hrRecovery !== undefined);
   const avgRecovery =
     intervalPairsWithHr.length > 0
-      ? intervalPairsWithHr.reduce((sum, p) => sum + p.hrRecovery!, 0) /
-        intervalPairsWithHr.length
+      ? intervalPairsWithHr.reduce((sum, p) => sum + p.hrRecovery!, 0) / intervalPairsWithHr.length
       : 0;
 
   const recoveryMeta =
     avgRecovery > 25
-      ? { label: "Strong recovery", className: "text-status-success" }
+      ? { label: 'Strong recovery', className: 'text-status-success' }
       : avgRecovery >= 15
-        ? { label: "Adequate recovery", className: "text-text-secondary" }
-        : { label: "Slow recovery", className: "text-status-warning" };
+        ? { label: 'Adequate recovery', className: 'text-text-secondary' }
+        : { label: 'Slow recovery', className: 'text-status-warning' };
 
   const stats: Array<{
     key: string;
     label: string;
     value: React.ReactNode;
     unit?: string;
-    metricId?: import("../../lib/explanations.ts").MetricId;
+    metricId?: import('../../lib/explanations.ts').MetricId;
     subDetail?: React.ReactNode;
   }> = [];
 
   // Row 1: Duration & Distance (always present)
   stats.push({
-    key: "duration",
-    label: "Duration",
+    key: 'duration',
+    label: 'Duration',
     value: formatDuration(props.session.duration),
   });
 
   stats.push({
-    key: "distance",
-    label: "Distance",
+    key: 'distance',
+    label: 'Distance',
     value: formatDistance(props.session.distance),
   });
 
   // Row 2: Stress Score & Avg HR
   stats.push({
-    key: "tss",
+    key: 'tss',
     label: METRIC_EXPLANATIONS[props.session.stressMethod].friendlyName,
     value: props.session.tss.toFixed(0),
     metricId: props.session.stressMethod,
   });
 
   stats.push({
-    key: "avgHr",
-    label: "Avg HR",
-    value: props.session.avgHr ?? "--",
-    unit: props.session.avgHr ? "bpm" : undefined,
-    metricId: "avgHr",
+    key: 'avgHr',
+    label: 'Avg HR',
+    value: props.session.avgHr ?? '--',
+    unit: props.session.avgHr ? 'bpm' : undefined,
+    metricId: 'avgHr',
   });
 
   // Row 3: Sport-aware pace/speed (single card)
-  if (props.session.sport === "cycling") {
+  if (props.session.sport === 'cycling') {
     if (props.session.avgSpeed ?? (props.session.distance > 0 && props.session.duration > 0)) {
       stats.push({
-        key: "avgSpeed",
-        label: "Avg Speed",
-        value: formatSpeed(props.session.avgSpeed ?? props.session.distance / props.session.duration),
-        metricId: "avgSpeed",
+        key: 'avgSpeed',
+        label: 'Avg Speed',
+        value: formatSpeed(
+          props.session.avgSpeed ?? props.session.distance / props.session.duration,
+        ),
+        metricId: 'avgSpeed',
       });
     }
   } else if (props.session.avgPace) {
     stats.push({
-      key: "avgPace",
-      label: "Avg Pace",
+      key: 'avgPace',
+      label: 'Avg Pace',
       value: formatPace(props.session.avgPace),
-      metricId: "avgPace",
+      metricId: 'avgPace',
     });
   }
 
   // Row 4: Merged power card (NP primary when both exist)
   if (props.session.normalizedPower && props.session.avgPower) {
     stats.push({
-      key: "power",
-      label: "Norm. Power",
+      key: 'power',
+      label: 'Norm. Power',
       value: props.session.normalizedPower,
-      unit: "W",
-      metricId: "normalizedPower",
+      unit: 'W',
+      metricId: 'normalizedPower',
       subDetail: (
         <Typography variant="caption" as="p">
           avg {props.session.avgPower}W
@@ -136,34 +120,28 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     });
   } else if (props.session.avgPower) {
     stats.push({
-      key: "power",
-      label: "Avg Power",
+      key: 'power',
+      label: 'Avg Power',
       value: props.session.avgPower,
-      unit: "W",
-      metricId: "avgPower",
+      unit: 'W',
+      metricId: 'avgPower',
     });
   }
 
   // Row 4b: GAP
-  if (props.session.gap && props.session.sport === "running") {
+  if (props.session.gap && props.session.sport === 'running') {
     stats.push({
-      key: "gap",
-      label: "Grade Adj. Pace",
+      key: 'gap',
+      label: 'Grade Adj. Pace',
       value: formatPace(props.session.gap),
-      metricId: "gradeAdjustedPace",
+      metricId: 'gradeAdjustedPace',
     });
   }
 
   // Row 5: Elevation (absorbs altitude range) & Cadence
-  if (
-    props.session.elevationGain !== undefined &&
-    props.session.elevationGain > 0
-  ) {
+  if (props.session.elevationGain !== undefined && props.session.elevationGain > 0) {
     const elevationSubParts: React.ReactNode[] = [];
-    if (
-      props.session.elevationLoss !== undefined &&
-      props.session.elevationLoss > 0
-    ) {
+    if (props.session.elevationLoss !== undefined && props.session.elevationLoss > 0) {
       elevationSubParts.push(`-${props.session.elevationLoss}m`);
     }
     if (props.session.minAltitude !== undefined) {
@@ -172,15 +150,15 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       );
     }
     stats.push({
-      key: "elevation",
-      label: "Elevation",
+      key: 'elevation',
+      label: 'Elevation',
       value: `+${props.session.elevationGain}`,
-      unit: "m",
-      metricId: "elevation",
+      unit: 'm',
+      metricId: 'elevation',
       subDetail:
         elevationSubParts.length > 0 ? (
           <Typography variant="caption" as="p">
-            {elevationSubParts.join(" · ")}
+            {elevationSubParts.join(' · ')}
           </Typography>
         ) : undefined,
     });
@@ -188,11 +166,11 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
 
   if (props.session.avgCadence) {
     stats.push({
-      key: "cadence",
-      label: "Cadence",
+      key: 'cadence',
+      label: 'Cadence',
       value: props.session.avgCadence,
-      unit: "rpm",
-      metricId: "cadence",
+      unit: 'rpm',
+      metricId: 'cadence',
     });
   }
 
@@ -200,19 +178,15 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   if (overload.lapCount >= 3) {
     const trend = TREND_META[overload.trend];
     stats.push({
-      key: "pacingTrend",
-      label: "Pacing Trend",
+      key: 'pacingTrend',
+      label: 'Pacing Trend',
       value:
         overload.paceDriftPercent !== undefined
-          ? `${overload.paceDriftPercent > 0 ? "+" : ""}${overload.paceDriftPercent}% drift`
+          ? `${overload.paceDriftPercent > 0 ? '+' : ''}${overload.paceDriftPercent}% drift`
           : trend.label,
-      metricId: "pacingTrend",
+      metricId: 'pacingTrend',
       subDetail: (
-        <Typography
-          variant="caption"
-          as="p"
-          className={trend.className}
-        >
+        <Typography variant="caption" as="p" className={trend.className}>
           {trend.label}
         </Typography>
       ),
@@ -222,16 +196,12 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   // Row 7: Recovery
   if (intervalPairsWithHr.length > 0) {
     stats.push({
-      key: "recovery",
-      label: "Recovery",
+      key: 'recovery',
+      label: 'Recovery',
       value: `${Math.round(avgRecovery)} bpm`,
-      metricId: "recovery",
+      metricId: 'recovery',
       subDetail: (
-        <Typography
-          variant="caption"
-          as="p"
-          className={recoveryMeta.className}
-        >
+        <Typography variant="caption" as="p" className={recoveryMeta.className}>
           {recoveryMeta.label}
         </Typography>
       ),
@@ -256,21 +226,12 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       </CardGrid>
 
       {hasWarnings && (
-        <div className={cn("border-t border-white/10", "mt-4 pt-4")}>
-          <Typography
-            variant="overline"
-            as="h3"
-            color="warning"
-            className="mb-2"
-          >
+        <div className={cn('border-t border-white/10', 'mt-4 pt-4')}>
+          <Typography variant="overline" as="h3" color="warning" className="mb-2">
             Sensor Warnings
           </Typography>
           {props.session.sensorWarnings.map((w, i) => (
-            <Typography
-              key={i}
-              variant="body"
-              className="text-status-warning/80 mt-1"
-            >
+            <Typography key={i} variant="body" className="text-status-warning/80 mt-1">
               {w}
             </Typography>
           ))}

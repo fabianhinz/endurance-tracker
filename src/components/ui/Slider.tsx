@@ -1,5 +1,5 @@
-import * as SliderPrimitive from "@radix-ui/react-slider";
-import { cn } from "@/lib/utils.ts";
+import * as SliderPrimitive from '@radix-ui/react-slider';
+import { cn } from '@/lib/utils.ts';
 
 interface SliderProps {
   value: number[];
@@ -21,8 +21,8 @@ export const Slider = (props: SliderProps) => {
       step={props.step}
       disabled={props.disabled}
       className={cn(
-        "cursor-pointer relative flex w-full touch-none select-none items-center",
-        props.disabled && "opacity-40 pointer-events-none",
+        'cursor-pointer relative flex w-full touch-none select-none items-center',
+        props.disabled && 'opacity-40 pointer-events-none',
         props.className,
       )}
     >

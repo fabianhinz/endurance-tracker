@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   ComposedChart,
   Line,
@@ -9,33 +9,38 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   ReferenceArea,
-} from "recharts";
-import { useFilteredMetrics } from "@/hooks/useFilteredMetrics.ts";
-import { ChartPreviewCard } from "@/components/ui/ChartPreviewCard.tsx";
-import { MetricLabel } from "@/components/ui/MetricLabel.tsx";
-import { useChartZoom } from "@/lib/hooks/useChartZoom.ts";
-import { chartTheme } from "@/lib/chartTheme.ts";
-import { tokens } from "@/lib/tokens.ts";
-import { rangeMap } from "@/lib/timeRange.ts";
-import type { TimeRange } from "@/lib/timeRange.ts";
-import { useDashboardChartZoom } from "./hooks/useDashboardChartZoom.ts";
+} from 'recharts';
+import { useFilteredMetrics } from '@/hooks/useFilteredMetrics.ts';
+import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
+import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
+import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
+import { chartTheme } from '@/lib/chartTheme.ts';
+import { tokens } from '@/lib/tokens.ts';
+import { rangeMap } from '@/lib/timeRange.ts';
+import type { TimeRange } from '@/lib/timeRange.ts';
+import { useDashboardChartZoom } from './hooks/useDashboardChartZoom.ts';
 
 export const MetricsChart = () => {
   const metrics = useFilteredMetrics();
   const dashboardZoom = useDashboardChartZoom();
 
   const filtered = useMemo(() => {
-    if (dashboardZoom.range === "custom" && dashboardZoom.customRange) {
+    if (dashboardZoom.range === 'custom' && dashboardZoom.customRange) {
       return metrics.history.filter(
         (d) => d.date >= dashboardZoom.customRange!.from && d.date <= dashboardZoom.customRange!.to,
       );
     }
-    const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, "custom">];
+    const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, 'custom'>];
     if (days === Infinity) return metrics.history;
     return metrics.history.slice(-days);
   }, [metrics.history, dashboardZoom.range, dashboardZoom.customRange]);
 
-  const zoom = useChartZoom({ data: filtered, xKey: "date", onZoomComplete: dashboardZoom.onZoomComplete, onZoomReset: dashboardZoom.onZoomReset });
+  const zoom = useChartZoom({
+    data: filtered,
+    xKey: 'date',
+    onZoomComplete: dashboardZoom.onZoomComplete,
+    onZoomReset: dashboardZoom.onZoomReset,
+  });
 
   return (
     <ChartPreviewCard
@@ -60,25 +65,27 @@ export const MetricsChart = () => {
       }
     >
       {(mode) => {
-        const compact = mode === "compact";
+        const compact = mode === 'compact';
         return filtered.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
-              syncId={compact ? "dashboard" : undefined}
+              syncId={compact ? 'dashboard' : undefined}
               data={zoom.zoomedData}
               onMouseDown={zoom.onMouseDown}
               onMouseMove={zoom.onMouseMove}
               onMouseUp={zoom.onMouseUp}
             >
-              {!compact && (
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={chartTheme.grid.stroke}
-                />
-              )}
+              {!compact && <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />}
               <XAxis
                 dataKey="date"
-                ticks={compact ? [zoom.zoomedData[0]?.date, zoom.zoomedData[zoom.zoomedData.length - 1]?.date].filter(Boolean) as string[] : undefined}
+                ticks={
+                  compact
+                    ? ([
+                        zoom.zoomedData[0]?.date,
+                        zoom.zoomedData[zoom.zoomedData.length - 1]?.date,
+                      ].filter(Boolean) as string[])
+                    : undefined
+                }
                 tick={chartTheme.tick}
                 tickLine={false}
                 axisLine={chartTheme.axisLine}

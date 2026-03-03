@@ -30,9 +30,7 @@ const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
  * @param records - Raw time-series records from a parsed FIT file.
  * @returns Array of `[lng, lat]` pairs containing only geographically valid coordinates.
  */
-export const extractPathFromRecords = (
-  records: SessionRecord[],
-): [number, number][] =>
+export const extractPathFromRecords = (records: SessionRecord[]): [number, number][] =>
   records.reduce<[number, number][]>((acc, r) => {
     if (
       r.lat != null &&
@@ -53,10 +51,7 @@ export const extractPathFromRecords = (
  * @param tolerance - Maximum allowed deviation in degrees (default `0.00005`).
  * @returns Simplified array of GPS points; returns the original array unchanged when it has fewer than 3 points.
  */
-const simplifyTrack = (
-  points: GPSPoint[],
-  tolerance = 0.00005,
-): GPSPoint[] => {
+const simplifyTrack = (points: GPSPoint[], tolerance = 0.00005): GPSPoint[] => {
   if (points.length < 3) return points;
   const simplified = simplify(
     points.map((p) => ({ x: p.lng, y: p.lat })),
@@ -70,8 +65,7 @@ const simplifyTrack = (
  * @param points - GPS points to encode.
  * @returns Polyline-encoded string representing the track.
  */
-const encodeTrack = (points: GPSPoint[]): string =>
-  encode(points.map((p) => [p.lat, p.lng]));
+const encodeTrack = (points: GPSPoint[]): string => encode(points.map((p) => [p.lat, p.lng]));
 
 /**
  * Compute the axis-aligned bounding box that tightly encloses all given GPS points.
@@ -98,10 +92,7 @@ const computeBounds = (points: GPSPoint[]): GPSBounds => {
  * @param records - Raw time-series records from a parsed FIT file.
  * @returns A `SessionGPS` object ready for storage, or `null` when fewer than 2 valid GPS points are found.
  */
-export const buildSessionGPS = (
-  sessionId: string,
-  records: SessionRecord[],
-): SessionGPS | null => {
+export const buildSessionGPS = (sessionId: string, records: SessionRecord[]): SessionGPS | null => {
   const points = extractGPSPoints(records);
   if (points.length < 2) return null;
   const simplified = simplifyTrack(points);
@@ -115,9 +106,7 @@ export const buildSessionGPS = (
  * @param encodedPolyline - Google Polyline-encoded string produced by `encodeTrack`.
  * @returns Array of `[lng, lat]` pairs in the order expected by mapping layers.
  */
-export const decodeTrackForRendering = (
-  encodedPolyline: string,
-): [number, number][] =>
+export const decodeTrackForRendering = (encodedPolyline: string): [number, number][] =>
   decode(encodedPolyline).map((p) => [p[1], p[0]]);
 
 /**
@@ -127,10 +116,7 @@ export const decodeTrackForRendering = (
  * @returns `true` when the boxes share at least one point, `false` otherwise.
  */
 export const boundsOverlap = (a: GPSBounds, b: GPSBounds): boolean =>
-  a.minLat <= b.maxLat &&
-  a.maxLat >= b.minLat &&
-  a.minLng <= b.maxLng &&
-  a.maxLng >= b.minLng;
+  a.minLat <= b.maxLat && a.maxLat >= b.minLat && a.minLng <= b.maxLng && a.maxLng >= b.minLng;
 
 /**
  * Compute the smallest bounding box that encloses every box in the input array.
@@ -253,8 +239,6 @@ export const densestClusterBounds = (
   }
 
   const seed = centers[bestIdx];
-  const cluster = boundsArray.filter(
-    (_, idx) => scaledDistDeg(seed, centers[idx]) <= radiusDeg,
-  );
+  const cluster = boundsArray.filter((_, idx) => scaledDistDeg(seed, centers[idx]) <= radiusDeg);
   return unionBounds(cluster);
 };

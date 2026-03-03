@@ -23,10 +23,7 @@ const dateTimeFmt = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
 });
 
-export const formatDate = (
-  timestamp: number,
-  options?: FormatDateOptions,
-): string =>
+export const formatDate = (timestamp: number, options?: FormatDateOptions): string =>
   options?.includeTime ? dateTimeFmt.format(timestamp) : dateFmt.format(timestamp);
 
 export const formatDuration = (seconds: number): string => {
@@ -99,49 +96,49 @@ export const formatPaceTick = (minPerKm: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-import type { PersonalBest } from "@/engine/types.ts";
+import type { PersonalBest } from '@/engine/types.ts';
 
 const POWER_WINDOW_LABELS: Record<number, string> = {
-  5: "5 sec",
-  60: "1 min",
-  300: "5 min",
-  1200: "20 min",
-  3600: "60 min",
+  5: '5 sec',
+  60: '1 min',
+  300: '5 min',
+  1200: '20 min',
+  3600: '60 min',
 };
 
 const RUNNING_DISTANCE_LABELS: Record<number, string> = {
-  1000: "1 km",
-  5000: "5 km",
-  10000: "10 km",
-  21097: "Half Marathon",
-  42195: "Marathon",
+  1000: '1 km',
+  5000: '5 km',
+  10000: '10 km',
+  21097: 'Half Marathon',
+  42195: 'Marathon',
 };
 
 const SWIMMING_DISTANCE_LABELS: Record<number, string> = {
-  100: "100 m",
-  400: "400 m",
-  1000: "1000 m",
-  1500: "1500 m",
+  100: '100 m',
+  400: '400 m',
+  1000: '1000 m',
+  1500: '1500 m',
 };
 
 export const pbLabel = (pb: PersonalBest): string => {
-  if (pb.category === "peak-power") {
+  if (pb.category === 'peak-power') {
     return POWER_WINDOW_LABELS[pb.window] ?? `${pb.window}s`;
   }
-  if (pb.category === "fastest-distance") {
-    if (pb.sport === "swimming") {
+  if (pb.category === 'fastest-distance') {
+    if (pb.sport === 'swimming') {
       return SWIMMING_DISTANCE_LABELS[pb.window] ?? `${pb.window} m`;
     }
     return RUNNING_DISTANCE_LABELS[pb.window] ?? `${pb.window} m`;
   }
-  if (pb.category === "longest") return "Longest";
-  return "Elevation Gain";
+  if (pb.category === 'longest') return 'Longest';
+  return 'Elevation Gain';
 };
 
 export const formatPBValue = (pb: PersonalBest): string => {
-  if (pb.category === "peak-power") return `${pb.value}W`;
-  if (pb.category === "fastest-distance") return formatDuration(pb.value);
-  if (pb.category === "longest") return formatDistance(pb.value);
+  if (pb.category === 'peak-power') return `${pb.value}W`;
+  if (pb.category === 'fastest-distance') return formatDuration(pb.value);
+  if (pb.category === 'longest') return formatDistance(pb.value);
   return `${formatDistance(pb.value)} \u2191`;
 };
 
@@ -158,5 +155,8 @@ const SUB_SPORT_LABELS: Record<string, string> = {
 };
 
 export const formatSubSport = (subSport: string): string => {
-  return SUB_SPORT_LABELS[subSport] ?? subSport.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return (
+    SUB_SPORT_LABELS[subSport] ??
+    subSport.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  );
 };

@@ -27,11 +27,11 @@ export interface ZoneBucket {
 // --- HR Zones (5-zone model based on % of HR reserve) ---
 
 const HR_ZONE_DEFS = [
-  { zone: 'Z1', label: 'Recovery', minPct: 0.50, maxPct: 0.60, color: '#60a5fa' },
-  { zone: 'Z2', label: 'Aerobic', minPct: 0.60, maxPct: 0.70, color: '#34d399' },
-  { zone: 'Z3', label: 'Tempo', minPct: 0.70, maxPct: 0.80, color: '#fbbf24' },
-  { zone: 'Z4', label: 'Threshold', minPct: 0.80, maxPct: 0.90, color: '#f97316' },
-  { zone: 'Z5', label: 'VO2max', minPct: 0.90, maxPct: 1.00, color: '#ef4444' },
+  { zone: 'Z1', label: 'Recovery', minPct: 0.5, maxPct: 0.6, color: '#60a5fa' },
+  { zone: 'Z2', label: 'Aerobic', minPct: 0.6, maxPct: 0.7, color: '#34d399' },
+  { zone: 'Z3', label: 'Tempo', minPct: 0.7, maxPct: 0.8, color: '#fbbf24' },
+  { zone: 'Z4', label: 'Threshold', minPct: 0.8, maxPct: 0.9, color: '#f97316' },
+  { zone: 'Z5', label: 'VO2max', minPct: 0.9, maxPct: 1.0, color: '#ef4444' },
 ];
 
 /**
@@ -85,11 +85,11 @@ export const computeHrZoneDistribution = (
 const POWER_ZONE_DEFS = [
   { zone: 'Z1', label: 'Active Recovery', minPct: 0, maxPct: 0.55, color: '#94a3b8' },
   { zone: 'Z2', label: 'Endurance', minPct: 0.55, maxPct: 0.75, color: '#60a5fa' },
-  { zone: 'Z3', label: 'Tempo', minPct: 0.75, maxPct: 0.90, color: '#34d399' },
-  { zone: 'Z4', label: 'Threshold', minPct: 0.90, maxPct: 1.05, color: '#fbbf24' },
-  { zone: 'Z5', label: 'VO2max', minPct: 1.05, maxPct: 1.20, color: '#f97316' },
-  { zone: 'Z6', label: 'Anaerobic', minPct: 1.20, maxPct: 1.50, color: '#ef4444' },
-  { zone: 'Z7', label: 'Neuromuscular', minPct: 1.50, maxPct: Infinity, color: '#dc2626' },
+  { zone: 'Z3', label: 'Tempo', minPct: 0.75, maxPct: 0.9, color: '#34d399' },
+  { zone: 'Z4', label: 'Threshold', minPct: 0.9, maxPct: 1.05, color: '#fbbf24' },
+  { zone: 'Z5', label: 'VO2max', minPct: 1.05, maxPct: 1.2, color: '#f97316' },
+  { zone: 'Z6', label: 'Anaerobic', minPct: 1.2, maxPct: 1.5, color: '#ef4444' },
+  { zone: 'Z7', label: 'Neuromuscular', minPct: 1.5, maxPct: Infinity, color: '#dc2626' },
 ];
 
 /**
@@ -127,9 +127,10 @@ export const computePowerZoneDistribution = (
     seconds: counts[i],
     percentage: Math.round((counts[i] / total) * 1000) / 10,
     color: def.color,
-    rangeLabel: def.maxPct === Infinity
-      ? `>${Math.round(ftp * def.minPct)} W`
-      : `${Math.round(ftp * def.minPct)}–${Math.round(ftp * def.maxPct)} W`,
+    rangeLabel:
+      def.maxPct === Infinity
+        ? `>${Math.round(ftp * def.minPct)} W`
+        : `${Math.round(ftp * def.minPct)}–${Math.round(ftp * def.maxPct)} W`,
   }));
 };
 

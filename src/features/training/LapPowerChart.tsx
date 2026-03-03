@@ -7,20 +7,20 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-} from "recharts";
-import { avgDomain, chartTheme } from "@/lib/chartTheme.ts";
-import { tokens } from "@/lib/tokens.ts";
-import type { LapPowerPoint } from "@/lib/lapChartData.ts";
+} from 'recharts';
+import { avgDomain, chartTheme } from '@/lib/chartTheme.ts';
+import { tokens } from '@/lib/tokens.ts';
+import type { LapPowerPoint } from '@/lib/lapChartData.ts';
 
 interface LapPowerChartProps {
   data: LapPowerPoint[];
-  mode: "compact" | "expanded";
+  mode: 'compact' | 'expanded';
   syncId?: string;
   onActiveLapChange?: (lapIndex: number | null) => void;
 }
 
 export const LapPowerChart = (props: LapPowerChartProps) => {
-  const compact = props.mode === "compact";
+  const compact = props.mode === 'compact';
   const yDomain = avgDomain(props.data.map((d) => d.avgPower));
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -32,15 +32,14 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
         }}
         onMouseLeave={() => props.onActiveLapChange?.(null)}
       >
-        {!compact && (
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke={chartTheme.grid.stroke}
-          />
-        )}
+        {!compact && <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />}
         <XAxis
           dataKey="lap"
-          ticks={compact ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean) : undefined}
+          ticks={
+            compact
+              ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean)
+              : undefined
+          }
           tick={chartTheme.tick}
           tickLine={false}
           axisLine={chartTheme.axisLine}
@@ -65,11 +64,8 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
             entry: { payload?: LapPowerPoint },
           ) => {
             const p = entry.payload;
-            if (!p) return [`-- W`, "Avg Power"];
-            return [
-              `${p.avgPower} W (${p.minPower}–${p.maxPower})`,
-              "Avg Power",
-            ];
+            if (!p) return [`-- W`, 'Avg Power'];
+            return [`${p.avgPower} W (${p.minPower}–${p.maxPower})`, 'Avg Power'];
           }}
         />
         <Area

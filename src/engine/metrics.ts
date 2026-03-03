@@ -79,8 +79,7 @@ export const computeMetrics = (
 ): DailyMetrics[] => {
   const fmt = options?.formatter ?? defaultFormatter;
   const historicalSessions = sessions.filter((s) => !s.isPlanned);
-  const allSessions =
-    options?.includeGhosts ? sessions : historicalSessions;
+  const allSessions = options?.includeGhosts ? sessions : historicalSessions;
 
   const dates = getDateRange(allSessions, options?.endDate, fmt.date);
   if (dates.length === 0) return [];
@@ -111,4 +110,3 @@ export const computeMetrics = (
 
   return metrics;
 };
-

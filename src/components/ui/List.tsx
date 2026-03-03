@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { cn } from "@/lib/utils.ts";
-import { Button } from "./Button.tsx";
-import { Typography } from "./Typography.tsx";
+import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils.ts';
+import { Button } from './Button.tsx';
+import { Typography } from './Typography.tsx';
 
 type ListProps = {
   children: ReactNode;
@@ -9,7 +9,7 @@ type ListProps = {
 };
 
 export const List = (props: ListProps) => (
-  <ul className={cn("space-y-3", props.className)}>{props.children}</ul>
+  <ul className={cn('space-y-3', props.className)}>{props.children}</ul>
 );
 
 type ListItemProps = {
@@ -17,19 +17,16 @@ type ListItemProps = {
   secondary?: ReactNode;
   children?: ReactNode;
   onClick?: () => void;
-  size?: "default" | "sm";
+  size?: 'default' | 'sm';
 };
 
 export const ListItem = (props: ListItemProps) => {
-  const small = props.size === "sm";
+  const small = props.size === 'sm';
 
   const content = (
     <>
       <div className="min-w-0">
-        <Typography
-          variant={small ? "caption" : "body"}
-          color={small ? "tertiary" : "secondary"}
-        >
+        <Typography variant={small ? 'caption' : 'body'} color={small ? 'tertiary' : 'secondary'}>
           {props.primary}
         </Typography>
         {props.secondary && (
@@ -38,13 +35,11 @@ export const ListItem = (props: ListItemProps) => {
           </Typography>
         )}
       </div>
-      {props.children && (
-        <div className="ml-auto text-right shrink-0">{props.children}</div>
-      )}
+      {props.children && <div className="ml-auto text-right shrink-0">{props.children}</div>}
     </>
   );
 
-  const baseClass = "flex w-full items-center justify-between";
+  const baseClass = 'flex w-full items-center justify-between';
 
   if (props.onClick) {
     return (
@@ -52,7 +47,7 @@ export const ListItem = (props: ListItemProps) => {
         <Button
           variant="ghost"
           onClick={props.onClick}
-          className={cn(baseClass, "-mx-2 -my-1 h-auto text-left")}
+          className={cn(baseClass, '-mx-2 -my-1 h-auto text-left')}
         >
           {content}
         </Button>

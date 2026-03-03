@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Heart,
   Zap,
@@ -8,11 +8,11 @@ import {
   TrendingUp,
   ArrowUpDown,
   Activity,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { useUserStore } from "@/store/user.ts";
-import { ChartPreviewCard } from "@/components/ui/ChartPreviewCard.tsx";
-import { downsample } from "@/engine/downsample.ts";
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { useUserStore } from '@/store/user.ts';
+import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
+import { downsample } from '@/engine/downsample.ts';
 import {
   prepareHrData,
   preparePowerData,
@@ -24,25 +24,25 @@ import {
   prepareGAPData,
   buildTimeToGpsLookup,
   filterTimeSeries,
-} from "@/lib/chartData.ts";
-import { useMapFocusStore } from "@/store/mapFocus.ts";
+} from '@/lib/chartData.ts';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
 import {
   computeHrZoneDistribution,
   computePowerZoneDistribution,
   computePaceZoneDistribution,
-} from "@/engine/zoneDistribution.ts";
-import { sportIcon } from "@/lib/sportIcons.ts";
-import { HrChart } from "./HrChart.tsx";
-import { PowerChart } from "./PowerChart.tsx";
-import { SpeedChart } from "./SpeedChart.tsx";
-import { CadenceChart } from "./CadenceChart.tsx";
-import { ElevationChart } from "./ElevationChart.tsx";
-import { GradeChart } from "./GradeChart.tsx";
-import { PaceChart } from "./PaceChart.tsx";
-import { GradeAdjustedPaceChart } from "./GradeAdjustedPaceChart.tsx";
-import { ZoneDistributionChart } from "./ZoneDistributionChart.tsx";
-import { tokens } from "@/lib/tokens.ts";
-import type { SessionRecord, TrainingSession } from "@/engine/types.ts";
+} from '@/engine/zoneDistribution.ts';
+import { sportIcon } from '@/lib/sportIcons.ts';
+import { HrChart } from './HrChart.tsx';
+import { PowerChart } from './PowerChart.tsx';
+import { SpeedChart } from './SpeedChart.tsx';
+import { CadenceChart } from './CadenceChart.tsx';
+import { ElevationChart } from './ElevationChart.tsx';
+import { GradeChart } from './GradeChart.tsx';
+import { PaceChart } from './PaceChart.tsx';
+import { GradeAdjustedPaceChart } from './GradeAdjustedPaceChart.tsx';
+import { ZoneDistributionChart } from './ZoneDistributionChart.tsx';
+import { tokens } from '@/lib/tokens.ts';
+import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
 
 interface ChartEntry {
   key: string;
@@ -51,7 +51,7 @@ interface ChartEntry {
   color: string;
   hasData: boolean;
   compactHeight?: string;
-  render: (mode: "compact" | "expanded") => React.ReactNode;
+  render: (mode: 'compact' | 'expanded') => React.ReactNode;
 }
 
 interface SessionChartsExplorerProps {
@@ -61,7 +61,7 @@ interface SessionChartsExplorerProps {
 
 export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
   const profile = useUserStore((s) => s.profile);
-  const isRunning = props.session.sport === "running";
+  const isRunning = props.session.sport === 'running';
 
   const sampled = useMemo(() => downsample(props.records), [props.records]);
 
@@ -72,10 +72,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
   const cadenceData = useMemo(() => prepareCadenceData(sampled), [sampled]);
   const elevationData = useMemo(() => prepareElevationData(sampled), [sampled]);
   const gradeData = useMemo(() => prepareGradeData(sampled), [sampled]);
-  const paceData = useMemo(
-    () => (isRunning ? preparePaceData(sampled) : []),
-    [sampled, isRunning],
-  );
+  const paceData = useMemo(() => (isRunning ? preparePaceData(sampled) : []), [sampled, isRunning]);
   const gapData = useMemo(
     () => (isRunning && gradeData.length > 0 ? prepareGAPData(sampled) : []),
     [sampled, isRunning, gradeData.length],
@@ -85,11 +82,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
   const hrZoneData = useMemo(() => {
     const thresholds = profile?.thresholds;
     if (!thresholds?.maxHr || !thresholds?.restHr) return [];
-    return computeHrZoneDistribution(
-      props.records,
-      thresholds.maxHr,
-      thresholds.restHr,
-    );
+    return computeHrZoneDistribution(props.records, thresholds.maxHr, thresholds.restHr);
   }, [props.records, profile?.thresholds]);
 
   const powerZoneData = useMemo(() => {
@@ -128,12 +121,9 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
   // Synced zoom state for compact mode
   const [zoomRange, setZoomRange] = useState<{ from: number; to: number } | null>(null);
 
-  const handleZoomComplete = useCallback(
-    (from: string | number, to: string | number) => {
-      setZoomRange({ from: Number(from), to: Number(to) });
-    },
-    [],
-  );
+  const handleZoomComplete = useCallback((from: string | number, to: string | number) => {
+    setZoomRange({ from: Number(from), to: Number(to) });
+  }, []);
 
   const handleZoomReset = useCallback(() => {
     setZoomRange(null);
@@ -157,7 +147,8 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
     [cadenceData, zoomRange],
   );
   const filteredElevationData = useMemo(
-    () => (zoomRange ? filterTimeSeries(elevationData, zoomRange.from, zoomRange.to) : elevationData),
+    () =>
+      zoomRange ? filterTimeSeries(elevationData, zoomRange.from, zoomRange.to) : elevationData,
     [elevationData, zoomRange],
   );
   const filteredGradeData = useMemo(
@@ -181,144 +172,141 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
   const charts: ChartEntry[] = useMemo(
     () => [
       {
-        key: "hr",
-        title: "Heart Rate",
+        key: 'hr',
+        title: 'Heart Rate',
         icon: Heart,
         color: tokens.chartHr,
         hasData: hrData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <HrChart
-            data={mode === "compact" ? filteredHrData : hrData}
+            data={mode === 'compact' ? filteredHrData : hrData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "power",
-        title: "Power",
+        key: 'power',
+        title: 'Power',
         icon: Zap,
         color: tokens.chartPower,
         hasData: powerData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <PowerChart
-            data={mode === "compact" ? filteredPowerData : powerData}
+            data={mode === 'compact' ? filteredPowerData : powerData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "speed",
-        title: "Speed",
+        key: 'speed',
+        title: 'Speed',
         icon: Gauge,
         color: tokens.chartSpeed,
         hasData: speedData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <SpeedChart
-            data={mode === "compact" ? filteredSpeedData : speedData}
+            data={mode === 'compact' ? filteredSpeedData : speedData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "elevation",
-        title: "Elevation",
+        key: 'elevation',
+        title: 'Elevation',
         icon: Mountain,
         color: tokens.chartElevation,
         hasData: elevationData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <ElevationChart
-            data={mode === "compact" ? filteredElevationData : elevationData}
+            data={mode === 'compact' ? filteredElevationData : elevationData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "cadence",
-        title: "Cadence",
+        key: 'cadence',
+        title: 'Cadence',
         icon: cadenceIcon,
         color: tokens.chartCadence,
         hasData: cadenceData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <CadenceChart
-            data={mode === "compact" ? filteredCadenceData : cadenceData}
+            data={mode === 'compact' ? filteredCadenceData : cadenceData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "grade",
-        title: "Grade",
+        key: 'grade',
+        title: 'Grade',
         icon: TrendingUp,
         color: tokens.chartGrade,
         hasData: gradeData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <GradeChart
-            data={mode === "compact" ? filteredGradeData : gradeData}
+            data={mode === 'compact' ? filteredGradeData : gradeData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "pace",
-        title: "Pace",
+        key: 'pace',
+        title: 'Pace',
         icon: Timer,
         color: tokens.chartPace,
         hasData: paceData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <PaceChart
-            data={mode === "compact" ? filteredPaceData : paceData}
+            data={mode === 'compact' ? filteredPaceData : paceData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "gap",
-        title: "Grade Adjusted Pace",
+        key: 'gap',
+        title: 'Grade Adjusted Pace',
         icon: ArrowUpDown,
         color: tokens.chartGap,
         hasData: gapData.length > 0,
-        render: (mode: "compact" | "expanded") => (
+        render: (mode: 'compact' | 'expanded') => (
           <GradeAdjustedPaceChart
-            data={mode === "compact" ? filteredGapData : gapData}
+            data={mode === 'compact' ? filteredGapData : gapData}
             mode={mode}
             onActiveTimeChange={hasGps ? onActiveTimeChange : undefined}
-            onZoomComplete={mode === "compact" ? handleZoomComplete : undefined}
-            onZoomReset={mode === "compact" ? handleZoomReset : undefined}
+            onZoomComplete={mode === 'compact' ? handleZoomComplete : undefined}
+            onZoomReset={mode === 'compact' ? handleZoomReset : undefined}
           />
         ),
       },
       {
-        key: "zones",
-        title: "Zone Distribution",
+        key: 'zones',
+        title: 'Zone Distribution',
         icon: Activity,
         color: tokens.accent,
-        hasData:
-          hrZoneData.length > 0 ||
-          powerZoneData.length > 0 ||
-          paceZoneData.length > 0,
-        compactHeight: "h-[250px]",
-        render: (mode: "compact" | "expanded") => (
+        hasData: hrZoneData.length > 0 || powerZoneData.length > 0 || paceZoneData.length > 0,
+        compactHeight: 'h-[250px]',
+        render: (mode: 'compact' | 'expanded') => (
           <ZoneDistributionChart
             hrZones={hrZoneData}
             powerZones={powerZoneData}

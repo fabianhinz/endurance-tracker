@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { WorkoutCard } from "./WorkoutCard.tsx";
-import { WorkoutExpansionPanel } from "./WorkoutExpansionPanel.tsx";
-import type { RunningZone } from "@/engine/types.ts";
-import type { WeeklyPlan } from "@/types/index.ts";
+import { useState } from 'react';
+import { WorkoutCard } from './WorkoutCard.tsx';
+import { WorkoutExpansionPanel } from './WorkoutExpansionPanel.tsx';
+import type { RunningZone } from '@/engine/types.ts';
+import type { WeeklyPlan } from '@/types/index.ts';
 
 interface WeeklyPlanTimelineProps {
   plan: WeeklyPlan;
@@ -10,8 +10,7 @@ interface WeeklyPlanTimelineProps {
 }
 
 export const WeeklyPlanTimeline = (props: WeeklyPlanTimelineProps) => {
-  const firstTrainingId =
-    props.plan.workouts.find((w) => w.type !== "rest")?.id ?? null;
+  const firstTrainingId = props.plan.workouts.find((w) => w.type !== 'rest')?.id ?? null;
   const [expandedId, setExpandedId] = useState<string | null>(firstTrainingId);
 
   const expandedWorkout = expandedId
@@ -26,9 +25,7 @@ export const WeeklyPlanTimeline = (props: WeeklyPlanTimelineProps) => {
             key={workout.id}
             workout={workout}
             isExpanded={workout.id === expandedId}
-            onToggle={() =>
-              setExpandedId(workout.id === expandedId ? null : workout.id)
-            }
+            onToggle={() => setExpandedId(workout.id === expandedId ? null : workout.id)}
           />
         ))}
       </div>

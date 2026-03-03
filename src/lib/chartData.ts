@@ -45,8 +45,7 @@ export const filterTimeSeries = <T extends TimeSeriesPoint>(
   to: number,
 ): T[] => data.filter((d) => d.time >= from && d.time <= to);
 
-export const toMinutes = (timestamp: number): number =>
-  Math.round((timestamp / 60) * 100) / 100;
+export const toMinutes = (timestamp: number): number => Math.round((timestamp / 60) * 100) / 100;
 
 export const buildTimeToGpsLookup = (records: SessionRecord[]): Map<number, [number, number]> => {
   const map = new Map<number, [number, number]>();
@@ -67,11 +66,10 @@ export const prepareHrData = (records: SessionRecord[]): HrPoint[] =>
     }));
 
 export const preparePowerData = (records: SessionRecord[]): PowerPoint[] =>
-  filterValidPower(records)
-    .map((r) => ({
-      time: toMinutes(r.timestamp),
-      power: Math.round(r.power!),
-    }));
+  filterValidPower(records).map((r) => ({
+    time: toMinutes(r.timestamp),
+    power: Math.round(r.power!),
+  }));
 
 export const prepareSpeedData = (records: SessionRecord[]): SpeedPoint[] =>
   records
@@ -111,7 +109,7 @@ export const prepareGradeData = (records: SessionRecord[]): GradePoint[] =>
  */
 const speedToPace = (speed: number): number | undefined => {
   if (speed <= 0) return undefined;
-  return (1000 / speed) / 60; // min/km
+  return 1000 / speed / 60; // min/km
 };
 
 export const preparePaceData = (records: SessionRecord[]): PacePoint[] =>

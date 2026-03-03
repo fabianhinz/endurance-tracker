@@ -1,10 +1,10 @@
-import { useState, useTransition } from "react";
-import { Card } from "@/components/ui/Card.tsx";
-import { CardHeader } from "@/components/ui/CardHeader.tsx";
-import { Slider } from "@/components/ui/Slider.tsx";
-import { Switch } from "@/components/ui/Switch.tsx";
-import { Typography } from "@/components/ui/Typography.tsx";
-import type { Sport } from "@/engine/types.ts";
+import { useState, useTransition } from 'react';
+import { Card } from '@/components/ui/Card.tsx';
+import { CardHeader } from '@/components/ui/CardHeader.tsx';
+import { Slider } from '@/components/ui/Slider.tsx';
+import { Switch } from '@/components/ui/Switch.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import type { Sport } from '@/engine/types.ts';
 
 const formatDistanceKm = (metres: number): string => {
   const km = metres / 1000;
@@ -22,9 +22,7 @@ interface SplitDistanceCardProps {
 
 export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
   const [, startTransition] = useTransition();
-  const [localSliderKm, setLocalSliderKm] = useState(
-    () => props.splitDistance / 1000,
-  );
+  const [localSliderKm, setLocalSliderKm] = useState(() => props.splitDistance / 1000);
 
   const handleSliderChange = (value: number[]) => {
     const km = value[0];
@@ -38,8 +36,8 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
     <Card
       footer={
         <Typography variant="caption" color="tertiary" as="p">
-          Custom splits divide the route into equal-distance segments. Device
-          uses the laps recorded by your watch or bike computer.
+          Custom splits divide the route into equal-distance segments. Device uses the laps recorded
+          by your watch or bike computer.
         </Typography>
       }
     >
@@ -47,7 +45,7 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
         title="Split Distance"
         subtitle={
           props.isDevice
-            ? "Using device-recorded laps"
+            ? 'Using device-recorded laps'
             : `${formatDistanceKm(Math.round(localSliderKm * 1000))} splits`
         }
         actions={
@@ -55,10 +53,7 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
             <Typography variant="caption" color="tertiary">
               Device
             </Typography>
-            <Switch
-              checked={props.isDevice}
-              onCheckedChange={props.onDeviceToggle}
-            />
+            <Switch checked={props.isDevice} onCheckedChange={props.onDeviceToggle} />
           </div>
         }
       />

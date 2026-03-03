@@ -10,15 +10,13 @@ describe('computeRunningZones', () => {
   });
 
   it('zone names are in correct order', () => {
-    expect(zones.map((z) => z.name)).toEqual([
-      'recovery', 'easy', 'tempo', 'threshold', 'vo2max',
-    ]);
+    expect(zones.map((z) => z.name)).toEqual(['recovery', 'easy', 'tempo', 'threshold', 'vo2max']);
   });
 
   it('recovery zone is slowest (highest sec/km)', () => {
     const recovery = zones[0];
     expect(recovery.minPace).toBeGreaterThan(recovery.maxPace);
-    expect(recovery.minPace).toBe(Math.round(270 * 1.40)); // 378
+    expect(recovery.minPace).toBe(Math.round(270 * 1.4)); // 378
   });
 
   it('vo2max zone is fastest (lowest sec/km)', () => {
@@ -48,13 +46,13 @@ describe('computeRunningZones', () => {
 describe('computeRunningZones edge cases', () => {
   it('handles very fast threshold pace (2:30/km = 150s)', () => {
     const zones = computeRunningZones(150);
-    expect(zones[0].minPace).toBe(Math.round(150 * 1.40)); // 210
+    expect(zones[0].minPace).toBe(Math.round(150 * 1.4)); // 210
     expect(zones[4].maxPace).toBe(Math.round(150 * 0.86)); // 129
   });
 
   it('handles very slow threshold pace (9:00/km = 540s)', () => {
     const zones = computeRunningZones(540);
-    expect(zones[0].minPace).toBe(Math.round(540 * 1.40)); // 756
+    expect(zones[0].minPace).toBe(Math.round(540 * 1.4)); // 756
     expect(zones[4].maxPace).toBe(Math.round(540 * 0.86)); // 464
   });
 });

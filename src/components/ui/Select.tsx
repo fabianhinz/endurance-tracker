@@ -36,9 +36,7 @@ export const SelectContent = (props: SelectPrimitive.SelectContentProps) => {
         sideOffset={4}
         {...rest}
       >
-        <SelectPrimitive.Viewport className="p-1">
-          {children}
-        </SelectPrimitive.Viewport>
+        <SelectPrimitive.Viewport className="p-1">{children}</SelectPrimitive.Viewport>
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   );

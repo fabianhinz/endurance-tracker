@@ -33,16 +33,12 @@ describe('computeHrZoneDistribution', () => {
   });
 
   it('returns empty for no HR data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(computeHrZoneDistribution(records, maxHr, restHr)).toHaveLength(0);
   });
 
   it('returns empty for invalid HR reserve', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0, hr: 150 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0, hr: 150 }];
     expect(computeHrZoneDistribution(records, 50, 50)).toHaveLength(0);
   });
 
@@ -71,9 +67,7 @@ describe('computeHrZoneDistribution', () => {
   });
 
   it('includes rangeLabel with bpm range', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0, hr: 150 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0, hr: 150 }];
     const result = computeHrZoneDistribution(records, maxHr, restHr);
     // HR reserve = 140, Z1 minPct=0.50 maxPct=0.60 → 50+70=120 to 50+84=134
     const z1 = result.find((b) => b.zone === 'Z1');
@@ -104,23 +98,17 @@ describe('computePowerZoneDistribution', () => {
   });
 
   it('returns empty for no power data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(computePowerZoneDistribution(records, ftp)).toHaveLength(0);
   });
 
   it('returns empty for ftp <= 0', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0, power: 200 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0, power: 200 }];
     expect(computePowerZoneDistribution(records, 0)).toHaveLength(0);
   });
 
   it('includes rangeLabel with watt range', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0, power: 200 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0, power: 200 }];
     const result = computePowerZoneDistribution(records, ftp);
     // Z2: 0.55–0.75 of 250 = 138–188, Z3: 0.75–0.90 = 188–225
     const z3 = result.find((b) => b.zone === 'Z3');
@@ -160,23 +148,17 @@ describe('computePaceZoneDistribution', () => {
   });
 
   it('returns empty for no speed data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(computePaceZoneDistribution(records, thresholdPace)).toHaveLength(0);
   });
 
   it('returns empty for thresholdPace <= 0', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0, speed: 3.5 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0, speed: 3.5 }];
     expect(computePaceZoneDistribution(records, 0)).toHaveLength(0);
   });
 
   it('filters out slow records (speed <= 0.5 m/s)', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0, speed: 0.3 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0, speed: 0.3 }];
     expect(computePaceZoneDistribution(records, thresholdPace)).toHaveLength(0);
   });
 

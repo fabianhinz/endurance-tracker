@@ -22,7 +22,14 @@ describe('delete all data', () => {
     const { id: _id, createdAt: _ca, ...sessionData } = makeSession();
     const sessionId = useSessionsStore.getState().addSession(sessionData);
     useSessionsStore.getState().updatePersonalBests([
-      { sport: 'cycling', metric: 'power', duration: 300, value: 280, sessionId, date: Date.now() },
+      {
+        sport: 'cycling',
+        metric: 'power',
+        duration: 300,
+        value: 280,
+        sessionId,
+        date: Date.now(),
+      },
     ]);
 
     // Populate user store
@@ -44,10 +51,12 @@ describe('delete all data', () => {
     await idbStorage.setItem('store-user', '{"state":{"profile":{}}}');
 
     // Populate coach plan cache
-    useCoachPlanStore.getState().setPlan(
-      { weekOf: '2026-02-09', workouts: [], totalEstimatedTss: 0, context: { mode: 'no-data' } },
-      '2026-02-09:1:300',
-    );
+    useCoachPlanStore
+      .getState()
+      .setPlan(
+        { weekOf: '2026-02-09', workouts: [], totalEstimatedTss: 0, context: { mode: 'no-data' } },
+        '2026-02-09:1:300',
+      );
 
     // Set non-default filters
     useFiltersStore.setState({ timeRange: '90d', sportFilter: 'cycling' });
@@ -68,7 +77,12 @@ describe('delete all data', () => {
     useUserStore.getState().resetProfile();
     useCoachPlanStore.getState().clearPlan();
     useLayoutStore.setState({ onboardingComplete: false });
-    useFiltersStore.setState({ timeRange: 'all', customRange: null, prevDashboardRange: null, sportFilter: 'all' });
+    useFiltersStore.setState({
+      timeRange: 'all',
+      customRange: null,
+      prevDashboardRange: null,
+      sportFilter: 'all',
+    });
     await clearAllRecords();
 
     // Verify everything is cleared

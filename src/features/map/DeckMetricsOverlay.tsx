@@ -1,15 +1,15 @@
-import { useState, useRef, useCallback } from "react";
-import { GripVertical } from "lucide-react";
-import { Card } from "@/components/ui/Card.tsx";
-import { Typography } from "@/components/ui/Typography.tsx";
-import { List, ListItem } from "@/components/ui/List.tsx";
-import { useDeckMetricsStore } from "@/store/deckMetrics.ts";
-import type { DeckMetrics } from "@/store/deckMetrics.ts";
+import { useState, useRef, useCallback } from 'react';
+import { GripVertical } from 'lucide-react';
+import { Card } from '@/components/ui/Card.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import { List, ListItem } from '@/components/ui/List.tsx';
+import { useDeckMetricsStore } from '@/store/deckMetrics.ts';
+import type { DeckMetrics } from '@/store/deckMetrics.ts';
 
 const formatMs = (v: number) => `${v.toFixed(1)} ms`;
 const formatMB = (v: number) => `${(v / 1024 / 1024).toFixed(1)} MB`;
 
-type HealthDirection = "lower-is-better" | "higher-is-better";
+type HealthDirection = 'lower-is-better' | 'higher-is-better';
 
 type MetricRow = {
   key: keyof DeckMetrics;
@@ -19,23 +19,52 @@ type MetricRow = {
 };
 
 const METRIC_ROWS: MetricRow[] = [
-  { key: "fps", label: "FPS", format: (v) => Math.round(v).toString(), thresholds: { green: 55, yellow: 30, direction: "higher-is-better" } },
-  { key: "gpuTimePerFrame", label: "GPU / frame", format: formatMs, thresholds: { green: 4, yellow: 8, direction: "lower-is-better" } },
-  { key: "cpuTimePerFrame", label: "CPU / frame", format: formatMs, thresholds: { green: 4, yellow: 8, direction: "lower-is-better" } },
-  { key: "pickTime", label: "Pick time", format: formatMs, thresholds: { green: 2, yellow: 5, direction: "lower-is-better" } },
-  { key: "framesRedrawn", label: "Redrawn", format: (v) => v.toString() },
-  { key: "bufferMemory", label: "Buf mem", format: formatMB, thresholds: { green: 50 * 1024 * 1024, yellow: 100 * 1024 * 1024, direction: "lower-is-better" } },
+  {
+    key: 'fps',
+    label: 'FPS',
+    format: (v) => Math.round(v).toString(),
+    thresholds: { green: 55, yellow: 30, direction: 'higher-is-better' },
+  },
+  {
+    key: 'gpuTimePerFrame',
+    label: 'GPU / frame',
+    format: formatMs,
+    thresholds: { green: 4, yellow: 8, direction: 'lower-is-better' },
+  },
+  {
+    key: 'cpuTimePerFrame',
+    label: 'CPU / frame',
+    format: formatMs,
+    thresholds: { green: 4, yellow: 8, direction: 'lower-is-better' },
+  },
+  {
+    key: 'pickTime',
+    label: 'Pick time',
+    format: formatMs,
+    thresholds: { green: 2, yellow: 5, direction: 'lower-is-better' },
+  },
+  { key: 'framesRedrawn', label: 'Redrawn', format: (v) => v.toString() },
+  {
+    key: 'bufferMemory',
+    label: 'Buf mem',
+    format: formatMB,
+    thresholds: {
+      green: 50 * 1024 * 1024,
+      yellow: 100 * 1024 * 1024,
+      direction: 'lower-is-better',
+    },
+  },
 ];
 
-const getHealthColor = (value: number, thresholds: NonNullable<MetricRow["thresholds"]>) => {
-  if (thresholds.direction === "higher-is-better") {
-    if (value >= thresholds.green) return "bg-status-success";
-    if (value >= thresholds.yellow) return "bg-status-warning";
-    return "bg-status-danger";
+const getHealthColor = (value: number, thresholds: NonNullable<MetricRow['thresholds']>) => {
+  if (thresholds.direction === 'higher-is-better') {
+    if (value >= thresholds.green) return 'bg-status-success';
+    if (value >= thresholds.yellow) return 'bg-status-warning';
+    return 'bg-status-danger';
   }
-  if (value <= thresholds.green) return "bg-status-success";
-  if (value <= thresholds.yellow) return "bg-status-warning";
-  return "bg-status-danger";
+  if (value <= thresholds.green) return 'bg-status-success';
+  if (value <= thresholds.yellow) return 'bg-status-warning';
+  return 'bg-status-danger';
 };
 
 export const DeckMetricsOverlay = () => {
@@ -102,9 +131,11 @@ export const DeckMetricsOverlay = () => {
             <ListItem key={row.key} size="sm" primary={row.label}>
               <span className="flex items-center gap-1.5">
                 <Typography variant="caption" tabularNums>
-                  {metrics ? row.format(metrics[row.key]) : "—"}
+                  {metrics ? row.format(metrics[row.key]) : '—'}
                 </Typography>
-                <span className={`size-2 rounded-full ${metrics && row.thresholds ? getHealthColor(metrics[row.key], row.thresholds) : ""}`} />
+                <span
+                  className={`size-2 rounded-full ${metrics && row.thresholds ? getHealthColor(metrics[row.key], row.thresholds) : ''}`}
+                />
               </span>
             </ListItem>
           ))}

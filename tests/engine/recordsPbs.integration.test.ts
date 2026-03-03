@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
+import { detectNewPBs, mergePBs } from '@/engine/records.ts';
 import {
-  detectNewPBs,
-  mergePBs,
-} from '@/engine/records.ts';
-import { makeCyclingRecords, makeRunningRecords, makeSwimmingRecords } from '@tests/factories/records.ts';
+  makeCyclingRecords,
+  makeRunningRecords,
+  makeSwimmingRecords,
+} from '@tests/factories/records.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -131,7 +132,10 @@ describe('detectNewPBs — session-level records', () => {
     const now = Date.now();
     const records = makeCyclingRecords('s1', 100, { basePower: 200 });
 
-    const newPBs = detectNewPBs('s1', now, 'cycling', records, [], { distance: 50000, elevationGain: 800 });
+    const newPBs = detectNewPBs('s1', now, 'cycling', records, [], {
+      distance: 50000,
+      elevationGain: 800,
+    });
     const longest = newPBs.find((pb) => pb.category === 'longest');
     const elevation = newPBs.find((pb) => pb.category === 'most-elevation');
 
@@ -156,7 +160,10 @@ describe('detectNewPBs — session-level records', () => {
     const now = Date.now();
     const records = makeRunningRecords('s1', 100, { baseSpeed: 3.5 });
 
-    const newPBs = detectNewPBs('s1', now, 'running', records, [], { distance: 10000, elevationGain: 500 });
+    const newPBs = detectNewPBs('s1', now, 'running', records, [], {
+      distance: 10000,
+      elevationGain: 500,
+    });
     const elevation = newPBs.find((pb) => pb.category === 'most-elevation');
 
     expect(elevation).toBeUndefined();
@@ -166,7 +173,14 @@ describe('detectNewPBs — session-level records', () => {
 describe('mergePBs', () => {
   it('appends into empty array', () => {
     const incoming = [
-      { sport: 'cycling' as const, category: 'peak-power' as const, window: 300, value: 250, sessionId: 's1', date: Date.now() },
+      {
+        sport: 'cycling' as const,
+        category: 'peak-power' as const,
+        window: 300,
+        value: 250,
+        sessionId: 's1',
+        date: Date.now(),
+      },
     ];
     const result = mergePBs([], incoming);
     expect(result).toEqual(incoming);
@@ -174,10 +188,24 @@ describe('mergePBs', () => {
 
   it('replaces matching sport+category+window', () => {
     const existing = [
-      { sport: 'cycling' as const, category: 'peak-power' as const, window: 300, value: 230, sessionId: 's1', date: Date.now() - DAY_MS },
+      {
+        sport: 'cycling' as const,
+        category: 'peak-power' as const,
+        window: 300,
+        value: 230,
+        sessionId: 's1',
+        date: Date.now() - DAY_MS,
+      },
     ];
     const incoming = [
-      { sport: 'cycling' as const, category: 'peak-power' as const, window: 300, value: 260, sessionId: 's2', date: Date.now() },
+      {
+        sport: 'cycling' as const,
+        category: 'peak-power' as const,
+        window: 300,
+        value: 260,
+        sessionId: 's2',
+        date: Date.now(),
+      },
     ];
     const result = mergePBs(existing, incoming);
     expect(result.length).toBe(1);
@@ -187,10 +215,24 @@ describe('mergePBs', () => {
 
   it('appends non-overlapping entries', () => {
     const existing = [
-      { sport: 'cycling' as const, category: 'peak-power' as const, window: 300, value: 250, sessionId: 's1', date: Date.now() },
+      {
+        sport: 'cycling' as const,
+        category: 'peak-power' as const,
+        window: 300,
+        value: 250,
+        sessionId: 's1',
+        date: Date.now(),
+      },
     ];
     const incoming = [
-      { sport: 'running' as const, category: 'fastest-distance' as const, window: 1000, value: 280, sessionId: 's2', date: Date.now() },
+      {
+        sport: 'running' as const,
+        category: 'fastest-distance' as const,
+        window: 1000,
+        value: 280,
+        sessionId: 's2',
+        date: Date.now(),
+      },
     ];
     const result = mergePBs(existing, incoming);
     expect(result.length).toBe(2);
@@ -198,11 +240,25 @@ describe('mergePBs', () => {
 
   it('does not mutate the existing array', () => {
     const existing = [
-      { sport: 'cycling' as const, category: 'peak-power' as const, window: 300, value: 230, sessionId: 's1', date: Date.now() },
+      {
+        sport: 'cycling' as const,
+        category: 'peak-power' as const,
+        window: 300,
+        value: 230,
+        sessionId: 's1',
+        date: Date.now(),
+      },
     ];
     const copy = [...existing];
     mergePBs(existing, [
-      { sport: 'cycling' as const, category: 'peak-power' as const, window: 300, value: 260, sessionId: 's2', date: Date.now() },
+      {
+        sport: 'cycling' as const,
+        category: 'peak-power' as const,
+        window: 300,
+        value: 260,
+        sessionId: 's2',
+        date: Date.now(),
+      },
     ]);
     expect(existing).toEqual(copy);
   });

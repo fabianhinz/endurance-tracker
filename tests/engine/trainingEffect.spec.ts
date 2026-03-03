@@ -263,8 +263,6 @@ describe('getTrainingEffectSummary', () => {
   });
 
   it('returns maintenance message for moderate aerobic', () => {
-    expect(getTrainingEffectSummary(2.5, 0.5)).toBe(
-      'Easy aerobic maintenance — good recovery day',
-    );
+    expect(getTrainingEffectSummary(2.5, 0.5)).toBe('Easy aerobic maintenance — good recovery day');
   });
 });

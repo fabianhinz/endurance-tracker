@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -8,14 +8,14 @@ import {
   CartesianGrid,
   Cell,
   Tooltip as RechartsTooltip,
-} from "recharts";
-import { Heart, Timer, Zap } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/Tabs.tsx";
-import { chartTheme } from "@/lib/chartTheme.ts";
-import { tokens } from "@/lib/tokens.ts";
-import type { ZoneBucket } from "@/engine/zoneDistribution.ts";
+} from 'recharts';
+import { Heart, Timer, Zap } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
+import { Tabs, TabsContent, TabsTrigger } from '@/components/ui/Tabs.tsx';
+import { chartTheme } from '@/lib/chartTheme.ts';
+import { tokens } from '@/lib/tokens.ts';
+import type { ZoneBucket } from '@/engine/zoneDistribution.ts';
 
 interface TabConfig {
   key: string;
@@ -28,7 +28,7 @@ interface ZoneDistributionChartProps {
   hrZones: ZoneBucket[];
   powerZones: ZoneBucket[];
   paceZones: ZoneBucket[];
-  mode?: "compact" | "expanded";
+  mode?: 'compact' | 'expanded';
 }
 
 const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
@@ -36,11 +36,9 @@ const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
     <BarChart
       data={props.data}
       layout="vertical"
-      barCategoryGap={props.compact ? "20%" : undefined}
+      barCategoryGap={props.compact ? '20%' : undefined}
     >
-      {!props.compact && (
-        <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />
-      )}
+      {!props.compact && <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />}
       <XAxis
         type="number"
         tick={chartTheme.tick}
@@ -66,7 +64,7 @@ const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
           value: number | undefined,
           _name: string | undefined,
           entry: { payload?: ZoneBucket },
-        ) => [`${value ?? 0}% · ${entry.payload?.rangeLabel ?? ""}`, "Time"]}
+        ) => [`${value ?? 0}% · ${entry.payload?.rangeLabel ?? ''}`, 'Time']}
       />
       <Bar dataKey="percentage" name="Time">
         {props.data.map((entry, index) => (
@@ -80,9 +78,9 @@ const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
 export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   const tabs = useMemo(() => {
     const all: TabConfig[] = [
-      { key: "hr", label: "HR", icon: Heart, data: props.hrZones },
-      { key: "power", label: "Power", icon: Zap, data: props.powerZones },
-      { key: "pace", label: "Pace", icon: Timer, data: props.paceZones },
+      { key: 'hr', label: 'HR', icon: Heart, data: props.hrZones },
+      { key: 'power', label: 'Power', icon: Zap, data: props.powerZones },
+      { key: 'pace', label: 'Pace', icon: Timer, data: props.paceZones },
     ];
     return all.filter((t) => t.data.length > 0);
   }, [props.hrZones, props.powerZones, props.paceZones]);
@@ -92,7 +90,7 @@ export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
 
   if (tabs.length === 0) return null;
 
-  const isCompact = props.mode === "compact";
+  const isCompact = props.mode === 'compact';
 
   const tabsTriggers = (
     <TabsPrimitive.List className="inline-flex gap-1 mb-1">
@@ -113,11 +111,7 @@ export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   );
 
   return (
-    <Tabs
-      value={resolvedTab}
-      onValueChange={setActiveTab}
-      className="h-full flex flex-col"
-    >
+    <Tabs value={resolvedTab} onValueChange={setActiveTab} className="h-full flex flex-col">
       {tabs.length > 1 && tabsTriggers}
       <div className="flex-1">
         {tabs.map((tab) => (

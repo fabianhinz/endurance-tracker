@@ -1,12 +1,12 @@
-import * as ToastPrimitive from "@radix-ui/react-toast";
-import { cn } from "@/lib/utils.ts";
-import { useToastStore } from "./toastStore.ts";
+import * as ToastPrimitive from '@radix-ui/react-toast';
+import { cn } from '@/lib/utils.ts';
+import { useToastStore } from './toastStore.ts';
 
 const variantClasses: Record<string, string> = {
-  default: "border-white/10",
-  success: "border-status-success-strong/30",
-  error: "border-status-danger-strong/30",
-  warning: "border-status-warning-strong/30",
+  default: 'border-white/10',
+  success: 'border-status-success-strong/30',
+  error: 'border-status-danger-strong/30',
+  warning: 'border-status-warning-strong/30',
 };
 
 export const ToastViewport = () => {
@@ -19,8 +19,8 @@ export const ToastViewport = () => {
         <ToastPrimitive.Root
           key={t.id}
           className={cn(
-            "rounded-lg border p-4 shadow-lg bg-white/5 backdrop-blur-xl",
-            variantClasses[t.variant ?? "default"],
+            'rounded-lg border p-4 shadow-lg bg-white/5 backdrop-blur-xl',
+            variantClasses[t.variant ?? 'default'],
           )}
           onOpenChange={(open) => {
             if (!open) removeToast(t.id);

@@ -3,7 +3,7 @@ import type { SessionLap, SessionRecord } from './types.ts';
 export interface LapMarker {
   lapIndex: number;
   position: [number, number]; // [lng, lat] for deck.gl
-  label: string;              // "1", "2", "3", ...
+  label: string; // "1", "2", "3", ...
 }
 
 export type LapMarkerMode =
@@ -11,12 +11,7 @@ export type LapMarkerMode =
   | { kind: 'dynamic'; splitDistanceMetres: number };
 
 const hasValidGPS = (r: SessionRecord): boolean =>
-  r.lat != null &&
-  r.lng != null &&
-  r.lat >= -90 &&
-  r.lat <= 90 &&
-  r.lng >= -180 &&
-  r.lng <= 180;
+  r.lat != null && r.lng != null && r.lat >= -90 && r.lat <= 90 && r.lng >= -180 && r.lng <= 180;
 
 const computeDeviceMarkers = (
   records: SessionRecord[],
@@ -27,9 +22,7 @@ const computeDeviceMarkers = (
 
   for (const lap of laps) {
     const lapStartSec = (lap.startTime - sessionStartMs) / 1000;
-    const first = records.find(
-      (r) => r.timestamp >= lapStartSec && hasValidGPS(r),
-    );
+    const first = records.find((r) => r.timestamp >= lapStartSec && hasValidGPS(r));
     if (first) {
       markers.push({
         lapIndex: lap.lapIndex,
@@ -84,10 +77,7 @@ const computeDynamicMarkers = (
   return markers;
 };
 
-export const computeLapMarkers = (
-  records: SessionRecord[],
-  mode: LapMarkerMode,
-): LapMarker[] => {
+export const computeLapMarkers = (records: SessionRecord[], mode: LapMarkerMode): LapMarker[] => {
   if (records.length === 0) return [];
 
   if (mode.kind === 'device') {

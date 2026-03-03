@@ -1,9 +1,9 @@
-import type { UserProfile } from "@/types/index.ts";
+import type { UserProfile } from '@/types/index.ts';
 
 export const createDefaultProfile = (id: string): UserProfile => {
   return {
     id,
-    gender: "male",
+    gender: 'male',
     thresholds: {
       ftp: 305,
       maxHr: 203,

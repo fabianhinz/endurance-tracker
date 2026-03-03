@@ -116,10 +116,9 @@ describe('useChartZoom', () => {
   });
 
   it('resets zoom when data changes', () => {
-    const { result, rerender } = renderHook(
-      ({ data }) => useChartZoom({ data, xKey: 'date' }),
-      { initialProps: { data: sampleData } },
-    );
+    const { result, rerender } = renderHook(({ data }) => useChartZoom({ data, xKey: 'date' }), {
+      initialProps: { data: sampleData },
+    });
 
     act(() => result.current.onMouseDown(mockEvent('2024-01-02')));
     act(() => result.current.onMouseMove(mockEvent('2024-01-04')));

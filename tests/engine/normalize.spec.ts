@@ -123,9 +123,7 @@ describe('calculateGAP', () => {
   });
 
   it('returns undefined for single record', () => {
-    const records = [
-      makeRecord({ timestamp: 0, speed: 3.0, distance: 0, grade: 0 }),
-    ];
+    const records = [makeRecord({ timestamp: 0, speed: 3.0, distance: 0, grade: 0 })];
     expect(calculateGAP(records)).toBeUndefined();
   });
 

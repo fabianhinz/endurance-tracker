@@ -31,19 +31,12 @@ interface SensorWarning {
  * @param sport - The sport type, used to apply sport-specific speed thresholds.
  * @returns An array of `SensorWarning` objects; empty when no anomalies are detected.
  */
-export const validateRecords = (
-  records: SessionRecord[],
-  sport: Sport,
-): SensorWarning[] => {
+export const validateRecords = (records: SessionRecord[], sport: Sport): SensorWarning[] => {
   const warnings: SensorWarning[] = [];
 
   const hrValues = records.filter((r) => r.hr !== undefined).map((r) => r.hr!);
-  const powerValues = records
-    .filter((r) => r.power !== undefined)
-    .map((r) => r.power!);
-  const speedValues = records
-    .filter((r) => r.speed !== undefined)
-    .map((r) => r.speed!);
+  const powerValues = records.filter((r) => r.power !== undefined).map((r) => r.power!);
+  const speedValues = records.filter((r) => r.speed !== undefined).map((r) => r.speed!);
 
   if (hrValues.length > 0) {
     const sustainedHighHr = hrValues.filter((hr) => hr > MAX_VALID_HR).length;
@@ -76,9 +69,7 @@ export const validateRecords = (
   if (speedValues.length > 0) {
     const speedKmh = speedValues.map((s) => s * 3.6);
     const maxThreshold = MAX_SPEED_KMH[sport];
-    const sustainedHighSpeed = speedKmh.filter(
-      (s) => s > maxThreshold,
-    ).length;
+    const sustainedHighSpeed = speedKmh.filter((s) => s > maxThreshold).length;
     if (sustainedHighSpeed > SUSTAINED_ERROR_THRESHOLD) {
       warnings.push({
         field: 'speed',
@@ -97,7 +88,5 @@ export const validateRecords = (
  * @returns A new array containing only records where `power` is defined, greater than zero, and within the valid range.
  */
 export const filterValidPower = (records: SessionRecord[]): SessionRecord[] => {
-  return records.filter(
-    (r) => r.power !== undefined && r.power > 0 && r.power <= MAX_VALID_POWER,
-  );
+  return records.filter((r) => r.power !== undefined && r.power > 0 && r.power <= MAX_VALID_POWER);
 };

@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { densestClusterBounds } from "@/engine/gps.ts";
-import type { MapRef } from "react-map-gl/maplibre";
-import type { MapTrack } from "./useMapTracks.ts";
+import { useEffect } from 'react';
+import { densestClusterBounds } from '@/engine/gps.ts';
+import type { MapRef } from 'react-map-gl/maplibre';
+import type { MapTrack } from './useMapTracks.ts';
 
 export const useMapCameraEffect = (
   mapRef: React.RefObject<MapRef | null>,
@@ -13,7 +13,7 @@ export const useMapCameraEffect = (
   useEffect(() => {
     if (tracks.length === 0 || !mapRef.current || !mapLoaded) return;
 
-    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
     const rightPad = compactLayout && isDesktop ? window.innerWidth * 0.4 : 0;
 
     if (openedSessionId) {

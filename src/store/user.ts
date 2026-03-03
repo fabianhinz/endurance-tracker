@@ -28,16 +28,12 @@ export const useUserStore = create<UserState>()(
 
       updateProfile: (updates) =>
         set((state) => ({
-          profile: state.profile
-            ? { ...state.profile, ...updates }
-            : null,
+          profile: state.profile ? { ...state.profile, ...updates } : null,
         })),
 
       updateThresholds: (thresholds) =>
         set((state) => ({
-          profile: state.profile
-            ? { ...state.profile, thresholds }
-            : null,
+          profile: state.profile ? { ...state.profile, thresholds } : null,
         })),
 
       toggleMetricHelp: () =>

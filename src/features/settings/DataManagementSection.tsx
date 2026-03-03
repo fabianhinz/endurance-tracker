@@ -1,21 +1,19 @@
-import { useState, useEffect } from "react";
-import { useSessionsStore } from "@/store/sessions.ts";
-import { getAllFitFileSessionIds } from "@/lib/indexeddb.ts";
-import { Card } from "@/components/ui/Card.tsx";
-import { CardHeader } from "@/components/ui/CardHeader.tsx";
-import { List, ListItem } from "@/components/ui/List.tsx";
-import { Typography } from "@/components/ui/Typography.tsx";
-import { DeleteAllDataDialog } from "./DeleteAllDataDialog.tsx";
-import { ReimportDialog } from "./ReimportDialog.tsx";
-import { useReimport } from "./hooks/useReimport.ts";
-import { formatDate } from "@/lib/utils.ts";
+import { useState, useEffect } from 'react';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { getAllFitFileSessionIds } from '@/lib/indexeddb.ts';
+import { Card } from '@/components/ui/Card.tsx';
+import { CardHeader } from '@/components/ui/CardHeader.tsx';
+import { List, ListItem } from '@/components/ui/List.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import { DeleteAllDataDialog } from './DeleteAllDataDialog.tsx';
+import { ReimportDialog } from './ReimportDialog.tsx';
+import { useReimport } from './hooks/useReimport.ts';
+import { formatDate } from '@/lib/utils.ts';
 
 export const DataManagementSection = () => {
   const sessionCount = useSessionsStore((s) => s.sessions.length);
   const lastUpdated = useSessionsStore((s) =>
-    s.sessions.length > 0
-      ? Math.max(...s.sessions.map((session) => session.createdAt))
-      : null,
+    s.sessions.length > 0 ? Math.max(...s.sessions.map((session) => session.createdAt)) : null,
   );
   const [fitFileCount, setFitFileCount] = useState<number | null>(null);
   const [storageEstimate, setStorageEstimate] = useState<string | null>(null);
@@ -32,9 +30,7 @@ export const DataManagementSection = () => {
       navigator.storage.estimate().then((estimate) => {
         if (estimate.usage !== undefined) {
           const mb = estimate.usage / (1024 * 1024);
-          setStorageEstimate(
-            mb < 1 ? `${Math.round(mb * 1024)} KB` : `${mb.toFixed(1)} MB`,
-          );
+          setStorageEstimate(mb < 1 ? `${Math.round(mb * 1024)} KB` : `${mb.toFixed(1)} MB`);
         }
       });
     }
@@ -43,10 +39,7 @@ export const DataManagementSection = () => {
   return (
     <>
       <Card>
-        <CardHeader
-          title="Storage"
-          subtitle="FIT files and session data stored in your browser"
-        />
+        <CardHeader title="Storage" subtitle="FIT files and session data stored in your browser" />
         <List>
           <ListItem
             primary="Sessions"
@@ -66,7 +59,7 @@ export const DataManagementSection = () => {
                 : undefined
             }
           >
-            <Typography variant="body">{fitFileCount ?? "..."}</Typography>
+            <Typography variant="body">{fitFileCount ?? '...'}</Typography>
           </ListItem>
           {storageEstimate && (
             <ListItem primary="Estimated storage used">

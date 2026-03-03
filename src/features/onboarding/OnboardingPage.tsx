@@ -1,12 +1,12 @@
-import { useRef } from "react";
-import { Upload, ArrowRight } from "lucide-react";
-import { useUserStore } from "@/store/user.ts";
-import { useSessionsStore } from "@/store/sessions.ts";
-import { useLayoutStore } from "@/store/layout.ts";
-import { useFileUpload } from "@/features/training/hooks/useFileUpload.ts";
-import { Button } from "@/components/ui/Button.tsx";
-import { ActionPromptCard } from "@/components/ui/ActionPromptCard.tsx";
-import { ThresholdsSection } from "@/features/settings/ThresholdsSection.tsx";
+import { useRef } from 'react';
+import { Upload, ArrowRight } from 'lucide-react';
+import { useUserStore } from '@/store/user.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useLayoutStore } from '@/store/layout.ts';
+import { useFileUpload } from '@/features/training/hooks/useFileUpload.ts';
+import { Button } from '@/components/ui/Button.tsx';
+import { ActionPromptCard } from '@/components/ui/ActionPromptCard.tsx';
+import { ThresholdsSection } from '@/features/settings/ThresholdsSection.tsx';
 
 export const OnboardingPage = () => {
   const profile = useUserStore((s) => s.profile);
@@ -23,7 +23,7 @@ export const OnboardingPage = () => {
       {canFinish ? (
         <ActionPromptCard
           title="You're All Set"
-          description={`${sessionCount} session${sessionCount !== 1 ? "s" : ""} uploaded. Ready to explore your training data.`}
+          description={`${sessionCount} session${sessionCount !== 1 ? 's' : ''} uploaded. Ready to explore your training data.`}
         >
           <Button onClick={completeOnboarding}>
             Get Started
@@ -38,14 +38,11 @@ export const OnboardingPage = () => {
             title="Upload Your First Session"
             description={
               profile
-                ? "Import a .FIT file from your Garmin, Wahoo, or other device to get started."
-                : "Set your thresholds first, then upload a .FIT file to get started."
+                ? 'Import a .FIT file from your Garmin, Wahoo, or other device to get started.'
+                : 'Set your thresholds first, then upload a .FIT file to get started.'
             }
           >
-            <Button
-              disabled={!profile || upload.uploading}
-              onClick={upload.triggerUpload}
-            >
+            <Button disabled={!profile || upload.uploading} onClick={upload.triggerUpload}>
               <Upload size={16} />
               Upload .FIT Files
             </Button>
@@ -55,9 +52,7 @@ export const OnboardingPage = () => {
               accept=".fit"
               multiple
               className="hidden"
-              onChange={(e) =>
-                e.target.files && upload.handleFiles(e.target.files)
-              }
+              onChange={(e) => e.target.files && upload.handleFiles(e.target.files)}
               disabled={upload.uploading}
             />
           </ActionPromptCard>

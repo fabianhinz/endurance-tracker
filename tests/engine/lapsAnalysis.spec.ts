@@ -133,11 +133,29 @@ describe('detectProgressiveOverload', () => {
 
   it('detects fading: pace slowing across intervals', () => {
     const laps = [
-      makeLap({ lapIndex: 0, intensity: 'active', distance: 1000, totalTimerTime: 300, avgHr: 155 }),
+      makeLap({
+        lapIndex: 0,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 300,
+        avgHr: 155,
+      }),
       makeLap({ lapIndex: 1, intensity: 'rest', distance: 500, totalTimerTime: 180 }),
-      makeLap({ lapIndex: 2, intensity: 'active', distance: 1000, totalTimerTime: 330, avgHr: 162 }),
+      makeLap({
+        lapIndex: 2,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 330,
+        avgHr: 162,
+      }),
       makeLap({ lapIndex: 3, intensity: 'rest', distance: 500, totalTimerTime: 180 }),
-      makeLap({ lapIndex: 4, intensity: 'active', distance: 1000, totalTimerTime: 360, avgHr: 168 }),
+      makeLap({
+        lapIndex: 4,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 360,
+        avgHr: 168,
+      }),
     ];
     const result = detectProgressiveOverload(laps);
     expect(result.trend).toBe('fading');
@@ -148,11 +166,29 @@ describe('detectProgressiveOverload', () => {
 
   it('detects stable: minimal drift', () => {
     const laps = [
-      makeLap({ lapIndex: 0, intensity: 'active', distance: 1000, totalTimerTime: 300, avgHr: 155 }),
+      makeLap({
+        lapIndex: 0,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 300,
+        avgHr: 155,
+      }),
       makeLap({ lapIndex: 1, intensity: 'rest', distance: 500, totalTimerTime: 180 }),
-      makeLap({ lapIndex: 2, intensity: 'active', distance: 1000, totalTimerTime: 303, avgHr: 156 }),
+      makeLap({
+        lapIndex: 2,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 303,
+        avgHr: 156,
+      }),
       makeLap({ lapIndex: 3, intensity: 'rest', distance: 500, totalTimerTime: 180 }),
-      makeLap({ lapIndex: 4, intensity: 'active', distance: 1000, totalTimerTime: 302, avgHr: 157 }),
+      makeLap({
+        lapIndex: 4,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 302,
+        avgHr: 157,
+      }),
     ];
     const result = detectProgressiveOverload(laps);
     expect(result.trend).toBe('stable');
@@ -160,9 +196,21 @@ describe('detectProgressiveOverload', () => {
 
   it('detects building: pace improving (negative drift)', () => {
     const laps = [
-      makeLap({ lapIndex: 0, intensity: 'active', distance: 1000, totalTimerTime: 330, avgHr: 155 }),
+      makeLap({
+        lapIndex: 0,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 330,
+        avgHr: 155,
+      }),
       makeLap({ lapIndex: 1, intensity: 'rest', distance: 500, totalTimerTime: 180 }),
-      makeLap({ lapIndex: 2, intensity: 'active', distance: 1000, totalTimerTime: 300, avgHr: 162 }),
+      makeLap({
+        lapIndex: 2,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 300,
+        avgHr: 162,
+      }),
     ];
     const result = detectProgressiveOverload(laps);
     expect(result.trend).toBe('building');
@@ -171,8 +219,20 @@ describe('detectProgressiveOverload', () => {
 
   it('uses all laps when no intervals detected (steady state)', () => {
     const laps = [
-      makeLap({ lapIndex: 0, intensity: 'active', distance: 1000, totalTimerTime: 300, avgHr: 150 }),
-      makeLap({ lapIndex: 1, intensity: 'active', distance: 1000, totalTimerTime: 330, avgHr: 158 }),
+      makeLap({
+        lapIndex: 0,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 300,
+        avgHr: 150,
+      }),
+      makeLap({
+        lapIndex: 1,
+        intensity: 'active',
+        distance: 1000,
+        totalTimerTime: 330,
+        avgHr: 158,
+      }),
     ];
     const result = detectProgressiveOverload(laps);
     expect(result.lapCount).toBe(2);

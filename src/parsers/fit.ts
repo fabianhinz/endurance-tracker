@@ -60,9 +60,7 @@ export const deriveAvgFromRecords = (
   records: SessionRecord[],
   field: 'power' | 'cadence',
 ): number | undefined => {
-  const values = records
-    .map((r) => r[field])
-    .filter((v): v is number => v !== undefined && v > 0);
+  const values = records.map((r) => r[field]).filter((v): v is number => v !== undefined && v > 0);
   if (values.length === 0) return undefined;
   return Math.round(values.reduce((sum, v) => sum + v, 0) / values.length);
 };
@@ -71,9 +69,7 @@ export const deriveMaxFromRecords = (
   records: SessionRecord[],
   field: 'power' | 'speed',
 ): number | undefined => {
-  const values = records
-    .map((r) => r[field])
-    .filter((v): v is number => v !== undefined && v > 0);
+  const values = records.map((r) => r[field]).filter((v): v is number => v !== undefined && v > 0);
   if (values.length === 0) return undefined;
   return Math.max(...values);
 };
@@ -128,7 +124,7 @@ export const parseFitFile = async (
     data = await parser.parseAsync(arrayBuffer);
   } catch (err) {
     throw new Error(
-      `Failed to parse FIT file "${fileName}": ${err instanceof Error ? err.message : 'unknown error'}`
+      `Failed to parse FIT file "${fileName}": ${err instanceof Error ? err.message : 'unknown error'}`,
     );
   }
 
@@ -177,9 +173,10 @@ export const parseFitFile = async (
   const laps = mapFitLaps(lapsResult.success ? lapsResult.data : [], sessionId);
 
   // Derive moving time from laps; fall back to timer time per lap when moving time is unavailable
-  const movingTime = laps.length > 0
-    ? laps.reduce((sum, lap) => sum + (lap.totalMovingTime ?? lap.totalTimerTime), 0)
-    : undefined;
+  const movingTime =
+    laps.length > 0
+      ? laps.reduce((sum, lap) => sum + (lap.totalMovingTime ?? lap.totalTimerTime), 0)
+      : undefined;
 
   // Validate sensor data
   const sensorWarnings = validateRecords(records, sport).map((w) => w.message);
@@ -209,10 +206,12 @@ export const parseFitFile = async (
   const sessionDuration = fitSession?.total_timer_time ?? fitSession?.total_elapsed_time ?? 0;
   const sessionDistance = deriveDistanceFromRecords(records);
 
-  const fingerprint = generateFingerprint(
-    fileIdResult.success ? fileIdResult.data : undefined,
-    { sport, date: sessionDate, duration: sessionDuration, distance: sessionDistance },
-  );
+  const fingerprint = generateFingerprint(fileIdResult.success ? fileIdResult.data : undefined, {
+    sport,
+    date: sessionDate,
+    duration: sessionDuration,
+    distance: sessionDistance,
+  });
 
   const session: Omit<TrainingSession, 'id' | 'createdAt'> = {
     ...(name !== undefined && { name }),
@@ -227,10 +226,7 @@ export const parseFitFile = async (
     normalizedPower: stressResult.normalizedPower ?? fitSession?.normalized_power,
     avgCadence: deriveAvgFromRecords(records, 'cadence') ?? fitSession?.avg_cadence,
     avgSpeed,
-    avgPace:
-      sport === 'running' && avgSpeed && avgSpeed > 0
-        ? 1000 / avgSpeed
-        : undefined,
+    avgPace: sport === 'running' && avgSpeed && avgSpeed > 0 ? 1000 / avgSpeed : undefined,
     calories: fitSession?.total_calories,
     elevationGain: fitSession?.total_ascent,
     elevationLoss: fitSession?.total_descent,

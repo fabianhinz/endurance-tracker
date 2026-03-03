@@ -49,9 +49,7 @@ describe('EWMA alpha matches Coggan PMC model', () => {
 
   it('alpha is NOT the financial 2/(n+1) formula', () => {
     const now = Date.now();
-    const sessions = [
-      makeSession({ id: 'single', date: now - 1 * DAY_MS, tss: 100 }),
-    ];
+    const sessions = [makeSession({ id: 'single', date: now - 1 * DAY_MS, tss: 100 })];
 
     const metrics = computeMetrics(sessions, { endDate: now - 1 * DAY_MS });
     const last = metrics[metrics.length - 1];

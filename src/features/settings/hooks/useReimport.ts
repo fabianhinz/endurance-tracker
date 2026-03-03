@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import { useUserStore } from "@/store/user.ts";
-import { useSessionsStore } from "@/store/sessions.ts";
+import { useState, useCallback } from 'react';
+import { useUserStore } from '@/store/user.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
 import {
   getAllFitFiles,
   deleteSessionRecords,
@@ -8,10 +8,10 @@ import {
   deleteSessionGPS,
   saveSessionRecords,
   saveSessionLaps,
-} from "@/lib/indexeddb.ts";
-import { parseFitFile } from "@/parsers/fit.ts";
-import { computePBsForSessions } from "@/engine/records.ts";
-import { toast } from "@/components/ui/toastStore.ts";
+} from '@/lib/indexeddb.ts';
+import { parseFitFile } from '@/parsers/fit.ts';
+import { computePBsForSessions } from '@/engine/records.ts';
+import { toast } from '@/components/ui/toastStore.ts';
 
 interface ReimportState {
   reimporting: boolean;
@@ -29,7 +29,7 @@ export const useReimport = () => {
   const reimportAll = useCallback(async () => {
     const profile = useUserStore.getState().profile;
     if (!profile) {
-      toast("No profile", "Set up your thresholds before reimporting", "error");
+      toast('No profile', 'Set up your thresholds before reimporting', 'error');
       return;
     }
 
@@ -37,7 +37,7 @@ export const useReimport = () => {
 
     const fitFiles = await getAllFitFiles();
     if (fitFiles.length === 0) {
-      toast("No FIT files", "No stored FIT files to reimport", "warning");
+      toast('No FIT files', 'No stored FIT files to reimport', 'warning');
       setState({ reimporting: false, processed: 0, total: 0 });
       return;
     }
@@ -46,16 +46,13 @@ export const useReimport = () => {
 
     const updates: Array<{
       id: string;
-      session: Omit<
-        import("../../../engine/types.ts").TrainingSession,
-        "id" | "createdAt"
-      >;
+      session: Omit<import('../../../engine/types.ts').TrainingSession, 'id' | 'createdAt'>;
     }> = [];
     const pbSessions: Array<{
       sessionId: string;
       date: number;
-      sport: import("../../../engine/types.ts").Sport;
-      records: import("../../../engine/types.ts").SessionRecord[];
+      sport: import('../../../engine/types.ts').Sport;
+      records: import('../../../engine/types.ts').SessionRecord[];
       distance?: number;
       elevationGain?: number;
     }> = [];
@@ -120,16 +117,12 @@ export const useReimport = () => {
 
     const parts: string[] = [];
     if (updates.length > 0) {
-      parts.push(`${updates.length} session${updates.length !== 1 ? "s" : ""} reimported`);
+      parts.push(`${updates.length} session${updates.length !== 1 ? 's' : ''} reimported`);
     }
     if (failed > 0) {
       parts.push(`${failed} failed`);
     }
-    toast(
-      "Reimport complete",
-      parts.join(", "),
-      failed > 0 ? "error" : "success",
-    );
+    toast('Reimport complete', parts.join(', '), failed > 0 ? 'error' : 'success');
   }, []);
 
   return {

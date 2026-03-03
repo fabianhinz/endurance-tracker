@@ -95,10 +95,7 @@ export const makeSwimmingRecords = (
 /**
  * Generate lap data for a session.
  */
-export const makeLaps = (
-  sessionId: string,
-  count: number,
-): SessionLap[] => {
+export const makeLaps = (sessionId: string, count: number): SessionLap[] => {
   const laps: SessionLap[] = [];
   const lapDuration = 300;
 

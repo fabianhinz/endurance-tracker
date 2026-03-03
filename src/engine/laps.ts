@@ -71,16 +71,12 @@ const DRIFT_THRESHOLD_PERCENT = 3;
 export const analyzeLaps = (laps: SessionLap[]): LapAnalysis[] => {
   if (laps.length === 0) return [];
 
-  const hasRestLaps = laps.some(
-    (l) => l.intensity !== undefined && l.intensity !== 'active',
-  );
+  const hasRestLaps = laps.some((l) => l.intensity !== undefined && l.intensity !== 'active');
 
   return laps.map((lap) => {
     const duration = lap.totalMovingTime ?? lap.totalTimerTime;
     const paceSecPerKm =
-      lap.distance > 0 && duration > 0
-        ? (duration / lap.distance) * 1000
-        : undefined;
+      lap.distance > 0 && duration > 0 ? (duration / lap.distance) * 1000 : undefined;
 
     return {
       lapIndex: lap.lapIndex,
@@ -147,7 +143,12 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
   const targetLaps = intervalLaps.length > 0 ? intervalLaps : analyzed;
 
   if (targetLaps.length < 2) {
-    return { paceDriftPercent: undefined, hrDriftPercent: undefined, lapCount: targetLaps.length, trend: 'stable' };
+    return {
+      paceDriftPercent: undefined,
+      hrDriftPercent: undefined,
+      lapCount: targetLaps.length,
+      trend: 'stable',
+    };
   }
 
   const first = targetLaps[0];
@@ -171,7 +172,8 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
   }
 
   return {
-    paceDriftPercent: paceDriftPercent !== undefined ? Math.round(paceDriftPercent * 10) / 10 : undefined,
+    paceDriftPercent:
+      paceDriftPercent !== undefined ? Math.round(paceDriftPercent * 10) / 10 : undefined,
     hrDriftPercent: hrDriftPercent !== undefined ? Math.round(hrDriftPercent * 10) / 10 : undefined,
     lapCount: targetLaps.length,
     trend,
@@ -213,9 +215,7 @@ export const filterRecordsByLap = (
 ): SessionRecord[] => {
   const lapStartSec = (lap.startTime - sessionStartMs) / 1000;
   const lapEndSec = (lap.endTime - sessionStartMs) / 1000;
-  return records.filter(
-    (r) => r.timestamp >= lapStartSec && r.timestamp < lapEndSec,
-  );
+  return records.filter((r) => r.timestamp >= lapStartSec && r.timestamp < lapEndSec);
 };
 
 /**
@@ -235,9 +235,13 @@ export const enrichLapFromRecords = (
   records: SessionRecord[],
 ): LapRecordEnrichment => {
   const MIN_SPEED_MS = 0.5; // ~33:20/km, below any reasonable running/cycling pace
-  const speeds = records.map((r) => r.speed).filter((s): s is number => s !== undefined && s > MIN_SPEED_MS);
+  const speeds = records
+    .map((r) => r.speed)
+    .filter((s): s is number => s !== undefined && s > MIN_SPEED_MS);
   const powers = records.map((r) => r.power).filter((p): p is number => p !== undefined && p > 0);
-  const cadences = records.map((r) => r.cadence).filter((c): c is number => c !== undefined && c > 0);
+  const cadences = records
+    .map((r) => r.cadence)
+    .filter((c): c is number => c !== undefined && c > 0);
   const hrs = records.map((r) => r.hr).filter((h): h is number => h !== undefined && h > 0);
 
   speeds.sort((a, b) => a - b);
@@ -246,7 +250,8 @@ export const enrichLapFromRecords = (
   hrs.sort((a, b) => a - b);
 
   const minSpeed = speeds.length > 0 ? speeds[0] : undefined;
-  const avgPower = powers.length > 0 ? Math.round(powers.reduce((a, b) => a + b, 0) / powers.length) : undefined;
+  const avgPower =
+    powers.length > 0 ? Math.round(powers.reduce((a, b) => a + b, 0) / powers.length) : undefined;
   const minPower = powers.length > 0 ? powers[0] : undefined;
   const maxPower = powers.length > 0 ? powers[powers.length - 1] : undefined;
   const minCadence = cadences.length > 0 ? cadences[0] : undefined;

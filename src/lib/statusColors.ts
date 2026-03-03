@@ -20,9 +20,21 @@ export const statusFill: Record<string, string> = {
 
 /** ACWR traffic-light color sets */
 export const acwrColorMap = {
-  green: { bg: 'bg-status-success-strong', text: 'text-status-success', ring: 'ring-status-success-strong/20' },
-  yellow: { bg: 'bg-status-warning-strong', text: 'text-status-warning', ring: 'ring-status-warning-strong/20' },
-  red: { bg: 'bg-status-danger-strong', text: 'text-status-danger', ring: 'ring-status-danger-strong/20' },
+  green: {
+    bg: 'bg-status-success-strong',
+    text: 'text-status-success',
+    ring: 'ring-status-success-strong/20',
+  },
+  yellow: {
+    bg: 'bg-status-warning-strong',
+    text: 'text-status-warning',
+    ring: 'ring-status-warning-strong/20',
+  },
+  red: {
+    bg: 'bg-status-danger-strong',
+    text: 'text-status-danger',
+    ring: 'ring-status-danger-strong/20',
+  },
 };
 
 /** Raw hex fills for Recharts (ACWR traffic-light) */
@@ -49,7 +61,7 @@ export const sportColorClass: Record<string, string> = {
 
 /** Sport icon watermark classes — very subtle tinted icon */
 export const sportIconWatermarkClass: Record<string, string> = {
-  running: "text-sport-running/10",
-  cycling: "text-sport-cycling/10",
-  swimming: "text-sport-swimming/10",
+  running: 'text-sport-running/10',
+  cycling: 'text-sport-cycling/10',
+  swimming: 'text-sport-swimming/10',
 };

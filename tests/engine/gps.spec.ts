@@ -45,9 +45,7 @@ describe('extractPathFromRecords', () => {
   });
 
   it('outputs [lng, lat] matching decodeTrackForRendering convention', () => {
-    const records = [
-      { sessionId: 's1', timestamp: 0, lat: 48.137, lng: 11.575 },
-    ];
+    const records = [{ sessionId: 's1', timestamp: 0, lat: 48.137, lng: 11.575 }];
     const path = extractPathFromRecords(records);
     // Output is [lng, lat]
     expect(path[0][0]).toBeCloseTo(11.575, 4);
@@ -57,9 +55,7 @@ describe('extractPathFromRecords', () => {
 
 describe('buildSessionGPS', () => {
   it('returns null for < 2 GPS points', () => {
-    const records = [
-      { sessionId: 's1', timestamp: 0, lat: 48.0, lng: 11.0 },
-    ];
+    const records = [{ sessionId: 's1', timestamp: 0, lat: 48.0, lng: 11.0 }];
     expect(buildSessionGPS('s1', records)).toBeNull();
   });
 
@@ -137,13 +133,18 @@ describe('densestClusterBounds', () => {
     const munichRun1 = { minLat: 48.12, maxLat: 48.15, minLng: 11.55, maxLng: 11.58 };
     const munichRun2 = { minLat: 48.13, maxLat: 48.16, minLng: 11.56, maxLng: 11.59 };
     const munichRun3 = { minLat: 48.11, maxLat: 48.14, minLng: 11.54, maxLng: 11.57 };
-    const munichRun4 = { minLat: 48.14, maxLat: 48.17, minLng: 11.57, maxLng: 11.60 };
-    const munichRun5 = { minLat: 48.10, maxLat: 48.13, minLng: 11.53, maxLng: 11.56 };
+    const munichRun4 = { minLat: 48.14, maxLat: 48.17, minLng: 11.57, maxLng: 11.6 };
+    const munichRun5 = { minLat: 48.1, maxLat: 48.13, minLng: 11.53, maxLng: 11.56 };
     // 1 long bike ride Munich → Alps (center ≈ 47.6, 11.7 — outside radius of Munich cluster)
     const alpsBikeRide = { minLat: 47.0, maxLat: 48.2, minLng: 11.0, maxLng: 12.4 };
 
     const result = densestClusterBounds([
-      munichRun1, munichRun2, munichRun3, munichRun4, munichRun5, alpsBikeRide,
+      munichRun1,
+      munichRun2,
+      munichRun3,
+      munichRun4,
+      munichRun5,
+      alpsBikeRide,
     ]);
 
     expect(result).not.toBeNull();

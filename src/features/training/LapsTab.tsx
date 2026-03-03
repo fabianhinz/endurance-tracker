@@ -1,29 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Timer, Heart, Zap } from "lucide-react";
-import { ChartPreviewCard } from "@/components/ui/ChartPreviewCard.tsx";
-import { analyzeLaps, enrichAllLaps } from "@/engine/laps.ts";
-import type { LapAnalysis, LapRecordEnrichment } from "@/engine/laps.ts";
-import { computeDynamicLaps } from "@/engine/dynamicLaps.ts";
-import { computeLapMarkers } from "@/engine/lapMarkers.ts";
-import type { LapMarkerMode } from "@/engine/lapMarkers.ts";
-import { DEFAULT_CUSTOM_DISTANCE } from "@/store/lapOptions.ts";
-import { useMapFocusStore } from "@/store/mapFocus.ts";
-import {
-  prepareLapSplitsData,
-  prepareLapHrData,
-  prepareLapPowerData,
-} from "@/lib/lapChartData.ts";
-import { tokens } from "@/lib/tokens.ts";
-import { LapSplitsChart } from "./LapSplitsChart.tsx";
-import { LapHrChart } from "./LapHrChart.tsx";
-import { LapPowerChart } from "./LapPowerChart.tsx";
-import { LapDetailTable } from "./LapDetailTable.tsx";
-import { SplitDistanceCard } from "./SplitDistanceCard.tsx";
-import type {
-  SessionLap,
-  SessionRecord,
-  TrainingSession,
-} from "@/engine/types.ts";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Timer, Heart, Zap } from 'lucide-react';
+import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
+import { analyzeLaps, enrichAllLaps } from '@/engine/laps.ts';
+import type { LapAnalysis, LapRecordEnrichment } from '@/engine/laps.ts';
+import { computeDynamicLaps } from '@/engine/dynamicLaps.ts';
+import { computeLapMarkers } from '@/engine/lapMarkers.ts';
+import type { LapMarkerMode } from '@/engine/lapMarkers.ts';
+import { DEFAULT_CUSTOM_DISTANCE } from '@/store/lapOptions.ts';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { prepareLapSplitsData, prepareLapHrData, prepareLapPowerData } from '@/lib/lapChartData.ts';
+import { tokens } from '@/lib/tokens.ts';
+import { LapSplitsChart } from './LapSplitsChart.tsx';
+import { LapHrChart } from './LapHrChart.tsx';
+import { LapPowerChart } from './LapPowerChart.tsx';
+import { LapDetailTable } from './LapDetailTable.tsx';
+import { SplitDistanceCard } from './SplitDistanceCard.tsx';
+import type { SessionLap, SessionRecord, TrainingSession } from '@/engine/types.ts';
 
 interface LapsTabProps {
   laps: SessionLap[];
@@ -31,16 +23,14 @@ interface LapsTabProps {
   records: SessionRecord[];
 }
 
-const SYNC_ID = "laps-detail";
+const SYNC_ID = 'laps-detail';
 
 export const LapsTab = (props: LapsTabProps) => {
-  const isRunning = props.session.sport === "running";
+  const isRunning = props.session.sport === 'running';
   const sport = props.session.sport;
 
   const [isDevice, setIsDevice] = useState(true);
-  const [splitDistance, setSplitDistance] = useState(
-    () => DEFAULT_CUSTOM_DISTANCE[sport],
-  );
+  const [splitDistance, setSplitDistance] = useState(() => DEFAULT_CUSTOM_DISTANCE[sport]);
 
   const deviceAnalysis = useMemo(() => analyzeLaps(props.laps), [props.laps]);
   const deviceEnrichments = useMemo(
@@ -49,39 +39,25 @@ export const LapsTab = (props: LapsTabProps) => {
   );
 
   const dynamicResult = useMemo(
-    () =>
-      isDevice
-        ? undefined
-        : computeDynamicLaps(props.records, splitDistance),
+    () => (isDevice ? undefined : computeDynamicLaps(props.records, splitDistance)),
     [props.records, splitDistance, isDevice],
   );
 
-  const analysis: LapAnalysis[] = isDevice
-    ? deviceAnalysis
-    : dynamicResult!.analysis;
+  const analysis: LapAnalysis[] = isDevice ? deviceAnalysis : dynamicResult!.analysis;
   const enrichments: LapRecordEnrichment[] = isDevice
     ? deviceEnrichments
     : dynamicResult!.enrichments;
 
   const enrichmentMap = useMemo(
-    () =>
-      new Map<number, LapRecordEnrichment>(
-        enrichments.map((e) => [e.lapIndex, e]),
-      ),
+    () => new Map<number, LapRecordEnrichment>(enrichments.map((e) => [e.lapIndex, e])),
     [enrichments],
   );
   const splitsData = useMemo(
     () => prepareLapSplitsData(analysis, enrichments),
     [analysis, enrichments],
   );
-  const hrData = useMemo(
-    () => prepareLapHrData(analysis, enrichments),
-    [analysis, enrichments],
-  );
-  const powerData = useMemo(
-    () => prepareLapPowerData(enrichments),
-    [enrichments],
-  );
+  const hrData = useMemo(() => prepareLapHrData(analysis, enrichments), [analysis, enrichments]);
+  const powerData = useMemo(() => prepareLapPowerData(enrichments), [enrichments]);
 
   const setLapMarkers = useMapFocusStore((s) => s.setLapMarkers);
   const clearLapMarkers = useMapFocusStore((s) => s.clearLapMarkers);
@@ -102,13 +78,13 @@ export const LapsTab = (props: LapsTabProps) => {
   const markerMode = useMemo((): LapMarkerMode | undefined => {
     if (isDevice) {
       return {
-        kind: "device",
+        kind: 'device',
         laps: props.laps,
         sessionStartMs: props.laps[0].startTime,
       };
     }
     return {
-      kind: "dynamic",
+      kind: 'dynamic',
       splitDistanceMetres: splitDistance,
     };
   }, [props.laps, splitDistance, isDevice]);
@@ -138,30 +114,34 @@ export const LapsTab = (props: LapsTabProps) => {
       />
 
       {hrData.length > 0 && (
-        <ChartPreviewCard
-          title="Heart Rate per Lap"
-          icon={Heart}
-          color={tokens.chartHr}
-        >
-          {(mode) => <LapHrChart data={hrData} mode={mode} syncId={SYNC_ID} onActiveLapChange={handleActiveLapChange} />}
+        <ChartPreviewCard title="Heart Rate per Lap" icon={Heart} color={tokens.chartHr}>
+          {(mode) => (
+            <LapHrChart
+              data={hrData}
+              mode={mode}
+              syncId={SYNC_ID}
+              onActiveLapChange={handleActiveLapChange}
+            />
+          )}
         </ChartPreviewCard>
       )}
 
       {powerData.length > 0 && (
-        <ChartPreviewCard
-          title="Power per Lap"
-          icon={Zap}
-          color={tokens.chartPower}
-        >
+        <ChartPreviewCard title="Power per Lap" icon={Zap} color={tokens.chartPower}>
           {(mode) => (
-            <LapPowerChart data={powerData} mode={mode} syncId={SYNC_ID} onActiveLapChange={handleActiveLapChange} />
+            <LapPowerChart
+              data={powerData}
+              mode={mode}
+              syncId={SYNC_ID}
+              onActiveLapChange={handleActiveLapChange}
+            />
           )}
         </ChartPreviewCard>
       )}
 
       {splitsData.length > 0 && (
         <ChartPreviewCard
-          title={isRunning ? "Pace per Lap" : "Speed per Lap"}
+          title={isRunning ? 'Pace per Lap' : 'Speed per Lap'}
           icon={Timer}
           color={isRunning ? tokens.chartPace : tokens.chartSpeed}
         >
@@ -177,11 +157,7 @@ export const LapsTab = (props: LapsTabProps) => {
         </ChartPreviewCard>
       )}
 
-      <LapDetailTable
-        laps={analysis}
-        isRunning={isRunning}
-        enrichments={enrichmentMap}
-      />
+      <LapDetailTable laps={analysis} isRunning={isRunning} enrichments={enrichmentMap} />
     </div>
   );
 };
