@@ -17,6 +17,12 @@ export const avgDomain = (values: number[]): [number, number] => {
   return [min - padding, max + padding];
 };
 
+export const formatTick = (v: number, unit?: string): string => {
+  const rounded = Math.round(v * 10) / 10;
+  const label = `${rounded}`;
+  return unit ? `${label} ${unit}` : label;
+};
+
 export const chartTheme = {
   tick: { fill: tokens.textTertiary, fontSize: 11 },
   axisLine: { stroke: tokens.border },

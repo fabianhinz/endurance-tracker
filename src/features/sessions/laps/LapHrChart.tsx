@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from 'recharts';
-import { avgDomain, chartTheme } from '@/lib/chartTheme.ts';
+import { avgDomain, chartTheme, formatTick } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { LapHrPoint } from '@/lib/lapChartData.ts';
 
@@ -51,7 +51,7 @@ export const LapHrChart = (props: LapHrChartProps) => {
           tickLine={false}
           axisLine={false}
           tickCount={compact ? 3 : undefined}
-          tickFormatter={(v: number) => (compact ? `${v}` : `${v} bpm`)}
+          tickFormatter={(v: number) => formatTick(v, compact ? undefined : 'bpm')}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}
