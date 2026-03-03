@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { useSessionsStore } from "../../store/sessions.ts";
-import { getAllFitFileSessionIds } from "../../lib/indexeddb.ts";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
-import { List, ListItem } from "../../components/ui/List.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
+import { useSessionsStore } from "@/store/sessions.ts";
+import { getAllFitFileSessionIds } from "@/lib/indexeddb.ts";
+import { Card } from "@/components/ui/Card.tsx";
+import { CardHeader } from "@/components/ui/CardHeader.tsx";
+import { List, ListItem } from "@/components/ui/List.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
 import { DeleteAllDataDialog } from "./DeleteAllDataDialog.tsx";
 import { ReimportDialog } from "./ReimportDialog.tsx";
 import { useReimport } from "./hooks/useReimport.ts";
-import { formatDate } from "../../lib/utils.ts";
+import { formatDate } from "@/lib/utils.ts";
 
 export const DataManagementSection = () => {
   const sessionCount = useSessionsStore((s) => s.sessions.length);

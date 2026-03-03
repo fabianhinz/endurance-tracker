@@ -10,9 +10,9 @@ import {
   Activity,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useUserStore } from "../../store/user.ts";
-import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
-import { downsample } from "../../engine/downsample.ts";
+import { useUserStore } from "@/store/user.ts";
+import { ChartPreviewCard } from "@/components/ui/ChartPreviewCard.tsx";
+import { downsample } from "@/engine/downsample.ts";
 import {
   prepareHrData,
   preparePowerData,
@@ -24,14 +24,14 @@ import {
   prepareGAPData,
   buildTimeToGpsLookup,
   filterTimeSeries,
-} from "../../lib/chartData.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
+} from "@/lib/chartData.ts";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
 import {
   computeHrZoneDistribution,
   computePowerZoneDistribution,
   computePaceZoneDistribution,
-} from "../../engine/zoneDistribution.ts";
-import { sportIcon } from "../../lib/sportIcons.ts";
+} from "@/engine/zoneDistribution.ts";
+import { sportIcon } from "@/lib/sportIcons.ts";
 import { HrChart } from "./HrChart.tsx";
 import { PowerChart } from "./PowerChart.tsx";
 import { SpeedChart } from "./SpeedChart.tsx";
@@ -41,8 +41,8 @@ import { GradeChart } from "./GradeChart.tsx";
 import { PaceChart } from "./PaceChart.tsx";
 import { GradeAdjustedPaceChart } from "./GradeAdjustedPaceChart.tsx";
 import { ZoneDistributionChart } from "./ZoneDistributionChart.tsx";
-import { tokens } from "../../lib/tokens.ts";
-import type { SessionRecord, TrainingSession } from "../../engine/types.ts";
+import { tokens } from "@/lib/tokens.ts";
+import type { SessionRecord, TrainingSession } from "@/engine/types.ts";
 
 interface ChartEntry {
   key: string;

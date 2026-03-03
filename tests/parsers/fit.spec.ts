@@ -3,8 +3,8 @@ import {
   deriveDistanceFromRecords,
   deriveAvgFromRecords,
   deriveMaxFromRecords,
-} from '../../src/parsers/fit.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
+} from '@/parsers/fit.ts';
+import type { SessionRecord } from '@/engine/types.ts';
 
 function makeRecord(overrides: Partial<SessionRecord> = {}): SessionRecord {
   return { sessionId: 'test', timestamp: 0, ...overrides };

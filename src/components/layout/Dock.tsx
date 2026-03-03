@@ -11,23 +11,23 @@ import {
   Clock,
   HeartPulse,
 } from "lucide-react";
-import { useFileUpload } from "../../features/training/hooks/useFileUpload.ts";
-import { cn } from "../../lib/utils.ts";
-import { cardClass } from "../ui/Card.tsx";
-import { useSlideIndicator } from "../ui/SlideIndicator.tsx";
-import { useLayoutStore } from "../../store/layout.ts";
-import { useFiltersStore } from "../../store/filters.ts";
-import { Button } from "../ui/Button.tsx";
+import { useFileUpload } from "@/features/training/hooks/useFileUpload.ts";
+import { cn } from "@/lib/utils.ts";
+import { cardClass } from "@/components/ui/Card.tsx";
+import { useSlideIndicator } from "@/components/ui/SlideIndicator.tsx";
+import { useLayoutStore } from "@/store/layout.ts";
+import { useFiltersStore } from "@/store/filters.ts";
+import { Button } from "@/components/ui/Button.tsx";
 import { DockRevealPanel } from "./DockRevealPanel.tsx";
 import { DockFilterOptions } from "./DockFilterOptions.tsx";
-import { sportIcon } from "../../lib/sportIcons.ts";
+import { sportIcon } from "@/lib/sportIcons.ts";
 import {
   type TimeRange,
   timeRangeOptions,
   rangeLabelMap,
   formatCustomRangeDuration,
-} from "../../lib/timeRange.ts";
-import type { Sport } from "../../engine/types.ts";
+} from "@/lib/timeRange.ts";
+import type { Sport } from "@/engine/types.ts";
 
 const tabs = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useSessionsStore } from '../../../store/sessions.ts';
-import { useUploadProgressStore } from '../../../store/uploadProgress.ts';
-import { getAllSessionGPS } from '../../../lib/indexeddb.ts';
-import type { SessionGPS } from '../../../engine/types.ts';
-import type { WorkerMessageOut } from '../gpsBuild.worker.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useUploadProgressStore } from '@/store/uploadProgress.ts';
+import { getAllSessionGPS } from '@/lib/indexeddb.ts';
+import type { SessionGPS } from '@/engine/types.ts';
+import type { WorkerMessageOut } from '@/features/map/gpsBuild.worker.ts';
 
 export const useGPSBackfill = () => {
   const [backfilling, setBackfilling] = useState(false);

@@ -8,9 +8,9 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from "recharts";
-import { avgDomain, chartTheme } from "../../lib/chartTheme.ts";
-import { tokens } from "../../lib/tokens.ts";
-import type { LapPowerPoint } from "../../lib/lapChartData.ts";
+import { avgDomain, chartTheme } from "@/lib/chartTheme.ts";
+import { tokens } from "@/lib/tokens.ts";
+import type { LapPowerPoint } from "@/lib/lapChartData.ts";
 
 interface LapPowerChartProps {
   data: LapPowerPoint[];

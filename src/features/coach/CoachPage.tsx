@@ -1,18 +1,18 @@
 import { Link } from 'react-router-dom';
-import { useCoachPlan } from '../../hooks/useCoachPlan.ts';
-import { PageGrid } from '../../components/ui/PageGrid.tsx';
-import { Card } from '../../components/ui/Card.tsx';
-import { CardHeader } from '../../components/ui/CardHeader.tsx';
-import { Typography } from '../../components/ui/Typography.tsx';
-import { Button } from '../../components/ui/Button.tsx';
-import { MetricLabel } from '../../components/ui/MetricLabel.tsx';
-import { ActionPromptCard } from '../../components/ui/ActionPromptCard.tsx';
-import { METRIC_EXPLANATIONS } from '../../lib/explanations.ts';
+import { useCoachPlan } from '@/hooks/useCoachPlan.ts';
+import { PageGrid } from '@/components/ui/PageGrid.tsx';
+import { Card } from '@/components/ui/Card.tsx';
+import { CardHeader } from '@/components/ui/CardHeader.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import { Button } from '@/components/ui/Button.tsx';
+import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
+import { ActionPromptCard } from '@/components/ui/ActionPromptCard.tsx';
+import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
 
 import { CoachStatusCard } from './CoachStatusCard.tsx';
 import { WeeklyPlanTimeline } from './WeeklyPlanTimeline.tsx';
 import { Settings } from 'lucide-react';
-import { ZoneLegend } from '../../components/ui/ZoneLegend.tsx';
+import { ZoneLegend } from '@/components/ui/ZoneLegend.tsx';
 
 export const CoachPage = () => {
   const coach = useCoachPlan();

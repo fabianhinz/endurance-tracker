@@ -1,5 +1,5 @@
 import * as ToastPrimitive from "@radix-ui/react-toast";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
 import { useToastStore } from "./toastStore.ts";
 
 const variantClasses: Record<string, string> = {

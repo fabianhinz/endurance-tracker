@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { useLayoutStore } from "../../store/layout.ts";
-import { cn } from "../../lib/utils.ts";
+import { useLayoutStore } from "@/store/layout.ts";
+import { cn } from "@/lib/utils.ts";
 
 interface PageGridProps {
   children: ReactNode;

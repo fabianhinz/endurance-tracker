@@ -9,9 +9,9 @@ import {
   preparePaceData,
   prepareGAPData,
   filterTimeSeries,
-} from '../../src/lib/chartData.ts';
-import { makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
+} from '@/lib/chartData.ts';
+import { makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
+import type { SessionRecord } from '@/engine/types.ts';
 
 describe('filterTimeSeries', () => {
   const data = [

@@ -1,10 +1,10 @@
 import { useState, useTransition } from "react";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
-import { Slider } from "../../components/ui/Slider.tsx";
-import { Switch } from "../../components/ui/Switch.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import type { Sport } from "../../engine/types.ts";
+import { Card } from "@/components/ui/Card.tsx";
+import { CardHeader } from "@/components/ui/CardHeader.tsx";
+import { Slider } from "@/components/ui/Slider.tsx";
+import { Switch } from "@/components/ui/Switch.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import type { Sport } from "@/engine/types.ts";
 
 const formatDistanceKm = (metres: number): string => {
   const km = metres / 1000;

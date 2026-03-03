@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mapFitLaps } from '../../src/parsers/fit.ts';
+import { mapFitLaps } from '@/parsers/fit.ts';
 
 function makeFitLap(overrides: Record<string, unknown> = {}) {
   return {

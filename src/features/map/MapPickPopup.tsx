@@ -1,13 +1,13 @@
-import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
+import { useHoverIntent } from "@/hooks/useHoverIntent.ts";
 import { X } from "lucide-react";
-import { Button } from "../../components/ui/Button.tsx";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
-import { SessionItem } from "../../components/ui/SessionItem.tsx";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
+import { Button } from "@/components/ui/Button.tsx";
+import { Card } from "@/components/ui/Card.tsx";
+import { CardHeader } from "@/components/ui/CardHeader.tsx";
+import { SessionItem } from "@/components/ui/SessionItem.tsx";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
 import { usePopupPosition } from "./hooks/usePopupPosition.ts";
 import { useDismiss } from "./hooks/useDismiss.ts";
-import type { TrainingSession } from "../../engine/types.ts";
+import type { TrainingSession } from "@/engine/types.ts";
 
 export interface PopupInfo {
   x: number;

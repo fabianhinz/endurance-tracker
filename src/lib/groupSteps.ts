@@ -1,4 +1,4 @@
-import type { WorkoutStep } from "../types/index.ts";
+import type { WorkoutStep } from "@/types/index.ts";
 
 export type GroupedStep =
   | { kind: "single"; step: WorkoutStep }

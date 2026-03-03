@@ -1,9 +1,9 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, afterEach, vi } from 'vitest';
-import { useUserStore } from '../src/store/user.ts';
-import { useSessionsStore } from '../src/store/sessions.ts';
-import { useCoachPlanStore } from '../src/store/coachPlan.ts';
-import { resetDBInstance } from '../src/lib/db.ts';
+import { useUserStore } from '@/store/user.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useCoachPlanStore } from '@/store/coachPlan.ts';
+import { resetDBInstance } from '@/lib/db.ts';
 
 beforeEach(() => {
   // Only fake Date (not setTimeout/setInterval) to avoid blocking async IndexedDB

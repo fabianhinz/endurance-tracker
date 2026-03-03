@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   detectNewPBs,
   mergePBs,
-} from '../../src/engine/records.ts';
-import { makeCyclingRecords, makeRunningRecords, makeSwimmingRecords } from '../factories/records.ts';
+} from '@/engine/records.ts';
+import { makeCyclingRecords, makeRunningRecords, makeSwimmingRecords } from '@tests/factories/records.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

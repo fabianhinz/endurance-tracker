@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { glassClass } from "../../components/ui/Card.tsx";
-import { Button } from "../../components/ui/Button.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { cn } from "../../lib/utils.ts";
+import { glassClass } from "@/components/ui/Card.tsx";
+import { Button } from "@/components/ui/Button.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { cn } from "@/lib/utils.ts";
 import {
   formatDistance,
   formatLapTime,
   formatPace,
   formatSpeed,
-} from "../../lib/utils.ts";
-import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
+} from "@/lib/utils.ts";
+import type { LapAnalysis, LapRecordEnrichment } from "@/engine/laps.ts";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
 
 interface LapDetailTableProps {
   laps: LapAnalysis[];

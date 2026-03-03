@@ -1,12 +1,12 @@
-import { useMetrics } from "../../hooks/useMetrics.ts";
-import { ChartCard } from "../../components/ui/ChartCard.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { cn } from "../../lib/utils.ts";
-import { acwrColorMap, acwrFill, ACWR_ZONES } from "../../lib/statusColors.ts";
-import { getACWRColor, getInjuryRisk } from "../../engine/coaching.ts";
-import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
-import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
-import { GaugeDial } from "../../components/ui/GaugeDial.tsx";
+import { useMetrics } from "@/hooks/useMetrics.ts";
+import { ChartCard } from "@/components/ui/ChartCard.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { cn } from "@/lib/utils.ts";
+import { acwrColorMap, acwrFill, ACWR_ZONES } from "@/lib/statusColors.ts";
+import { getACWRColor, getInjuryRisk } from "@/engine/coaching.ts";
+import { METRIC_EXPLANATIONS } from "@/lib/explanations.ts";
+import { MetricLabel } from "@/components/ui/MetricLabel.tsx";
+import { GaugeDial } from "@/components/ui/GaugeDial.tsx";
 
 export const ACWRGauge = () => {
   const metrics = useMetrics();

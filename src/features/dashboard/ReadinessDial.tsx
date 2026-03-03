@@ -1,12 +1,12 @@
-import { useMetrics } from "../../hooks/useMetrics.ts";
-import { ChartCard } from "../../components/ui/ChartCard.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { cn } from "../../lib/utils.ts";
-import { tokens } from "../../lib/tokens.ts";
-import { statusTextClass, statusFill } from "../../lib/statusColors.ts";
-import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
-import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
-import { GaugeDial } from "../../components/ui/GaugeDial.tsx";
+import { useMetrics } from "@/hooks/useMetrics.ts";
+import { ChartCard } from "@/components/ui/ChartCard.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { cn } from "@/lib/utils.ts";
+import { tokens } from "@/lib/tokens.ts";
+import { statusTextClass, statusFill } from "@/lib/statusColors.ts";
+import { METRIC_EXPLANATIONS } from "@/lib/explanations.ts";
+import { MetricLabel } from "@/components/ui/MetricLabel.tsx";
+import { GaugeDial } from "@/components/ui/GaugeDial.tsx";
 
 const TSB_ZONES = [
   { from: -40, to: -30, color: tokens.statusDangerStrong },

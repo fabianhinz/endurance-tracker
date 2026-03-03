@@ -1,5 +1,5 @@
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
 
 interface FilterOption {
   value: string;

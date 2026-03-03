@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
-import { useSessionsStore } from '../../src/store/sessions.ts';
-import { useUserStore } from '../../src/store/user.ts';
-import { useCoachPlanStore } from '../../src/store/coachPlan.ts';
-import { useLayoutStore } from '../../src/store/layout.ts';
-import { useFiltersStore } from '../../src/store/filters.ts';
-import { makeSession } from '../factories/sessions.ts';
-import { makeUserProfile } from '../factories/profiles.ts';
-import { makeCyclingRecords, makeLaps } from '../factories/records.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useUserStore } from '@/store/user.ts';
+import { useCoachPlanStore } from '@/store/coachPlan.ts';
+import { useLayoutStore } from '@/store/layout.ts';
+import { useFiltersStore } from '@/store/filters.ts';
+import { makeSession } from '@tests/factories/sessions.ts';
+import { makeUserProfile } from '@tests/factories/profiles.ts';
+import { makeCyclingRecords, makeLaps } from '@tests/factories/records.ts';
 import {
   saveSessionRecords,
   getSessionRecords,
   clearAllRecords,
   saveSessionLaps,
   getSessionLaps,
-} from '../../src/lib/indexeddb.ts';
-import { idbStorage } from '../../src/lib/idbStorage.ts';
+} from '@/lib/indexeddb.ts';
+import { idbStorage } from '@/lib/idbStorage.ts';
 
 describe('delete all data', () => {
   it('clears sessions, personal bests, profile, session-records, session-laps, and resets onboarding', async () => {

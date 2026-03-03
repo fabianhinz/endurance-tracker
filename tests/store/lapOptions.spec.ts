@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_CUSTOM_DISTANCE } from '../../src/store/lapOptions.ts';
+import { DEFAULT_CUSTOM_DISTANCE } from '@/store/lapOptions.ts';
 
 describe('DEFAULT_CUSTOM_DISTANCE', () => {
   it('provides defaults for all sports', () => {

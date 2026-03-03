@@ -2,7 +2,7 @@ import { Children, useState, type ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 import { Button } from "./Button.tsx";
 import { Typography } from "./Typography.tsx";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
 
 interface CardGridProps {
   children: ReactNode;

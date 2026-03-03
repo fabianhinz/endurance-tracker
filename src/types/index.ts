@@ -1,6 +1,6 @@
-import type { Gender, FormStatus, InjuryRisk, RunningZoneName, RaceDistance } from '../engine/types.ts';
+import type { Gender, FormStatus, InjuryRisk, RunningZoneName, RaceDistance } from '@/engine/types.ts';
 
-export type { Gender, FormStatus, InjuryRisk, RunningZoneName, RaceDistance } from '../engine/types.ts';
+export type { Gender, FormStatus, InjuryRisk, RunningZoneName, RaceDistance } from '@/engine/types.ts';
 
 export interface UserProfile {
   id: string;

@@ -1,22 +1,22 @@
 import { useMemo } from "react";
 import { X } from "lucide-react";
-import { Button } from "../../components/ui/Button.tsx";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
+import { Button } from "@/components/ui/Button.tsx";
+import { Card } from "@/components/ui/Card.tsx";
+import { CardHeader } from "@/components/ui/CardHeader.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
 import { usePopupPosition } from "./hooks/usePopupPosition.ts";
 import { useDismiss } from "./hooks/useDismiss.ts";
-import { analyzeLaps } from "../../engine/laps.ts";
-import { computeRunningZones } from "../../engine/zones.ts";
-import { useUserStore } from "../../store/user.ts";
+import { analyzeLaps } from "@/engine/laps.ts";
+import { computeRunningZones } from "@/engine/zones.ts";
+import { useUserStore } from "@/store/user.ts";
 import {
   formatPace,
   formatSpeed,
   formatLapTime,
   formatDistance,
-} from "../../lib/utils.ts";
-import type { SessionLap, Sport, RunningZone } from "../../engine/types.ts";
-import type { LapAnalysis } from "../../engine/laps.ts";
+} from "@/lib/utils.ts";
+import type { SessionLap, Sport, RunningZone } from "@/engine/types.ts";
+import type { LapAnalysis } from "@/engine/laps.ts";
 
 export interface LapPopupInfo {
   x: number;

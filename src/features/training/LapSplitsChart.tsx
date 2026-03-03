@@ -8,10 +8,10 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from "recharts";
-import { avgDomain, chartTheme } from "../../lib/chartTheme.ts";
-import { tokens } from "../../lib/tokens.ts";
-import { formatPace, formatPaceInput } from "../../lib/utils.ts";
-import type { LapSplitPoint } from "../../lib/lapChartData.ts";
+import { avgDomain, chartTheme } from "@/lib/chartTheme.ts";
+import { tokens } from "@/lib/tokens.ts";
+import { formatPace, formatPaceInput } from "@/lib/utils.ts";
+import type { LapSplitPoint } from "@/lib/lapChartData.ts";
 
 interface LapSplitsChartProps {
   data: LapSplitPoint[];

@@ -8,7 +8,7 @@ import {
   BedDouble,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { WorkoutType } from "../../types/index.ts";
+import type { WorkoutType } from "@/types/index.ts";
 
 export const WORKOUT_ICONS: Record<WorkoutType, LucideIcon> = {
   rest: BedDouble,

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { computeDynamicLaps } from '../../src/engine/dynamicLaps.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
-import { makeRunningRecords, makeCyclingRecords } from '../factories/records.ts';
+import { computeDynamicLaps } from '@/engine/dynamicLaps.ts';
+import type { SessionRecord } from '@/engine/types.ts';
+import { makeRunningRecords, makeCyclingRecords } from '@tests/factories/records.ts';
 
 describe('computeDynamicLaps', () => {
   it('returns empty for empty records', () => {

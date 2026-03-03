@@ -1,9 +1,9 @@
-import { cn } from "../../lib/utils.ts";
-import { useLayoutStore } from "../../store/layout.ts";
-import { MapBackground } from "../../features/map/MapBackground.tsx";
+import { cn } from "@/lib/utils.ts";
+import { useLayoutStore } from "@/store/layout.ts";
+import { MapBackground } from "@/features/map/MapBackground.tsx";
 import { Dock } from "./Dock.tsx";
 import { UploadProgress } from "./UploadProgress.tsx";
-import { OnboardingPage } from "../../features/onboarding/OnboardingPage.tsx";
+import { OnboardingPage } from "@/features/onboarding/OnboardingPage.tsx";
 import { Outlet } from "react-router-dom";
 
 export const AppLayout = () => {

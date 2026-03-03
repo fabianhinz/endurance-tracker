@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { useUserStore } from "../../../store/user.ts";
-import { useSessionsStore } from "../../../store/sessions.ts";
+import { useUserStore } from "@/store/user.ts";
+import { useSessionsStore } from "@/store/sessions.ts";
 import {
   getAllFitFiles,
   deleteSessionRecords,
@@ -8,10 +8,10 @@ import {
   deleteSessionGPS,
   saveSessionRecords,
   saveSessionLaps,
-} from "../../../lib/indexeddb.ts";
-import { parseFitFile } from "../../../parsers/fit.ts";
-import { computePBsForSessions } from "../../../engine/records.ts";
-import { toast } from "../../../components/ui/toastStore.ts";
+} from "@/lib/indexeddb.ts";
+import { parseFitFile } from "@/parsers/fit.ts";
+import { computePBsForSessions } from "@/engine/records.ts";
+import { toast } from "@/components/ui/toastStore.ts";
 
 interface ReimportState {
   reimporting: boolean;

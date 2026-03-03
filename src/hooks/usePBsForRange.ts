@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useFiltersStore } from "../store/filters.ts";
-import { useSessionsStore } from "../store/sessions.ts";
-import { getRecordsForSessions } from "../lib/indexeddb.ts";
-import { rangeToCutoff, customRangeToCutoffs } from "../lib/timeRange.ts";
-import { computePBsForSessions, groupPBsBySport, PB_SLOTS } from "../engine/records.ts";
-import type { PersonalBest, Sport } from "../engine/types.ts";
+import { useFiltersStore } from "@/store/filters.ts";
+import { useSessionsStore } from "@/store/sessions.ts";
+import { getRecordsForSessions } from "@/lib/indexeddb.ts";
+import { rangeToCutoff, customRangeToCutoffs } from "@/lib/timeRange.ts";
+import { computePBsForSessions, groupPBsBySport, PB_SLOTS } from "@/engine/records.ts";
+import type { PersonalBest, Sport } from "@/engine/types.ts";
 
 const categoryOrder: Record<string, number> = {
   "peak-power": 0,

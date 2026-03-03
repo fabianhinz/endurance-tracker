@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { useLayoutStore } from "../../src/store/layout.ts";
+import { useLayoutStore } from "@/store/layout.ts";
 
 describe("useLayoutStore", () => {
   beforeEach(() => {

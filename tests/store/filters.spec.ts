@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { useFiltersStore } from "../../src/store/filters.ts";
+import { useFiltersStore } from "@/store/filters.ts";
 
 describe("useFiltersStore", () => {
   beforeEach(() => {

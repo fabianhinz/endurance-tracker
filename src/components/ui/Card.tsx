@@ -1,4 +1,4 @@
-import { cn } from "../../lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
 
 export const glassClass = "bg-white/5 backdrop-blur-xl border border-white/10";
 

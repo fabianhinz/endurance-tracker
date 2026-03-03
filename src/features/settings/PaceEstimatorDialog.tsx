@@ -1,25 +1,25 @@
 import { useState, useMemo } from "react";
-import type { RaceDistance } from "../../engine/types.ts";
+import type { RaceDistance } from "@/engine/types.ts";
 import {
   RACE_DISTANCE_METERS,
   thresholdPaceFromRace,
-} from "../../engine/vdot.ts";
+} from "@/engine/vdot.ts";
 import {
   DialogRoot,
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "../../components/ui/Dialog.tsx";
-import { Button } from "../../components/ui/Button.tsx";
-import { Input } from "../../components/ui/Input.tsx";
-import { Label } from "../../components/ui/Label.tsx";
+} from "@/components/ui/Dialog.tsx";
+import { Button } from "@/components/ui/Button.tsx";
+import { Input } from "@/components/ui/Input.tsx";
+import { Label } from "@/components/ui/Label.tsx";
 import {
   SelectRoot,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "../../components/ui/Select.tsx";
+} from "@/components/ui/Select.tsx";
 
 interface PaceEstimatorDialogProps {
   open: boolean;

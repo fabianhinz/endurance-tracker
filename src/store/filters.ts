@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { idbStorage } from "../lib/idbStorage.ts";
-import type { TimeRange } from "../lib/timeRange.ts";
-import type { Sport } from "../engine/types.ts";
+import { idbStorage } from "@/lib/idbStorage.ts";
+import type { TimeRange } from "@/lib/timeRange.ts";
+import type { Sport } from "@/engine/types.ts";
 
 interface FiltersState {
   timeRange: TimeRange;

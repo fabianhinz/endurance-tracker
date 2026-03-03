@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   pickBoundsFromCorners,
   filterTracksByPickBounds,
-} from "../../../src/features/map/trackPicking.ts";
-import type { PickableTrack } from "../../../src/features/map/trackPicking.ts";
-import type { GPSBounds } from "../../../src/engine/types.ts";
+} from "@/features/map/trackPicking.ts";
+import type { PickableTrack } from "@/features/map/trackPicking.ts";
+import type { GPSBounds } from "@/engine/types.ts";
 
 describe("pickBoundsFromCorners", () => {
   it("normalizes corners regardless of order", () => {

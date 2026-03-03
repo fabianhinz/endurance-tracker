@@ -1,10 +1,10 @@
 import { useState, useRef, useCallback } from "react";
 import { GripVertical } from "lucide-react";
-import { Card } from "../../components/ui/Card.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { List, ListItem } from "../../components/ui/List.tsx";
-import { useDeckMetricsStore } from "../../store/deckMetrics.ts";
-import type { DeckMetrics } from "../../store/deckMetrics.ts";
+import { Card } from "@/components/ui/Card.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { List, ListItem } from "@/components/ui/List.tsx";
+import { useDeckMetricsStore } from "@/store/deckMetrics.ts";
+import type { DeckMetrics } from "@/store/deckMetrics.ts";
 
 const formatMs = (v: number) => `${v.toFixed(1)} ms`;
 const formatMB = (v: number) => `${(v / 1024 / 1024).toFixed(1)} MB`;

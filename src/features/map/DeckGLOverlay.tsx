@@ -11,11 +11,11 @@ import {
   sportMarkerColor,
   sportTrackColor,
 } from "./trackColors.ts";
-import type { LapMarker } from "../../engine/lapMarkers.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
-import { useSessionsStore } from "../../store/sessions.ts";
-import { useLayoutStore } from "../../store/layout.ts";
-import { useDeckMetricsStore } from "../../store/deckMetrics.ts";
+import type { LapMarker } from "@/engine/lapMarkers.ts";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
+import { useSessionsStore } from "@/store/sessions.ts";
+import { useLayoutStore } from "@/store/layout.ts";
+import { useDeckMetricsStore } from "@/store/deckMetrics.ts";
 import type { MapTrack } from "./hooks/useMapTracks.ts";
 import {
   decodeCached,

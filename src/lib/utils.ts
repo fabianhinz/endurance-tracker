@@ -99,7 +99,7 @@ export const formatPaceTick = (minPerKm: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-import type { PersonalBest } from "../engine/types.ts";
+import type { PersonalBest } from "@/engine/types.ts";
 
 const POWER_WINDOW_LABELS: Record<number, string> = {
   5: "5 sec",

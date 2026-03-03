@@ -8,11 +8,11 @@ import {
   Tooltip as RechartsTooltip,
   ReferenceArea,
 } from "recharts";
-import { useChartZoom } from "../../lib/hooks/useChartZoom.ts";
-import { chartTheme, formatChartTime } from "../../lib/chartTheme.ts";
-import { tokens } from "../../lib/tokens.ts";
-import { formatPaceTick } from "../../lib/utils.ts";
-import type { PacePoint } from "../../lib/chartData.ts";
+import { useChartZoom } from "@/lib/hooks/useChartZoom.ts";
+import { chartTheme, formatChartTime } from "@/lib/chartTheme.ts";
+import { tokens } from "@/lib/tokens.ts";
+import { formatPaceTick } from "@/lib/utils.ts";
+import type { PacePoint } from "@/lib/chartData.ts";
 
 interface PaceChartProps {
   data: PacePoint[];

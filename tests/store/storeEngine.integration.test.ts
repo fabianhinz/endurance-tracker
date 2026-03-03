@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { useUserStore } from '../../src/store/user.ts';
-import { useSessionsStore } from '../../src/store/sessions.ts';
-import { computeMetrics } from '../../src/engine/metrics.ts';
-import { getCoachingRecommendation } from '../../src/lib/coachingMessages.ts';
-import { detectNewPBs } from '../../src/engine/records.ts';
-import { makeUserProfile } from '../factories/profiles.ts';
-import { makeSession } from '../factories/sessions.ts';
-import { makeCyclingRecords } from '../factories/records.ts';
+import { useUserStore } from '@/store/user.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { computeMetrics } from '@/engine/metrics.ts';
+import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
+import { detectNewPBs } from '@/engine/records.ts';
+import { makeUserProfile } from '@tests/factories/profiles.ts';
+import { makeSession } from '@tests/factories/sessions.ts';
+import { makeCyclingRecords } from '@tests/factories/records.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

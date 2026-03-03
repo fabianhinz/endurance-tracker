@@ -1,5 +1,5 @@
 import type { ElementType, HTMLAttributes, ReactNode } from "react";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
 
 const variants = {
   display: { element: "p", classes: "text-3xl font-bold", defaultColor: "primary" },

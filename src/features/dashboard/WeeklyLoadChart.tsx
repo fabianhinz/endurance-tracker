@@ -9,16 +9,16 @@ import {
   CartesianGrid,
   ReferenceArea,
 } from "recharts";
-import { useFilteredMetrics } from "../../hooks/useFilteredMetrics.ts";
-import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
-import { useChartZoom } from "../../lib/hooks/useChartZoom.ts";
-import { chartTheme } from "../../lib/chartTheme.ts";
-import { tokens } from "../../lib/tokens.ts";
-import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
-import { rangeMap } from "../../lib/timeRange.ts";
-import type { TimeRange } from "../../lib/timeRange.ts";
+import { useFilteredMetrics } from "@/hooks/useFilteredMetrics.ts";
+import { ChartPreviewCard } from "@/components/ui/ChartPreviewCard.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { MetricLabel } from "@/components/ui/MetricLabel.tsx";
+import { useChartZoom } from "@/lib/hooks/useChartZoom.ts";
+import { chartTheme } from "@/lib/chartTheme.ts";
+import { tokens } from "@/lib/tokens.ts";
+import { METRIC_EXPLANATIONS } from "@/lib/explanations.ts";
+import { rangeMap } from "@/lib/timeRange.ts";
+import type { TimeRange } from "@/lib/timeRange.ts";
 import { useDashboardChartZoom } from "./hooks/useDashboardChartZoom.ts";
 
 const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

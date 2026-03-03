@@ -1,18 +1,18 @@
 import { useState, useRef, useEffect, useTransition } from "react";
-import type { Gender } from "../../engine/types.ts";
-import { useUserStore } from "../../store/user.ts";
-import { Input } from "../../components/ui/Input.tsx";
-import { Label } from "../../components/ui/Label.tsx";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
+import type { Gender } from "@/engine/types.ts";
+import { useUserStore } from "@/store/user.ts";
+import { Input } from "@/components/ui/Input.tsx";
+import { Label } from "@/components/ui/Label.tsx";
+import { Card } from "@/components/ui/Card.tsx";
+import { CardHeader } from "@/components/ui/CardHeader.tsx";
 import {
   SelectRoot,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "../../components/ui/Select.tsx";
-import { parsePaceInput, formatPaceInput } from "../../lib/utils.ts";
+} from "@/components/ui/Select.tsx";
+import { parsePaceInput, formatPaceInput } from "@/lib/utils.ts";
 import { PaceEstimatorDialog } from "./PaceEstimatorDialog.tsx";
 import { Info } from "lucide-react";
 

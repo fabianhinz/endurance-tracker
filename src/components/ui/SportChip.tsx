@@ -1,7 +1,7 @@
-import { cn } from "../../lib/utils.ts";
-import { sportColorClass } from "../../lib/statusColors.ts";
-import { sportIcon } from "../../lib/sportIcons.ts";
-import type { Sport } from "../../engine/types.ts";
+import { cn } from "@/lib/utils.ts";
+import { sportColorClass } from "@/lib/statusColors.ts";
+import { sportIcon } from "@/lib/sportIcons.ts";
+import type { Sport } from "@/engine/types.ts";
 
 export const SportChip = (props: { sport: Sport }) => {
   const Icon = sportIcon[props.sport];

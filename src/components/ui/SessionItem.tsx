@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { cn } from "../../lib/utils.ts";
-import { formatDate, formatDuration, formatDistance } from "../../lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
+import { formatDate, formatDuration, formatDistance } from "@/lib/utils.ts";
 import { Typography } from "./Typography.tsx";
 import { SportBadge } from "./SportBadge.tsx";
 import { glassClass } from "./Card.tsx";
-import type { TrainingSession } from "../../engine/types.ts";
+import type { TrainingSession } from "@/engine/types.ts";
 
 interface SessionItemProps {
   session: TrainingSession;

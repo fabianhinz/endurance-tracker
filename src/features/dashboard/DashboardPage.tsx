@@ -1,8 +1,8 @@
 import { MetricsChart } from "./MetricsChart.tsx";
 import { WeeklyLoadChart } from "./WeeklyLoadChart.tsx";
 import { RecentActivityCard } from "./RecentActivityCard.tsx";
-import { PageGrid } from "../../components/ui/PageGrid.tsx";
-import { CoachStatusCard } from "../coach/CoachStatusCard.tsx";
+import { PageGrid } from "@/components/ui/PageGrid.tsx";
+import { CoachStatusCard } from "@/features/coach/CoachStatusCard.tsx";
 
 export const DashboardPage = () => {
   return (

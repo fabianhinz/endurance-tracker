@@ -4,9 +4,9 @@ import {
   getTrainingEffectLabel,
   getTrainingEffectSummary,
   LT_HRR,
-} from '../../src/engine/trainingEffect.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
-import { makeRunningRecords, makeCyclingRecords } from '../factories/records.ts';
+} from '@/engine/trainingEffect.ts';
+import type { SessionRecord } from '@/engine/types.ts';
+import { makeRunningRecords, makeCyclingRecords } from '@tests/factories/records.ts';
 
 describe('calculateTrainingEffect', () => {
   it('returns undefined when maxHr <= restHr', () => {

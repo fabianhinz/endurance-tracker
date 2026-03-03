@@ -6,9 +6,9 @@ import {
   filterRecordsByLap,
   enrichLapFromRecords,
   enrichAllLaps,
-} from '../../src/engine/laps.ts';
-import type { SessionLap, SessionRecord } from '../../src/engine/types.ts';
-import { makeLaps, makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
+} from '@/engine/laps.ts';
+import type { SessionLap, SessionRecord } from '@/engine/types.ts';
+import { makeLaps, makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
 
 function makeLap(overrides: Partial<SessionLap> = {}): SessionLap {
   return {

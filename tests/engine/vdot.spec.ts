@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { thresholdPaceFromRace, RACE_DISTANCE_METERS } from '../../src/engine/vdot.ts';
+import { thresholdPaceFromRace, RACE_DISTANCE_METERS } from '@/engine/vdot.ts';
 
 describe('thresholdPaceFromRace', () => {
   it('5K in 20:00 → threshold pace ~4:10-4:20/km', () => {

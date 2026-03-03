@@ -10,14 +10,14 @@ import {
   CartesianGrid,
   ReferenceArea,
 } from "recharts";
-import { useFilteredMetrics } from "../../hooks/useFilteredMetrics.ts";
-import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
-import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
-import { useChartZoom } from "../../lib/hooks/useChartZoom.ts";
-import { chartTheme } from "../../lib/chartTheme.ts";
-import { tokens } from "../../lib/tokens.ts";
-import { rangeMap } from "../../lib/timeRange.ts";
-import type { TimeRange } from "../../lib/timeRange.ts";
+import { useFilteredMetrics } from "@/hooks/useFilteredMetrics.ts";
+import { ChartPreviewCard } from "@/components/ui/ChartPreviewCard.tsx";
+import { MetricLabel } from "@/components/ui/MetricLabel.tsx";
+import { useChartZoom } from "@/lib/hooks/useChartZoom.ts";
+import { chartTheme } from "@/lib/chartTheme.ts";
+import { tokens } from "@/lib/tokens.ts";
+import { rangeMap } from "@/lib/timeRange.ts";
+import type { TimeRange } from "@/lib/timeRange.ts";
 import { useDashboardChartZoom } from "./hooks/useDashboardChartZoom.ts";
 
 export const MetricsChart = () => {

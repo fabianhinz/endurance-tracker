@@ -1,8 +1,8 @@
 import {
   boundsOverlap,
   segmentIntersectsBounds,
-} from "../../engine/gps.ts";
-import type { GPSBounds } from "../../engine/types.ts";
+} from "@/engine/gps.ts";
+import type { GPSBounds } from "@/engine/types.ts";
 
 interface GeoCorner {
   lat: number;

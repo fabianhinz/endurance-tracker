@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateFingerprint, findDuplicates } from '../../src/engine/fingerprint.ts';
-import type { TrainingSession } from '../../src/engine/types.ts';
+import { generateFingerprint, findDuplicates } from '@/engine/fingerprint.ts';
+import type { TrainingSession } from '@/engine/types.ts';
 
 // ---------------------------------------------------------------------------
 // generateFingerprint

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { useUserStore } from '../../src/store/user.ts';
-import { makeUserProfile } from '../factories/profiles.ts';
-import { createDefaultProfile } from '../../src/lib/defaults.ts';
+import { useUserStore } from '@/store/user.ts';
+import { makeUserProfile } from '@tests/factories/profiles.ts';
+import { createDefaultProfile } from '@/lib/defaults.ts';
 
 describe('user store', () => {
   it('setProfile auto-generates id and createdAt', () => {

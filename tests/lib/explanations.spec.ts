@@ -3,7 +3,7 @@ import {
   METRIC_EXPLANATIONS,
   type MetricId,
   type MetricExplanation,
-} from '../../src/lib/explanations.ts';
+} from '@/lib/explanations.ts';
 
 const ALL_METRIC_IDS: MetricId[] = [
   'tss',

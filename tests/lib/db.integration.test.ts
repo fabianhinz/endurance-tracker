@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { getDB, resetDBInstance } from '../../src/lib/db.ts';
+import { getDB, resetDBInstance } from '@/lib/db.ts';
 
 describe('DB schema', () => {
   beforeEach(() => {

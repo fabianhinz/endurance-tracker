@@ -3,9 +3,9 @@ import {
   prepareLapSplitsData,
   prepareLapHrData,
   prepareLapPowerData,
-} from '../../src/lib/lapChartData.ts';
-import { analyzeLaps, enrichAllLaps, type LapRecordEnrichment } from '../../src/engine/laps.ts';
-import { makeLaps, makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
+} from '@/lib/lapChartData.ts';
+import { analyzeLaps, enrichAllLaps, type LapRecordEnrichment } from '@/engine/laps.ts';
+import { makeLaps, makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
 
 describe('prepareLapSplitsData', () => {
   it('converts laps to split points with pace, speed, and max values', () => {

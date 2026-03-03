@@ -1,7 +1,7 @@
-import { Typography } from "../../components/ui/Typography.tsx";
-import { formatDuration, cn } from "../../lib/utils.ts";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { formatDuration, cn } from "@/lib/utils.ts";
 import { WORKOUT_ICONS } from "./workoutDisplay.ts";
-import type { PrescribedWorkout } from "../../types/index.ts";
+import type { PrescribedWorkout } from "@/types/index.ts";
 
 interface WorkoutCardProps {
   workout: PrescribedWorkout;

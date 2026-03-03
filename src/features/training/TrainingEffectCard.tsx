@@ -1,18 +1,18 @@
 import { useMemo } from "react";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardHeader } from "../../components/ui/CardHeader.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { GaugeDial } from "../../components/ui/GaugeDial.tsx";
-import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
-import { tokens } from "../../lib/tokens.ts";
-import { useUserStore } from "../../store/user.ts";
-import { useMetrics } from "../../hooks/useMetrics.ts";
+import { Card } from "@/components/ui/Card.tsx";
+import { CardHeader } from "@/components/ui/CardHeader.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { GaugeDial } from "@/components/ui/GaugeDial.tsx";
+import { MetricLabel } from "@/components/ui/MetricLabel.tsx";
+import { tokens } from "@/lib/tokens.ts";
+import { useUserStore } from "@/store/user.ts";
+import { useMetrics } from "@/hooks/useMetrics.ts";
 import {
   calculateTrainingEffect,
   getTrainingEffectLabel,
   getTrainingEffectSummary,
-} from "../../engine/trainingEffect.ts";
-import type { SessionRecord, TrainingSession } from "../../engine/types.ts";
+} from "@/engine/trainingEffect.ts";
+import type { SessionRecord, TrainingSession } from "@/engine/types.ts";
 
 const TE_ZONES = [
   { from: 0, to: 1, color: tokens.statusNeutral },

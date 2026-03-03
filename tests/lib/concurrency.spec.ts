@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mapWithConcurrency } from '../../src/lib/concurrency.ts';
+import { mapWithConcurrency } from '@/lib/concurrency.ts';
 
 describe('mapWithConcurrency', () => {
   it('processes all items and returns results in order', async () => {

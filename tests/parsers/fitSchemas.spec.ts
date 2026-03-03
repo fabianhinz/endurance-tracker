@@ -5,7 +5,7 @@ import {
   fitRecordsSchema,
   fitLapSchema,
   fitLapsSchema,
-} from '../../src/parsers/fitSchemas.ts';
+} from '@/parsers/fitSchemas.ts';
 
 describe('fitUserProfileSchema', () => {
   it('accepts a full profile', () => {

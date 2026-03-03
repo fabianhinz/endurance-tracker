@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { idbStorage } from "../lib/idbStorage.ts";
+import { idbStorage } from "@/lib/idbStorage.ts";
 
 interface LayoutState {
   dockExpanded: boolean;

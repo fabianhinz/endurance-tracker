@@ -2,13 +2,13 @@ import { describe, it, expect } from 'vitest';
 import {
   getFormMessage,
   getFormMessageDetailed,
-} from '../../src/lib/coachingMessages.ts';
+} from '@/lib/coachingMessages.ts';
 import {
   getLoadState,
   getInjuryRisk,
-} from '../../src/engine/coaching.ts';
-import type { FormStatus } from '../../src/engine/types.ts';
-import type { CoachingRecommendation } from '../../src/types/index.ts';
+} from '@/engine/coaching.ts';
+import type { FormStatus } from '@/engine/types.ts';
+import type { CoachingRecommendation } from '@/types/index.ts';
 
 const ALL_STATUSES: FormStatus[] = [
   'detraining',

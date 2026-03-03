@@ -1,13 +1,13 @@
 import { useState, useCallback } from "react";
-import { useMapFocusStore } from "../../../store/mapFocus.ts";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
 import {
   pickBoundsFromCorners,
   filterTracksByPickBounds,
-} from "../trackPicking.ts";
+} from "@/features/map/trackPicking.ts";
 import type { MapRef } from "react-map-gl/maplibre";
 import type { MapTrack } from "./useMapTracks.ts";
-import type { PopupInfo } from "../MapPickPopup.tsx";
-import type { LapPopupInfo } from "../LapPickPopup.tsx";
+import type { PopupInfo } from "@/features/map/MapPickPopup.tsx";
+import type { LapPopupInfo } from "@/features/map/LapPickPopup.tsx";
 import { decodeCached, PICK_RADIUS } from "./types.ts";
 import type { PickingInfo } from "@deck.gl/core";
 

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
-import { useSessionsStore } from "../../store/sessions.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
+import { useSessionsStore } from "@/store/sessions.ts";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
 import {
   getSessionRecords,
   getSessionLaps,
@@ -10,36 +10,36 @@ import {
   deleteSessionLaps,
   deleteSessionGPS,
   deleteFitFile,
-} from "../../lib/indexeddb.ts";
-import { Button } from "../../components/ui/Button.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { PageGrid } from "../../components/ui/PageGrid.tsx";
+} from "@/lib/indexeddb.ts";
+import { Button } from "@/components/ui/Button.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { PageGrid } from "@/components/ui/PageGrid.tsx";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "../../components/ui/Tabs.tsx";
+} from "@/components/ui/Tabs.tsx";
 import {
   DialogRoot,
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "../../components/ui/Dialog.tsx";
+} from "@/components/ui/Dialog.tsx";
 import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "../../components/ui/DropdownMenu.tsx";
-import { formatDate, formatSubSport } from "../../lib/utils.ts";
-import { SportChip } from "../../components/ui/SportChip.tsx";
+} from "@/components/ui/DropdownMenu.tsx";
+import { formatDate, formatSubSport } from "@/lib/utils.ts";
+import { SportChip } from "@/components/ui/SportChip.tsx";
 import { SessionStatsGrid } from "./SessionStatsGrid.tsx";
 import { SessionChartsExplorer } from "./SessionChartsExplorer.tsx";
 import { TrainingEffectCard } from "./TrainingEffectCard.tsx";
 import { SessionRecordsCard } from "./SessionRecordsCard.tsx";
 import { LapsTab } from "./LapsTab.tsx";
-import type { SessionRecord, SessionLap } from "../../engine/types.ts";
+import type { SessionRecord, SessionLap } from "@/engine/types.ts";
 
 const validTabs = new Set(["overview", "laps"]);
 

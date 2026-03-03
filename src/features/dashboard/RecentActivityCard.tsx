@@ -1,22 +1,22 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useSessionsStore } from "../../store/sessions.ts";
-import { useFiltersStore } from "../../store/filters.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
-import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
-import { usePBsForRange } from "../../hooks/usePBsForRange.ts";
-import { Card } from "../../components/ui/Card.tsx";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/Tabs.tsx";
-import { SessionItem } from "../../components/ui/SessionItem.tsx";
-import { SportBadge } from "../../components/ui/SportBadge.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { ValueSkeleton } from "../../components/ui/ValueSkeleton.tsx";
-import { Button } from "../../components/ui/Button.tsx";
+import { useSessionsStore } from "@/store/sessions.ts";
+import { useFiltersStore } from "@/store/filters.ts";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
+import { useHoverIntent } from "@/hooks/useHoverIntent.ts";
+import { usePBsForRange } from "@/hooks/usePBsForRange.ts";
+import { Card } from "@/components/ui/Card.tsx";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs.tsx";
+import { SessionItem } from "@/components/ui/SessionItem.tsx";
+import { SportBadge } from "@/components/ui/SportBadge.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
+import { ValueSkeleton } from "@/components/ui/ValueSkeleton.tsx";
+import { Button } from "@/components/ui/Button.tsx";
 import { ChevronRight } from "lucide-react";
-import { pbLabel, formatPBValue, formatDate } from "../../lib/utils.ts";
-import { rangeToCutoff, customRangeToCutoffs } from "../../lib/timeRange.ts";
-import type { TimeRange } from "../../lib/timeRange.ts";
-import type { PersonalBest, Sport } from "../../engine/types.ts";
+import { pbLabel, formatPBValue, formatDate } from "@/lib/utils.ts";
+import { rangeToCutoff, customRangeToCutoffs } from "@/lib/timeRange.ts";
+import type { TimeRange } from "@/lib/timeRange.ts";
+import type { PersonalBest, Sport } from "@/engine/types.ts";
 
 const sports: Sport[] = ["running", "cycling", "swimming"];
 

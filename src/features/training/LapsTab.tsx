@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Timer, Heart, Zap } from "lucide-react";
-import { ChartPreviewCard } from "../../components/ui/ChartPreviewCard.tsx";
-import { analyzeLaps, enrichAllLaps } from "../../engine/laps.ts";
-import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
-import { computeDynamicLaps } from "../../engine/dynamicLaps.ts";
-import { computeLapMarkers } from "../../engine/lapMarkers.ts";
-import type { LapMarkerMode } from "../../engine/lapMarkers.ts";
-import { DEFAULT_CUSTOM_DISTANCE } from "../../store/lapOptions.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
+import { ChartPreviewCard } from "@/components/ui/ChartPreviewCard.tsx";
+import { analyzeLaps, enrichAllLaps } from "@/engine/laps.ts";
+import type { LapAnalysis, LapRecordEnrichment } from "@/engine/laps.ts";
+import { computeDynamicLaps } from "@/engine/dynamicLaps.ts";
+import { computeLapMarkers } from "@/engine/lapMarkers.ts";
+import type { LapMarkerMode } from "@/engine/lapMarkers.ts";
+import { DEFAULT_CUSTOM_DISTANCE } from "@/store/lapOptions.ts";
+import { useMapFocusStore } from "@/store/mapFocus.ts";
 import {
   prepareLapSplitsData,
   prepareLapHrData,
   prepareLapPowerData,
-} from "../../lib/lapChartData.ts";
-import { tokens } from "../../lib/tokens.ts";
+} from "@/lib/lapChartData.ts";
+import { tokens } from "@/lib/tokens.ts";
 import { LapSplitsChart } from "./LapSplitsChart.tsx";
 import { LapHrChart } from "./LapHrChart.tsx";
 import { LapPowerChart } from "./LapPowerChart.tsx";
@@ -23,7 +23,7 @@ import type {
   SessionLap,
   SessionRecord,
   TrainingSession,
-} from "../../engine/types.ts";
+} from "@/engine/types.ts";
 
 interface LapsTabProps {
   laps: SessionLap[];

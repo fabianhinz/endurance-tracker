@@ -4,8 +4,8 @@ import type { LucideIcon } from "lucide-react";
 import { glassClass } from "./Card.tsx";
 import { Typography } from "./Typography.tsx";
 import { Button } from "./Button.tsx";
-import { cn } from "../../lib/utils.ts";
-import { useExpandCard } from "../../lib/hooks/useExpandCard.ts";
+import { cn } from "@/lib/utils.ts";
+import { useExpandCard } from "@/lib/hooks/useExpandCard.ts";
 
 interface ChartPreviewCardProps {
   title: string;

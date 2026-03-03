@@ -1,21 +1,21 @@
 import { useMemo } from "react";
-import { Card } from "../../components/ui/Card.tsx";
-import { CardGrid } from "../../components/ui/CardGrid.tsx";
-import { StatItem } from "../../components/ui/StatItem.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
+import { Card } from "@/components/ui/Card.tsx";
+import { CardGrid } from "@/components/ui/CardGrid.tsx";
+import { StatItem } from "@/components/ui/StatItem.tsx";
+import { Typography } from "@/components/ui/Typography.tsx";
 import {
   cn,
   formatDuration,
   formatDistance,
   formatPace,
   formatSpeed,
-} from "../../lib/utils.ts";
-import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
+} from "@/lib/utils.ts";
+import { METRIC_EXPLANATIONS } from "@/lib/explanations.ts";
 import {
   detectIntervals,
   detectProgressiveOverload,
-} from "../../engine/laps.ts";
-import type { TrainingSession, SessionLap } from "../../engine/types.ts";
+} from "@/engine/laps.ts";
+import type { TrainingSession, SessionLap } from "@/engine/types.ts";
 
 interface SessionStatsGridProps {
   session: TrainingSession;

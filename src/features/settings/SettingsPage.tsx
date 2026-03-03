@@ -1,18 +1,18 @@
 import { useTransition } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useUserStore } from '../../store/user.ts';
-import { useLayoutStore } from '../../store/layout.ts';
-import { Card } from '../../components/ui/Card.tsx';
-import { CardHeader } from '../../components/ui/CardHeader.tsx';
-import { List, ListItem } from '../../components/ui/List.tsx';
-import { Switch } from '../../components/ui/Switch.tsx';
-import { PageGrid } from '../../components/ui/PageGrid.tsx';
+import { useUserStore } from '@/store/user.ts';
+import { useLayoutStore } from '@/store/layout.ts';
+import { Card } from '@/components/ui/Card.tsx';
+import { CardHeader } from '@/components/ui/CardHeader.tsx';
+import { List, ListItem } from '@/components/ui/List.tsx';
+import { Switch } from '@/components/ui/Switch.tsx';
+import { PageGrid } from '@/components/ui/PageGrid.tsx';
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from '../../components/ui/Tabs.tsx';
+} from '@/components/ui/Tabs.tsx';
 import { ThresholdsSection } from './ThresholdsSection.tsx';
 import { DataManagementSection } from './DataManagementSection.tsx';
 

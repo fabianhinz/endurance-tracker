@@ -1,8 +1,8 @@
-import type { DailyMetrics, FormStatus, RunningZone, RunningZoneName } from '../engine/types.ts';
-import type { PrescribedWorkout, WeeklyPlan, WorkoutStep, WorkoutType, PlanContext } from '../types/index.ts';
+import type { DailyMetrics, FormStatus, RunningZone, RunningZoneName } from '@/engine/types.ts';
+import type { PrescribedWorkout, WeeklyPlan, WorkoutStep, WorkoutType, PlanContext } from '@/types/index.ts';
 import { toDateString } from './utils.ts';
-import { getFormStatus, getInjuryRisk, getLoadState } from '../engine/coaching.ts';
-import { getZoneMidPace } from '../engine/zones.ts';
+import { getFormStatus, getInjuryRisk, getLoadState } from '@/engine/coaching.ts';
+import { getZoneMidPace } from '@/engine/zones.ts';
 
 // --- TSS per hour by workout type ---
 

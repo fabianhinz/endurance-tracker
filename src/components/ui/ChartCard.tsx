@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Card } from "./Card.tsx";
 import { CardHeader } from "./CardHeader.tsx";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
 
 interface ChartCardProps {
   title: string;

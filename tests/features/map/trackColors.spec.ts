@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getTrackWidth } from "../../../src/features/map/trackColors.ts";
+import { getTrackWidth } from "@/features/map/trackColors.ts";
 
 describe("getTrackWidth", () => {
   it("returns default width when no session is highlighted", () => {

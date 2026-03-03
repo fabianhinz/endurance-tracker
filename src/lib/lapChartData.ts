@@ -1,4 +1,4 @@
-import type { LapAnalysis, LapRecordEnrichment } from '../engine/laps.ts';
+import type { LapAnalysis, LapRecordEnrichment } from '@/engine/laps.ts';
 
 export interface LapSplitPoint {
   lap: string;

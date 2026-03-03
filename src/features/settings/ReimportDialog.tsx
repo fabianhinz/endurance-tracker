@@ -4,8 +4,8 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "../../components/ui/Dialog.tsx";
-import { Button } from "../../components/ui/Button.tsx";
+} from "@/components/ui/Dialog.tsx";
+import { Button } from "@/components/ui/Button.tsx";
 
 interface ReimportDialogProps {
   open: boolean;

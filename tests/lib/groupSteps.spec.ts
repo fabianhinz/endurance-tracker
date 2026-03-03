@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { groupSteps } from "../../src/lib/groupSteps.ts";
-import type { WorkoutStep } from "../../src/types/index.ts";
+import { groupSteps } from "@/lib/groupSteps.ts";
+import type { WorkoutStep } from "@/types/index.ts";
 
 const makeStep = (overrides: Partial<WorkoutStep> = {}): WorkoutStep => ({
   type: "work",
