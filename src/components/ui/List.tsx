@@ -17,20 +17,15 @@ type ListItemProps = {
   secondary?: ReactNode;
   children?: ReactNode;
   onClick?: () => void;
-  size?: 'default' | 'sm';
 };
 
 export const ListItem = (props: ListItemProps) => {
-  const small = props.size === 'sm';
-
   const content = (
     <>
       <div className="min-w-0">
-        <Typography variant={small ? 'caption' : 'body1'} color="textSecondary">
-          {props.primary}
-        </Typography>
+        <Typography>{props.primary}</Typography>
         {props.secondary && (
-          <Typography variant="caption" color="textSecondary" as="p">
+          <Typography variant="caption" as="p">
             {props.secondary}
           </Typography>
         )}
@@ -47,7 +42,7 @@ export const ListItem = (props: ListItemProps) => {
         <Button
           variant="ghost"
           onClick={props.onClick}
-          className={cn(baseClass, '-mx-2 -my-1 h-auto text-left')}
+          className={cn(baseClass, 'h-auto text-left')}
         >
           {content}
         </Button>

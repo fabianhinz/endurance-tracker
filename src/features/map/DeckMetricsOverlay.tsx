@@ -128,7 +128,7 @@ export const DeckMetricsOverlay = () => {
       {expanded && (
         <List className="mt-3 space-y-1">
           {METRIC_ROWS.map((row) => (
-            <ListItem key={row.key} size="sm" primary={row.label}>
+            <ListItem key={row.key} primary={row.label}>
               <span className="flex items-center gap-1.5">
                 <Typography variant="caption" tabularNums>
                   {metrics ? row.format(metrics[row.key]) : '—'}
