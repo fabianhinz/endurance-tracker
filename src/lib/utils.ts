@@ -5,13 +5,29 @@ export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
 
-export const formatDate = (timestamp: number): string => {
-  return new Date(timestamp).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
+interface FormatDateOptions {
+  includeTime?: boolean;
+}
+
+const dateFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const dateTimeFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+});
+
+export const formatDate = (
+  timestamp: number,
+  options?: FormatDateOptions,
+): string =>
+  options?.includeTime ? dateTimeFmt.format(timestamp) : dateFmt.format(timestamp);
 
 export const formatDuration = (seconds: number): string => {
   const h = Math.floor(seconds / 3600);

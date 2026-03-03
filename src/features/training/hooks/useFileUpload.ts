@@ -3,7 +3,7 @@ import { useUserStore } from "../../../store/user.ts";
 import { useSessionsStore } from "../../../store/sessions.ts";
 import { useUploadProgressStore } from "../../../store/uploadProgress.ts";
 import { parseFitFile } from "../../../parsers/fit.ts";
-import { bulkSaveSessionData } from "../../../lib/indexeddb.ts";
+import { bulkSaveSessionData, saveFitFile } from "../../../lib/indexeddb.ts";
 import { detectNewPBs, mergePBs } from "../../../engine/records.ts";
 import { mapWithConcurrency } from "../../../lib/concurrency.ts";
 import { toast } from "../../../components/ui/toastStore.ts";
@@ -15,6 +15,8 @@ interface ParsedFile {
   records: SessionRecord[];
   laps: SessionLap[];
   fingerprint: string;
+  rawData: ArrayBuffer;
+  fileName: string;
 }
 
 const CHUNK_SIZE = 10;
@@ -67,13 +69,16 @@ export const useFileUpload = (
       const settled = await mapWithConcurrency(
         fitFiles,
         6,
-        async (file) =>
-          parseFitFile(file, {
+        async (file) => {
+          const rawData = await file.arrayBuffer();
+          const result = await parseFitFile(rawData, file.name, {
             restHr: profile.thresholds.restHr,
             maxHr: profile.thresholds.maxHr,
             gender: profile.gender,
             ftp: profile.thresholds.ftp,
-          }),
+          });
+          return { ...result, rawData, fileName: file.name };
+        },
         advance,
       );
 
@@ -159,6 +164,10 @@ export const useFileUpload = (
             await bulkSaveSessionData(idbEntries, {
               chunkSize: CHUNK_SIZE,
             });
+          }
+
+          for (let i = 0; i < unique.length; i++) {
+            await saveFitFile(sessionIds[i], unique[i].fileName, unique[i].rawData);
           }
 
           if (accumulatedBests.length > 0) {

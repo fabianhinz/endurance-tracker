@@ -11,6 +11,7 @@ interface SessionsState {
   addSessions: (sessions: Omit<TrainingSession, 'id' | 'createdAt'>[]) => string[];
   deleteSession: (id: string) => void;
   renameSession: (id: string, name: string) => void;
+  replaceSessions: (updates: Array<{ id: string; session: Omit<TrainingSession, 'id' | 'createdAt'> }>) => void;
   updatePersonalBests: (newBests: PersonalBest[]) => void;
   clearAll: () => void;
 }
@@ -55,6 +56,18 @@ export const useSessionsStore = create<SessionsState>()(
             s.id === id ? { ...s, name } : s,
           ),
         })),
+
+      replaceSessions: (updates) =>
+        set((state) => {
+          const updateMap = new Map(updates.map((u) => [u.id, u.session]));
+          return {
+            sessions: state.sessions.map((s) => {
+              const updated = updateMap.get(s.id);
+              if (!updated) return s;
+              return { ...updated, id: s.id, createdAt: s.createdAt };
+            }),
+          };
+        }),
 
       updatePersonalBests: (newBests) =>
         set((state) => ({

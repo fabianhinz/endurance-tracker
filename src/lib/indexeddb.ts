@@ -48,6 +48,7 @@ export const clearAllRecords = async (): Promise<void> => {
   await db.clear("session-records");
   await db.clear("session-laps");
   await db.clear("session-gps");
+  await db.clear("fit-files");
   await db.clear("kv");
 };
 
@@ -157,4 +158,37 @@ export const getRecordsForSessions = async (
     map.set(sessionIds[i], results[i]?.records ?? []);
   }
   return map;
+};
+
+export const saveFitFile = async (
+  sessionId: string,
+  fileName: string,
+  data: ArrayBuffer,
+): Promise<void> => {
+  const db = await getDB();
+  await db.put("fit-files", { sessionId, fileName, data });
+};
+
+export const getFitFile = async (
+  sessionId: string,
+): Promise<{ sessionId: string; fileName: string; data: ArrayBuffer } | undefined> => {
+  const db = await getDB();
+  return db.get("fit-files", sessionId);
+};
+
+export const deleteFitFile = async (sessionId: string): Promise<void> => {
+  const db = await getDB();
+  await db.delete("fit-files", sessionId);
+};
+
+export const getAllFitFiles = async (): Promise<
+  Array<{ sessionId: string; fileName: string; data: ArrayBuffer }>
+> => {
+  const db = await getDB();
+  return db.getAll("fit-files");
+};
+
+export const getAllFitFileSessionIds = async (): Promise<string[]> => {
+  const db = await getDB();
+  return db.getAllKeys("fit-files");
 };

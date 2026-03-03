@@ -3,7 +3,14 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useSessionsStore } from "../../store/sessions.ts";
 import { useMapFocusStore } from "../../store/mapFocus.ts";
-import { getSessionRecords, getSessionLaps } from "../../lib/indexeddb.ts";
+import {
+  getSessionRecords,
+  getSessionLaps,
+  deleteSessionRecords,
+  deleteSessionLaps,
+  deleteSessionGPS,
+  deleteFitFile,
+} from "../../lib/indexeddb.ts";
 import { Button } from "../../components/ui/Button.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
 import { PageGrid } from "../../components/ui/PageGrid.tsx";
@@ -251,10 +258,16 @@ export const SessionDetailPage = () => {
             </Button>
             <Button
               className="bg-status-danger text-white hover:bg-status-danger/80"
-              onClick={() => {
+              onClick={async () => {
                 deleteSession(session.id);
                 setShowDeleteDialog(false);
                 navigate("/training");
+                await Promise.all([
+                  deleteSessionRecords(session.id),
+                  deleteSessionLaps(session.id),
+                  deleteSessionGPS(session.id),
+                  deleteFitFile(session.id),
+                ]);
               }}
             >
               Delete

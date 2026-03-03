@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { GripVertical } from "lucide-react";
 import { Card } from "../../components/ui/Card.tsx";
 import { Typography } from "../../components/ui/Typography.tsx";
+import { List, ListItem } from "../../components/ui/List.tsx";
 import { useDeckMetricsStore } from "../../store/deckMetrics.ts";
 import type { DeckMetrics } from "../../store/deckMetrics.ts";
 
@@ -96,21 +97,18 @@ export const DeckMetricsOverlay = () => {
         </button>
       </div>
       {expanded && (
-        <div className="mt-3 flex flex-col gap-1">
+        <List className="mt-3 space-y-1">
           {METRIC_ROWS.map((row) => (
-            <div key={row.key} className="flex items-center justify-between">
-              <Typography variant="caption" color="tertiary">
-                {row.label}
-              </Typography>
+            <ListItem key={row.key} size="sm" primary={row.label}>
               <span className="flex items-center gap-1.5">
                 <Typography variant="caption" tabularNums>
                   {metrics ? row.format(metrics[row.key]) : "—"}
                 </Typography>
                 <span className={`size-2 rounded-full ${metrics && row.thresholds ? getHealthColor(metrics[row.key], row.thresholds) : ""}`} />
               </span>
-            </div>
+            </ListItem>
           ))}
-        </div>
+        </List>
       )}
     </Card>
   );

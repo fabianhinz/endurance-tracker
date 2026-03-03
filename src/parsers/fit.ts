@@ -105,7 +105,8 @@ export const mapFitLaps = (fitLaps: FitLapInput[], sessionId: string): SessionLa
 };
 
 export const parseFitFile = async (
-  file: File,
+  arrayBuffer: ArrayBuffer,
+  fileName: string,
   userProfile: {
     restHr: number;
     maxHr: number;
@@ -113,8 +114,6 @@ export const parseFitFile = async (
     ftp?: number;
   },
 ): Promise<ParsedFitResult> => {
-  const arrayBuffer = await file.arrayBuffer();
-
   const parser = new FitParser({
     force: true,
     speedUnit: 'm/s',
@@ -129,7 +128,7 @@ export const parseFitFile = async (
     data = await parser.parseAsync(arrayBuffer);
   } catch (err) {
     throw new Error(
-      `Failed to parse FIT file "${file.name}": ${err instanceof Error ? err.message : 'unknown error'}`
+      `Failed to parse FIT file "${fileName}": ${err instanceof Error ? err.message : 'unknown error'}`
     );
   }
 
@@ -204,7 +203,7 @@ export const parseFitFile = async (
     : Date.now();
 
   const avgSpeed = fitSession?.avg_speed;
-  const name = extractSessionName(file.name);
+  const name = extractSessionName(fileName);
 
   const fileIdResult = fitFileIdSchema.safeParse(data.file_ids?.[0]);
   const sessionDuration = fitSession?.total_timer_time ?? fitSession?.total_elapsed_time ?? 0;

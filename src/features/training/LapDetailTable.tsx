@@ -11,6 +11,7 @@ import {
   formatSpeed,
 } from "../../lib/utils.ts";
 import type { LapAnalysis, LapRecordEnrichment } from "../../engine/laps.ts";
+import { useMapFocusStore } from "../../store/mapFocus.ts";
 
 interface LapDetailTableProps {
   laps: LapAnalysis[];
@@ -32,6 +33,9 @@ const formatPaceOrSpeed = (
 
 export const LapDetailTable = (props: LapDetailTableProps) => {
   const [expanded, setExpanded] = useState(false);
+  const hoveredLapIndex = useMapFocusStore((s) => s.hoveredLapIndex);
+  const setHoveredLapIndex = useMapFocusStore((s) => s.setHoveredLapIndex);
+  const clearHoveredLapIndex = useMapFocusStore((s) => s.clearHoveredLapIndex);
   const needsToggle = props.laps.length > COLLAPSED_COUNT;
   const visibleLaps =
     needsToggle && !expanded
@@ -103,13 +107,15 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
               )}
             </tr>
           </thead>
-          <tbody>
+          <tbody onPointerLeave={clearHoveredLapIndex}>
             {visibleLaps.map((lap) => (
               <tr
                 key={lap.lapIndex}
+                onPointerEnter={() => setHoveredLapIndex(lap.lapIndex)}
                 className={cn(
-                  "odd:bg-white/5",
+                  "transition-colors",
                   lap.intensity !== "active" && "text-text-quaternary",
+                  hoveredLapIndex === lap.lapIndex && "bg-white/10",
                 )}
               >
                 <td className="px-3 py-1.5 text-left">
