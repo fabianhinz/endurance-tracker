@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { idbStorage } from "../lib/idbStorage.ts";
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { idbStorage } from '@/lib/idbStorage.ts';
 
 interface LayoutState {
   dockExpanded: boolean;
@@ -17,11 +17,15 @@ export const useLayoutStore = create<LayoutState>()(
       dockExpanded: true,
       toggleDock: () => set((state) => ({ dockExpanded: !state.dockExpanded })),
       compactLayout: false,
-      toggleCompactLayout: () =>
-        set((state) => ({ compactLayout: !state.compactLayout })),
+      toggleCompactLayout: () => set((state) => ({ compactLayout: !state.compactLayout })),
       onboardingComplete: false,
       completeOnboarding: () => set({ onboardingComplete: true, compactLayout: true }),
     }),
-    { name: "store-layout", storage: createJSONStorage(() => idbStorage), skipHydration: true, version: 1 },
+    {
+      name: 'store-layout',
+      storage: createJSONStorage(() => idbStorage),
+      skipHydration: true,
+      version: 1,
+    },
   ),
 );

@@ -1,4 +1,4 @@
-import type { Sport } from "../engine/types.ts";
+import type { Sport } from '@/engine/types.ts';
 
 export const DEFAULT_CUSTOM_DISTANCE: Record<Sport, number> = {
   running: 1000,

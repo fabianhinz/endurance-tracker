@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { useSessionsStore } from '../../src/store/sessions.ts';
-import { makeSession } from '../factories/sessions.ts';
-import type { PersonalBest } from '../../src/engine/types.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { makeSession } from '@tests/factories/sessions.ts';
+import type { PersonalBest } from '@/engine/types.ts';
 
 describe('sessions store', () => {
   it('addSession returns UUID, session in state', () => {
@@ -28,16 +28,44 @@ describe('sessions store', () => {
 
   it('updatePersonalBests upserts (no duplicates by sport+category+window)', () => {
     const firstBatch: PersonalBest[] = [
-      { sport: 'cycling', category: 'peak-power', window: 300, value: 280, sessionId: 's1', date: Date.now() },
-      { sport: 'cycling', category: 'peak-power', window: 1200, value: 250, sessionId: 's1', date: Date.now() },
+      {
+        sport: 'cycling',
+        category: 'peak-power',
+        window: 300,
+        value: 280,
+        sessionId: 's1',
+        date: Date.now(),
+      },
+      {
+        sport: 'cycling',
+        category: 'peak-power',
+        window: 1200,
+        value: 250,
+        sessionId: 's1',
+        date: Date.now(),
+      },
     ];
     useSessionsStore.getState().updatePersonalBests(firstBatch);
     expect(useSessionsStore.getState().personalBests).toHaveLength(2);
 
     // Update with better value for 300s and new 3600s
     const secondBatch: PersonalBest[] = [
-      { sport: 'cycling', category: 'peak-power', window: 300, value: 295, sessionId: 's2', date: Date.now() },
-      { sport: 'cycling', category: 'peak-power', window: 3600, value: 220, sessionId: 's2', date: Date.now() },
+      {
+        sport: 'cycling',
+        category: 'peak-power',
+        window: 300,
+        value: 295,
+        sessionId: 's2',
+        date: Date.now(),
+      },
+      {
+        sport: 'cycling',
+        category: 'peak-power',
+        window: 3600,
+        value: 220,
+        sessionId: 's2',
+        date: Date.now(),
+      },
     ];
     useSessionsStore.getState().updatePersonalBests(secondBatch);
 
@@ -50,7 +78,11 @@ describe('sessions store', () => {
   });
 
   it('addSessions batch-adds multiple sessions and returns IDs', () => {
-    const batch = [makeSession(), makeSession({ sport: 'running' }), makeSession({ sport: 'swimming' })];
+    const batch = [
+      makeSession(),
+      makeSession({ sport: 'running' }),
+      makeSession({ sport: 'swimming' }),
+    ];
     const inputs = batch.map(({ id: _id, createdAt: _ca, ...data }) => data);
 
     const ids = useSessionsStore.getState().addSessions(inputs);
@@ -104,7 +136,14 @@ describe('sessions store', () => {
     const { id: _id, createdAt: _ca, ...data } = makeSession();
     useSessionsStore.getState().addSession(data);
     useSessionsStore.getState().updatePersonalBests([
-      { sport: 'cycling', category: 'peak-power', window: 300, value: 280, sessionId: 's1', date: Date.now() },
+      {
+        sport: 'cycling',
+        category: 'peak-power',
+        window: 300,
+        value: 280,
+        sessionId: 's1',
+        date: Date.now(),
+      },
     ]);
 
     expect(useSessionsStore.getState().sessions).toHaveLength(1);

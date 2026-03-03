@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { useUserStore } from '../../src/store/user.ts';
-import { useSessionsStore } from '../../src/store/sessions.ts';
-import { computeMetrics } from '../../src/engine/metrics.ts';
-import { getCoachingRecommendation } from '../../src/lib/coachingMessages.ts';
-import { detectNewPBs } from '../../src/engine/records.ts';
-import { makeUserProfile } from '../factories/profiles.ts';
-import { makeSession } from '../factories/sessions.ts';
-import { makeCyclingRecords } from '../factories/records.ts';
+import { useUserStore } from '@/store/user.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { computeMetrics } from '@/engine/metrics.ts';
+import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
+import { detectNewPBs } from '@/engine/records.ts';
+import { makeUserProfile } from '@tests/factories/profiles.ts';
+import { makeSession } from '@tests/factories/sessions.ts';
+import { makeCyclingRecords } from '@tests/factories/records.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -20,7 +20,11 @@ describe('store + engine integration (no React)', () => {
     // Add 30 sessions over 30 days
     const now = Date.now();
     for (let i = 0; i < 30; i++) {
-      const { id: _sid, createdAt: _sca, ...sessionData } = makeSession({
+      const {
+        id: _sid,
+        createdAt: _sca,
+        ...sessionData
+      } = makeSession({
         date: now - (30 - i) * DAY_MS,
         tss: 80 + 20 * Math.sin(i * 0.5),
       });
@@ -51,7 +55,11 @@ describe('store + engine integration (no React)', () => {
     const now = Date.now();
 
     // Add a session
-    const { id: _id, createdAt: _ca, ...sessionData } = makeSession({
+    const {
+      id: _id,
+      createdAt: _ca,
+      ...sessionData
+    } = makeSession({
       sport: 'cycling',
       date: now,
     });
@@ -77,7 +85,14 @@ describe('store + engine integration (no React)', () => {
     const { id: _sid, createdAt: _sca, ...sessionData } = makeSession();
     useSessionsStore.getState().addSession(sessionData);
     useSessionsStore.getState().updatePersonalBests([
-      { sport: 'cycling', metric: 'power', duration: 300, value: 280, sessionId: 's1', date: Date.now() },
+      {
+        sport: 'cycling',
+        metric: 'power',
+        duration: 300,
+        value: 280,
+        sessionId: 's1',
+        date: Date.now(),
+      },
     ]);
     // Verify populated
     expect(useUserStore.getState().profile).not.toBeNull();

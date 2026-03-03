@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const optNum = z.number().optional();
 const optStr = z.string().optional();

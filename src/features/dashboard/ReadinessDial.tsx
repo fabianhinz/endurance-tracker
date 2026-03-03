@@ -1,12 +1,13 @@
-import { useMetrics } from "../../hooks/useMetrics.ts";
-import { ChartCard } from "../../components/ui/ChartCard.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { cn } from "../../lib/utils.ts";
-import { tokens } from "../../lib/tokens.ts";
-import { statusTextClass, statusFill } from "../../lib/statusColors.ts";
-import { METRIC_EXPLANATIONS } from "../../lib/explanations.ts";
-import { MetricLabel } from "../../components/ui/MetricLabel.tsx";
-import { GaugeDial } from "../../components/ui/GaugeDial.tsx";
+import { m } from '@/paraglide/messages.js';
+import { useMetrics } from '@/hooks/useMetrics.ts';
+import { ChartCard } from '@/components/ui/ChartCard.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import { cn } from '@/lib/utils.ts';
+import { tokens } from '@/lib/tokens.ts';
+import { statusTextClass, statusFill } from '@/lib/statusColors.ts';
+import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
+import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
+import { GaugeDial } from '@/components/ui/GaugeDial.tsx';
 
 const TSB_ZONES = [
   { from: -40, to: -30, color: tokens.statusDangerStrong },
@@ -33,25 +34,18 @@ export const ReadinessGauge = () => {
         <div className="absolute inset-0 flex flex-col items-center justify-end">
           <Typography
             variant="h1"
-            className={cn(
-              "leading-none pb-1",
-              statusTextClass[metrics.coaching.status],
-            )}
+            className={cn('leading-none pb-1', statusTextClass[metrics.coaching.status])}
           >
-            {tsb > 0 ? "+" : ""}
+            {tsb > 0 ? '+' : ''}
             {tsb.toFixed(1)}
           </Typography>
         </div>
       </div>
-      <Typography
-        variant="overline"
-        as="p"
-        className={statusTextClass[metrics.coaching.status]}
-      >
-        {metrics.coaching.status === "fresh"
-          ? "Go"
-          : metrics.coaching.status === "overload"
-            ? "No-Go"
+      <Typography variant="overline" as="p" className={statusTextClass[metrics.coaching.status]}>
+        {metrics.coaching.status === 'fresh'
+          ? m.ui_readiness_go()
+          : metrics.coaching.status === 'overload'
+            ? m.ui_readiness_no_go()
             : metrics.coaching.status}
       </Typography>
     </div>
@@ -62,7 +56,9 @@ export const ReadinessDial = () => (
   <ChartCard
     titleSlot={
       <div className="flex items-center gap-1">
-        <Typography variant="overline" as="h3">{METRIC_EXPLANATIONS.tsb.friendlyName}</Typography>
+        <Typography variant="title" as="h3">
+          {METRIC_EXPLANATIONS.tsb.friendlyName}
+        </Typography>
         <MetricLabel metricId="tsb" size="sm" />
       </div>
     }

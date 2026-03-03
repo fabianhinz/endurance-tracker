@@ -37,28 +37,28 @@ const SWIMMING_DISTANCES = [
  */
 export const PB_SLOTS: Record<Sport, Array<{ category: PBCategory; window: number }>> = {
   running: [
-    { category: "fastest-distance", window: 1000 },
-    { category: "fastest-distance", window: 5000 },
-    { category: "fastest-distance", window: 10000 },
-    { category: "fastest-distance", window: 21097 },
-    { category: "fastest-distance", window: 42195 },
-    { category: "longest", window: 0 },
+    { category: 'fastest-distance', window: 1000 },
+    { category: 'fastest-distance', window: 5000 },
+    { category: 'fastest-distance', window: 10000 },
+    { category: 'fastest-distance', window: 21097 },
+    { category: 'fastest-distance', window: 42195 },
+    { category: 'longest', window: 0 },
   ],
   cycling: [
-    { category: "peak-power", window: 5 },
-    { category: "peak-power", window: 60 },
-    { category: "peak-power", window: 300 },
-    { category: "peak-power", window: 1200 },
-    { category: "peak-power", window: 3600 },
-    { category: "longest", window: 0 },
-    { category: "most-elevation", window: 0 },
+    { category: 'peak-power', window: 5 },
+    { category: 'peak-power', window: 60 },
+    { category: 'peak-power', window: 300 },
+    { category: 'peak-power', window: 1200 },
+    { category: 'peak-power', window: 3600 },
+    { category: 'longest', window: 0 },
+    { category: 'most-elevation', window: 0 },
   ],
   swimming: [
-    { category: "fastest-distance", window: 100 },
-    { category: "fastest-distance", window: 400 },
-    { category: "fastest-distance", window: 1000 },
-    { category: "fastest-distance", window: 1500 },
-    { category: "longest", window: 0 },
+    { category: 'fastest-distance', window: 100 },
+    { category: 'fastest-distance', window: 400 },
+    { category: 'fastest-distance', window: 1000 },
+    { category: 'fastest-distance', window: 1500 },
+    { category: 'longest', window: 0 },
   ],
 };
 
@@ -91,9 +91,7 @@ const findPeakAverage = (values: number[], windowSize: number): number => {
  * @param records - Time-series session records, each optionally containing a `power` field in watts.
  * @returns Map keyed by window duration in seconds, valued by peak average power in watts; windows with no data are omitted.
  */
-const extractPeakPower = (
-  records: SessionRecord[],
-): Map<number, number> => {
+const extractPeakPower = (records: SessionRecord[]): Map<number, number> => {
   const powerData = records
     .filter((r) => r.power !== undefined && r.power > 0)
     .map((r) => r.power!);
@@ -130,7 +128,10 @@ const extractFastestDistances = (
     let left = 0;
 
     for (let right = 1; right < withDistance.length; right++) {
-      while (left < right && withDistance[right].distance! - withDistance[left].distance! >= target.meters) {
+      while (
+        left < right &&
+        withDistance[right].distance! - withDistance[left].distance! >= target.meters
+      ) {
         const time = withDistance[right].timestamp - withDistance[left].timestamp;
         if (time > 0 && time < bestTime) {
           bestTime = time;
@@ -178,23 +179,43 @@ const extractSessionPeaks = (
   if (sport === 'running') {
     const distances = extractFastestDistances(records, RUNNING_DISTANCES);
     for (const [meters, time] of distances) {
-      peaks.push({ category: 'fastest-distance', window: meters, value: time, higherIsBetter: false });
+      peaks.push({
+        category: 'fastest-distance',
+        window: meters,
+        value: time,
+        higherIsBetter: false,
+      });
     }
   }
 
   if (sport === 'swimming') {
     const distances = extractFastestDistances(records, SWIMMING_DISTANCES);
     for (const [meters, time] of distances) {
-      peaks.push({ category: 'fastest-distance', window: meters, value: time, higherIsBetter: false });
+      peaks.push({
+        category: 'fastest-distance',
+        window: meters,
+        value: time,
+        higherIsBetter: false,
+      });
     }
   }
 
   if (sessionMeta) {
     if (sessionMeta.distance > 0) {
-      peaks.push({ category: 'longest', window: 0, value: sessionMeta.distance, higherIsBetter: true });
+      peaks.push({
+        category: 'longest',
+        window: 0,
+        value: sessionMeta.distance,
+        higherIsBetter: true,
+      });
     }
     if (sport === 'cycling' && sessionMeta.elevationGain && sessionMeta.elevationGain > 0) {
-      peaks.push({ category: 'most-elevation', window: 0, value: sessionMeta.elevationGain, higherIsBetter: true });
+      peaks.push({
+        category: 'most-elevation',
+        window: 0,
+        value: sessionMeta.elevationGain,
+        higherIsBetter: true,
+      });
     }
   }
 
@@ -230,7 +251,14 @@ export const detectNewPBs = (
       ? !existing || peak.value > existing.value
       : !existing || peak.value < existing.value;
     if (isBetter) {
-      newPBs.push({ sport, category: peak.category, window: peak.window, value: peak.value, sessionId, date: sessionDate });
+      newPBs.push({
+        sport,
+        category: peak.category,
+        window: peak.window,
+        value: peak.value,
+        sessionId,
+        date: sessionDate,
+      });
     }
   }
 
@@ -243,17 +271,11 @@ export const detectNewPBs = (
  * @param incoming - New personal bests to apply; each replaces a matching entry or is appended if none exists.
  * @returns New array containing the merged personal bests.
  */
-export const mergePBs = (
-  existing: PersonalBest[],
-  incoming: PersonalBest[],
-): PersonalBest[] => {
+export const mergePBs = (existing: PersonalBest[], incoming: PersonalBest[]): PersonalBest[] => {
   const merged = [...existing];
   for (const nb of incoming) {
     const idx = merged.findIndex(
-      (pb) =>
-        pb.sport === nb.sport &&
-        pb.category === nb.category &&
-        pb.window === nb.window,
+      (pb) => pb.sport === nb.sport && pb.category === nb.category && pb.window === nb.window,
     );
     if (idx >= 0) {
       merged[idx] = nb;
@@ -269,9 +291,7 @@ export const mergePBs = (
  * @param pbs - Flat array of personal bests spanning any number of sports.
  * @returns Partial record mapping each sport to its corresponding array of personal bests.
  */
-export const groupPBsBySport = (
-  pbs: PersonalBest[],
-): Partial<Record<Sport, PersonalBest[]>> => {
+export const groupPBsBySport = (pbs: PersonalBest[]): Partial<Record<Sport, PersonalBest[]>> => {
   const grouped: Partial<Record<Sport, PersonalBest[]>> = {};
   for (const pb of pbs) {
     if (!grouped[pb.sport]) {

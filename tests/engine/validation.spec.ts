@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { validateRecords, filterValidPower } from '../../src/engine/validation.ts';
+import { validateRecords, filterValidPower } from '@/engine/validation.ts';
 import {
   makeCyclingRecords,
   makeRunningRecords,
   makeInvalidRecords,
-} from '../factories/records.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
+} from '@tests/factories/records.ts';
+import type { SessionRecord } from '@/engine/types.ts';
 
 function makeRecord(overrides: Partial<SessionRecord>): SessionRecord {
   return { sessionId: 'test', timestamp: 0, ...overrides };

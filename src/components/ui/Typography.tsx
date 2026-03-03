@@ -1,29 +1,29 @@
-import type { ElementType, HTMLAttributes, ReactNode } from "react";
-import { cn } from "../../lib/utils.ts";
+import type { ElementType, HTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/utils.ts';
 
 const variants = {
-  display: { element: "p", classes: "text-3xl font-bold", defaultColor: "primary" },
-  h1: { element: "h1", classes: "text-2xl font-bold", defaultColor: "primary" },
-  h2: { element: "h2", classes: "text-xl font-bold", defaultColor: "primary" },
-  h3: { element: "h3", classes: "text-lg font-bold", defaultColor: "primary" },
-  body: { element: "p", classes: "text-sm", defaultColor: "primary" },
-  emphasis: { element: "p", classes: "text-sm font-medium", defaultColor: "primary" },
-  label: { element: "span", classes: "text-sm font-medium", defaultColor: "secondary" },
-  caption: { element: "span", classes: "text-xs", defaultColor: "tertiary" },
-  overline: { element: "span", classes: "text-xs font-medium uppercase tracking-wider", defaultColor: "tertiary" },
+  h1: { element: 'h1', classes: 'text-2xl font-bold', defaultColor: 'textPrimary' },
+  h2: { element: 'h2', classes: 'text-xl font-bold', defaultColor: 'textPrimary' },
+  h3: { element: 'h3', classes: 'text-lg font-bold', defaultColor: 'textPrimary' },
+  title: { element: 'h4', classes: 'text-base font-medium', defaultColor: 'textPrimary' },
+  body1: { element: 'p', classes: 'text-sm', defaultColor: 'textPrimary' },
+  subtitle1: { element: 'p', classes: 'text-sm font-medium', defaultColor: 'textPrimary' },
+  subtitle2: { element: 'span', classes: 'text-sm font-medium', defaultColor: 'textSecondary' },
+  caption: { element: 'span', classes: 'text-xs', defaultColor: 'textSecondary' },
+  overline: {
+    element: 'span',
+    classes: 'text-xs font-medium uppercase tracking-wider',
+    defaultColor: 'textSecondary',
+  },
 } as const;
 
 const colorMap = {
-  primary: "text-text-primary",
-  secondary: "text-text-secondary",
-  tertiary: "text-text-tertiary",
-  quaternary: "text-text-quaternary",
-  accent: "text-accent",
-  success: "text-status-success",
-  danger: "text-status-danger",
-  warning: "text-status-warning",
-  info: "text-accent",
-  inherit: "",
+  textPrimary: 'text-text-primary',
+  textSecondary: 'text-text-secondary',
+  textQuaternary: 'text-text-quaternary',
+  success: 'text-status-success',
+  error: 'text-status-danger',
+  warning: 'text-status-warning',
 } as const;
 
 type Variant = keyof typeof variants;
@@ -38,22 +38,23 @@ interface TypographyProps extends HTMLAttributes<HTMLElement> {
 }
 
 export const Typography = (props: TypographyProps) => {
-  const { variant = "body", color, as, tabularNums, className, children, ...rest } = props;
-  const config = variants[variant];
-  const resolvedColor = color ?? (config.defaultColor as Color);
-  const Component = (as ?? config.element) as ElementType;
+  const { variant: _, color: _c, as: _a, tabularNums: _t, className: _cls, ...rest } = props;
+
+  const config = variants[props.variant ?? 'body1'];
+  const resolvedColor = props.color ?? (config.defaultColor as Color);
+  const Component = (props.as ?? config.element) as ElementType;
 
   return (
     <Component
       className={cn(
         config.classes,
         colorMap[resolvedColor],
-        tabularNums && "tabular-nums",
-        className,
+        props.tabularNums && 'tabular-nums',
+        props.className,
       )}
       {...rest}
     >
-      {children}
+      {props.children}
     </Component>
   );
 };

@@ -1,18 +1,15 @@
-import type { ReactNode } from "react";
-import { Typography } from "./Typography.tsx";
+import type { ReactNode } from 'react';
+import { Typography } from './Typography.tsx';
 
 type CardHeaderProps = {
   subtitle?: string;
   icon?: ReactNode;
   actions?: ReactNode;
-} & (
-  | { title: string; titleSlot?: ReactNode }
-  | { title?: string; titleSlot: ReactNode }
-);
+} & ({ title: string; titleSlot?: ReactNode } | { title?: string; titleSlot: ReactNode });
 
 export const CardHeader = (props: CardHeaderProps) => {
   const titleContent = props.titleSlot ?? (
-    <Typography variant="overline" as="h3">
+    <Typography variant="title" as="h3">
       {props.title}
     </Typography>
   );
@@ -21,12 +18,7 @@ export const CardHeader = (props: CardHeaderProps) => {
     <div>
       {titleContent}
       {props.subtitle && (
-        <Typography
-          variant="caption"
-          color="quaternary"
-          as="p"
-          className="mt-0.5"
-        >
+        <Typography variant="caption" as="p" className="mt-0.5">
           {props.subtitle}
         </Typography>
       )}

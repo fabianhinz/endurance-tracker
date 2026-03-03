@@ -3,9 +3,9 @@ import {
   calculateNormalizedPower,
   gradeAdjustedPaceFactor,
   calculateGAP,
-} from '../../src/engine/normalize.ts';
-import { makeCyclingRecords } from '../factories/records.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
+} from '@/engine/normalize.ts';
+import { makeCyclingRecords } from '@tests/factories/records.ts';
+import type { SessionRecord } from '@/engine/types.ts';
 
 function makeRecord(overrides: Partial<SessionRecord>): SessionRecord {
   return { sessionId: 'test', timestamp: 0, ...overrides };
@@ -123,9 +123,7 @@ describe('calculateGAP', () => {
   });
 
   it('returns undefined for single record', () => {
-    const records = [
-      makeRecord({ timestamp: 0, speed: 3.0, distance: 0, grade: 0 }),
-    ];
+    const records = [makeRecord({ timestamp: 0, speed: 3.0, distance: 0, grade: 0 })];
     expect(calculateGAP(records)).toBeUndefined();
   });
 

@@ -1,17 +1,31 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { getLocale } from '@/paraglide/runtime.js';
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
 
-export const formatDate = (timestamp: number): string => {
-  return new Date(timestamp).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
+interface FormatDateOptions {
+  includeTime?: boolean;
+}
+
+const dateFmt = new Intl.DateTimeFormat(getLocale(), {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const dateTimeFmt = new Intl.DateTimeFormat(getLocale(), {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+});
+
+export const formatDate = (timestamp: number, options?: FormatDateOptions): string =>
+  options?.includeTime ? dateTimeFmt.format(timestamp) : dateFmt.format(timestamp);
 
 export const formatDuration = (seconds: number): string => {
   const h = Math.floor(seconds / 3600);
@@ -83,64 +97,68 @@ export const formatPaceTick = (minPerKm: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-import type { PersonalBest } from "../engine/types.ts";
+import { m } from '@/paraglide/messages.js';
+import type { PersonalBest } from '@/engine/types.ts';
 
 const POWER_WINDOW_LABELS: Record<number, string> = {
-  5: "5 sec",
-  60: "1 min",
-  300: "5 min",
-  1200: "20 min",
-  3600: "60 min",
+  5: '5 sec',
+  60: '1 min',
+  300: '5 min',
+  1200: '20 min',
+  3600: '60 min',
 };
 
 const RUNNING_DISTANCE_LABELS: Record<number, string> = {
-  1000: "1 km",
-  5000: "5 km",
-  10000: "10 km",
-  21097: "Half Marathon",
-  42195: "Marathon",
+  1000: '1 km',
+  5000: '5 km',
+  10000: '10 km',
+  21097: m.ui_pb_half_marathon(),
+  42195: m.ui_pb_marathon(),
 };
 
 const SWIMMING_DISTANCE_LABELS: Record<number, string> = {
-  100: "100 m",
-  400: "400 m",
-  1000: "1000 m",
-  1500: "1500 m",
+  100: '100 m',
+  400: '400 m',
+  1000: '1000 m',
+  1500: '1500 m',
 };
 
 export const pbLabel = (pb: PersonalBest): string => {
-  if (pb.category === "peak-power") {
+  if (pb.category === 'peak-power') {
     return POWER_WINDOW_LABELS[pb.window] ?? `${pb.window}s`;
   }
-  if (pb.category === "fastest-distance") {
-    if (pb.sport === "swimming") {
+  if (pb.category === 'fastest-distance') {
+    if (pb.sport === 'swimming') {
       return SWIMMING_DISTANCE_LABELS[pb.window] ?? `${pb.window} m`;
     }
     return RUNNING_DISTANCE_LABELS[pb.window] ?? `${pb.window} m`;
   }
-  if (pb.category === "longest") return "Longest";
-  return "Elevation Gain";
+  if (pb.category === 'longest') return m.ui_pb_longest();
+  return m.ui_pb_elevation_gain();
 };
 
 export const formatPBValue = (pb: PersonalBest): string => {
-  if (pb.category === "peak-power") return `${pb.value}W`;
-  if (pb.category === "fastest-distance") return formatDuration(pb.value);
-  if (pb.category === "longest") return formatDistance(pb.value);
+  if (pb.category === 'peak-power') return `${pb.value}W`;
+  if (pb.category === 'fastest-distance') return formatDuration(pb.value);
+  if (pb.category === 'longest') return formatDistance(pb.value);
   return `${formatDistance(pb.value)} \u2191`;
 };
 
 const SUB_SPORT_LABELS: Record<string, string> = {
-  road: 'Road',
-  trail: 'Trail',
-  mountain: 'Mountain',
-  virtual_activity: 'Virtual',
-  indoor_cycling: 'Indoor',
-  indoor_running: 'Indoor',
-  track: 'Track',
-  gravel_cycling: 'Gravel',
-  treadmill: 'Treadmill',
+  road: m.ui_sub_sport_road(),
+  trail: m.ui_sub_sport_trail(),
+  mountain: m.ui_sub_sport_mountain(),
+  virtual_activity: m.ui_sub_sport_virtual(),
+  indoor_cycling: m.ui_sub_sport_indoor(),
+  indoor_running: m.ui_sub_sport_indoor(),
+  track: m.ui_sub_sport_track(),
+  gravel_cycling: m.ui_sub_sport_gravel(),
+  treadmill: m.ui_sub_sport_treadmill(),
 };
 
 export const formatSubSport = (subSport: string): string => {
-  return SUB_SPORT_LABELS[subSport] ?? subSport.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return (
+    SUB_SPORT_LABELS[subSport] ??
+    subSport.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  );
 };

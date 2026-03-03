@@ -1,6 +1,6 @@
-# Forge
+# PaceVault
 
-**WHY:** Forge is a local-first, Progressive Web App (PWA) designed for mapping, analyzing, and storing fitness/GPS activities (primarily parsing `.FIT` binaries).
+**WHY:** PaceVault is a local-first, Progressive Web App (PWA) designed for mapping, analyzing, and storing fitness/GPS activities (primarily parsing `.FIT` binaries).
 **WHAT:** A pure client-side SPA. There is no backend server, no external APIs to call, and no `fetch`/`axios`. The browser _is_ the database.
 
 ## 1. Tech Stack
@@ -67,6 +67,8 @@ Specific guidelines for features, testing, and state management are located in t
 
    ```bash
    pnpm test          # vitest run
+   pnpm test:e2e      # playwright
    pnpm lint --fix    # eslint
    pnpm typecheck     # tsc --noEmit
+   pnpm format        # prettier
    ```

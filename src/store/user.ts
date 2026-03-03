@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { UserProfile } from '../types/index.ts';
-import { idbStorage } from '../lib/idbStorage.ts';
+import type { UserProfile } from '@/types/index.ts';
+import { idbStorage } from '@/lib/idbStorage.ts';
 
 interface UserState {
   profile: UserProfile | null;
@@ -28,16 +28,12 @@ export const useUserStore = create<UserState>()(
 
       updateProfile: (updates) =>
         set((state) => ({
-          profile: state.profile
-            ? { ...state.profile, ...updates }
-            : null,
+          profile: state.profile ? { ...state.profile, ...updates } : null,
         })),
 
       updateThresholds: (thresholds) =>
         set((state) => ({
-          profile: state.profile
-            ? { ...state.profile, thresholds }
-            : null,
+          profile: state.profile ? { ...state.profile, thresholds } : null,
         })),
 
       toggleMetricHelp: () =>

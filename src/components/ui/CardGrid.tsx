@@ -1,8 +1,8 @@
-import { Children, useState, type ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
-import { Button } from "./Button.tsx";
-import { Typography } from "./Typography.tsx";
-import { cn } from "../../lib/utils.ts";
+import { Children, useState, type ReactNode } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { Button } from './Button.tsx';
+import { Typography } from './Typography.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface CardGridProps {
   children: ReactNode;
@@ -25,23 +25,14 @@ export const CardGrid = (props: CardGridProps) => {
     <>
       {collapsible && (
         <div className="mb-4 flex items-start justify-between gap-2">
-          <Typography variant="overline" as="h3">
+          <Typography variant="title" as="h3">
             {props.title}
           </Typography>
           {needsToggle && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setExpanded((prev) => !prev)}
-            >
-              <Typography variant="caption" color="secondary">
-                ({totalCount})
-              </Typography>
+            <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
+              <Typography variant="caption">({totalCount})</Typography>
               <ChevronRight
-                className={cn(
-                  "size-4 transition-transform",
-                  expanded && "rotate-90",
-                )}
+                className={cn('size-4 transition-transform', expanded && 'rotate-90')}
               />
             </Button>
           )}
@@ -50,9 +41,7 @@ export const CardGrid = (props: CardGridProps) => {
       <div className="grid grid-cols-2 gap-3">
         {Children.map(visibleChildren, (child) =>
           child != null ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              {child}
-            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3">{child}</div>
           ) : null,
         )}
       </div>

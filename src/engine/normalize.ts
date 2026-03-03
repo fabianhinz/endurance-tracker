@@ -32,8 +32,7 @@ export const calculateNormalizedPower = (records: SessionRecord[]): number | und
 
   // Raise to 4th power, average, then 4th root
   const fourthPowerAvg =
-    rollingAvg.reduce((sum, val) => sum + Math.pow(val, 4), 0) /
-    rollingAvg.length;
+    rollingAvg.reduce((sum, val) => sum + Math.pow(val, 4), 0) / rollingAvg.length;
 
   return Math.round(Math.pow(fourthPowerAvg, 0.25));
 };
@@ -88,9 +87,12 @@ export const calculateGAP = (records: SessionRecord[]): number | undefined => {
 
     // Prefer native FIT grade field; fall back to elevation delta
     // FIT grade is percentage (e.g. 5 = 5%); gradeAdjustedPaceFactor expects fraction (0.05)
-    const gradient = curr.grade !== undefined
-      ? curr.grade / 100
-      : dx > 0 ? ((curr.elevation ?? 0) - (prev.elevation ?? 0)) / dx : 0;
+    const gradient =
+      curr.grade !== undefined
+        ? curr.grade / 100
+        : dx > 0
+          ? ((curr.elevation ?? 0) - (prev.elevation ?? 0)) / dx
+          : 0;
 
     const factor = gradeAdjustedPaceFactor(gradient);
     const dt = curr.timestamp - prev.timestamp;

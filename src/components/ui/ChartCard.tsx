@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { Card } from "./Card.tsx";
-import { CardHeader } from "./CardHeader.tsx";
-import { cn } from "../../lib/utils.ts";
+import type { ReactNode } from 'react';
+import { Card } from './Card.tsx';
+import { CardHeader } from './CardHeader.tsx';
+import { cn } from '@/lib/utils.ts';
 
 interface ChartCardProps {
   title: string;
@@ -21,9 +21,9 @@ export const ChartCard = (props: ChartCardProps) => {
   const chartArea = (
     <div
       className={cn(
-        "h-full select-none",
-        props.minHeight ?? "h-64",
-        (props.scrollable ?? true) && (props.minWidth ?? "min-w-[400px]"),
+        'h-full select-none',
+        props.minHeight ?? 'h-64',
+        (props.scrollable ?? true) && (props.minWidth ?? 'min-w-[400px]'),
       )}
     >
       {props.children}

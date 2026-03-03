@@ -1,8 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { generateWeeklyPlan, estimateWorkoutTss, estimateWorkoutDistance } from '../../src/lib/prescription.ts';
-import { computeRunningZones } from '../../src/engine/zones.ts';
-import type { DailyMetrics } from '../../src/engine/types.ts';
-import type { PrescribedWorkout } from '../../src/types/index.ts';
+import {
+  generateWeeklyPlan,
+  estimateWorkoutTss,
+  estimateWorkoutDistance,
+} from '@/lib/prescription.ts';
+import { computeRunningZones } from '@/engine/zones.ts';
+import type { DailyMetrics } from '@/engine/types.ts';
+import type { PrescribedWorkout } from '@/types/index.ts';
 
 const zones = computeRunningZones(270); // 4:30/km threshold
 const MATURE = 42; // days — well above 28-day threshold
@@ -73,7 +77,9 @@ describe('form status templates', () => {
   it('overload (TSB < -30) generates mostly rest/recovery', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -35, acwr: 1.0 }),
-      zones, '2026-02-16', MATURE,
+      zones,
+      '2026-02-16',
+      MATURE,
     );
     const types = plan.workouts.map((w) => w.type);
     const restCount = types.filter((t) => t === 'rest').length;
@@ -84,7 +90,9 @@ describe('form status templates', () => {
   it('optimal (TSB -10 to -30) includes intensity sessions', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -15, acwr: 1.0 }),
-      zones, '2026-02-16', MATURE,
+      zones,
+      '2026-02-16',
+      MATURE,
     );
     const types = plan.workouts.map((w) => w.type);
     expect(types).toContain('threshold-intervals');
@@ -94,7 +102,9 @@ describe('form status templates', () => {
   it('detraining (TSB > 25) includes high-intensity sessions', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: 30, acwr: 1.0 }),
-      zones, '2026-02-16', MATURE,
+      zones,
+      '2026-02-16',
+      MATURE,
     );
     const types = plan.workouts.map((w) => w.type);
     expect(types).toContain('vo2max-intervals');
@@ -115,13 +125,11 @@ describe('load guards', () => {
     it('uses conservative no-data template regardless of form status', () => {
       const statuses = [
         { tsb: -15, acwr: 1.0 }, // optimal
-        { tsb: 30, acwr: 1.0 },  // detraining
+        { tsb: 30, acwr: 1.0 }, // detraining
         { tsb: -35, acwr: 1.0 }, // overload
       ];
       for (const s of statuses) {
-        const plan = generateWeeklyPlan(
-          makeMetrics(s), zones, '2026-02-16', 14,
-        );
+        const plan = generateWeeklyPlan(makeMetrics(s), zones, '2026-02-16', 14);
         const types = plan.workouts.map((w) => w.type);
         expect(types).not.toContain('threshold-intervals');
         expect(types).not.toContain('vo2max-intervals');
@@ -132,7 +140,10 @@ describe('load guards', () => {
 
     it('rationale mentions data stabilizing', () => {
       const plan = generateWeeklyPlan(
-        makeMetrics({ tsb: -15, acwr: 1.0 }), zones, '2026-02-16', 14,
+        makeMetrics({ tsb: -15, acwr: 1.0 }),
+        zones,
+        '2026-02-16',
+        14,
       );
       expect(plan.workouts[0].rationale).toContain('stabilizing');
     });
@@ -141,7 +152,10 @@ describe('load guards', () => {
   describe('transitioning data (21-27 days)', () => {
     it('uses conservative no-data template for normal ACWR', () => {
       const plan = generateWeeklyPlan(
-        makeMetrics({ tsb: -15, acwr: 1.0 }), zones, '2026-02-16', 25,
+        makeMetrics({ tsb: -15, acwr: 1.0 }),
+        zones,
+        '2026-02-16',
+        25,
       );
       const types = plan.workouts.map((w) => w.type);
       expect(types).not.toContain('threshold-intervals');
@@ -152,7 +166,10 @@ describe('load guards', () => {
 
     it('uses recovery plan for extreme ACWR (> 1.5) during transition', () => {
       const plan = generateWeeklyPlan(
-        makeMetrics({ tsb: -15, acwr: 1.8 }), zones, '2026-02-16', 25,
+        makeMetrics({ tsb: -15, acwr: 1.8 }),
+        zones,
+        '2026-02-16',
+        25,
       );
       const types = plan.workouts.map((w) => w.type);
       // high-risk: downgradeToRecoveryWeek — no intensity
@@ -163,7 +180,10 @@ describe('load guards', () => {
 
     it('rationale mentions data stabilizing', () => {
       const plan = generateWeeklyPlan(
-        makeMetrics({ tsb: -15, acwr: 1.0 }), zones, '2026-02-16', 25,
+        makeMetrics({ tsb: -15, acwr: 1.0 }),
+        zones,
+        '2026-02-16',
+        25,
       );
       expect(plan.workouts[0].rationale).toContain('stabilizing');
     });
@@ -175,7 +195,9 @@ describe('load guards', () => {
       for (const tsb of tsbValues) {
         const plan = generateWeeklyPlan(
           makeMetrics({ tsb, acwr: 1.6 }),
-          zones, '2026-02-16', MATURE,
+          zones,
+          '2026-02-16',
+          MATURE,
         );
         const types = plan.workouts.map((w) => w.type);
         expect(types).not.toContain('vo2max-intervals');
@@ -188,7 +210,9 @@ describe('load guards', () => {
       // Fresh template has tempo — verify it gets replaced
       const plan = generateWeeklyPlan(
         makeMetrics({ tsb: 10, acwr: 1.6 }),
-        zones, '2026-02-16', MATURE,
+        zones,
+        '2026-02-16',
+        MATURE,
       );
       const types = plan.workouts.map((w) => w.type);
       expect(types).not.toContain('tempo');
@@ -199,7 +223,9 @@ describe('load guards', () => {
     it('removes threshold/vo2max/long-run but keeps tempo', () => {
       const plan = generateWeeklyPlan(
         makeMetrics({ tsb: -15, acwr: 1.4 }),
-        zones, '2026-02-16', MATURE,
+        zones,
+        '2026-02-16',
+        MATURE,
       );
       const types = plan.workouts.map((w) => w.type);
       expect(types).not.toContain('vo2max-intervals');
@@ -214,11 +240,15 @@ describe('load guards', () => {
       // Neutral template: easy, threshold, recovery, tempo, easy, rest, long-run
       const baseline = generateWeeklyPlan(
         makeMetrics({ tsb: 0, acwr: 1.0 }),
-        zones, '2026-02-16', MATURE,
+        zones,
+        '2026-02-16',
+        MATURE,
       );
       const undertrained = generateWeeklyPlan(
         makeMetrics({ tsb: 0, acwr: 0.7 }),
-        zones, '2026-02-16', MATURE,
+        zones,
+        '2026-02-16',
+        MATURE,
       );
       const baselineEasy = baseline.workouts.filter((w) => w.type === 'easy').length;
       const undertrainedEasy = undertrained.workouts.filter((w) => w.type === 'easy').length;
@@ -229,7 +259,9 @@ describe('load guards', () => {
       // Fresh template has rest at index 5
       const plan = generateWeeklyPlan(
         makeMetrics({ tsb: 10, acwr: 0.7 }),
-        zones, '2026-02-16', MATURE,
+        zones,
+        '2026-02-16',
+        MATURE,
       );
       // Saturday (index 5) should still be rest
       expect(plan.workouts[5].type).toBe('rest');
@@ -240,7 +272,9 @@ describe('load guards', () => {
     it('preserves the original template', () => {
       const plan = generateWeeklyPlan(
         makeMetrics({ tsb: -15, acwr: 1.0 }),
-        zones, '2026-02-16', MATURE,
+        zones,
+        '2026-02-16',
+        MATURE,
       );
       const types = plan.workouts.map((w) => w.type);
       expect(types).toContain('threshold-intervals');
@@ -252,16 +286,16 @@ describe('load guards', () => {
 describe('hard/easy alternation', () => {
   it('never has two intensity sessions back to back', () => {
     const intensityTypes = new Set([
-      'threshold-intervals', 'vo2max-intervals', 'tempo', 'long-run',
+      'threshold-intervals',
+      'vo2max-intervals',
+      'tempo',
+      'long-run',
     ]);
 
     // Test across all form statuses
     const tsbValues = [-35, -15, 0, 10, 30];
     for (const tsb of tsbValues) {
-      const plan = generateWeeklyPlan(
-        makeMetrics({ tsb, acwr: 1.0 }),
-        zones, '2026-02-16', MATURE,
-      );
+      const plan = generateWeeklyPlan(makeMetrics({ tsb, acwr: 1.0 }), zones, '2026-02-16', MATURE);
       for (let i = 1; i < plan.workouts.length; i++) {
         const prev = plan.workouts[i - 1].type;
         const curr = plan.workouts[i].type;
@@ -277,20 +311,32 @@ describe('hard/easy alternation', () => {
 describe('estimateWorkoutTss', () => {
   it('rest workout returns 0', () => {
     const rest: PrescribedWorkout = {
-      id: 'test', date: '2026-02-20', dayLabel: 'Monday',
-      type: 'rest', title: 'Rest', steps: [],
-      estimatedDurationSec: 0, estimatedTss: 0,
-      rationale: '', isTaper: false,
+      id: 'test',
+      date: '2026-02-20',
+      dayLabel: 'Monday',
+      type: 'rest',
+      title: 'Rest',
+      steps: [],
+      estimatedDurationSec: 0,
+      estimatedTss: 0,
+      rationale: '',
+      isTaper: false,
     };
     expect(estimateWorkoutTss(rest)).toBe(0);
   });
 
   it('45min easy workout returns ~37 TSS (50 TSS/hr)', () => {
     const easy: PrescribedWorkout = {
-      id: 'test', date: '2026-02-20', dayLabel: 'Monday',
-      type: 'easy', title: 'Easy', steps: [],
-      estimatedDurationSec: 45 * 60, estimatedTss: 0,
-      rationale: '', isTaper: false,
+      id: 'test',
+      date: '2026-02-20',
+      dayLabel: 'Monday',
+      type: 'easy',
+      title: 'Easy',
+      steps: [],
+      estimatedDurationSec: 45 * 60,
+      estimatedTss: 0,
+      rationale: '',
+      isTaper: false,
     };
     expect(estimateWorkoutTss(easy)).toBe(38); // 0.75 * 50 = 37.5 → 38
   });
@@ -299,10 +345,16 @@ describe('estimateWorkoutTss', () => {
 describe('estimateWorkoutDistance', () => {
   it('rest workout returns 0', () => {
     const rest: PrescribedWorkout = {
-      id: 'test', date: '2026-02-20', dayLabel: 'Monday',
-      type: 'rest', title: 'Rest', steps: [],
-      estimatedDurationSec: 0, estimatedTss: 0,
-      rationale: '', isTaper: false,
+      id: 'test',
+      date: '2026-02-20',
+      dayLabel: 'Monday',
+      type: 'rest',
+      title: 'Rest',
+      steps: [],
+      estimatedDurationSec: 0,
+      estimatedTss: 0,
+      rationale: '',
+      isTaper: false,
     };
     expect(estimateWorkoutDistance(rest, zones)).toBe(0);
   });
@@ -321,7 +373,9 @@ describe('workout structure', () => {
   it('threshold-intervals has warmup, work intervals, recovery intervals, cooldown', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -15, acwr: 1.0 }),
-      zones, '2026-02-16', MATURE,
+      zones,
+      '2026-02-16',
+      MATURE,
     );
     const threshold = plan.workouts.find((w) => w.type === 'threshold-intervals')!;
     expect(threshold).toBeDefined();
@@ -337,7 +391,9 @@ describe('workout structure', () => {
   it('long-run has easy portion followed by tempo portion', () => {
     const plan = generateWeeklyPlan(
       makeMetrics({ tsb: -15, acwr: 1.0 }),
-      zones, '2026-02-16', MATURE,
+      zones,
+      '2026-02-16',
+      MATURE,
     );
     const longRun = plan.workouts.find((w) => w.type === 'long-run')!;
     expect(longRun).toBeDefined();
@@ -357,37 +413,44 @@ describe('all workout types produce valid TSS and distance', () => {
     'vo2max-intervals',
   ];
 
-  it.each(NON_REST_TYPES)(
-    '"%s" returns positive TSS and distance',
-    (type) => {
-      // Generate a plan that includes all types by using different form statuses
-      // Build a workout directly via a plan that would include this type
-      const plan = generateWeeklyPlan(
-        makeMetrics({ tsb: -15, acwr: 1.0 }),
-        zones, '2026-02-16', MATURE,
-      );
-      // Find the workout or create a synthetic one
-      const workout = plan.workouts.find((w) => w.type === type);
-      if (workout) {
-        expect(estimateWorkoutTss(workout)).toBeGreaterThan(0);
-        expect(estimateWorkoutDistance(workout, zones)).toBeGreaterThan(0);
-      } else {
-        // Type not in this plan — create a synthetic workout to test estimation
-        const synth: PrescribedWorkout = {
-          id: 'test',
-          date: '2026-02-20',
-          dayLabel: 'Monday',
-          type,
-          title: type,
-          steps: [{ type: 'work', durationSec: 30 * 60, zone: 'easy', targetPaceMin: 360, targetPaceMax: 300 }],
-          estimatedDurationSec: 30 * 60,
-          estimatedTss: 0,
-          rationale: '',
-          isTaper: false,
-        };
-        expect(estimateWorkoutTss(synth)).toBeGreaterThan(0);
-        expect(estimateWorkoutDistance(synth, zones)).toBeGreaterThan(0);
-      }
-    },
-  );
+  it.each(NON_REST_TYPES)('"%s" returns positive TSS and distance', (type) => {
+    // Generate a plan that includes all types by using different form statuses
+    // Build a workout directly via a plan that would include this type
+    const plan = generateWeeklyPlan(
+      makeMetrics({ tsb: -15, acwr: 1.0 }),
+      zones,
+      '2026-02-16',
+      MATURE,
+    );
+    // Find the workout or create a synthetic one
+    const workout = plan.workouts.find((w) => w.type === type);
+    if (workout) {
+      expect(estimateWorkoutTss(workout)).toBeGreaterThan(0);
+      expect(estimateWorkoutDistance(workout, zones)).toBeGreaterThan(0);
+    } else {
+      // Type not in this plan — create a synthetic workout to test estimation
+      const synth: PrescribedWorkout = {
+        id: 'test',
+        date: '2026-02-20',
+        dayLabel: 'Monday',
+        type,
+        title: type,
+        steps: [
+          {
+            type: 'work',
+            durationSec: 30 * 60,
+            zone: 'easy',
+            targetPaceMin: 360,
+            targetPaceMax: 300,
+          },
+        ],
+        estimatedDurationSec: 30 * 60,
+        estimatedTss: 0,
+        rationale: '',
+        isTaper: false,
+      };
+      expect(estimateWorkoutTss(synth)).toBeGreaterThan(0);
+      expect(estimateWorkoutDistance(synth, zones)).toBeGreaterThan(0);
+    }
+  });
 });

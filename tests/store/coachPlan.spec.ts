@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { useCoachPlanStore } from '../../src/store/coachPlan.ts';
-import type { WeeklyPlan } from '../../src/types/index.ts';
+import { useCoachPlanStore } from '@/store/coachPlan.ts';
+import type { WeeklyPlan } from '@/types/index.ts';
 
 const makePlan = (weekOf: string): WeeklyPlan => ({
   weekOf,

@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { useLayoutStore } from "../../store/layout.ts";
-import { cn } from "../../lib/utils.ts";
+import type { ReactNode } from 'react';
+import { useLayoutStore } from '@/store/layout.ts';
+import { cn } from '@/lib/utils.ts';
 
 interface PageGridProps {
   children: ReactNode;
@@ -13,9 +13,7 @@ export const PageGrid = (props: PageGridProps) => {
   return (
     <div
       className={cn(
-        compactLayout
-          ? "flex flex-col gap-4"
-          : "grid grid-cols-1 md:grid-cols-2 gap-4",
+        compactLayout ? 'flex flex-col gap-4' : 'grid grid-cols-1 md:grid-cols-2 gap-4',
         props.className,
       )}
     >

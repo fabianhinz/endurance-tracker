@@ -1,8 +1,6 @@
-import type { UserProfile } from '../../src/types/index.ts';
+import type { UserProfile } from '@/types/index.ts';
 
-export const makeUserProfile = (
-  overrides?: Partial<UserProfile>,
-): UserProfile => {
+export const makeUserProfile = (overrides?: Partial<UserProfile>): UserProfile => {
   return {
     id: 'test-user-id',
     gender: 'male',

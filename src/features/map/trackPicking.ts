@@ -1,8 +1,5 @@
-import {
-  boundsOverlap,
-  segmentIntersectsBounds,
-} from "../../engine/gps.ts";
-import type { GPSBounds } from "../../engine/types.ts";
+import { boundsOverlap, segmentIntersectsBounds } from '@/engine/gps.ts';
+import type { GPSBounds } from '@/engine/types.ts';
 
 interface GeoCorner {
   lat: number;
@@ -15,10 +12,7 @@ export interface PickableTrack {
   path: [number, number][];
 }
 
-export const pickBoundsFromCorners = (
-  a: GeoCorner,
-  b: GeoCorner,
-): GPSBounds => ({
+export const pickBoundsFromCorners = (a: GeoCorner, b: GeoCorner): GPSBounds => ({
   minLat: Math.min(a.lat, b.lat),
   maxLat: Math.max(a.lat, b.lat),
   minLng: Math.min(a.lng, b.lng),
@@ -34,8 +28,7 @@ export const filterTracksByPickBounds = (
     if (seen.has(t.sessionId)) continue;
     if (!boundsOverlap(t.bounds, pickBounds)) continue;
     const hit = t.path.some(
-      (p, i) =>
-        i > 0 && segmentIntersectsBounds(t.path[i - 1], p, pickBounds),
+      (p, i) => i > 0 && segmentIntersectsBounds(t.path[i - 1], p, pickBounds),
     );
     if (hit) seen.add(t.sessionId);
   }

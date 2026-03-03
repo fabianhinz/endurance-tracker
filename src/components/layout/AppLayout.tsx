@@ -1,10 +1,10 @@
-import { cn } from "../../lib/utils.ts";
-import { useLayoutStore } from "../../store/layout.ts";
-import { MapBackground } from "../../features/map/MapBackground.tsx";
-import { Dock } from "./Dock.tsx";
-import { UploadProgress } from "./UploadProgress.tsx";
-import { OnboardingPage } from "../../features/onboarding/OnboardingPage.tsx";
-import { Outlet } from "react-router-dom";
+import { cn } from '@/lib/utils.ts';
+import { useLayoutStore } from '@/store/layout.ts';
+import { MapBackground } from '@/features/map/MapBackground.tsx';
+import { Dock } from './Dock.tsx';
+import { UploadProgress } from './UploadProgress.tsx';
+import { OnboardingPage } from '@/pages/OnboardingPage.tsx';
+import { Outlet } from 'react-router-dom';
 
 export const AppLayout = () => {
   const compactLayout = useLayoutStore((s) => s.compactLayout);
@@ -15,10 +15,7 @@ export const AppLayout = () => {
     return (
       <div className="min-h-screen">
         <MapBackground />
-        <main
-          data-layout="main"
-          className="relative z-10 p-6 pt-24 w-full mx-auto max-w-2xl"
-        >
+        <main data-layout="main" className="relative z-10 p-6 pt-24 w-full mx-auto max-w-2xl">
           <OnboardingPage />
         </main>
         <UploadProgress />
@@ -33,11 +30,11 @@ export const AppLayout = () => {
       <main
         data-layout="main"
         className={cn(
-          "relative z-10 p-6 w-full transition-[padding,max-width,margin] duration-300",
+          'relative z-10 p-6 w-full transition-[padding,max-width,margin] duration-300',
           compactLayout
-            ? "mx-auto max-w-[1280px] md:pl-0 md:ml-auto md:mr-0 md:max-w-[40dvw]"
-            : "mx-auto max-w-[1280px]",
-          dockExpanded ? "pb-28" : "pb-20",
+            ? 'mx-auto max-w-[1280px] md:pl-0 md:ml-auto md:mr-0 md:max-w-[40dvw]'
+            : 'mx-auto max-w-[1280px]',
+          dockExpanded ? 'pb-28' : 'pb-20',
         )}
       >
         <Outlet />

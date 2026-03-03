@@ -3,8 +3,8 @@ import {
   deriveDistanceFromRecords,
   deriveAvgFromRecords,
   deriveMaxFromRecords,
-} from '../../src/parsers/fit.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
+} from '@/parsers/fit.ts';
+import type { SessionRecord } from '@/engine/types.ts';
 
 function makeRecord(overrides: Partial<SessionRecord> = {}): SessionRecord {
   return { sessionId: 'test', timestamp: 0, ...overrides };
@@ -25,11 +25,7 @@ describe('deriveDistanceFromRecords', () => {
   });
 
   it('skips trailing records with no distance', () => {
-    const records = [
-      makeRecord({ distance: 100 }),
-      makeRecord({ distance: 800 }),
-      makeRecord({}),
-    ];
+    const records = [makeRecord({ distance: 100 }), makeRecord({ distance: 800 }), makeRecord({})];
     expect(deriveDistanceFromRecords(records)).toBe(800);
   });
 
@@ -39,10 +35,7 @@ describe('deriveDistanceFromRecords', () => {
   });
 
   it('skips records with distance 0', () => {
-    const records = [
-      makeRecord({ distance: 500 }),
-      makeRecord({ distance: 0 }),
-    ];
+    const records = [makeRecord({ distance: 500 }), makeRecord({ distance: 0 })];
     expect(deriveDistanceFromRecords(records)).toBe(500);
   });
 });
@@ -114,10 +107,7 @@ describe('deriveMaxFromRecords', () => {
   });
 
   it('skips zero values', () => {
-    const records = [
-      makeRecord({ power: 0 }),
-      makeRecord({ power: 250 }),
-    ];
+    const records = [makeRecord({ power: 0 }), makeRecord({ power: 250 })];
     expect(deriveMaxFromRecords(records, 'power')).toBe(250);
   });
 });

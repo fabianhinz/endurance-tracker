@@ -1,16 +1,16 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface ToastItem {
   id: string;
   title: string;
   description?: string;
-  variant?: "default" | "success" | "error" | "warning";
+  variant?: 'default' | 'success' | 'error' | 'warning';
   persistent?: boolean;
 }
 
 interface ToastState {
   toasts: ToastItem[];
-  addToast: (toast: Omit<ToastItem, "id"> & { id?: string }) => void;
+  addToast: (toast: Omit<ToastItem, 'id'> & { id?: string }) => void;
   removeToast: (id: string) => void;
 }
 
@@ -29,10 +29,6 @@ export const useToastStore = create<ToastState>()((set) => ({
     })),
 }));
 
-export const toast = (
-  title: string,
-  description?: string,
-  variant?: ToastItem["variant"],
-) => {
+export const toast = (title: string, description?: string, variant?: ToastItem['variant']) => {
   useToastStore.getState().addToast({ title, description, variant });
 };

@@ -5,7 +5,7 @@ import {
   fitRecordsSchema,
   fitLapSchema,
   fitLapsSchema,
-} from '../../src/parsers/fitSchemas.ts';
+} from '@/parsers/fitSchemas.ts';
 
 describe('fitUserProfileSchema', () => {
   it('accepts a full profile', () => {
@@ -94,10 +94,7 @@ describe('fitRecordsSchema', () => {
   });
 
   it('rejects array with invalid element', () => {
-    const result = fitRecordsSchema.safeParse([
-      { elapsed_time: 1 },
-      { heart_rate: 'invalid' },
-    ]);
+    const result = fitRecordsSchema.safeParse([{ elapsed_time: 1 }, { heart_rate: 'invalid' }]);
     expect(result.success).toBe(false);
   });
 });
@@ -168,10 +165,7 @@ describe('fitLapsSchema', () => {
   });
 
   it('rejects array with invalid element', () => {
-    const result = fitLapsSchema.safeParse([
-      { total_elapsed_time: 300 },
-      { avg_speed: 'fast' },
-    ]);
+    const result = fitLapsSchema.safeParse([{ total_elapsed_time: 300 }, { avg_speed: 'fast' }]);
     expect(result.success).toBe(false);
   });
 });

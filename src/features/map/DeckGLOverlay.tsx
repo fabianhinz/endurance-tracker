@@ -1,28 +1,24 @@
-import { useMemo } from "react";
-import { useMatch } from "react-router-dom";
-import { MapboxOverlay } from "@deck.gl/mapbox";
-import type { PickingInfo } from "@deck.gl/core";
-import { PathLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
-import { useHiresPaths } from "./hooks/useHiresPaths.ts";
+import { useMemo } from 'react';
+import { useMatch } from 'react-router-dom';
+import { MapboxOverlay } from '@deck.gl/mapbox';
+import type { PickingInfo } from '@deck.gl/core';
+import { PathLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers';
+import { useHiresPaths } from './hooks/useHiresPaths.ts';
 import {
   ADDITIVE_BLEND,
   ALPHA_HIGHLIGHTED,
   getTrackWidth,
   sportMarkerColor,
   sportTrackColor,
-} from "./trackColors.ts";
-import type { LapMarker } from "../../engine/lapMarkers.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
-import { useSessionsStore } from "../../store/sessions.ts";
-import { useLayoutStore } from "../../store/layout.ts";
-import { useDeckMetricsStore } from "../../store/deckMetrics.ts";
-import type { MapTrack } from "./hooks/useMapTracks.ts";
-import {
-  decodeCached,
-  PICK_RADIUS,
-  type TrackPickData,
-} from "./hooks/types.ts";
-import { useControl } from "react-map-gl/maplibre";
+} from './trackColors.ts';
+import type { LapMarker } from '@/engine/lapMarkers.ts';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useLayoutStore } from '@/store/layout.ts';
+import { useDeckMetricsStore } from '@/store/deckMetrics.ts';
+import type { MapTrack } from './hooks/useMapTracks.ts';
+import { decodeCached, PICK_RADIUS, type TrackPickData } from './hooks/types.ts';
+import { useControl } from 'react-map-gl/maplibre';
 
 type PickHandler = (info: PickingInfo, event: unknown) => boolean | void;
 
@@ -43,14 +39,12 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
 
-  const match = useMatch("/training/:id");
+  const match = useMatch('/sessions/:id');
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
   const eventHandlers = useMemo(
     (): { onClick?: PickHandler; onHover?: PickHandler } =>
-      onboardingComplete
-        ? { onClick: props.onClick, onHover: props.onHover }
-        : {},
+      onboardingComplete ? { onClick: props.onClick, onHover: props.onHover } : {},
     [onboardingComplete, props.onClick, props.onHover],
   );
 
@@ -63,7 +57,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
 
     return [
       new PathLayer<TrackPickData>({
-        id: "gps-tracks",
+        id: 'gps-tracks',
         data,
         getPath: (d) => d.path,
         getColor: (d) => {
@@ -106,9 +100,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
 
     const path = hiresPaths.get(openedSessionId);
 
-    const sport = sessions.find(
-      (session) => session.id === openedSessionId,
-    )?.sport;
+    const sport = sessions.find((session) => session.id === openedSessionId)?.sport;
     if (!sport || !path) {
       return;
     }
@@ -120,7 +112,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     };
 
     return new PathLayer<typeof data>({
-      id: "hires-tracks",
+      id: 'hires-tracks',
       data: [data],
       getPath: (d) => d.path,
       getColor: (d) => {
@@ -144,16 +136,16 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) return null;
     return new ScatterplotLayer<{ center: [number, number] }>({
-      id: "pick-circle",
+      id: 'pick-circle',
       data: [{ center: pickCircle }],
       getPosition: (d) => d.center,
       getRadius: PICK_RADIUS,
-      radiusUnits: "pixels",
+      radiusUnits: 'pixels',
       getFillColor: [255, 255, 255, 13],
       filled: true,
       stroked: true,
       getLineColor: [255, 255, 255, 25],
-      lineWidthUnits: "pixels" as const,
+      lineWidthUnits: 'pixels' as const,
       getLineWidth: 1,
       pickable: false,
     });
@@ -162,16 +154,16 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const hoveredPointLayer = useMemo(() => {
     if (!hoveredPoint) return null;
     return new ScatterplotLayer<{ position: [number, number] }>({
-      id: "hovered-point",
+      id: 'hovered-point',
       data: [{ position: hoveredPoint }],
       getPosition: (d) => d.position,
       getRadius: 6,
-      radiusUnits: "pixels",
+      radiusUnits: 'pixels',
       getFillColor: [255, 255, 255, 230],
       filled: true,
       stroked: true,
       getLineColor: [0, 0, 0, 180],
-      lineWidthUnits: "pixels" as const,
+      lineWidthUnits: 'pixels' as const,
       getLineWidth: 2,
       pickable: false,
     });
@@ -183,23 +175,19 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     const [r, g, b] = sportTrackColor[focusedSport];
     return lapMarkers.flatMap((marker) => {
       const lineAlpha =
-        hoveredLapIndex != null
-          ? marker.lapIndex === hoveredLapIndex
-            ? 255
-            : 0
-          : 0;
+        hoveredLapIndex != null ? (marker.lapIndex === hoveredLapIndex ? 255 : 0) : 0;
       return [
         new ScatterplotLayer<LapMarker>({
           id: `lap-marker-circle-${marker.lapIndex}`,
           data: [marker],
           getPosition: (d) => d.position,
           getRadius: 12,
-          radiusUnits: "pixels",
+          radiusUnits: 'pixels',
           getFillColor: fill,
           filled: true,
           stroked: true,
           getLineColor: [r, g, b, lineAlpha],
-          lineWidthUnits: "pixels" as const,
+          lineWidthUnits: 'pixels' as const,
           getLineWidth: 4,
           pickable: false,
           updateTriggers: {
@@ -213,8 +201,8 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
           getText: (d) => d.label,
           getSize: 12,
           getColor: [0, 0, 0, 255],
-          getTextAnchor: "middle",
-          getAlignmentBaseline: "center",
+          getTextAnchor: 'middle',
+          getAlignmentBaseline: 'center',
           pickable: false,
         }),
       ];
@@ -229,14 +217,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       ...(hoveredPointLayer ? [hoveredPointLayer] : []),
       ...lapMarkerLayers,
     ],
-    [
-      openedSessionId,
-      trackLayers,
-      hiresLayer,
-      pickCircleLayer,
-      hoveredPointLayer,
-      lapMarkerLayers,
-    ],
+    [openedSessionId, trackLayers, hiresLayer, pickCircleLayer, hoveredPointLayer, lapMarkerLayers],
   );
 
   const overlay = useControl<MapboxOverlay>(

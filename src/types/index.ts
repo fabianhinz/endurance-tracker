@@ -1,6 +1,18 @@
-import type { Gender, FormStatus, InjuryRisk, RunningZoneName, RaceDistance } from '../engine/types.ts';
+import type {
+  Gender,
+  FormStatus,
+  InjuryRisk,
+  RunningZoneName,
+  RaceDistance,
+} from '@/engine/types.ts';
 
-export type { Gender, FormStatus, InjuryRisk, RunningZoneName, RaceDistance } from '../engine/types.ts';
+export type {
+  Gender,
+  FormStatus,
+  InjuryRisk,
+  RunningZoneName,
+  RaceDistance,
+} from '@/engine/types.ts';
 
 export interface UserProfile {
   id: string;
@@ -27,15 +39,15 @@ export interface CoachingRecommendation {
 // --- Running Zones & Coaching Plan ---
 
 export type WorkoutType =
-  | "rest"
-  | "recovery"
-  | "easy"
-  | "long-run"
-  | "tempo"
-  | "threshold-intervals"
-  | "vo2max-intervals";
+  | 'rest'
+  | 'recovery'
+  | 'easy'
+  | 'long-run'
+  | 'tempo'
+  | 'threshold-intervals'
+  | 'vo2max-intervals';
 
-export type StepType = "warmup" | "work" | "recovery" | "cooldown";
+export type StepType = 'warmup' | 'work' | 'recovery' | 'cooldown';
 
 export interface WorkoutStep {
   type: StepType;
@@ -60,9 +72,9 @@ export interface PrescribedWorkout {
 }
 
 export type PlanContext =
-  | { mode: "normal"; formStatus: FormStatus; tsb: number; acwr: number; dataMaturityDays: number }
-  | { mode: "taper"; raceDate: string; raceDistance: RaceDistance; daysToRace: number }
-  | { mode: "no-data" };
+  | { mode: 'normal'; formStatus: FormStatus; tsb: number; acwr: number; dataMaturityDays: number }
+  | { mode: 'taper'; raceDate: string; raceDistance: RaceDistance; daysToRace: number }
+  | { mode: 'no-data' };
 
 export interface WeeklyPlan {
   weekOf: string;

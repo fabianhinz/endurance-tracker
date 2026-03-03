@@ -1,22 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import {
-  getFormMessage,
-  getFormMessageDetailed,
-} from '../../src/lib/coachingMessages.ts';
-import {
-  getLoadState,
-  getInjuryRisk,
-} from '../../src/engine/coaching.ts';
-import type { FormStatus } from '../../src/engine/types.ts';
-import type { CoachingRecommendation } from '../../src/types/index.ts';
+import { getFormMessage, getFormMessageDetailed } from '@/lib/coachingMessages.ts';
+import { getLoadState, getInjuryRisk } from '@/engine/coaching.ts';
+import type { FormStatus } from '@/engine/types.ts';
+import type { CoachingRecommendation } from '@/types/index.ts';
 
-const ALL_STATUSES: FormStatus[] = [
-  'detraining',
-  'fresh',
-  'neutral',
-  'optimal',
-  'overload',
-];
+const ALL_STATUSES: FormStatus[] = ['detraining', 'fresh', 'neutral', 'optimal', 'overload'];
 
 const makeRec = (overrides: Partial<CoachingRecommendation> = {}): CoachingRecommendation => ({
   status: 'neutral',
@@ -59,14 +47,11 @@ describe('getFormMessageDetailed', () => {
   });
 
   describe('undertraining (ACWR < 0.8, mature data)', () => {
-    it.each(ALL_STATUSES)(
-      '"%s" returns an undertraining message',
-      (status) => {
-        const rec = makeRec({ status, acwr: 0.5, injuryRisk: 'low', dataMaturityDays: 42 });
-        const msg = getFormMessageDetailed(rec);
-        expect(msg.length).toBeGreaterThan(0);
-      },
-    );
+    it.each(ALL_STATUSES)('"%s" returns an undertraining message', (status) => {
+      const rec = makeRec({ status, acwr: 0.5, injuryRisk: 'low', dataMaturityDays: 42 });
+      const msg = getFormMessageDetailed(rec);
+      expect(msg.length).toBeGreaterThan(0);
+    });
 
     it('detraining + undertraining mentions deconditioning', () => {
       const rec = makeRec({ status: 'detraining', acwr: 0.3, dataMaturityDays: 42 });
@@ -95,34 +80,38 @@ describe('getFormMessageDetailed', () => {
   });
 
   describe('moderate risk (mature data)', () => {
-    it.each(ALL_STATUSES)(
-      '"%s" with moderate risk returns a risk-aware message',
-      (status) => {
-        const rec = makeRec({ status, acwr: 1.4, injuryRisk: 'moderate', dataMaturityDays: 42 });
-        const msg = getFormMessageDetailed(rec);
-        expect(msg.length).toBeGreaterThan(0);
-      },
-    );
+    it.each(ALL_STATUSES)('"%s" with moderate risk returns a risk-aware message', (status) => {
+      const rec = makeRec({ status, acwr: 1.4, injuryRisk: 'moderate', dataMaturityDays: 42 });
+      const msg = getFormMessageDetailed(rec);
+      expect(msg.length).toBeGreaterThan(0);
+    });
 
     it('fresh + moderate risk warns about ramp', () => {
-      const rec = makeRec({ status: 'fresh', acwr: 1.4, injuryRisk: 'moderate', dataMaturityDays: 42 });
+      const rec = makeRec({
+        status: 'fresh',
+        acwr: 1.4,
+        injuryRisk: 'moderate',
+        dataMaturityDays: 42,
+      });
       const msg = getFormMessageDetailed(rec);
       expect(msg).toContain('ramp');
     });
   });
 
   describe('high risk (mature data)', () => {
-    it.each(ALL_STATUSES)(
-      '"%s" with high risk returns a strong warning',
-      (status) => {
-        const rec = makeRec({ status, acwr: 1.8, injuryRisk: 'high', dataMaturityDays: 42 });
-        const msg = getFormMessageDetailed(rec);
-        expect(msg.length).toBeGreaterThan(0);
-      },
-    );
+    it.each(ALL_STATUSES)('"%s" with high risk returns a strong warning', (status) => {
+      const rec = makeRec({ status, acwr: 1.8, injuryRisk: 'high', dataMaturityDays: 42 });
+      const msg = getFormMessageDetailed(rec);
+      expect(msg.length).toBeGreaterThan(0);
+    });
 
     it('overload + high risk is the strongest warning', () => {
-      const rec = makeRec({ status: 'overload', acwr: 2.0, injuryRisk: 'high', dataMaturityDays: 42 });
+      const rec = makeRec({
+        status: 'overload',
+        acwr: 2.0,
+        injuryRisk: 'high',
+        dataMaturityDays: 42,
+      });
       const msg = getFormMessageDetailed(rec);
       expect(msg).toContain('highest-risk');
     });
@@ -149,8 +138,18 @@ describe('getFormMessageDetailed', () => {
     });
 
     it('undertraining takes priority over low-risk sweet-spot message', () => {
-      const sweetSpot = makeRec({ status: 'neutral', acwr: 1.0, injuryRisk: 'low', dataMaturityDays: 42 });
-      const undertraining = makeRec({ status: 'neutral', acwr: 0.5, injuryRisk: 'low', dataMaturityDays: 42 });
+      const sweetSpot = makeRec({
+        status: 'neutral',
+        acwr: 1.0,
+        injuryRisk: 'low',
+        dataMaturityDays: 42,
+      });
+      const undertraining = makeRec({
+        status: 'neutral',
+        acwr: 0.5,
+        injuryRisk: 'low',
+        dataMaturityDays: 42,
+      });
       expect(getFormMessageDetailed(sweetSpot)).not.toBe(getFormMessageDetailed(undertraining));
     });
   });
@@ -268,12 +267,16 @@ describe('threshold consistency: getLoadState and getInjuryRisk agree at boundar
 describe('message uniqueness', () => {
   it('all 25 status x load-state messages are unique and non-trivial', () => {
     const messages = new Set<string>();
-    const loadConfigs: Array<{ acwr: number; dataMaturityDays: number; injuryRisk: CoachingRecommendation['injuryRisk'] }> = [
-      { acwr: 1.0, dataMaturityDays: 10, injuryRisk: 'low' },      // immature
-      { acwr: 0.5, dataMaturityDays: 42, injuryRisk: 'low' },      // undertraining
-      { acwr: 1.0, dataMaturityDays: 42, injuryRisk: 'low' },      // sweet-spot
+    const loadConfigs: Array<{
+      acwr: number;
+      dataMaturityDays: number;
+      injuryRisk: CoachingRecommendation['injuryRisk'];
+    }> = [
+      { acwr: 1.0, dataMaturityDays: 10, injuryRisk: 'low' }, // immature
+      { acwr: 0.5, dataMaturityDays: 42, injuryRisk: 'low' }, // undertraining
+      { acwr: 1.0, dataMaturityDays: 42, injuryRisk: 'low' }, // sweet-spot
       { acwr: 1.4, dataMaturityDays: 42, injuryRisk: 'moderate' }, // moderate-risk
-      { acwr: 1.8, dataMaturityDays: 42, injuryRisk: 'high' },    // high-risk
+      { acwr: 1.8, dataMaturityDays: 42, injuryRisk: 'high' }, // high-risk
     ];
 
     for (const config of loadConfigs) {

@@ -9,9 +9,9 @@ import {
   preparePaceData,
   prepareGAPData,
   filterTimeSeries,
-} from '../../src/lib/chartData.ts';
-import { makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
-import type { SessionRecord } from '../../src/engine/types.ts';
+} from '@/lib/chartData.ts';
+import { makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
+import type { SessionRecord } from '@/engine/types.ts';
 
 describe('filterTimeSeries', () => {
   const data = [
@@ -69,9 +69,7 @@ describe('prepareHrData', () => {
   });
 
   it('returns empty array for records without hr data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(prepareHrData(records)).toHaveLength(0);
   });
 });
@@ -100,9 +98,7 @@ describe('preparePowerData', () => {
   });
 
   it('returns empty array for records without power data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(preparePowerData(records)).toHaveLength(0);
   });
 });
@@ -110,9 +106,7 @@ describe('preparePowerData', () => {
 describe('prepareSpeedData', () => {
   it('converts speed from m/s to km/h', () => {
     // 10 m/s = 36 km/h
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 60, speed: 10 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 60, speed: 10 }];
     const result = prepareSpeedData(records);
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({ time: 1, speed: 36 });
@@ -129,9 +123,7 @@ describe('prepareSpeedData', () => {
   });
 
   it('returns empty array for records without speed data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(prepareSpeedData(records)).toHaveLength(0);
   });
 });
@@ -175,17 +167,13 @@ describe('prepareElevationData', () => {
   });
 
   it('converts timestamp to minutes', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 120, elevation: 500 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 120, elevation: 500 }];
     const result = prepareElevationData(records);
     expect(result[0].time).toBe(2); // 120s = 2 min
   });
 
   it('returns empty for no elevation data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(prepareElevationData(records)).toHaveLength(0);
   });
 });
@@ -211,9 +199,7 @@ describe('prepareGradeData', () => {
 describe('preparePaceData', () => {
   it('converts speed (m/s) to pace (min/km)', () => {
     // 3.33 m/s = 300 sec/km = 5.0 min/km
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 60, speed: 1000 / 300 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 60, speed: 1000 / 300 }];
     const result = preparePaceData(records);
     expect(result).toHaveLength(1);
     expect(result[0].pace).toBe(5);
@@ -230,9 +216,7 @@ describe('preparePaceData', () => {
   });
 
   it('returns empty when no speed data', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0 }];
     expect(preparePaceData(records)).toHaveLength(0);
   });
 });
@@ -261,9 +245,7 @@ describe('prepareGAPData', () => {
   });
 
   it('returns empty for fewer than 2 valid records', () => {
-    const records: SessionRecord[] = [
-      { sessionId: 's1', timestamp: 0, speed: 3.5, grade: 5 },
-    ];
+    const records: SessionRecord[] = [{ sessionId: 's1', timestamp: 0, speed: 3.5, grade: 5 }];
     expect(prepareGAPData(records)).toHaveLength(0);
   });
 

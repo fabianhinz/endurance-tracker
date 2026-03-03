@@ -1,20 +1,14 @@
-import { useState, useCallback } from "react";
-import { useMapFocusStore } from "../../../store/mapFocus.ts";
-import {
-  pickBoundsFromCorners,
-  filterTracksByPickBounds,
-} from "../trackPicking.ts";
-import type { MapRef } from "react-map-gl/maplibre";
-import type { MapTrack } from "./useMapTracks.ts";
-import type { PopupInfo } from "../MapPickPopup.tsx";
-import type { LapPopupInfo } from "../LapPickPopup.tsx";
-import { decodeCached, PICK_RADIUS } from "./types.ts";
-import type { PickingInfo } from "@deck.gl/core";
+import { useState, useCallback } from 'react';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { pickBoundsFromCorners, filterTracksByPickBounds } from '@/features/map/trackPicking.ts';
+import type { MapRef } from 'react-map-gl/maplibre';
+import type { MapTrack } from './useMapTracks.ts';
+import type { PopupInfo } from '@/features/map/MapPickPopup.tsx';
+import type { LapPopupInfo } from '@/features/map/LapPickPopup.tsx';
+import { decodeCached, PICK_RADIUS } from './types.ts';
+import type { PickingInfo } from '@deck.gl/core';
 
-export const useMapPopupState = (
-  mapRef: React.RefObject<MapRef | null>,
-  tracks: MapTrack[],
-) => {
+export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks: MapTrack[]) => {
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
 
@@ -40,14 +34,8 @@ export const useMapPopupState = (
         return stopPropagation;
       }
 
-      const topLeft = mapRef.current.unproject([
-        info.x - PICK_RADIUS,
-        info.y - PICK_RADIUS,
-      ]);
-      const bottomRight = mapRef.current.unproject([
-        info.x + PICK_RADIUS,
-        info.y + PICK_RADIUS,
-      ]);
+      const topLeft = mapRef.current.unproject([info.x - PICK_RADIUS, info.y - PICK_RADIUS]);
+      const bottomRight = mapRef.current.unproject([info.x + PICK_RADIUS, info.y + PICK_RADIUS]);
 
       const pickBounds = pickBoundsFromCorners(topLeft, bottomRight);
       const pickable = tracks.map((t) => ({
@@ -62,9 +50,7 @@ export const useMapPopupState = (
       }
 
       const hitSet = new Set(hitIds);
-      const sessions = tracks
-        .filter((t) => hitSet.has(t.sessionId))
-        .map((t) => t.session);
+      const sessions = tracks.filter((t) => hitSet.has(t.sessionId)).map((t) => t.session);
 
       useMapFocusStore.getState().setPickCircle([center.lng, center.lat]);
       setPopup({ x: info.x, y: info.y, sessions });
@@ -86,9 +72,7 @@ export const useMapPopupState = (
       setHoveringTrack(!!info.object);
       if (!popup && !lapPopup) {
         if (info.object && info.coordinate) {
-          useMapFocusStore
-            .getState()
-            .setPickCircle([info.coordinate[0], info.coordinate[1]]);
+          useMapFocusStore.getState().setPickCircle([info.coordinate[0], info.coordinate[1]]);
         } else {
           useMapFocusStore.getState().clearPickCircle();
         }

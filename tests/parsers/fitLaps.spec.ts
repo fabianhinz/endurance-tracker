@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mapFitLaps } from '../../src/parsers/fit.ts';
+import { mapFitLaps } from '@/parsers/fit.ts';
 
 function makeFitLap(overrides: Record<string, unknown> = {}) {
   return {
@@ -55,20 +55,14 @@ describe('mapFitLaps', () => {
   });
 
   it('maps running lap fields correctly (with cadence)', () => {
-    const laps = mapFitLaps(
-      [makeFitLap({ avg_cadence: 83, max_cadence: 88 })],
-      'session-1',
-    );
+    const laps = mapFitLaps([makeFitLap({ avg_cadence: 83, max_cadence: 88 })], 'session-1');
     expect(laps[0].avgCadence).toBe(83);
     expect(laps[0].maxCadence).toBe(88);
   });
 
   it('uses array index as fallback when message_index is missing', () => {
     const laps = mapFitLaps(
-      [
-        makeFitLap({ message_index: undefined }),
-        makeFitLap({ message_index: undefined }),
-      ],
+      [makeFitLap({ message_index: undefined }), makeFitLap({ message_index: undefined })],
       'session-1',
     );
     expect(laps[0].lapIndex).toBe(0);
@@ -84,18 +78,12 @@ describe('mapFitLaps', () => {
   });
 
   it('totalMovingTime is undefined when missing from FIT data', () => {
-    const laps = mapFitLaps(
-      [makeFitLap({ total_moving_time: undefined })],
-      'session-1',
-    );
+    const laps = mapFitLaps([makeFitLap({ total_moving_time: undefined })], 'session-1');
     expect(laps[0].totalMovingTime).toBeUndefined();
   });
 
   it('handles missing total_distance gracefully', () => {
-    const laps = mapFitLaps(
-      [makeFitLap({ total_distance: undefined })],
-      'session-1',
-    );
+    const laps = mapFitLaps([makeFitLap({ total_distance: undefined })], 'session-1');
     expect(laps[0].distance).toBe(0);
   });
 
@@ -118,10 +106,7 @@ describe('mapFitLaps', () => {
 describe('movingTime derivation (via laps)', () => {
   it('sums totalMovingTime from all laps', () => {
     const laps = mapFitLaps(
-      [
-        makeFitLap({ total_moving_time: 300 }),
-        makeFitLap({ total_moving_time: 400 }),
-      ],
+      [makeFitLap({ total_moving_time: 300 }), makeFitLap({ total_moving_time: 400 })],
       'session-1',
     );
     const movingTime = laps.reduce(

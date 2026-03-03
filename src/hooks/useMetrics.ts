@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useSessionsStore } from '../store/sessions.ts';
-import { computeMetrics } from '../engine/metrics.ts';
-import { getCoachingRecommendation } from '../lib/coachingMessages.ts';
-import type { DailyMetrics } from '../engine/types.ts';
-import type { CoachingRecommendation } from '../types/index.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { computeMetrics } from '@/engine/metrics.ts';
+import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
+import type { DailyMetrics } from '@/engine/types.ts';
+import type { CoachingRecommendation } from '@/types/index.ts';
 
 export const useMetrics = (): {
   history: DailyMetrics[];

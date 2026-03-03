@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="200" height="200">
+  <defs>
+    <clipPath id="rounded">
+      <rect width="120" height="120" rx="20" />
+    </clipPath>
+    <linearGradient id="fadeCyan" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="20%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#22d3ee" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="fadeGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="20%" stop-color="#4ade80" />
+      <stop offset="100%" stop-color="#4ade80" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="fadeBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="20%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#rounded)">
+    <rect width="120" height="120" fill="#030712" />
+    <g fill="none" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 40 95 C 20 65, 40 35, 60 25" stroke="url(#fadeCyan)" />
+      <path d="M 60 95 C 60 60, 50 45, 60 25" stroke="url(#fadeGreen)" />
+      <path d="M 80 95 C 100 65, 80 35, 60 25" stroke="url(#fadeBlue)" />
+    </g>
+  </g>
+</svg>

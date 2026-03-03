@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { Typography } from "./Typography.tsx";
-import { MetricLabel } from "./MetricLabel.tsx";
-import type { MetricId } from "../../lib/explanations.ts";
+import type { ReactNode } from 'react';
+import { Typography } from './Typography.tsx';
+import { MetricLabel } from './MetricLabel.tsx';
+import type { MetricId } from '@/lib/explanations.ts';
 
 interface StatItemProps {
   label: string;
@@ -18,7 +18,9 @@ export const StatItem = (props: StatItemProps) => {
         <Typography variant="overline" as="span">
           {props.label}
         </Typography>
-        {props.metricId && <MetricLabel metricId={props.metricId} size="sm" contextLabel={props.label} />}
+        {props.metricId && (
+          <MetricLabel metricId={props.metricId} size="sm" contextLabel={props.label} />
+        )}
       </div>
       <Typography variant="h3" as="p">
         {props.value}

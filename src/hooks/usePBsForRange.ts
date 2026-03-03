@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { useFiltersStore } from "../store/filters.ts";
-import { useSessionsStore } from "../store/sessions.ts";
-import { getRecordsForSessions } from "../lib/indexeddb.ts";
-import { rangeToCutoff, customRangeToCutoffs } from "../lib/timeRange.ts";
-import { computePBsForSessions, groupPBsBySport, PB_SLOTS } from "../engine/records.ts";
-import type { PersonalBest, Sport } from "../engine/types.ts";
+import { useState, useEffect } from 'react';
+import { useFiltersStore } from '@/store/filters.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { getRecordsForSessions } from '@/lib/indexeddb.ts';
+import { rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
+import { computePBsForSessions, groupPBsBySport, PB_SLOTS } from '@/engine/records.ts';
+import type { PersonalBest, Sport } from '@/engine/types.ts';
 
 const categoryOrder: Record<string, number> = {
-  "peak-power": 0,
-  "fastest-distance": 1,
-  "longest": 2,
-  "most-elevation": 3,
+  'peak-power': 0,
+  'fastest-distance': 1,
+  longest: 2,
+  'most-elevation': 3,
 };
 
 export const usePBsForRange = (): {
@@ -33,15 +33,26 @@ export const usePBsForRange = (): {
 
       let eligible: typeof sessions;
 
-      if (timeRange === "custom" && customRange) {
+      if (timeRange === 'custom' && customRange) {
         const bounds = customRangeToCutoffs(customRange);
         eligible = sessions.filter(
-          (s) => !s.isPlanned && s.date >= bounds.from && s.date <= bounds.to && s.hasDetailedRecords && (sportFilter === "all" || s.sport === sportFilter),
+          (s) =>
+            !s.isPlanned &&
+            s.date >= bounds.from &&
+            s.date <= bounds.to &&
+            s.hasDetailedRecords &&
+            (sportFilter === 'all' || s.sport === sportFilter),
         );
       } else {
-        const cutoff = rangeToCutoff(timeRange as Exclude<import("../lib/timeRange.ts").TimeRange, "custom">);
+        const cutoff = rangeToCutoff(
+          timeRange as Exclude<import('../lib/timeRange.ts').TimeRange, 'custom'>,
+        );
         eligible = sessions.filter(
-          (s) => !s.isPlanned && s.date >= cutoff && s.hasDetailedRecords && (sportFilter === "all" || s.sport === sportFilter),
+          (s) =>
+            !s.isPlanned &&
+            s.date >= cutoff &&
+            s.hasDetailedRecords &&
+            (sportFilter === 'all' || s.sport === sportFilter),
         );
       }
 
@@ -91,10 +102,11 @@ export const usePBsForRange = (): {
 
   const flat = Object.values(grouped)
     .flat()
-    .sort((a, b) =>
-      sportOrder[a.sport] - sportOrder[b.sport]
-      || categoryOrder[a.category] - categoryOrder[b.category]
-      || slotIndex(a) - slotIndex(b),
+    .sort(
+      (a, b) =>
+        sportOrder[a.sport] - sportOrder[b.sport] ||
+        categoryOrder[a.category] - categoryOrder[b.category] ||
+        slotIndex(a) - slotIndex(b),
     );
 
   return { grouped, flat, loading };

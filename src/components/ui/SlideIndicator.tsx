@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 const INDICATOR_SIZE = 20;
 
@@ -17,28 +17,28 @@ export const useSlideIndicator = (
       const containerRect = container.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
       container.style.setProperty(
-        "--tab-x",
+        '--tab-x',
         `${elRect.left - containerRect.left + (elRect.width - INDICATOR_SIZE) / 2}px`,
       );
       container.style.setProperty(
-        "--tab-y",
+        '--tab-y',
         `${elRect.top - containerRect.top + (elRect.height - INDICATOR_SIZE) / 2}px`,
       );
     };
 
     update();
-    window.addEventListener("resize", update);
+    window.addEventListener('resize', update);
 
     // Recalculate after CSS transitions complete
     const handleTransitionEnd = () => update();
     if (container) {
-      container.addEventListener("transitionend", handleTransitionEnd);
+      container.addEventListener('transitionend', handleTransitionEnd);
     }
 
     return () => {
-      window.removeEventListener("resize", update);
+      window.removeEventListener('resize', update);
       if (container) {
-        container.removeEventListener("transitionend", handleTransitionEnd);
+        container.removeEventListener('transitionend', handleTransitionEnd);
       }
     };
   }, [containerRef, itemRefs, activeIndex, recalcKey]);

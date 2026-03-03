@@ -1,4 +1,4 @@
-import type { SessionRecord } from '../../src/engine/types.ts';
+import type { SessionRecord } from '@/engine/types.ts';
 
 /**
  * Generate running records with GPS coordinates following a realistic path.
@@ -36,10 +36,7 @@ export const makeGPSRunningRecords = (
 /**
  * Generate indoor records with no GPS data (lat/lng undefined).
  */
-export const makeIndoorRecords = (
-  sessionId: string,
-  count: number,
-): SessionRecord[] => {
+export const makeIndoorRecords = (sessionId: string, count: number): SessionRecord[] => {
   const records: SessionRecord[] = [];
   for (let i = 0; i < count; i++) {
     records.push({

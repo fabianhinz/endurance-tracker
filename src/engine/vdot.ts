@@ -10,12 +10,11 @@ export const RACE_DISTANCE_METERS: Record<RaceDistance, number> = {
   '5k': 5000,
   '10k': 10000,
   'half-marathon': 21097.5,
-  'marathon': 42195,
+  marathon: 42195,
 };
 
 // Daniels/Gilbert VO2 from velocity (m/min)
-const vo2FromVelocity = (v: number): number =>
-  -4.6 + 0.182258 * v + 0.000104 * v * v;
+const vo2FromVelocity = (v: number): number => -4.6 + 0.182258 * v + 0.000104 * v * v;
 
 // Daniels/Gilbert percent VO2max sustained over duration (minutes)
 const pctVo2max = (t: number): number =>
@@ -52,5 +51,5 @@ export const thresholdPaceFromRace = (distanceMeters: number, timeMinutes: numbe
   const vdot = calculateVdot(distanceMeters, timeMinutes);
   const targetVo2 = THRESHOLD_INTENSITY * vdot;
   const velocity = velocityFromVo2(targetVo2); // m/min
-  return Math.round(1000 / velocity * 60); // sec/km
+  return Math.round((1000 / velocity) * 60); // sec/km
 };

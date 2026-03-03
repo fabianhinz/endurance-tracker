@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
-import { useSessionsStore } from '../../src/store/sessions.ts';
-import { useUserStore } from '../../src/store/user.ts';
-import { useCoachPlanStore } from '../../src/store/coachPlan.ts';
-import { useLayoutStore } from '../../src/store/layout.ts';
-import { useFiltersStore } from '../../src/store/filters.ts';
-import { makeSession } from '../factories/sessions.ts';
-import { makeUserProfile } from '../factories/profiles.ts';
-import { makeCyclingRecords, makeLaps } from '../factories/records.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useUserStore } from '@/store/user.ts';
+import { useCoachPlanStore } from '@/store/coachPlan.ts';
+import { useLayoutStore } from '@/store/layout.ts';
+import { useFiltersStore } from '@/store/filters.ts';
+import { makeSession } from '@tests/factories/sessions.ts';
+import { makeUserProfile } from '@tests/factories/profiles.ts';
+import { makeCyclingRecords, makeLaps } from '@tests/factories/records.ts';
 import {
   saveSessionRecords,
   getSessionRecords,
   clearAllRecords,
   saveSessionLaps,
   getSessionLaps,
-} from '../../src/lib/indexeddb.ts';
-import { idbStorage } from '../../src/lib/idbStorage.ts';
+} from '@/lib/indexeddb.ts';
+import { idbStorage } from '@/lib/idbStorage.ts';
 
 describe('delete all data', () => {
   it('clears sessions, personal bests, profile, session-records, session-laps, and resets onboarding', async () => {
@@ -22,7 +22,14 @@ describe('delete all data', () => {
     const { id: _id, createdAt: _ca, ...sessionData } = makeSession();
     const sessionId = useSessionsStore.getState().addSession(sessionData);
     useSessionsStore.getState().updatePersonalBests([
-      { sport: 'cycling', metric: 'power', duration: 300, value: 280, sessionId, date: Date.now() },
+      {
+        sport: 'cycling',
+        metric: 'power',
+        duration: 300,
+        value: 280,
+        sessionId,
+        date: Date.now(),
+      },
     ]);
 
     // Populate user store
@@ -44,10 +51,12 @@ describe('delete all data', () => {
     await idbStorage.setItem('store-user', '{"state":{"profile":{}}}');
 
     // Populate coach plan cache
-    useCoachPlanStore.getState().setPlan(
-      { weekOf: '2026-02-09', workouts: [], totalEstimatedTss: 0, context: { mode: 'no-data' } },
-      '2026-02-09:1:300',
-    );
+    useCoachPlanStore
+      .getState()
+      .setPlan(
+        { weekOf: '2026-02-09', workouts: [], totalEstimatedTss: 0, context: { mode: 'no-data' } },
+        '2026-02-09:1:300',
+      );
 
     // Set non-default filters
     useFiltersStore.setState({ timeRange: '90d', sportFilter: 'cycling' });
@@ -68,7 +77,12 @@ describe('delete all data', () => {
     useUserStore.getState().resetProfile();
     useCoachPlanStore.getState().clearPlan();
     useLayoutStore.setState({ onboardingComplete: false });
-    useFiltersStore.setState({ timeRange: 'all', customRange: null, prevDashboardRange: null, sportFilter: 'all' });
+    useFiltersStore.setState({
+      timeRange: 'all',
+      customRange: null,
+      prevDashboardRange: null,
+      sportFilter: 'all',
+    });
     await clearAllRecords();
 
     // Verify everything is cleared

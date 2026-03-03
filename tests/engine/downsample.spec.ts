@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { downsample } from '../../src/engine/downsample.ts';
+import { downsample } from '@/engine/downsample.ts';
 
 describe('downsample', () => {
   it('returns all records when count is below target', () => {

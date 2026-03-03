@@ -1,6 +1,6 @@
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { ChevronDown } from 'lucide-react';
-import { cn } from '../../lib/utils.ts';
+import { cn } from '@/lib/utils.ts';
 
 export const SelectRoot = SelectPrimitive.Root;
 export const SelectValue = SelectPrimitive.Value;
@@ -36,9 +36,7 @@ export const SelectContent = (props: SelectPrimitive.SelectContentProps) => {
         sideOffset={4}
         {...rest}
       >
-        <SelectPrimitive.Viewport className="p-1">
-          {children}
-        </SelectPrimitive.Viewport>
+        <SelectPrimitive.Viewport className="p-1">{children}</SelectPrimitive.Viewport>
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   );

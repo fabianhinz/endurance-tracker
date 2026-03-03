@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getSessionRecords } from '../../../lib/indexeddb.ts';
-import { extractPathFromRecords } from '../../../engine/gps.ts';
-import type { TrainingSession } from '../../../engine/types.ts';
+import { getSessionRecords } from '@/lib/indexeddb.ts';
+import { extractPathFromRecords } from '@/engine/gps.ts';
+import type { TrainingSession } from '@/engine/types.ts';
 
 const pathCache = new Map<string, [number, number][]>();
 const loading = new Set<string>();
@@ -14,9 +14,7 @@ export const useHiresPaths = (
   const [snapshot, setSnapshot] = useState(() => new Map(pathCache));
 
   useEffect(() => {
-    const ids = [hoveredSessionId, openedSessionId].filter(
-      (id): id is string => id != null,
-    );
+    const ids = [hoveredSessionId, openedSessionId].filter((id): id is string => id != null);
 
     for (const id of ids) {
       if (pathCache.has(id) || loading.has(id)) continue;

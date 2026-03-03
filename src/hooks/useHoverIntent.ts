@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect } from 'react';
 
 export const useHoverIntent = (setter: (id: string | null) => void, delay = 150) => {
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);

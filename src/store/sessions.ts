@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { TrainingSession, PersonalBest } from '../engine/types.ts';
-import { idbStorage } from '../lib/idbStorage.ts';
-import { mergePBs } from '../engine/records.ts';
+import type { TrainingSession, PersonalBest } from '@/engine/types.ts';
+import { idbStorage } from '@/lib/idbStorage.ts';
+import { mergePBs } from '@/engine/records.ts';
 
 interface SessionsState {
   sessions: TrainingSession[];
@@ -11,6 +11,9 @@ interface SessionsState {
   addSessions: (sessions: Omit<TrainingSession, 'id' | 'createdAt'>[]) => string[];
   deleteSession: (id: string) => void;
   renameSession: (id: string, name: string) => void;
+  replaceSessions: (
+    updates: Array<{ id: string; session: Omit<TrainingSession, 'id' | 'createdAt'> }>,
+  ) => void;
   updatePersonalBests: (newBests: PersonalBest[]) => void;
   clearAll: () => void;
 }
@@ -51,10 +54,20 @@ export const useSessionsStore = create<SessionsState>()(
 
       renameSession: (id, name) =>
         set((state) => ({
-          sessions: state.sessions.map((s) =>
-            s.id === id ? { ...s, name } : s,
-          ),
+          sessions: state.sessions.map((s) => (s.id === id ? { ...s, name } : s)),
         })),
+
+      replaceSessions: (updates) =>
+        set((state) => {
+          const updateMap = new Map(updates.map((u) => [u.id, u.session]));
+          return {
+            sessions: state.sessions.map((s) => {
+              const updated = updateMap.get(s.id);
+              if (!updated) return s;
+              return { ...updated, id: s.id, createdAt: s.createdAt };
+            }),
+          };
+        }),
 
       updatePersonalBests: (newBests) =>
         set((state) => ({

@@ -1,20 +1,20 @@
-import { useRef, useEffect, useState } from "react";
-import { useMatch } from "react-router-dom";
-import MapGL from "react-map-gl/maplibre";
-import { darkMatterStyle } from "./mapStyle.ts";
-import { useMapTracks } from "./hooks/useMapTracks.ts";
-import { useGPSBackfill } from "./hooks/useGpsBackfill.ts";
-import { useMapCameraEffect } from "./hooks/useMapCameraEffect.ts";
-import { useMapPopupState } from "./hooks/useMapPopupState.ts";
-import { DeckGLOverlay } from "./DeckGLOverlay.tsx";
-import { DeckMetricsOverlay } from "./DeckMetricsOverlay.tsx";
-import { MapPickPopup } from "./MapPickPopup.tsx";
-import { LapPickPopup } from "./LapPickPopup.tsx";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
-import { useLayoutStore } from "../../store/layout.ts";
-import type { MapRef } from "react-map-gl/maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
-import "./map-attribution.css";
+import { useRef, useEffect, useState } from 'react';
+import { useMatch } from 'react-router-dom';
+import MapGL from 'react-map-gl/maplibre';
+import { darkMatterStyle } from './mapStyle.ts';
+import { useMapTracks } from './hooks/useMapTracks.ts';
+import { useGPSBackfill } from './hooks/useGpsBackfill.ts';
+import { useMapCameraEffect } from './hooks/useMapCameraEffect.ts';
+import { useMapPopupState } from './hooks/useMapPopupState.ts';
+import { DeckGLOverlay } from './DeckGLOverlay.tsx';
+import { DeckMetricsOverlay } from './DeckMetricsOverlay.tsx';
+import { MapPickPopup } from './MapPickPopup.tsx';
+import { LapPickPopup } from './LapPickPopup.tsx';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { useLayoutStore } from '@/store/layout.ts';
+import type { MapRef } from 'react-map-gl/maplibre';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import './map-attribution.css';
 
 const PROGRESS_SIZE = 20;
 const PROGRESS_STROKE = 2.5;
@@ -35,35 +35,24 @@ export const MapBackground = () => {
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
 
-  const match = useMatch("/training/:id");
+  const match = useMatch('/sessions/:id');
   useEffect(() => {
     setOpenedSession(match?.params.id ?? null);
   }, [match?.params.id, setOpenedSession]);
 
-  useMapCameraEffect(
-    mapRef,
-    mapTracks.tracks,
-    openedSessionId,
-    compactLayout,
-    mapLoaded,
-  );
+  useMapCameraEffect(mapRef, mapTracks.tracks, openedSessionId, compactLayout, mapLoaded);
 
   const backfillPct =
-    backfill.total > 0
-      ? Math.min(backfill.processed, backfill.total) / backfill.total
-      : 0;
+    backfill.total > 0 ? Math.min(backfill.processed, backfill.total) / backfill.total : 0;
   const backfillOffset = PROGRESS_CIRCUMFERENCE * (1 - backfillPct);
 
   return (
-    <div
-      className="fixed inset-0 z-0"
-      onPointerLeave={popupState.onPointerLeave}
-    >
+    <div className="fixed inset-0 z-0" onPointerLeave={popupState.onPointerLeave}>
       <MapGL
         ref={mapRef}
         onLoad={() => setMapLoaded(true)}
         mapStyle={darkMatterStyle}
-        cursor={popupState.hoveringTrack ? "pointer" : undefined}
+        cursor={popupState.hoveringTrack ? 'pointer' : undefined}
         initialViewState={{
           longitude: 10,
           latitude: 50,
@@ -76,7 +65,7 @@ export const MapBackground = () => {
         touchZoomRotate={popupState.interactive}
         keyboard={popupState.interactive}
         attributionControl={{ compact: true }}
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: '100%', height: '100%' }}
       >
         <DeckGLOverlay
           tracks={mapTracks.tracks}
@@ -85,9 +74,7 @@ export const MapBackground = () => {
         />
       </MapGL>
       <DeckMetricsOverlay />
-      {popupState.popup && (
-        <MapPickPopup info={popupState.popup} onClose={popupState.closePopup} />
-      )}
+      {popupState.popup && <MapPickPopup info={popupState.popup} onClose={popupState.closePopup} />}
       {popupState.lapPopup && focusedSport && (
         <LapPickPopup
           info={popupState.lapPopup}

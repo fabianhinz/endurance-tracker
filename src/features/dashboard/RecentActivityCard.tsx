@@ -1,24 +1,24 @@
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
-import { useSessionsStore } from "../../store/sessions.ts";
-import { useFiltersStore } from "../../store/filters.ts";
-import { useMapFocusStore } from "../../store/mapFocus.ts";
-import { useHoverIntent } from "../../hooks/useHoverIntent.ts";
-import { usePBsForRange } from "../../hooks/usePBsForRange.ts";
-import { Card } from "../../components/ui/Card.tsx";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/Tabs.tsx";
-import { SessionItem } from "../../components/ui/SessionItem.tsx";
-import { SportBadge } from "../../components/ui/SportBadge.tsx";
-import { Typography } from "../../components/ui/Typography.tsx";
-import { ValueSkeleton } from "../../components/ui/ValueSkeleton.tsx";
-import { Button } from "../../components/ui/Button.tsx";
-import { ChevronRight } from "lucide-react";
-import { pbLabel, formatPBValue, formatDate } from "../../lib/utils.ts";
-import { rangeToCutoff, customRangeToCutoffs } from "../../lib/timeRange.ts";
-import type { TimeRange } from "../../lib/timeRange.ts";
-import type { PersonalBest, Sport } from "../../engine/types.ts";
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { useFiltersStore } from '@/store/filters.ts';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
+import { usePBsForRange } from '@/hooks/usePBsForRange.ts';
+import { Card } from '@/components/ui/Card.tsx';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
+import { SessionItem } from '@/features/sessions/SessionItem.tsx';
+import { SportBadge } from '@/features/sessions/SportBadge.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
+import { ValueSkeleton } from '@/components/ui/ValueSkeleton.tsx';
+import { Button } from '@/components/ui/Button.tsx';
+import { ChevronRight } from 'lucide-react';
+import { pbLabel, formatPBValue, formatDate } from '@/lib/utils.ts';
+import { rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
+import type { TimeRange } from '@/lib/timeRange.ts';
+import type { PersonalBest, Sport } from '@/engine/types.ts';
 
-const sports: Sport[] = ["running", "cycling", "swimming"];
+const sports: Sport[] = ['running', 'cycling', 'swimming'];
 
 const heroForSport = (pbs: PersonalBest[]): PersonalBest | undefined => {
   if (pbs.length === 0) return undefined;
@@ -27,7 +27,9 @@ const heroForSport = (pbs: PersonalBest[]): PersonalBest | undefined => {
 
 const ViewAllLink = (props: { to: string }) => (
   <Button asChild variant="ghost" size="sm">
-    <Link to={props.to}>View all <ChevronRight className="size-4" /></Link>
+    <Link to={props.to}>
+      View all <ChevronRight className="size-4" />
+    </Link>
   </Button>
 );
 
@@ -42,22 +44,20 @@ export const RecentActivityCard = () => {
   const recent = useMemo(() => {
     let list: typeof sessions;
 
-    if (timeRange === "custom" && customRange) {
+    if (timeRange === 'custom' && customRange) {
       const bounds = customRangeToCutoffs(customRange);
       list = sessions.filter(
         (s) =>
           !s.isPlanned &&
           s.date >= bounds.from &&
           s.date <= bounds.to &&
-          (sportFilter === "all" || s.sport === sportFilter),
+          (sportFilter === 'all' || s.sport === sportFilter),
       );
     } else {
-      const cutoff = rangeToCutoff(timeRange as Exclude<TimeRange, "custom">);
+      const cutoff = rangeToCutoff(timeRange as Exclude<TimeRange, 'custom'>);
       list = sessions.filter(
         (s) =>
-          !s.isPlanned &&
-          s.date >= cutoff &&
-          (sportFilter === "all" || s.sport === sportFilter),
+          !s.isPlanned && s.date >= cutoff && (sportFilter === 'all' || s.sport === sportFilter),
       );
     }
 
@@ -85,7 +85,7 @@ export const RecentActivityCard = () => {
             ))}
           </div>
           <div className="mt-4 flex justify-end">
-            <ViewAllLink to="/training?tab=log" />
+            <ViewAllLink to="/sessions?tab=log" />
           </div>
         </Card>
       </TabsContent>
@@ -98,14 +98,16 @@ export const RecentActivityCard = () => {
               const hero = pbsResult.loading ? undefined : heroForSport(sportPBs);
 
               const row = (
-                <div className={`flex items-center gap-3 rounded-lg px-3 py-2${hero ? " transition-colors hover:bg-white/10" : ""}`}>
+                <div
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2${hero ? ' transition-colors hover:bg-white/10' : ''}`}
+                >
                   <SportBadge sport={sport} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <Typography variant="body" className="capitalize">
+                    <Typography variant="body1" className="capitalize">
                       {sport}
                     </Typography>
-                    <Typography variant="caption" as="p" className={hero ? "" : "invisible"}>
-                      {hero ? pbLabel(hero) : "\u00a0"}
+                    <Typography variant="caption" as="p" className={hero ? '' : 'invisible'}>
+                      {hero ? pbLabel(hero) : '\u00a0'}
                     </Typography>
                   </div>
                   <div className="text-right">
@@ -113,11 +115,14 @@ export const RecentActivityCard = () => {
                       <ValueSkeleton />
                     ) : (
                       <>
-                        <Typography variant="emphasis" color={hero ? "primary" : "quaternary"}>
-                          {hero ? formatPBValue(hero) : "--"}
+                        <Typography
+                          variant="subtitle1"
+                          color={hero ? 'textPrimary' : 'textQuaternary'}
+                        >
+                          {hero ? formatPBValue(hero) : '--'}
                         </Typography>
-                        <Typography variant="caption" as="p" className={hero ? "" : "invisible"}>
-                          {hero ? formatDate(hero.date) : "\u00a0"}
+                        <Typography variant="caption" as="p" className={hero ? '' : 'invisible'}>
+                          {hero ? formatDate(hero.date) : '\u00a0'}
                         </Typography>
                       </>
                     )}
@@ -127,7 +132,7 @@ export const RecentActivityCard = () => {
 
               if (hero) {
                 return (
-                  <Link key={sport} to={`/training/${hero.sessionId}`} className="block">
+                  <Link key={sport} to={`/sessions/${hero.sessionId}`} className="block">
                     {row}
                   </Link>
                 );
@@ -137,7 +142,7 @@ export const RecentActivityCard = () => {
             })}
           </div>
           <div className="mt-4 flex justify-end">
-            <ViewAllLink to="/training?tab=records" />
+            <ViewAllLink to="/sessions?tab=records" />
           </div>
         </Card>
       </TabsContent>

@@ -1,11 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import {
-  prepareLapSplitsData,
-  prepareLapHrData,
-  prepareLapPowerData,
-} from '../../src/lib/lapChartData.ts';
-import { analyzeLaps, enrichAllLaps, type LapRecordEnrichment } from '../../src/engine/laps.ts';
-import { makeLaps, makeCyclingRecords, makeRunningRecords } from '../factories/records.ts';
+import { prepareLapSplitsData, prepareLapHrData, prepareLapPowerData } from '@/lib/lapChartData.ts';
+import { analyzeLaps, enrichAllLaps, type LapRecordEnrichment } from '@/engine/laps.ts';
+import { makeLaps, makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
 
 describe('prepareLapSplitsData', () => {
   it('converts laps to split points with pace, speed, and max values', () => {
@@ -155,7 +151,15 @@ describe('prepareLapHrData', () => {
     laps[0].maxHr = 170;
     const analysis = analyzeLaps(laps);
     const enrichments: LapRecordEnrichment[] = [
-      { lapIndex: 0, minSpeed: undefined, avgPower: undefined, minPower: undefined, maxPower: undefined, minCadence: undefined, minHr: 138 },
+      {
+        lapIndex: 0,
+        minSpeed: undefined,
+        avgPower: undefined,
+        minPower: undefined,
+        maxPower: undefined,
+        minCadence: undefined,
+        minHr: 138,
+      },
     ];
     const result = prepareLapHrData(analysis, enrichments);
     expect(result[0].minHr).toBe(138);
@@ -169,7 +173,15 @@ describe('prepareLapHrData', () => {
     laps[0].maxHr = 170;
     const analysis = analyzeLaps(laps);
     const enrichments: LapRecordEnrichment[] = [
-      { lapIndex: 0, minSpeed: undefined, avgPower: undefined, minPower: undefined, maxPower: undefined, minCadence: undefined, minHr: undefined },
+      {
+        lapIndex: 0,
+        minSpeed: undefined,
+        avgPower: undefined,
+        minPower: undefined,
+        maxPower: undefined,
+        minCadence: undefined,
+        minHr: undefined,
+      },
     ];
     const result = prepareLapHrData(analysis, enrichments);
     expect(result[0].minHr).toBe(130);
@@ -193,8 +205,24 @@ describe('prepareLapPowerData', () => {
 
   it('filters out enrichments without power data', () => {
     const enrichments: LapRecordEnrichment[] = [
-      { lapIndex: 0, minSpeed: 3.0, avgPower: 200, minPower: 180, maxPower: 240, minCadence: 80, minHr: 135 },
-      { lapIndex: 1, minSpeed: 3.2, avgPower: undefined, minPower: undefined, maxPower: undefined, minCadence: 82, minHr: 140 },
+      {
+        lapIndex: 0,
+        minSpeed: 3.0,
+        avgPower: 200,
+        minPower: 180,
+        maxPower: 240,
+        minCadence: 80,
+        minHr: 135,
+      },
+      {
+        lapIndex: 1,
+        minSpeed: 3.2,
+        avgPower: undefined,
+        minPower: undefined,
+        maxPower: undefined,
+        minCadence: 82,
+        minHr: 140,
+      },
     ];
     const result = prepareLapPowerData(enrichments);
     expect(result).toHaveLength(1);

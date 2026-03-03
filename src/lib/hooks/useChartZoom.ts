@@ -44,7 +44,9 @@ export const useChartZoom = <T>(options: UseChartZoomOptions<T>): UseChartZoomRe
     if (!refAreaLeft) return;
     const prev = document.body.style.userSelect;
     document.body.style.userSelect = 'none';
-    return () => { document.body.style.userSelect = prev; };
+    return () => {
+      document.body.style.userSelect = prev;
+    };
   }, [refAreaLeft]);
 
   const onMouseDown = useCallback((e: MouseHandlerDataParam) => {
@@ -53,11 +55,14 @@ export const useChartZoom = <T>(options: UseChartZoomOptions<T>): UseChartZoomRe
     setRefAreaRight(null);
   }, []);
 
-  const onMouseMove = useCallback((e: MouseHandlerDataParam) => {
-    if (refAreaLeft && e.activeLabel != null) {
-      setRefAreaRight(e.activeLabel);
-    }
-  }, [refAreaLeft]);
+  const onMouseMove = useCallback(
+    (e: MouseHandlerDataParam) => {
+      if (refAreaLeft && e.activeLabel != null) {
+        setRefAreaRight(e.activeLabel);
+      }
+    },
+    [refAreaLeft],
+  );
 
   const onMouseUp = useCallback(() => {
     if (!refAreaLeft || !refAreaRight) {

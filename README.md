@@ -1,22 +1,22 @@
-# Forge
+# PaceVault
 
-*Your training. Your device. Your edge.*
+_Your training. Your device. Your edge._
 
 A local-first endurance training tracker built entirely in the browser. Import Garmin .FIT files, track training load with the Banister impulse-response model, detect personal bests, visualize GPS traces on a map, analyze sessions with advanced metrics (NP, GAP, efficiency, lap analysis), and get coaching recommendations — all without a server.
 
 ## Tech Stack
 
-| Layer | Choice |
-|-------|--------|
-| Build | Vite 7, TypeScript 5.9 strict |
-| Framework | React 19 |
-| Routing | React Router v7 |
-| UI | Radix primitives, Tailwind v4, dark mode only |
-| State | Zustand (persisted to IndexedDB) |
-| Forms | React Hook Form + Zod v4 |
-| Charts | Recharts |
-| File parsing | fit-file-parser (.FIT binaries) |
-| Storage | IndexedDB via `idb` (no localStorage, no server) |
+| Layer        | Choice                                           |
+| ------------ | ------------------------------------------------ |
+| Build        | Vite 7, TypeScript 5.9 strict                    |
+| Framework    | React 19                                         |
+| Routing      | React Router v7                                  |
+| UI           | Radix primitives, Tailwind v4, dark mode only    |
+| State        | Zustand (persisted to IndexedDB)                 |
+| Forms        | React Hook Form + Zod v4                         |
+| Charts       | Recharts                                         |
+| File parsing | fit-file-parser (.FIT binaries)                  |
+| Storage      | IndexedDB via `idb` (no localStorage, no server) |
 
 ## Getting Started
 
@@ -29,14 +29,14 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start dev server |
-| `pnpm build` | Type-check and build for production |
-| `pnpm test` | Run tests (vitest) |
-| `pnpm lint` | Lint with ESLint |
-| `pnpm typecheck` | Type-check with tsc |
-| `pnpm preview` | Preview production build |
+| Command          | Description                         |
+| ---------------- | ----------------------------------- |
+| `pnpm dev`       | Start dev server                    |
+| `pnpm build`     | Type-check and build for production |
+| `pnpm test`      | Run tests (vitest)                  |
+| `pnpm lint`      | Lint with ESLint                    |
+| `pnpm typecheck` | Type-check with tsc                 |
+| `pnpm preview`   | Preview production build            |
 
 ## Project Structure
 
