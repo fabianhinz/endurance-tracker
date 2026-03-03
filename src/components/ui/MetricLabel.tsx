@@ -1,4 +1,5 @@
 import { Info } from 'lucide-react';
+import { m } from '@/paraglide/messages.js';
 import { PopoverRoot, PopoverTrigger, PopoverContent } from './Popover.tsx';
 import { METRIC_EXPLANATIONS, type MetricId } from '@/lib/explanations.ts';
 import { useUserStore } from '@/store/user.ts';
@@ -55,7 +56,7 @@ export const MetricLabel = (props: MetricLabelProps) => {
               variant="ghost"
               size="icon"
               className="cursor-help text-text-quaternary hover:text-accent focus-visible:text-accent"
-              aria-label={`Learn about ${explanation.friendlyName}`}
+              aria-label={m.ui_learn_about({ metric: explanation.friendlyName })}
               aria-haspopup="dialog"
             >
               <Info size={size === 'sm' ? 14 : 16} strokeWidth={1.5} className="shrink-0" />
@@ -75,7 +76,7 @@ export const MetricLabel = (props: MetricLabelProps) => {
             <p className="mt-2 text-sm text-text-secondary">{explanation.oneLiner}</p>
 
             <p className="mt-2 text-sm italic text-text-tertiary">
-              Think of it as: {explanation.analogy}
+              {m.ui_think_of_it_as()} {explanation.analogy}
             </p>
 
             <p className="mt-2 border-t border-white/10 pt-2 text-xs text-text-quaternary">

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { getLocale } from '@/paraglide/runtime.js';
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -9,13 +10,13 @@ interface FormatDateOptions {
   includeTime?: boolean;
 }
 
-const dateFmt = new Intl.DateTimeFormat('en-US', {
+const dateFmt = new Intl.DateTimeFormat(getLocale(), {
   month: 'short',
   day: 'numeric',
   year: 'numeric',
 });
 
-const dateTimeFmt = new Intl.DateTimeFormat('en-US', {
+const dateTimeFmt = new Intl.DateTimeFormat(getLocale(), {
   month: 'short',
   day: 'numeric',
   year: 'numeric',
@@ -96,6 +97,7 @@ export const formatPaceTick = (minPerKm: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
+import { m } from '@/paraglide/messages.js';
 import type { PersonalBest } from '@/engine/types.ts';
 
 const POWER_WINDOW_LABELS: Record<number, string> = {
@@ -110,8 +112,8 @@ const RUNNING_DISTANCE_LABELS: Record<number, string> = {
   1000: '1 km',
   5000: '5 km',
   10000: '10 km',
-  21097: 'Half Marathon',
-  42195: 'Marathon',
+  21097: m.ui_pb_half_marathon(),
+  42195: m.ui_pb_marathon(),
 };
 
 const SWIMMING_DISTANCE_LABELS: Record<number, string> = {
@@ -131,8 +133,8 @@ export const pbLabel = (pb: PersonalBest): string => {
     }
     return RUNNING_DISTANCE_LABELS[pb.window] ?? `${pb.window} m`;
   }
-  if (pb.category === 'longest') return 'Longest';
-  return 'Elevation Gain';
+  if (pb.category === 'longest') return m.ui_pb_longest();
+  return m.ui_pb_elevation_gain();
 };
 
 export const formatPBValue = (pb: PersonalBest): string => {
@@ -143,15 +145,15 @@ export const formatPBValue = (pb: PersonalBest): string => {
 };
 
 const SUB_SPORT_LABELS: Record<string, string> = {
-  road: 'Road',
-  trail: 'Trail',
-  mountain: 'Mountain',
-  virtual_activity: 'Virtual',
-  indoor_cycling: 'Indoor',
-  indoor_running: 'Indoor',
-  track: 'Track',
-  gravel_cycling: 'Gravel',
-  treadmill: 'Treadmill',
+  road: m.ui_sub_sport_road(),
+  trail: m.ui_sub_sport_trail(),
+  mountain: m.ui_sub_sport_mountain(),
+  virtual_activity: m.ui_sub_sport_virtual(),
+  indoor_cycling: m.ui_sub_sport_indoor(),
+  indoor_running: m.ui_sub_sport_indoor(),
+  track: m.ui_sub_sport_track(),
+  gravel_cycling: m.ui_sub_sport_gravel(),
+  treadmill: m.ui_sub_sport_treadmill(),
 };
 
 export const formatSubSport = (subSport: string): string => {

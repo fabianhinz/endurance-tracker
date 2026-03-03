@@ -1,18 +1,18 @@
-name: CI
+name: Deploy
 
 on:
-  pull_request:
+  push:
     branches: [main]
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number }}
+  group: deploy-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  ci:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,14 +27,11 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-
-      - name: Generate Paraglide messages
-        run: npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/paraglide
-
-      - name: Format check
-        run: pnpm format:check
-
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm test
       - run: pnpm build
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PACEVAULT }}
+          channelId: live
+          projectId: pacevault

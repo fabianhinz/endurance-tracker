@@ -1,3 +1,5 @@
+import { m } from '@/paraglide/messages.js';
+
 export type TimeRange = '7d' | '30d' | '90d' | 'all' | 'custom';
 
 export const rangeMap: Record<Exclude<TimeRange, 'custom'>, number> = {
@@ -8,11 +10,11 @@ export const rangeMap: Record<Exclude<TimeRange, 'custom'>, number> = {
 };
 
 export const rangeLabelMap: Record<TimeRange, string> = {
-  '7d': '7 days',
-  '30d': '30 days',
-  '90d': '90 days',
-  all: 'All time',
-  custom: 'Custom',
+  '7d': m.ui_range_7d(),
+  '30d': m.ui_range_30d(),
+  '90d': m.ui_range_90d(),
+  all: m.ui_range_all_time(),
+  custom: m.ui_range_custom(),
 };
 
 export const rangeToCutoff = (
@@ -40,8 +42,8 @@ export const formatCustomRangeDuration = (range: { from: string; to: string }): 
 };
 
 export const timeRangeOptions = [
-  { value: 'all', label: 'All' },
-  { value: '7d', label: '7d' },
-  { value: '30d', label: '30d' },
-  { value: '90d', label: '90d' },
+  { value: 'all', label: m.ui_range_all_short() },
+  { value: '7d', label: m.ui_range_7d_short() },
+  { value: '30d', label: m.ui_range_30d_short() },
+  { value: '90d', label: m.ui_range_90d_short() },
 ];

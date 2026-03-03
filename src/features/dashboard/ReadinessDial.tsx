@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages.js';
 import { useMetrics } from '@/hooks/useMetrics.ts';
 import { ChartCard } from '@/components/ui/ChartCard.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
@@ -42,9 +43,9 @@ export const ReadinessGauge = () => {
       </div>
       <Typography variant="overline" as="p" className={statusTextClass[metrics.coaching.status]}>
         {metrics.coaching.status === 'fresh'
-          ? 'Go'
+          ? m.ui_readiness_go()
           : metrics.coaching.status === 'overload'
-            ? 'No-Go'
+            ? m.ui_readiness_no_go()
             : metrics.coaching.status}
       </Typography>
     </div>

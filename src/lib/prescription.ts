@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages.js';
 import type { DailyMetrics, FormStatus, RunningZone, RunningZoneName } from '@/engine/types.ts';
 import type {
   PrescribedWorkout,
@@ -23,7 +24,15 @@ const TSS_PER_HOUR: Record<Exclude<WorkoutType, 'rest'>, number> = {
 
 // --- Workout template builders ---
 
-const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAY_NAMES = [
+  m.coach_day_monday,
+  m.coach_day_tuesday,
+  m.coach_day_wednesday,
+  m.coach_day_thursday,
+  m.coach_day_friday,
+  m.coach_day_saturday,
+  m.coach_day_sunday,
+];
 
 const zoneRange = (
   zoneName: RunningZoneName,
@@ -57,25 +66,25 @@ const buildWorkout = (
 ): { title: string; steps: WorkoutStep[] } => {
   switch (type) {
     case 'rest':
-      return { title: 'Rest Day', steps: [] };
+      return { title: m.coach_workout_rest(), steps: [] };
     case 'recovery':
       return {
-        title: '25min Recovery',
+        title: m.coach_workout_recovery(),
         steps: [step('work', 25 * 60, 'recovery', zones)],
       };
     case 'easy':
       return {
-        title: '45min Easy',
+        title: m.coach_workout_easy(),
         steps: [step('work', 45 * 60, 'easy', zones)],
       };
     case 'long-run':
       return {
-        title: '90min Long Run',
+        title: m.coach_workout_long_run(),
         steps: [step('work', 75 * 60, 'easy', zones), step('work', 15 * 60, 'tempo', zones)],
       };
     case 'tempo':
       return {
-        title: '45min Tempo',
+        title: m.coach_workout_tempo(),
         steps: [
           step('warmup', 10 * 60, 'easy', zones),
           step('work', 25 * 60, 'tempo', zones),
@@ -84,7 +93,7 @@ const buildWorkout = (
       };
     case 'threshold-intervals':
       return {
-        title: '5x5min @ Threshold',
+        title: m.coach_workout_threshold(),
         steps: [
           step('warmup', 10 * 60, 'easy', zones),
           step('work', 5 * 60, 'threshold', zones, 5),
@@ -94,7 +103,7 @@ const buildWorkout = (
       };
     case 'vo2max-intervals':
       return {
-        title: '5x3min @ VO2max',
+        title: m.coach_workout_vo2max(),
         steps: [
           step('warmup', 15 * 60, 'easy', zones),
           step('work', 3 * 60, 'vo2max', zones, 5),
@@ -172,15 +181,24 @@ const WEEK_TEMPLATES: Record<FormStatus | 'no-data', WeekTemplate> = {
 
 const getRationale = (context: PlanContext): string => {
   if (context.mode === 'no-data') {
-    return 'No training history. Starting with a conservative plan of easy runs.';
+    return m.coach_rationale_no_data();
   }
   if (context.mode === 'taper') {
-    return `Taper plan for race on ${context.raceDate}. ${context.daysToRace} days to race.`;
+    return m.coach_rationale_taper({
+      raceDate: context.raceDate,
+      daysToRace: String(context.daysToRace),
+    });
   }
   const risk = getInjuryRisk(context.acwr);
-  const base = `TSB is ${context.tsb > 0 ? '+' : ''}${Math.round(context.tsb)}. Form: ${context.formStatus}. ACWR ${context.acwr.toFixed(2)} (${risk} injury risk).`;
+  const tsb = `${context.tsb > 0 ? '+' : ''}${Math.round(context.tsb)}`;
+  const base = m.coach_rationale_base({
+    tsb,
+    formStatus: context.formStatus,
+    acwr: context.acwr.toFixed(2),
+    risk,
+  });
   if (context.dataMaturityDays < 28) {
-    return `${base} Metrics are still stabilizing (${context.dataMaturityDays} days of data) — plan is conservative until 4 weeks of history.`;
+    return m.coach_rationale_immature({ base, days: String(context.dataMaturityDays) });
   }
   return base;
 };
@@ -314,7 +332,7 @@ export const generateWeeklyPlan = (
     return {
       id: `plan-${date}`,
       date,
-      dayLabel: DAY_NAMES[i],
+      dayLabel: DAY_NAMES[i](),
       type,
       title: built.title,
       steps: built.steps,

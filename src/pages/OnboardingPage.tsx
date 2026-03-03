@@ -4,6 +4,7 @@ import { useUserStore } from '@/store/user.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useLayoutStore } from '@/store/layout.ts';
 import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
+import { m } from '@/paraglide/messages.js';
 import { Button } from '@/components/ui/Button.tsx';
 import { ActionPromptCard } from '@/components/ui/ActionPromptCard.tsx';
 import { ThresholdsSection } from '@/features/settings/ThresholdsSection.tsx';
@@ -22,11 +23,15 @@ export const OnboardingPage = () => {
     <div className="flex flex-col gap-4">
       {canFinish ? (
         <ActionPromptCard
-          title="You're All Set"
-          description={`${sessionCount} session${sessionCount !== 1 ? 's' : ''} uploaded. Ready to explore your training data.`}
+          title={m.ui_onboarding_all_set()}
+          description={m.ui_onboarding_all_set_desc({
+            sessionCount: sessionCount === 1
+              ? m.ui_count_sessions_one()
+              : m.ui_count_sessions_other({ count: String(sessionCount) }),
+          })}
         >
           <Button onClick={completeOnboarding}>
-            Get Started
+            {m.ui_onboarding_get_started()}
             <ArrowRight size={16} />
           </Button>
         </ActionPromptCard>
@@ -35,16 +40,16 @@ export const OnboardingPage = () => {
           <ThresholdsSection />
 
           <ActionPromptCard
-            title="Upload Your First Session"
+            title={m.ui_onboarding_upload_title()}
             description={
               profile
-                ? 'Import a .FIT file from your Garmin, Wahoo, or other device to get started.'
-                : 'Set your thresholds first, then upload a .FIT file to get started.'
+                ? m.ui_onboarding_upload_desc_ready()
+                : m.ui_onboarding_upload_desc_thresholds()
             }
           >
             <Button disabled={!profile || upload.uploading} onClick={upload.triggerUpload}>
               <Upload size={16} />
-              Upload .FIT Files
+              {m.ui_onboarding_upload_fit()}
             </Button>
             <input
               ref={fileInputRef}

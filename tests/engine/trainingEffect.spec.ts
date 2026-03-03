@@ -203,66 +203,58 @@ describe('calculateTrainingEffect', () => {
 });
 
 describe('getTrainingEffectLabel', () => {
-  it('maps 0–0.9 to No Effect (neutral)', () => {
-    expect(getTrainingEffectLabel(0)).toEqual({ label: 'No Effect', color: 'neutral' });
-    expect(getTrainingEffectLabel(0.9)).toEqual({ label: 'No Effect', color: 'neutral' });
+  it('maps 0–0.9 to no_effect (neutral)', () => {
+    expect(getTrainingEffectLabel(0)).toEqual({ label: 'no_effect', color: 'neutral' });
+    expect(getTrainingEffectLabel(0.9)).toEqual({ label: 'no_effect', color: 'neutral' });
   });
 
-  it('maps 1.0–1.9 to Minor (blue)', () => {
-    expect(getTrainingEffectLabel(1.0)).toEqual({ label: 'Minor', color: 'blue' });
-    expect(getTrainingEffectLabel(1.9)).toEqual({ label: 'Minor', color: 'blue' });
+  it('maps 1.0–1.9 to minor (blue)', () => {
+    expect(getTrainingEffectLabel(1.0)).toEqual({ label: 'minor', color: 'blue' });
+    expect(getTrainingEffectLabel(1.9)).toEqual({ label: 'minor', color: 'blue' });
   });
 
-  it('maps 2.0–2.9 to Maintaining (green)', () => {
-    expect(getTrainingEffectLabel(2.0)).toEqual({ label: 'Maintaining', color: 'green' });
-    expect(getTrainingEffectLabel(2.9)).toEqual({ label: 'Maintaining', color: 'green' });
+  it('maps 2.0–2.9 to maintaining (green)', () => {
+    expect(getTrainingEffectLabel(2.0)).toEqual({ label: 'maintaining', color: 'green' });
+    expect(getTrainingEffectLabel(2.9)).toEqual({ label: 'maintaining', color: 'green' });
   });
 
-  it('maps 3.0–3.9 to Improving (amber)', () => {
-    expect(getTrainingEffectLabel(3.0)).toEqual({ label: 'Improving', color: 'amber' });
-    expect(getTrainingEffectLabel(3.9)).toEqual({ label: 'Improving', color: 'amber' });
+  it('maps 3.0–3.9 to improving (amber)', () => {
+    expect(getTrainingEffectLabel(3.0)).toEqual({ label: 'improving', color: 'amber' });
+    expect(getTrainingEffectLabel(3.9)).toEqual({ label: 'improving', color: 'amber' });
   });
 
-  it('maps 4.0–4.9 to Highly Improving (orange)', () => {
-    expect(getTrainingEffectLabel(4.0)).toEqual({ label: 'Highly Improving', color: 'orange' });
-    expect(getTrainingEffectLabel(4.9)).toEqual({ label: 'Highly Improving', color: 'orange' });
+  it('maps 4.0–4.9 to highly_improving (orange)', () => {
+    expect(getTrainingEffectLabel(4.0)).toEqual({ label: 'highly_improving', color: 'orange' });
+    expect(getTrainingEffectLabel(4.9)).toEqual({ label: 'highly_improving', color: 'orange' });
   });
 
-  it('maps 5.0 to Overreaching (red)', () => {
-    expect(getTrainingEffectLabel(5.0)).toEqual({ label: 'Overreaching', color: 'red' });
+  it('maps 5.0 to overreaching (red)', () => {
+    expect(getTrainingEffectLabel(5.0)).toEqual({ label: 'overreaching', color: 'red' });
   });
 });
 
 describe('getTrainingEffectSummary', () => {
-  it('returns easy message when both are below 1', () => {
-    expect(getTrainingEffectSummary(0.5, 0.5)).toBe('Too easy to stimulate adaptation');
+  it('returns too_easy key when both are below 1', () => {
+    expect(getTrainingEffectSummary(0.5, 0.5)).toBe('too_easy');
   });
 
-  it('returns extreme message when both are >= 4', () => {
-    expect(getTrainingEffectSummary(4.0, 4.0)).toBe(
-      'Extreme session — both aerobic and anaerobic systems pushed hard',
-    );
+  it('returns extreme key when both are >= 4', () => {
+    expect(getTrainingEffectSummary(4.0, 4.0)).toBe('extreme');
   });
 
-  it('returns aerobic message for steady effort', () => {
-    expect(getTrainingEffectSummary(3.5, 1.0)).toBe(
-      'Steady aerobic effort — improved endurance base',
-    );
+  it('returns steady_aerobic key for steady effort', () => {
+    expect(getTrainingEffectSummary(3.5, 1.0)).toBe('steady_aerobic');
   });
 
-  it('returns anaerobic message for high-intensity session', () => {
-    expect(getTrainingEffectSummary(1.5, 3.5)).toBe(
-      'High-intensity session — anaerobic capacity stimulus',
-    );
+  it('returns high_intensity key for high-intensity session', () => {
+    expect(getTrainingEffectSummary(1.5, 3.5)).toBe('high_intensity');
   });
 
-  it('returns mixed message for balanced effort', () => {
-    expect(getTrainingEffectSummary(3.0, 2.5)).toBe(
-      'Mixed-intensity effort — both energy systems challenged',
-    );
+  it('returns mixed_intensity key for balanced effort', () => {
+    expect(getTrainingEffectSummary(3.0, 2.5)).toBe('mixed_intensity');
   });
 
-  it('returns maintenance message for moderate aerobic', () => {
-    expect(getTrainingEffectSummary(2.5, 0.5)).toBe('Easy aerobic maintenance — good recovery day');
+  it('returns easy_maintenance key for moderate aerobic', () => {
+    expect(getTrainingEffectSummary(2.5, 0.5)).toBe('easy_maintenance');
   });
 });

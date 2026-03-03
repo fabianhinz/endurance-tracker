@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages.js';
 import { useMetrics } from '@/hooks/useMetrics.ts';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
@@ -17,7 +18,7 @@ export const CoachStatusCard = () => {
         </Typography>
       }
     >
-      <CardHeader title="Current Form" subtitle="Your training readiness" />
+      <CardHeader title={m.ui_coach_current_form()} subtitle={m.ui_coach_current_form_subtitle()} />
 
       <div className="flex justify-center gap-6">
         <div className="w-28">

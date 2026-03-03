@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import {
@@ -81,7 +82,7 @@ export const SessionDetailPage = () => {
   if (!session) {
     return (
       <Typography variant="body1" color="textTertiary">
-        Session not found.
+        {m.ui_session_not_found()}
       </Typography>
     );
   }
@@ -124,7 +125,7 @@ export const SessionDetailPage = () => {
           )}
           <DropdownMenuRoot>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Session actions">
+              <Button variant="ghost" size="icon" aria-label={m.ui_session_actions()}>
                 <Ellipsis size={18} />
               </Button>
             </DropdownMenuTrigger>
@@ -136,14 +137,14 @@ export const SessionDetailPage = () => {
                 }}
               >
                 <Pencil size={14} />
-                Rename
+                {m.ui_btn_rename()}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-status-danger focus:text-status-danger"
                 onSelect={() => setShowDeleteDialog(true)}
               >
                 <Trash2 size={14} />
-                Delete
+                {m.ui_btn_delete()}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenuRoot>
@@ -152,8 +153,8 @@ export const SessionDetailPage = () => {
 
       <Tabs defaultValue="overview" value={tab} onValueChange={handleTabChange}>
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="laps">Laps</TabsTrigger>
+          <TabsTrigger value="overview">{m.ui_session_tab_overview()}</TabsTrigger>
+          <TabsTrigger value="laps">{m.ui_session_tab_laps()}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -190,8 +191,8 @@ export const SessionDetailPage = () => {
         }}
       >
         <DialogContent>
-          <DialogTitle>Rename Session</DialogTitle>
-          <DialogDescription>Enter a new name for this session.</DialogDescription>
+          <DialogTitle>{m.ui_session_rename_title()}</DialogTitle>
+          <DialogDescription>{m.ui_session_rename_desc()}</DialogDescription>
           <input
             type="text"
             value={nameInput}
@@ -207,7 +208,7 @@ export const SessionDetailPage = () => {
           />
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setShowRenameDialog(false)}>
-              Cancel
+              {m.ui_btn_cancel()}
             </Button>
             <Button
               onClick={() => {
@@ -217,7 +218,7 @@ export const SessionDetailPage = () => {
                 }
               }}
             >
-              Save
+              {m.ui_btn_save()}
             </Button>
           </div>
         </DialogContent>
@@ -230,14 +231,13 @@ export const SessionDetailPage = () => {
         }}
       >
         <DialogContent>
-          <DialogTitle>Delete Session</DialogTitle>
+          <DialogTitle>{m.ui_session_delete_title()}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the {session.sport} session from{' '}
-            {formatDate(session.date)}? This action cannot be undone.
+            {m.ui_session_delete_desc({ sport: session.sport, date: formatDate(session.date) })}
           </DialogDescription>
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setShowDeleteDialog(false)}>
-              Cancel
+              {m.ui_btn_cancel()}
             </Button>
             <Button
               className="bg-status-danger text-white hover:bg-status-danger/80"
@@ -253,7 +253,7 @@ export const SessionDetailPage = () => {
                 ]);
               }}
             >
-              Delete
+              {m.ui_btn_delete()}
             </Button>
           </div>
         </DialogContent>

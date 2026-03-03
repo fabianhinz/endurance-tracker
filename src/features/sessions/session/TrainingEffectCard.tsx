@@ -7,11 +7,13 @@ import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { tokens } from '@/lib/tokens.ts';
 import { useUserStore } from '@/store/user.ts';
 import { useMetrics } from '@/hooks/useMetrics.ts';
+import { m } from '@/paraglide/messages.js';
 import {
   calculateTrainingEffect,
   getTrainingEffectLabel,
   getTrainingEffectSummary,
 } from '@/engine/trainingEffect.ts';
+import { localizedTELabel, localizedTESummary } from '@/lib/localizedTrainingEffect.ts';
 import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
 
 const TE_ZONES = [
@@ -71,11 +73,11 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
     <Card
       footer={
         <Typography variant="caption" color="textTertiary" as="p">
-          {summary}
+          {localizedTESummary(summary)}
         </Typography>
       }
     >
-      <CardHeader title="Training Effect" subtitle="Per-session aerobic & anaerobic impact" />
+      <CardHeader title={m.ui_te_title()} subtitle={m.ui_te_subtitle()} />
 
       <div className="flex justify-center gap-6">
         <div className="w-28">
@@ -102,7 +104,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
               as="p"
               className={`whitespace-nowrap ${TE_TEXT[aerobicLabel.color]}`}
             >
-              {aerobicLabel.label}
+              {localizedTELabel(aerobicLabel.label)}
             </Typography>
             <MetricLabel metricId="aerobicTE" size="sm" />
           </div>
@@ -132,7 +134,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
               as="p"
               className={`whitespace-nowrap ${TE_TEXT[anaerobicLabel.color]}`}
             >
-              {anaerobicLabel.label}
+              {localizedTELabel(anaerobicLabel.label)}
             </Typography>
             <MetricLabel metricId="anaerobicTE" size="sm" />
           </div>

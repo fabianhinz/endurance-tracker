@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { m } from '@/paraglide/messages.js';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardGrid } from '@/components/ui/CardGrid.tsx';
 import { StatItem } from '@/components/ui/StatItem.tsx';
@@ -15,15 +16,15 @@ interface SessionStatsGridProps {
 
 const TREND_META = {
   stable: {
-    label: 'Stable',
+    label: m.ui_stat_trend_stable,
     className: 'text-text-secondary',
   },
   fading: {
-    label: 'Fading',
+    label: m.ui_stat_trend_fading,
     className: 'text-status-warning',
   },
   building: {
-    label: 'Building',
+    label: m.ui_stat_trend_building,
     className: 'text-status-success',
   },
 } as const;
@@ -40,10 +41,10 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
 
   const recoveryMeta =
     avgRecovery > 25
-      ? { label: 'Strong recovery', className: 'text-status-success' }
+      ? { label: m.ui_stat_recovery_strong(), className: 'text-status-success' }
       : avgRecovery >= 15
-        ? { label: 'Adequate recovery', className: 'text-text-secondary' }
-        : { label: 'Slow recovery', className: 'text-status-warning' };
+        ? { label: m.ui_stat_recovery_adequate(), className: 'text-text-secondary' }
+        : { label: m.ui_stat_recovery_slow(), className: 'text-status-warning' };
 
   const stats: Array<{
     key: string;
@@ -57,13 +58,13 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   // Row 1: Duration & Distance (always present)
   stats.push({
     key: 'duration',
-    label: 'Duration',
+    label: m.ui_stat_duration(),
     value: formatDuration(props.session.duration),
   });
 
   stats.push({
     key: 'distance',
-    label: 'Distance',
+    label: m.ui_stat_distance(),
     value: formatDistance(props.session.distance),
   });
 
@@ -77,7 +78,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
 
   stats.push({
     key: 'avgHr',
-    label: 'Avg HR',
+    label: m.ui_stat_avg_hr(),
     value: props.session.avgHr ?? '--',
     unit: props.session.avgHr ? 'bpm' : undefined,
     metricId: 'avgHr',
@@ -88,7 +89,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     if (props.session.avgSpeed ?? (props.session.distance > 0 && props.session.duration > 0)) {
       stats.push({
         key: 'avgSpeed',
-        label: 'Avg Speed',
+        label: m.ui_stat_avg_speed(),
         value: formatSpeed(
           props.session.avgSpeed ?? props.session.distance / props.session.duration,
         ),
@@ -98,7 +99,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   } else if (props.session.avgPace) {
     stats.push({
       key: 'avgPace',
-      label: 'Avg Pace',
+      label: m.ui_stat_avg_pace(),
       value: formatPace(props.session.avgPace),
       metricId: 'avgPace',
     });
@@ -108,7 +109,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   if (props.session.normalizedPower && props.session.avgPower) {
     stats.push({
       key: 'power',
-      label: 'Norm. Power',
+      label: m.ui_stat_norm_power(),
       value: props.session.normalizedPower,
       unit: 'W',
       metricId: 'normalizedPower',
@@ -121,7 +122,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   } else if (props.session.avgPower) {
     stats.push({
       key: 'power',
-      label: 'Avg Power',
+      label: m.ui_stat_avg_power(),
       value: props.session.avgPower,
       unit: 'W',
       metricId: 'avgPower',
@@ -132,7 +133,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   if (props.session.gap && props.session.sport === 'running') {
     stats.push({
       key: 'gap',
-      label: 'Grade Adj. Pace',
+      label: m.ui_stat_grade_adj_pace(),
       value: formatPace(props.session.gap),
       metricId: 'gradeAdjustedPace',
     });
@@ -151,7 +152,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     }
     stats.push({
       key: 'elevation',
-      label: 'Elevation',
+      label: m.ui_stat_elevation(),
       value: `+${props.session.elevationGain}`,
       unit: 'm',
       metricId: 'elevation',
@@ -167,7 +168,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   if (props.session.avgCadence) {
     stats.push({
       key: 'cadence',
-      label: 'Cadence',
+      label: m.ui_stat_cadence(),
       value: props.session.avgCadence,
       unit: 'rpm',
       metricId: 'cadence',
@@ -179,15 +180,15 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     const trend = TREND_META[overload.trend];
     stats.push({
       key: 'pacingTrend',
-      label: 'Pacing Trend',
+      label: m.ui_stat_pacing_trend(),
       value:
         overload.paceDriftPercent !== undefined
           ? `${overload.paceDriftPercent > 0 ? '+' : ''}${overload.paceDriftPercent}% drift`
-          : trend.label,
+          : trend.label(),
       metricId: 'pacingTrend',
       subDetail: (
         <Typography variant="caption" as="p" className={trend.className}>
-          {trend.label}
+          {trend.label()}
         </Typography>
       ),
     });
@@ -197,7 +198,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   if (intervalPairsWithHr.length > 0) {
     stats.push({
       key: 'recovery',
-      label: 'Recovery',
+      label: m.ui_stat_recovery(),
       value: `${Math.round(avgRecovery)} bpm`,
       metricId: 'recovery',
       subDetail: (
@@ -212,7 +213,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
 
   return (
     <Card>
-      <CardGrid collapsedRows={2} title="Stats">
+      <CardGrid collapsedRows={2} title={m.ui_stat_stats()}>
         {stats.map((stat) => (
           <StatItem
             key={stat.key}
@@ -228,7 +229,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       {hasWarnings && (
         <div className={cn('border-t border-white/10', 'mt-4 pt-4')}>
           <Typography variant="overline" as="h3" color="warning" className="mb-2">
-            Sensor Warnings
+            {m.ui_stat_sensor_warnings()}
           </Typography>
           {props.session.sensorWarnings.map((w, i) => (
             <Typography key={i} variant="body1" className="text-status-warning/80 mt-1">

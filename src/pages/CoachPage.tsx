@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { m } from '@/paraglide/messages.js';
 import { useCoachPlan } from '@/features/coach/hooks/useCoachPlan.ts';
 import { PageGrid } from '@/components/ui/PageGrid.tsx';
 import { Card } from '@/components/ui/Card.tsx';
@@ -21,14 +22,14 @@ export const CoachPage = () => {
     return (
       <PageGrid>
         <ActionPromptCard
-          title="Set Your Threshold Pace"
-          description="To generate training plans, set your threshold pace in Settings. This is your pace at lactate threshold — roughly your 1-hour race pace."
+          title={m.ui_coach_threshold_title()}
+          description={m.ui_coach_threshold_desc()}
           className="md:col-span-2"
         >
           <Button asChild variant="secondary">
             <Link to="/settings">
               <Settings size={16} />
-              Go to Settings
+              {m.ui_coach_go_settings()}
             </Link>
           </Button>
         </ActionPromptCard>
@@ -60,8 +61,8 @@ export const CoachPage = () => {
       <div className="md:col-span-2">
         <Card>
           <CardHeader
-            title="Weekly Plan"
-            subtitle={`Week of ${coach.plan!.weekOf} — ${coach.plan!.totalEstimatedTss} TSS`}
+            title={m.ui_coach_weekly_plan()}
+            subtitle={m.ui_coach_weekly_plan_subtitle({ weekOf: coach.plan!.weekOf, tss: String(coach.plan!.totalEstimatedTss) })}
           />
           <WeeklyPlanTimeline plan={coach.plan!} zones={coach.zones} />
         </Card>

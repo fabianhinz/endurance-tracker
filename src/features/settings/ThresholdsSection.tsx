@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useTransition } from 'react';
+import { m } from '@/paraglide/messages.js';
 import type { Gender } from '@/engine/types.ts';
 import { useUserStore } from '@/store/user.ts';
 import { Input } from '@/components/ui/Input.tsx';
@@ -114,22 +115,22 @@ export const ThresholdsSection = () => {
       restHr: {
         min: 30,
         max: 100,
-        minLabel: 'Min 30 bpm',
-        maxLabel: 'Max 100 bpm',
+        minLabel: m.ui_thresholds_min_bpm({ value: '30' }),
+        maxLabel: m.ui_thresholds_max_bpm({ value: '100' }),
         setError: setRestHrError,
       },
       maxHr: {
         min: 120,
         max: 230,
-        minLabel: 'Min 120 bpm',
-        maxLabel: 'Max 230 bpm',
+        minLabel: m.ui_thresholds_min_bpm({ value: '120' }),
+        maxLabel: m.ui_thresholds_max_bpm({ value: '230' }),
         setError: setMaxHrError,
       },
       ftp: {
         min: 50,
         max: 500,
-        minLabel: 'Min 50W',
-        maxLabel: 'Max 500W',
+        minLabel: m.ui_thresholds_min_watts({ value: '50' }),
+        maxLabel: m.ui_thresholds_max_watts({ value: '500' }),
         setError: setFtpError,
       },
     };
@@ -149,7 +150,7 @@ export const ThresholdsSection = () => {
     }
 
     if (!value || isNaN(num)) {
-      c.setError('Required');
+      c.setError(m.ui_thresholds_required());
       return;
     }
     if (num < c.min) {
@@ -162,11 +163,11 @@ export const ThresholdsSection = () => {
     }
 
     if (field === 'maxHr' && num <= (Number(restHr) || 0)) {
-      c.setError('Max HR must be greater than resting HR');
+      c.setError(m.ui_thresholds_max_hr_greater());
       return;
     }
     if (field === 'restHr' && (Number(maxHr) || Infinity) <= num) {
-      c.setError('Resting HR must be less than max HR');
+      c.setError(m.ui_thresholds_rest_hr_less());
       return;
     }
 
@@ -202,7 +203,7 @@ export const ThresholdsSection = () => {
 
     const parsed = parsePaceInput(value);
     if (parsed === undefined) {
-      setThresholdPaceError('Format: m:ss (2:30-9:00)');
+      setThresholdPaceError(m.ui_thresholds_pace_format());
       return;
     }
 
@@ -250,25 +251,25 @@ export const ThresholdsSection = () => {
 
   return (
     <Card>
-      <CardHeader title="Thresholds" subtitle="Your heart rate and power baselines" />
+      <CardHeader title={m.ui_thresholds_title()} subtitle={m.ui_thresholds_subtitle()} />
 
       <div className="space-y-4">
         <div>
-          <Label>Gender</Label>
+          <Label>{m.ui_thresholds_gender()}</Label>
           <SelectRoot value={gender} onValueChange={(v) => handleGenderChange(v as Gender)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
+              <SelectItem value="male">{m.ui_thresholds_male()}</SelectItem>
+              <SelectItem value="female">{m.ui_thresholds_female()}</SelectItem>
+              <SelectItem value="other">{m.ui_thresholds_other()}</SelectItem>
             </SelectContent>
           </SelectRoot>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <Label htmlFor="thresh-restHr">Resting HR (bpm)</Label>
+            <Label htmlFor="thresh-restHr">{m.ui_thresholds_resting_hr()}</Label>
             <Input
               id="thresh-restHr"
               type="number"
@@ -279,7 +280,7 @@ export const ThresholdsSection = () => {
             />
           </div>
           <div>
-            <Label htmlFor="thresh-maxHr">Max HR (bpm)</Label>
+            <Label htmlFor="thresh-maxHr">{m.ui_thresholds_max_hr()}</Label>
             <Input
               id="thresh-maxHr"
               type="number"
@@ -293,7 +294,7 @@ export const ThresholdsSection = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label htmlFor="thresh-ftp">
-              FTP (watts) <span className="text-text-quaternary font-normal">optional</span>
+              {m.ui_thresholds_ftp()} <span className="text-text-quaternary font-normal">{m.ui_thresholds_optional()}</span>
             </Label>
             <Input
               id="thresh-ftp"
@@ -306,8 +307,8 @@ export const ThresholdsSection = () => {
           </div>
           <div>
             <Label htmlFor="thresh-pace">
-              Threshold Pace (min/km){' '}
-              <span className="text-text-quaternary font-normal">optional</span>
+              {m.ui_thresholds_threshold_pace()}{' '}
+              <span className="text-text-quaternary font-normal">{m.ui_thresholds_optional()}</span>
             </Label>
             <Input
               id="thresh-pace"
@@ -323,7 +324,7 @@ export const ThresholdsSection = () => {
                       className="cursor-pointer hover:underline"
                       onClick={() => setEstimatorOpen(true)}
                     >
-                      Estimate from a race time
+                      {m.ui_thresholds_estimate_from_race()}
                     </button>
                   </div>
                 )

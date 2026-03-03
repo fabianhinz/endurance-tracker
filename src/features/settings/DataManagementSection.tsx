@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { getAllFitFileSessionIds } from '@/lib/indexeddb.ts';
 import { Card } from '@/components/ui/Card.tsx';
@@ -39,30 +40,30 @@ export const DataManagementSection = () => {
   return (
     <>
       <Card>
-        <CardHeader title="Storage" subtitle="FIT files and session data stored in your browser" />
+        <CardHeader title={m.ui_data_storage()} subtitle={m.ui_data_storage_desc()} />
         <List>
           <ListItem
-            primary="Sessions"
+            primary={m.ui_data_sessions()}
             secondary={
               lastUpdated !== null
-                ? `Last updated ${formatDate(lastUpdated, { includeTime: true })}`
+                ? m.ui_data_last_updated({ date: formatDate(lastUpdated, { includeTime: true }) })
                 : undefined
             }
           >
             <Typography variant="body1">{sessionCount}</Typography>
           </ListItem>
           <ListItem
-            primary="Stored FIT files"
+            primary={m.ui_data_stored_fit_files()}
             secondary={
               lastUpdated !== null
-                ? `Last updated ${formatDate(lastUpdated, { includeTime: true })}`
+                ? m.ui_data_last_updated({ date: formatDate(lastUpdated, { includeTime: true }) })
                 : undefined
             }
           >
             <Typography variant="body1">{fitFileCount ?? '...'}</Typography>
           </ListItem>
           {storageEstimate && (
-            <ListItem primary="Estimated storage used">
+            <ListItem primary={m.ui_data_estimated_storage()}>
               <Typography variant="body1">{storageEstimate}</Typography>
             </ListItem>
           )}
@@ -70,16 +71,16 @@ export const DataManagementSection = () => {
       </Card>
 
       <Card>
-        <CardHeader title="Danger Zone" />
+        <CardHeader title={m.ui_data_danger_zone()} />
         <List>
           <ListItem
-            primary="Reimport all sessions"
-            secondary="Re-parse stored FIT files to recalculate TSS, zones, and personal bests"
+            primary={m.ui_data_reimport()}
+            secondary={m.ui_data_reimport_desc()}
             onClick={() => setReimportOpen(true)}
           />
           <ListItem
-            primary="Delete all data"
-            secondary="Permanently remove all sessions, records, and your profile"
+            primary={m.ui_data_delete_all()}
+            secondary={m.ui_data_delete_all_desc()}
             onClick={() => setDeleteOpen(true)}
           />
         </List>

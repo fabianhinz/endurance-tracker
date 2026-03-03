@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import { m } from '@/paraglide/messages.js';
 import {
   DialogRoot,
   DialogContent,
@@ -40,7 +41,7 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
     await clearAllRecords();
     setIsDeleting(false);
     props.onOpenChange(false);
-    toast('All data deleted', undefined, 'success');
+    toast(m.ui_delete_dialog_toast(), undefined, 'success');
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -58,17 +59,19 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
           if (isDeleting) e.preventDefault();
         }}
       >
-        <DialogTitle>Delete All Data</DialogTitle>
+        <DialogTitle>{m.ui_delete_dialog_title()}</DialogTitle>
         <DialogDescription>
-          This will permanently delete everything: all training sessions, personal bests, lap data,
-          time-series records, and your profile (name, thresholds, preferences). This action cannot
-          be undone.
+          {m.ui_delete_dialog_desc()}
         </DialogDescription>
 
         <div className="mt-4">
           <Typography variant="body1" color="textSecondary">
-            {sessionCount} {sessionCount === 1 ? 'session' : 'sessions'}
-            {hasProfile ? ' and your profile' : ''} will be deleted.
+            {m.ui_delete_dialog_count({
+              summary: (sessionCount === 1
+                ? m.ui_count_sessions_one()
+                : m.ui_count_sessions_other({ count: String(sessionCount) }))
+                + (hasProfile ? ` ${m.ui_delete_dialog_and_profile()}` : ''),
+            })}
           </Typography>
         </div>
 
@@ -79,22 +82,22 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
             onClick={() => props.onOpenChange(false)}
             disabled={isDeleting}
           >
-            Cancel
+            {m.ui_btn_cancel()}
           </Button>
           <Button
             type="button"
             variant="danger"
             onClick={handleDelete}
             disabled={isDeleting}
-            aria-label="Delete all data permanently"
+            aria-label={m.ui_delete_dialog_confirm()}
           >
             {isDeleting ? (
               <span className="flex items-center gap-2">
                 <LoaderCircle className="size-4 animate-spin" />
-                Deleting...
+                {m.ui_delete_dialog_deleting()}
               </span>
             ) : (
-              'Delete Everything'
+              m.ui_delete_dialog_confirm()
             )}
           </Button>
         </div>

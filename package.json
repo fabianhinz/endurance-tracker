@@ -1,5 +1,5 @@
 {
-  "name": "forge",
+  "name": "pacevault",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -20,6 +20,7 @@
     "@deck.gl/layers": "^9.2.9",
     "@deck.gl/mapbox": "^9.2.9",
     "@googlemaps/polyline-codec": "^1.0.28",
+    "@inlang/paraglide-js": "^2.13.1",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.8",

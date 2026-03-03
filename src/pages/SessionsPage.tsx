@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
+import { m } from '@/paraglide/messages.js';
 import { SessionList } from '@/features/sessions/SessionList.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
 import { usePBsForRange } from '@/hooks/usePBsForRange.ts';
@@ -22,8 +23,8 @@ export const SessionsPage = () => {
   return (
     <Tabs value={tab} onValueChange={handleTabChange}>
       <TabsList>
-        <TabsTrigger value="log">Log</TabsTrigger>
-        <TabsTrigger value="records">Records</TabsTrigger>
+        <TabsTrigger value="log">{m.ui_sessions_tab_log()}</TabsTrigger>
+        <TabsTrigger value="records">{m.ui_sessions_tab_records()}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="log">

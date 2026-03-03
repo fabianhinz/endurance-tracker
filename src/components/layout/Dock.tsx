@@ -11,6 +11,7 @@ import {
   Clock,
   HeartPulse,
 } from 'lucide-react';
+import { m } from '@/paraglide/messages.js';
 import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
 import { cn } from '@/lib/utils.ts';
 import { cardClass } from '@/components/ui/Card.tsx';
@@ -30,17 +31,17 @@ import {
 import type { Sport } from '@/engine/types.ts';
 
 const tabs = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/sessions', label: 'Sessions', icon: Zap },
-  { to: '/coach', label: 'Coach', icon: HeartPulse },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/', label: m.ui_nav_dashboard, icon: LayoutDashboard },
+  { to: '/sessions', label: m.ui_nav_sessions, icon: Zap },
+  { to: '/coach', label: m.ui_nav_coach, icon: HeartPulse },
+  { to: '/settings', label: m.ui_nav_settings, icon: Settings },
 ];
 
 const sportOptions = [
-  { value: 'all', label: 'All' },
-  { value: 'running', label: 'Run' },
-  { value: 'cycling', label: 'Cycle' },
-  { value: 'swimming', label: 'Swim' },
+  { value: 'all', label: m.ui_dock_sport_all() },
+  { value: 'running', label: m.ui_dock_sport_run() },
+  { value: 'cycling', label: m.ui_dock_sport_cycle() },
+  { value: 'swimming', label: m.ui_dock_sport_swim() },
 ];
 
 const dockItemMiniClass =
@@ -103,7 +104,7 @@ export const Dock = () => {
 
   const SportIcon = sportFilter === 'all' ? Activity : sportIcon[sportFilter];
   const sportLabel =
-    sportFilter === 'all' ? 'All' : sportFilter.charAt(0).toUpperCase() + sportFilter.slice(1);
+    sportOptions.find((o) => o.value === sportFilter)?.label ?? sportFilter;
 
   const timeLabel =
     timeRange === 'custom' && customRange
@@ -179,10 +180,10 @@ export const Dock = () => {
               upload.triggerUpload();
               closeFrom('menu');
             }}
-            aria-label="Upload .FIT files"
+            aria-label={m.ui_dock_upload_fit()}
           >
             <Upload size={20} strokeWidth={1.5} />
-            <span className="text-[10px] leading-none">Upload</span>
+            <span className="text-[10px] leading-none">{m.ui_btn_upload()}</span>
           </Button>
           <Button
             variant="ghost"
@@ -192,10 +193,10 @@ export const Dock = () => {
               isOpen('sport-filter') && 'bg-white/10 text-text-primary',
             )}
             onClick={() => toggleMiniFilter('sport-filter')}
-            aria-label="Sport filter"
+            aria-label={m.ui_dock_sport_filter()}
           >
             <SportIcon size={20} strokeWidth={1.5} />
-            <span className="text-[10px] leading-none">Sport</span>
+            <span className="text-[10px] leading-none">{m.ui_dock_sport()}</span>
           </Button>
           <Button
             variant="ghost"
@@ -205,10 +206,10 @@ export const Dock = () => {
               isOpen('time-filter') && 'bg-white/10 text-text-primary',
             )}
             onClick={() => toggleMiniFilter('time-filter')}
-            aria-label="Time range filter"
+            aria-label={m.ui_dock_time_filter()}
           >
             <Clock size={20} strokeWidth={1.5} />
-            <span className="text-[10px] leading-none">Range</span>
+            <span className="text-[10px] leading-none">{m.ui_dock_range()}</span>
           </Button>
         </DockRevealPanel>
 
@@ -228,7 +229,7 @@ export const Dock = () => {
               to={tab.to}
               end={tab.to === '/'}
               onClick={closeAll}
-              aria-label={tab.label}
+              aria-label={tab.label()}
               className={({ isActive }) =>
                 cn(
                   'relative flex items-center justify-center rounded-lg transition-all duration-300 overflow-hidden',
@@ -240,7 +241,7 @@ export const Dock = () => {
               }
             >
               <tab.icon size={20} strokeWidth={1.5} />
-              {dockExpanded && <span className="text-[10px] leading-none">{tab.label}</span>}
+              {dockExpanded && <span className="text-[10px] leading-none">{tab.label()}</span>}
             </NavLink>
           ))}
 
@@ -263,7 +264,7 @@ export const Dock = () => {
                   isOpen('sport-filter') && 'bg-white/10 text-text-primary',
                 )}
                 onClick={() => toggleMaxiFilter('sport-filter')}
-                aria-label="Sport filter"
+                aria-label={m.ui_dock_sport_filter()}
               >
                 <SportIcon size={20} strokeWidth={1.5} />
                 <span className="text-[10px] leading-none truncate max-w-14">{sportLabel}</span>
@@ -277,7 +278,7 @@ export const Dock = () => {
                   isOpen('time-filter') && 'bg-white/10 text-text-primary',
                 )}
                 onClick={() => toggleMaxiFilter('time-filter')}
-                aria-label="Time range filter"
+                aria-label={m.ui_dock_time_filter()}
               >
                 <Clock size={20} strokeWidth={1.5} />
                 <span className="text-[10px] leading-none truncate max-w-14">{timeLabel}</span>
@@ -297,10 +298,10 @@ export const Dock = () => {
                 className={dockItemMaxiClass}
                 disabled={upload.uploading || !upload.profile}
                 onClick={upload.triggerUpload}
-                aria-label="Upload .FIT files"
+                aria-label={m.ui_dock_upload_fit()}
               >
                 <Upload size={20} strokeWidth={1.5} />
-                <span className="text-[10px] leading-none">Upload</span>
+                <span className="text-[10px] leading-none">{m.ui_btn_upload()}</span>
               </Button>
             </>
           ) : (
@@ -309,7 +310,7 @@ export const Dock = () => {
               size="icon"
               className={dockItemMiniClass}
               onClick={() => setRevealStack((prev) => (prev.includes('menu') ? [] : ['menu']))}
-              aria-label={isOpen('menu') ? 'Close menu' : 'More actions'}
+              aria-label={isOpen('menu') ? m.ui_dock_close_menu() : m.ui_dock_more_actions()}
             >
               {isOpen('menu') ? (
                 <X size={20} strokeWidth={1.5} />

@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages.js';
 import { useMetrics } from '@/hooks/useMetrics.ts';
 import { ChartCard } from '@/components/ui/ChartCard.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
@@ -25,7 +26,7 @@ export const ACWRGauge = () => {
         </div>
       </div>
       <Typography variant="overline" as="p" className={acwrColorMap[color].text}>
-        {risk} risk
+        {m.ui_acwr_risk({ risk })}
       </Typography>
     </div>
   );

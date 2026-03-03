@@ -62,7 +62,7 @@ const StepRow = (props: { step: WorkoutStep; zones: RunningZone[]; showRepeat: b
         style={{ backgroundColor: zone?.color ?? '#888' }}
       />
       <Typography variant="caption" color="textSecondary" className="w-16 shrink-0">
-        {STEP_LABELS[props.step.type] ?? props.step.type}
+        {STEP_LABELS[props.step.type]?.() ?? props.step.type}
       </Typography>
       <Typography variant="caption" color="textTertiary" className="grow-1 text-right">
         {formatDuration(props.step.durationSec)}
