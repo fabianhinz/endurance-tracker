@@ -1,4 +1,4 @@
-import { formatPace } from '@/lib/utils.ts';
+import { PaceRange } from '@/components/ui/PaceRange.tsx';
 import type { RunningZone } from '@/engine/types.ts';
 
 export const ZoneLegend = (props: { zones: RunningZone[]; compact?: boolean }) => {
@@ -13,11 +13,7 @@ export const ZoneLegend = (props: { zones: RunningZone[]; compact?: boolean }) =
         >
           <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: zone.color }} />
           {zone.label}
-          {!props.compact && (
-            <span className="text-text-quaternary">
-              {formatPace(zone.maxPace)} – {formatPace(zone.minPace)}
-            </span>
-          )}
+          {!props.compact && <PaceRange minPace={zone.minPace} maxPace={zone.maxPace} />}
         </span>
       ))}
     </div>

@@ -1,5 +1,6 @@
 import { Typography } from '@/components/ui/Typography.tsx';
 import { Button } from '@/components/ui/Button.tsx';
+import { PaceRange } from '@/components/ui/PaceRange.tsx';
 import { formatDuration } from '@/lib/utils.ts';
 import { groupSteps } from '@/lib/groupSteps.ts';
 import { STEP_LABELS } from './workoutDisplay.ts';
@@ -65,7 +66,8 @@ const StepRow = (props: { step: WorkoutStep; zones: RunningZone[]; showRepeat: b
         {STEP_LABELS[props.step.type]?.() ?? props.step.type}
       </Typography>
       <Typography variant="caption" color="textSecondary" className="grow-1 text-right">
-        {formatDuration(props.step.durationSec)}
+        {formatDuration(props.step.durationSec)} &middot;{' '}
+        <PaceRange minPace={props.step.targetPaceMin} maxPace={props.step.targetPaceMax} />
       </Typography>
     </div>
   );
