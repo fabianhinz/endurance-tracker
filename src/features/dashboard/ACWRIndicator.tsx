@@ -36,7 +36,7 @@ export const ACWRIndicator = () => (
   <ChartCard
     titleSlot={
       <div className="flex items-center gap-1">
-        <Typography variant="overline" as="h3">
+        <Typography variant="title" as="h3">
           {METRIC_EXPLANATIONS.acwr.friendlyName}
         </Typography>
         <MetricLabel metricId="acwr" size="sm" />

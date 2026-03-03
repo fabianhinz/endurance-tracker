@@ -40,7 +40,7 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
   return (
     <div className={cn(glassClass, 'rounded-2xl shadow-lg overflow-hidden')}>
       <div className="flex items-center px-4 py-2">
-        <Typography variant="overline" className="flex-1 text-left">
+        <Typography variant="title" className="flex-1 text-left">
           Lap Details
         </Typography>
         {needsToggle && (

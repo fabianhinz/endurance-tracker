@@ -22,7 +22,7 @@ export const WorkoutCard = (props: WorkoutCardProps) => {
       )}
       onClick={isRest ? undefined : props.onToggle}
     >
-      <Typography variant="caption" color="textTertiary" className="font-medium">
+      <Typography variant="caption">
         {props.workout.dayLabel.slice(0, 3)}
       </Typography>
 
@@ -31,15 +31,19 @@ export const WorkoutCard = (props: WorkoutCardProps) => {
       <Typography
         variant="caption"
         color="textSecondary"
-        className="text-center text-[11px] leading-tight min-h-[2em]"
+        className="text-center leading-tight min-h-[2em]"
       >
         {props.workout.title}
       </Typography>
 
       {!isRest && (
-        <div className="flex gap-2 text-[10px] text-text-quaternary mt-auto">
-          <span>{formatDuration(props.workout.estimatedDurationSec)}</span>
-          <span>{props.workout.estimatedTss}T</span>
+        <div className="flex gap-2 mt-auto">
+          <Typography variant="caption" color="textQuaternary">
+            {formatDuration(props.workout.estimatedDurationSec)}
+          </Typography>
+          <Typography variant="caption" color="textQuaternary">
+            {props.workout.estimatedTss}T
+          </Typography>
         </div>
       )}
     </div>

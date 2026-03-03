@@ -16,7 +16,7 @@ export const ActionPromptCard = (props: ActionPromptCardProps) => {
       <Typography variant="h2" color="textPrimary">
         {props.title}
       </Typography>
-      <Typography variant="body1" color="textTertiary" className="text-center max-w-md">
+      <Typography variant="body1" color="textSecondary" className="text-center max-w-md">
         {props.description}
       </Typography>
       {props.children}

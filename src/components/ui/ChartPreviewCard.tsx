@@ -33,7 +33,7 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
       <div className="flex items-center px-4 py-2">
         {Icon && <Icon size={16} style={{ color: props.color }} />}
         {props.titleSlot ?? (
-          <Typography variant="overline" className={cn('flex-1 text-left', Icon && 'ml-2')}>
+          <Typography variant="title" className={cn('flex-1 text-left', Icon && 'ml-2')}>
             {props.title}
           </Typography>
         )}
@@ -49,9 +49,9 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
       </div>
 
       {props.subtitle && (
-        <p className="px-4 -mt-1 mb-1 text-xs text-[var(--color-text-tertiary)]">
+        <Typography variant="caption" as="p" className="px-4 -mt-1 mb-1">
           {props.subtitle}
-        </p>
+        </Typography>
       )}
 
       <div

@@ -13,7 +13,7 @@ export const CoachStatusCard = () => {
   return (
     <Card
       footer={
-        <Typography variant="caption" color="textTertiary" as="p">
+        <Typography variant="caption" as="p">
           {getFormMessageDetailed(metrics.coaching)}
         </Typography>
       }

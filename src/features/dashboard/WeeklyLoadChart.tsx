@@ -64,7 +64,7 @@ export const WeeklyLoadChart = () => {
       title=""
       titleSlot={
         <div className="flex items-center gap-1 flex-1">
-          <Typography variant="overline" as="h3">
+          <Typography variant="title" as="h3">
             {METRIC_EXPLANATIONS.tss.friendlyName}
           </Typography>
           <MetricLabel metricId="tss" size="sm" />

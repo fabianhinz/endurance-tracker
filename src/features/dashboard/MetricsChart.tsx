@@ -48,7 +48,7 @@ export const MetricsChart = () => {
       subtitle="Long-term fitness, fatigue, and readiness trends"
       compactHeight="h-64"
       footer={
-        <div className="flex items-center justify-center gap-6 text-xs">
+        <div className="flex items-center justify-center gap-6">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-4 rounded-sm bg-chart-fitness" />
             <MetricLabel metricId="ctl" size="sm" />

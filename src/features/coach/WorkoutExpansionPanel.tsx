@@ -19,7 +19,7 @@ export const WorkoutExpansionPanel = (props: {
           <Typography variant="body1" color="textPrimary" className="font-medium">
             {props.workout.title}
           </Typography>
-          <Typography variant="caption" color="textTertiary">
+          <Typography variant="caption" color="textSecondary">
             {props.workout.dayLabel} — {props.workout.date}
           </Typography>
         </div>
@@ -38,9 +38,9 @@ export const WorkoutExpansionPanel = (props: {
                 key={gi}
                 className="rounded-xl border border-white/10 px-3 pb-3 pt-1 space-y-1"
               >
-                <legend className="px-2 text-xs text-text-secondary font-medium">
+                <Typography variant="caption" color="textSecondary" as="legend" className="px-2">
                   {group.repeat}×
-                </legend>
+                </Typography>
                 {group.steps.map((s, si) => (
                   <StepRow key={si} step={s} zones={props.zones} showRepeat={false} />
                 ))}
@@ -64,7 +64,7 @@ const StepRow = (props: { step: WorkoutStep; zones: RunningZone[]; showRepeat: b
       <Typography variant="caption" color="textSecondary" className="w-16 shrink-0">
         {STEP_LABELS[props.step.type]?.() ?? props.step.type}
       </Typography>
-      <Typography variant="caption" color="textTertiary" className="grow-1 text-right">
+      <Typography variant="caption" color="textSecondary" className="grow-1 text-right">
         {formatDuration(props.step.durationSec)}
       </Typography>
     </div>

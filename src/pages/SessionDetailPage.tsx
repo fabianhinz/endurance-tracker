@@ -81,7 +81,7 @@ export const SessionDetailPage = () => {
 
   if (!session) {
     return (
-      <Typography variant="body1" color="textTertiary">
+      <Typography variant="body1" color="textSecondary">
         {m.ui_session_not_found()}
       </Typography>
     );
@@ -107,7 +107,7 @@ export const SessionDetailPage = () => {
             {session.name ?? formatDate(session.date)}
           </Typography>
           {session.name && (
-            <Typography variant="caption" color="textTertiary">
+            <Typography variant="caption">
               {formatDate(session.date)}
             </Typography>
           )}

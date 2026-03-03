@@ -25,12 +25,12 @@ export const CardGrid = (props: CardGridProps) => {
     <>
       {collapsible && (
         <div className="mb-4 flex items-start justify-between gap-2">
-          <Typography variant="overline" as="h3">
+          <Typography variant="title" as="h3">
             {props.title}
           </Typography>
           {needsToggle && (
             <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
-              <Typography variant="caption" color="textSecondary">
+              <Typography variant="caption">
                 ({totalCount})
               </Typography>
               <ChevronRight

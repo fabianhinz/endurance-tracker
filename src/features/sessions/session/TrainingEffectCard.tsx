@@ -72,7 +72,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
   return (
     <Card
       footer={
-        <Typography variant="caption" color="textTertiary" as="p">
+        <Typography variant="caption" as="p">
           {localizedTESummary(summary)}
         </Typography>
       }

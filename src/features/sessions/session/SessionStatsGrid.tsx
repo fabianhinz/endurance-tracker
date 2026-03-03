@@ -228,7 +228,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
 
       {hasWarnings && (
         <div className={cn('border-t border-white/10', 'mt-4 pt-4')}>
-          <Typography variant="overline" as="h3" color="warning" className="mb-2">
+          <Typography variant="title" as="h3" color="warning" className="mb-2">
             {m.ui_stat_sensor_warnings()}
           </Typography>
           {props.session.sensorWarnings.map((w, i) => (
