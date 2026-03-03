@@ -67,6 +67,7 @@ Specific guidelines for features, testing, and state management are located in t
 
    ```bash
    pnpm test          # vitest run
+   pnpm test:e2e      # playwright
    pnpm lint --fix    # eslint
    pnpm typecheck     # tsc --noEmit
    pnpm format        # prettier
