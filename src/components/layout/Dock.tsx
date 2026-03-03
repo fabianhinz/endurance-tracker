@@ -11,7 +11,7 @@ import {
   Clock,
   HeartPulse,
 } from 'lucide-react';
-import { useFileUpload } from '@/features/training/hooks/useFileUpload.ts';
+import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
 import { cn } from '@/lib/utils.ts';
 import { cardClass } from '@/components/ui/Card.tsx';
 import { useSlideIndicator } from '@/components/ui/SlideIndicator.tsx';
@@ -31,7 +31,7 @@ import type { Sport } from '@/engine/types.ts';
 
 const tabs = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/training', label: 'Training', icon: Zap },
+  { to: '/sessions', label: 'Sessions', icon: Zap },
   { to: '/coach', label: 'Coach', icon: HeartPulse },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];

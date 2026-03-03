@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { SessionList } from './SessionList.tsx';
+import { SessionList } from '@/features/sessions/SessionList.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
 import { usePBsForRange } from '@/hooks/usePBsForRange.ts';
 import { SportRecordsCard } from '@/features/records/SportRecordsCard.tsx';
@@ -9,7 +9,7 @@ import type { Sport } from '@/engine/types.ts';
 const sports: Sport[] = ['running', 'cycling', 'swimming'];
 const validTabs = new Set(['log', 'records']);
 
-export const TrainingPage = () => {
+export const SessionsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const rawTab = searchParams.get('tab');
   const tab = rawTab && validTabs.has(rawTab) ? rawTab : 'log';

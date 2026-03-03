@@ -35,7 +35,7 @@ export const MapBackground = () => {
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
 
-  const match = useMatch('/training/:id');
+  const match = useMatch('/sessions/:id');
   useEffect(() => {
     setOpenedSession(match?.params.id ?? null);
   }, [match?.params.id, setOpenedSession]);

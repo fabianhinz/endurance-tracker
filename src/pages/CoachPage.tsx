@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useCoachPlan } from '@/hooks/useCoachPlan.ts';
+import { useCoachPlan } from '@/features/coach/hooks/useCoachPlan.ts';
 import { PageGrid } from '@/components/ui/PageGrid.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
@@ -9,10 +9,10 @@ import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { ActionPromptCard } from '@/components/ui/ActionPromptCard.tsx';
 import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
 
-import { CoachStatusCard } from './CoachStatusCard.tsx';
-import { WeeklyPlanTimeline } from './WeeklyPlanTimeline.tsx';
+import { CoachStatusCard } from '@/features/coach/CoachStatusCard.tsx';
+import { WeeklyPlanTimeline } from '@/features/coach/WeeklyPlanTimeline.tsx';
 import { Settings } from 'lucide-react';
-import { ZoneLegend } from '@/components/ui/ZoneLegend.tsx';
+import { ZoneLegend } from '@/features/sessions/ZoneLegend.tsx';
 
 export const CoachPage = () => {
   const coach = useCoachPlan();

@@ -1,6 +1,6 @@
-import { MetricsChart } from './MetricsChart.tsx';
-import { WeeklyLoadChart } from './WeeklyLoadChart.tsx';
-import { RecentActivityCard } from './RecentActivityCard.tsx';
+import { MetricsChart } from '@/features/dashboard/MetricsChart.tsx';
+import { WeeklyLoadChart } from '@/features/dashboard/WeeklyLoadChart.tsx';
+import { RecentActivityCard } from '@/features/dashboard/RecentActivityCard.tsx';
 import { PageGrid } from '@/components/ui/PageGrid.tsx';
 import { CoachStatusCard } from '@/features/coach/CoachStatusCard.tsx';
 

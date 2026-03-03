@@ -50,7 +50,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     label: string;
     value: React.ReactNode;
     unit?: string;
-    metricId?: import('../../lib/explanations.ts').MetricId;
+    metricId?: import('@/lib/explanations.ts').MetricId;
     subDetail?: React.ReactNode;
   }> = [];
 

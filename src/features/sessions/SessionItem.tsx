@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils.ts';
 import { formatDate, formatDuration, formatDistance } from '@/lib/utils.ts';
-import { Typography } from './Typography.tsx';
+import { Typography } from '@/components/ui/Typography.tsx';
 import { SportBadge } from './SportBadge.tsx';
-import { glassClass } from './Card.tsx';
+import { glassClass } from '@/components/ui/Card.tsx';
 import type { TrainingSession } from '@/engine/types.ts';
 
 interface SessionItemProps {
@@ -25,7 +25,7 @@ export const SessionItem = (props: SessionItemProps) => {
 
   return (
     <Link
-      to={`/training/${s.id}`}
+      to={`/sessions/${s.id}`}
       className={cn(
         'flex items-center transition-colors hover:bg-white/10',
         sizeStyles[props.size ?? 'md'],

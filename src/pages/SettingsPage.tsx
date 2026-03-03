@@ -8,8 +8,8 @@ import { List, ListItem } from '@/components/ui/List.tsx';
 import { Switch } from '@/components/ui/Switch.tsx';
 import { PageGrid } from '@/components/ui/PageGrid.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
-import { ThresholdsSection } from './ThresholdsSection.tsx';
-import { DataManagementSection } from './DataManagementSection.tsx';
+import { ThresholdsSection } from '@/features/settings/ThresholdsSection.tsx';
+import { DataManagementSection } from '@/features/settings/DataManagementSection.tsx';
 
 const validTabs = new Set(['general', 'data']);
 

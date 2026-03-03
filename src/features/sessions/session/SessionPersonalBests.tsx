@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
-import { PbChip } from '@/components/ui/PbChip.tsx';
+import { PbChip } from '@/features/sessions/PbChip.tsx';
 
 export const SessionPersonalBests = (props: { sessionId: string }) => {
   const personalBests = useSessionsStore((s) => s.personalBests);

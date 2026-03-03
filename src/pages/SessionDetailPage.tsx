@@ -28,12 +28,12 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/DropdownMenu.tsx';
 import { formatDate, formatSubSport } from '@/lib/utils.ts';
-import { SportChip } from '@/components/ui/SportChip.tsx';
-import { SessionStatsGrid } from './SessionStatsGrid.tsx';
-import { SessionChartsExplorer } from './SessionChartsExplorer.tsx';
-import { TrainingEffectCard } from './TrainingEffectCard.tsx';
-import { SessionRecordsCard } from './SessionRecordsCard.tsx';
-import { LapsTab } from './LapsTab.tsx';
+import { SportChip } from '@/features/sessions/SportChip.tsx';
+import { SessionStatsGrid } from '@/features/sessions/session/SessionStatsGrid.tsx';
+import { SessionChartsExplorer } from '@/features/sessions/charts/SessionChartsExplorer.tsx';
+import { TrainingEffectCard } from '@/features/sessions/session/TrainingEffectCard.tsx';
+import { SessionRecordsCard } from '@/features/sessions/session/SessionRecordsCard.tsx';
+import { LapsTab } from '@/features/sessions/laps/LapsTab.tsx';
 import type { SessionRecord, SessionLap } from '@/engine/types.ts';
 
 const validTabs = new Set(['overview', 'laps']);
@@ -244,7 +244,7 @@ export const SessionDetailPage = () => {
               onClick={async () => {
                 deleteSession(session.id);
                 setShowDeleteDialog(false);
-                navigate('/training');
+                navigate('/sessions');
                 await Promise.all([
                   deleteSessionRecords(session.id),
                   deleteSessionLaps(session.id),

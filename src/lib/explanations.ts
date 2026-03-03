@@ -388,7 +388,7 @@ const anaerobicTE: MetricExplanation = {
 };
 
 // ---------------------------------------------------------------------------
-// Session stats (src/features/training/SessionStatsGrid.tsx)
+// Session stats (src/features/sessions/session/SessionStatsGrid.tsx)
 // ---------------------------------------------------------------------------
 
 const avgHr: MetricExplanation = {

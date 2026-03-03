@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { ValueSkeleton } from '@/components/ui/ValueSkeleton.tsx';
-import { SportBadge } from '@/components/ui/SportBadge.tsx';
+import { SportBadge } from '@/features/sessions/SportBadge.tsx';
 import { pbLabel, formatPBValue, formatDate } from '@/lib/utils.ts';
 import { PB_SLOTS } from '@/engine/records.ts';
 import type { PersonalBest, Sport } from '@/engine/types.ts';
@@ -74,7 +74,7 @@ export const SportRecordsCard = (props: {
             return (
               <Link
                 key={`${slot.category}-${slot.window}`}
-                to={`/training/${pb.sessionId}`}
+                to={`/sessions/${pb.sessionId}`}
                 className="block"
               >
                 {row}

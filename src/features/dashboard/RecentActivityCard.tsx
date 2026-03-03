@@ -7,8 +7,8 @@ import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
 import { usePBsForRange } from '@/hooks/usePBsForRange.ts';
 import { Card } from '@/components/ui/Card.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
-import { SessionItem } from '@/components/ui/SessionItem.tsx';
-import { SportBadge } from '@/components/ui/SportBadge.tsx';
+import { SessionItem } from '@/features/sessions/SessionItem.tsx';
+import { SportBadge } from '@/features/sessions/SportBadge.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { ValueSkeleton } from '@/components/ui/ValueSkeleton.tsx';
 import { Button } from '@/components/ui/Button.tsx';
@@ -85,7 +85,7 @@ export const RecentActivityCard = () => {
             ))}
           </div>
           <div className="mt-4 flex justify-end">
-            <ViewAllLink to="/training?tab=log" />
+            <ViewAllLink to="/sessions?tab=log" />
           </div>
         </Card>
       </TabsContent>
@@ -129,7 +129,7 @@ export const RecentActivityCard = () => {
 
               if (hero) {
                 return (
-                  <Link key={sport} to={`/training/${hero.sessionId}`} className="block">
+                  <Link key={sport} to={`/sessions/${hero.sessionId}`} className="block">
                     {row}
                   </Link>
                 );
@@ -139,7 +139,7 @@ export const RecentActivityCard = () => {
             })}
           </div>
           <div className="mt-4 flex justify-end">
-            <ViewAllLink to="/training?tab=records" />
+            <ViewAllLink to="/sessions?tab=records" />
           </div>
         </Card>
       </TabsContent>

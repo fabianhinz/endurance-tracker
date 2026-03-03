@@ -39,7 +39,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
 
-  const match = useMatch('/training/:id');
+  const match = useMatch('/sessions/:id');
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
 
   const eventHandlers = useMemo(

@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   ReferenceArea,
 } from 'recharts';
-import { useFilteredMetrics } from '@/hooks/useFilteredMetrics.ts';
+import { useFilteredMetrics } from './hooks/useFilteredMetrics.ts';
 import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
