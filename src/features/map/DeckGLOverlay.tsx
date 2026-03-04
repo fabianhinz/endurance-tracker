@@ -4,12 +4,13 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import type { PickingInfo } from '@deck.gl/core';
 import { PathLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers';
 import { useHiresPaths } from './hooks/useHiresPaths.ts';
+import { useZoneColoredPath } from './hooks/useZoneColoredPath.ts';
+import type { ZoneSegment } from './zoneColoredPath.ts';
 import {
   ADDITIVE_BLEND,
-  ALPHA_HIGHLIGHTED,
-  getTrackWidth,
   sportMarkerColor,
   sportTrackColor,
+  trackModifiers,
 } from './trackColors.ts';
 import type { LapMarker } from '@/engine/lapMarkers.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
@@ -36,6 +37,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const lapMarkers = useMapFocusStore((s) => s.lapMarkers);
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
   const hoveredLapIndex = useMapFocusStore((s) => s.hoveredLapIndex);
+  const zoneColorMode = useMapFocusStore((s) => s.zoneColorMode);
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
 
@@ -66,12 +68,15 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
           if (hoveredSessionId && hoveredSessionId !== d.sessionId) {
             alpha = 0;
           } else if (highlightedSessionId === d.sessionId) {
-            alpha = ALPHA_HIGHLIGHTED;
+            alpha = trackModifiers.alpha.highlighted;
           }
 
           return [r, g, b, alpha];
         },
-        getWidth: (d) => getTrackWidth(highlightedSessionId, d.sessionId),
+        getWidth: (d) =>
+          d.sessionId === highlightedSessionId
+            ? trackModifiers.width.highlighted
+            : trackModifiers.width.default,
         widthMinPixels: 1,
         widthMaxPixels: 5,
         jointRounded: true,
@@ -92,6 +97,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   }, [props.tracks, eventHandlers, highlightedSessionId, hoveredSessionId]);
 
   const hiresPaths = useHiresPaths(hoveredSessionId, openedSessionId, sessions);
+  const zoneColoredSegments = useZoneColoredPath();
 
   const hiresLayer = useMemo(() => {
     if (hiresPaths.size === 0 || !openedSessionId) {
@@ -117,9 +123,9 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       getPath: (d) => d.path,
       getColor: (d) => {
         const [r, g, b] = sportTrackColor[d.sport];
-        return [r, g, b, ALPHA_HIGHLIGHTED];
+        return [r, g, b, trackModifiers.alpha.highlighted];
       },
-      getWidth: 4,
+      getWidth: trackModifiers.width.highlighted,
       widthMinPixels: 1,
       widthMaxPixels: 5,
       jointRounded: true,
@@ -209,15 +215,42 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     });
   }, [lapMarkers, focusedSport, hoveredLapIndex]);
 
+  const zoneColoredLayer = useMemo(() => {
+    if (zoneColoredSegments.length === 0) return null;
+    return new PathLayer<ZoneSegment>({
+      id: 'zone-colored-track',
+      data: zoneColoredSegments,
+      getPath: (d) => d.path,
+      getColor: (d) => d.color,
+      getWidth: trackModifiers.width.highlighted,
+      widthMinPixels: 1,
+      widthMaxPixels: 5,
+      jointRounded: true,
+      capRounded: true,
+      pickable: false,
+      parameters: ADDITIVE_BLEND,
+      updateTriggers: { getColor: [zoneColorMode] },
+    });
+  }, [zoneColoredSegments, zoneColorMode]);
+
   const layers = useMemo(
     () => [
       ...(openedSessionId ? [] : [trackLayers]),
-      ...(hiresLayer ? [hiresLayer] : []),
+      ...(zoneColoredLayer ? [zoneColoredLayer] : []),
+      ...(hiresLayer && !zoneColoredLayer ? [hiresLayer] : []),
       ...(pickCircleLayer ? [pickCircleLayer] : []),
       ...(hoveredPointLayer ? [hoveredPointLayer] : []),
       ...lapMarkerLayers,
     ],
-    [openedSessionId, trackLayers, hiresLayer, pickCircleLayer, hoveredPointLayer, lapMarkerLayers],
+    [
+      openedSessionId,
+      trackLayers,
+      zoneColoredLayer,
+      hiresLayer,
+      pickCircleLayer,
+      hoveredPointLayer,
+      lapMarkerLayers,
+    ],
   );
 
   const overlay = useControl<MapboxOverlay>(

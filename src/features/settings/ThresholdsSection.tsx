@@ -293,10 +293,7 @@ export const ThresholdsSection = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <Label htmlFor="thresh-ftp">
-              {m.ui_thresholds_ftp()}{' '}
-              <span className="text-text-quaternary font-normal">{m.ui_thresholds_optional()}</span>
-            </Label>
+            <Label htmlFor="thresh-ftp">{m.ui_thresholds_ftp()}</Label>
             <Input
               id="thresh-ftp"
               type="number"
@@ -307,10 +304,7 @@ export const ThresholdsSection = () => {
             />
           </div>
           <div>
-            <Label htmlFor="thresh-pace">
-              {m.ui_thresholds_threshold_pace()}{' '}
-              <span className="text-text-quaternary font-normal">{m.ui_thresholds_optional()}</span>
-            </Label>
+            <Label htmlFor="thresh-pace">{m.ui_thresholds_threshold_pace()}</Label>
             <Input
               id="thresh-pace"
               type="text"

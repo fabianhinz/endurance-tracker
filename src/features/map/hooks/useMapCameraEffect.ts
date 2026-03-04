@@ -9,6 +9,7 @@ export const useMapCameraEffect = (
   openedSessionId: string | null,
   compactLayout: boolean,
   mapLoaded: boolean,
+  mapPitch: number,
 ) => {
   useEffect(() => {
     if (tracks.length === 0 || !mapRef.current || !mapLoaded) return;
@@ -26,6 +27,7 @@ export const useMapCameraEffect = (
         {
           padding: { top: 80, bottom: 80, left: 80, right: 80 + rightPad },
           duration: 1200,
+          pitch: mapPitch,
         },
       );
       return;
@@ -41,7 +43,8 @@ export const useMapCameraEffect = (
       {
         padding: { top: 50, bottom: 50, left: 50, right: 50 + rightPad },
         duration: 1000,
+        pitch: mapPitch,
       },
     );
-  }, [tracks, openedSessionId, compactLayout, mapLoaded, mapRef]);
+  }, [tracks, openedSessionId, compactLayout, mapLoaded, mapRef, mapPitch]);
 };

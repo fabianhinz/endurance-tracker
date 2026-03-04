@@ -10,6 +10,7 @@
   "ui_btn_rename": "Umbenennen",
 
   "ui_settings_display": "Anzeige",
+  "ui_settings_layout": "Layout",
   "ui_settings_language": "Sprache",
   "ui_settings_language_desc": "Wähle deine bevorzugte Sprache",
   "ui_settings_metric_help": "Metrik-Erklärungen anzeigen",
@@ -18,6 +19,11 @@
   "ui_settings_compact_layout_desc": "Einspaltiges Layout, Inhalt nach rechts verschieben um mehr von der Karte zu sehen",
   "ui_settings_expanded_dock": "Erweiterte Leiste",
   "ui_settings_expanded_dock_desc": "Beschriftungen unter den Leistensymbolen anzeigen",
+  "ui_settings_map_pitch": "Kartenneigung",
+  "ui_settings_map_pitch_desc": "Kamera-Neigungswinkel beim Anzeigen der Karte",
+  "ui_settings_map_pitch_flat": "Flach",
+  "ui_settings_map_pitch_low": "Niedrig",
+  "ui_settings_map_pitch_high": "Hoch",
   "ui_settings_tab_general": "Allgemein",
   "ui_settings_tab_data": "Datenverwaltung",
 
@@ -27,6 +33,7 @@
   "ui_settings_about_github_desc": "Fehler gefunden oder Feature-Wunsch? Issue erstellen",
   "ui_settings_about_sources": "Wissenschaftliche Quellen",
   "ui_settings_about_sources_desc": "Quellenangaben für alle Berechnungen und Algorithmen",
+  "ui_settings_about_version": "Build",
 
   "ui_thresholds_title": "Schwellenwerte",
   "ui_thresholds_subtitle": "Deine Herzfrequenz- und Leistungs-Grundwerte",
@@ -497,6 +504,8 @@
   "ui_zones_tab_hr": "HF",
   "ui_zones_tab_power": "Leistung",
   "ui_zones_tab_pace": "Tempo",
+  "ui_zone_color_title": "Zonenfärbung",
+  "ui_zone_color_desc": "Färbt die Route auf der Karte nach Trainingszone ein",
 
   "ui_chart_series_cadence": "Kadenz (rpm)",
   "ui_chart_series_hr": "HF (bpm)",

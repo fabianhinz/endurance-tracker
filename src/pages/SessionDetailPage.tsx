@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { Activity, Ellipsis, Pencil, Trash2 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
@@ -32,9 +32,15 @@ import { formatDate, formatSubSport } from '@/lib/utils.ts';
 import { SportChip } from '@/features/sessions/SportChip.tsx';
 import { SessionStatsGrid } from '@/features/sessions/session/SessionStatsGrid.tsx';
 import { SessionChartsExplorer } from '@/features/sessions/charts/SessionChartsExplorer.tsx';
+import { ZoneColorListItem } from '@/features/sessions/charts/ZoneColorListItem.tsx';
+import { ZoneDistributionChart } from '@/features/sessions/charts/ZoneDistributionChart.tsx';
+import { useZoneData } from '@/features/sessions/charts/hooks/useZoneData.ts';
 import { TrainingEffectCard } from '@/features/sessions/session/TrainingEffectCard.tsx';
 import { SessionRecordsCard } from '@/features/sessions/session/SessionRecordsCard.tsx';
 import { LapsTab } from '@/features/sessions/laps/LapsTab.tsx';
+import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
+import { List } from '@/components/ui/List.tsx';
+import { tokens } from '@/lib/tokens.ts';
 import type { SessionRecord, SessionLap } from '@/engine/types.ts';
 
 const validTabs = new Set(['overview', 'laps']);
@@ -66,6 +72,9 @@ export const SessionDetailPage = () => {
       getSessionLaps(params.id).then(setLaps);
     }
   }, [params.id, session?.hasDetailedRecords]);
+
+  const isRunning = session?.sport === 'running';
+  const zoneData = useZoneData(records, isRunning);
 
   const setFocusedLaps = useMapFocusStore((s) => s.setFocusedLaps);
   const clearFocusedLaps = useMapFocusStore((s) => s.clearFocusedLaps);
@@ -158,6 +167,27 @@ export const SessionDetailPage = () => {
             <div className="md:col-span-2">
               <TrainingEffectCard records={records} session={session} />
             </div>
+
+            <ChartPreviewCard
+              title={m.ui_chart_title_zones()}
+              icon={Activity}
+              color={tokens.accent}
+              compactHeight="h-[250px]"
+              footer={
+                <List>
+                  <ZoneColorListItem availableModes={zoneData.availableModes} />
+                </List>
+              }
+            >
+              {(mode) => (
+                <ZoneDistributionChart
+                  hrZones={zoneData.hrZoneData}
+                  powerZones={zoneData.powerZoneData}
+                  paceZones={zoneData.paceZoneData}
+                  mode={mode}
+                />
+              )}
+            </ChartPreviewCard>
 
             {sessionPBs.length > 0 && (
               <div className="md:col-span-2">

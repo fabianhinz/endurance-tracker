@@ -39,6 +39,8 @@ export const SettingsPage = () => {
   const toggleCompactLayout = useLayoutStore((s) => s.toggleCompactLayout);
   const dockExpanded = useLayoutStore((s) => s.dockExpanded);
   const toggleDock = useLayoutStore((s) => s.toggleDock);
+  const mapPitch = useLayoutStore((s) => s.mapPitch);
+  const setMapPitch = useLayoutStore((s) => s.setMapPitch);
   const [, startTransition] = useTransition();
 
   const handleTabChange = (value: string) => {
@@ -87,6 +89,12 @@ export const SettingsPage = () => {
                   onCheckedChange={() => startTransition(() => toggleMetricHelp())}
                 />
               </ListItem>
+            </List>
+          </Card>
+
+          <Card>
+            <CardHeader title={m.ui_settings_layout()} />
+            <List className="space-y-4">
               <ListItem
                 primary={m.ui_settings_compact_layout()}
                 secondary={m.ui_settings_compact_layout_desc()}
@@ -98,6 +106,24 @@ export const SettingsPage = () => {
                 secondary={m.ui_settings_expanded_dock_desc()}
               >
                 <Switch checked={dockExpanded} onCheckedChange={toggleDock} />
+              </ListItem>
+              <ListItem
+                primary={m.ui_settings_map_pitch()}
+                secondary={m.ui_settings_map_pitch_desc()}
+              >
+                <SelectRoot
+                  value={String(mapPitch)}
+                  onValueChange={(v) => setMapPitch(Number(v) as 0 | 30 | 60)}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">{m.ui_settings_map_pitch_flat()}</SelectItem>
+                    <SelectItem value="30">{m.ui_settings_map_pitch_low()}</SelectItem>
+                    <SelectItem value="60">{m.ui_settings_map_pitch_high()}</SelectItem>
+                  </SelectContent>
+                </SelectRoot>
               </ListItem>
             </List>
           </Card>

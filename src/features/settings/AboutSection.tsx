@@ -1,4 +1,4 @@
-import { Code, BookOpen } from 'lucide-react';
+import { Code, BookOpen, GitCommit } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
@@ -25,6 +25,12 @@ export const AboutSection = () => (
         primary={m.ui_settings_about_sources()}
         secondary={m.ui_settings_about_sources_desc()}
         onClick={() => openExternal(SOURCES_URL)}
+      />
+
+      <ListItem
+        icon={<GitCommit size={18} />}
+        primary={m.ui_settings_about_version()}
+        secondary={import.meta.env.VITE_APP_COMMIT}
       />
     </List>
   </Card>

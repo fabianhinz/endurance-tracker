@@ -140,4 +140,26 @@ describe('useMapFocusStore', () => {
     useMapFocusStore.getState().setOpenedSession(null);
     expect(useMapFocusStore.getState().lapMarkers).toEqual([]);
   });
+
+  it('defaults zoneColorMode to null', () => {
+    expect(useMapFocusStore.getState().zoneColorMode).toBeNull();
+  });
+
+  it('setZoneColorMode sets the mode', () => {
+    useMapFocusStore.getState().setZoneColorMode('hr');
+    expect(useMapFocusStore.getState().zoneColorMode).toBe('hr');
+  });
+
+  it('setZoneColorMode(null) clears the mode', () => {
+    useMapFocusStore.getState().setZoneColorMode('power');
+    useMapFocusStore.getState().setZoneColorMode(null);
+    expect(useMapFocusStore.getState().zoneColorMode).toBeNull();
+  });
+
+  it('setOpenedSession(null) resets zoneColorMode', () => {
+    useMapFocusStore.getState().setOpenedSession('abc-123');
+    useMapFocusStore.getState().setZoneColorMode('pace');
+    useMapFocusStore.getState().setOpenedSession(null);
+    expect(useMapFocusStore.getState().zoneColorMode).toBeNull();
+  });
 });

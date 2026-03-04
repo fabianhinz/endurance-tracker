@@ -34,13 +34,14 @@ export const MapBackground = () => {
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
+  const mapPitch = useLayoutStore((s) => s.mapPitch);
 
   const match = useMatch('/sessions/:id');
   useEffect(() => {
     setOpenedSession(match?.params.id ?? null);
   }, [match?.params.id, setOpenedSession]);
 
-  useMapCameraEffect(mapRef, mapTracks.tracks, openedSessionId, compactLayout, mapLoaded);
+  useMapCameraEffect(mapRef, mapTracks.tracks, openedSessionId, compactLayout, mapLoaded, mapPitch);
 
   const backfillPct =
     backfill.total > 0 ? Math.min(backfill.processed, backfill.total) / backfill.total : 0;
@@ -64,6 +65,8 @@ export const MapBackground = () => {
         doubleClickZoom={popupState.interactive}
         touchZoomRotate={popupState.interactive}
         keyboard={popupState.interactive}
+        pitchWithRotate={false}
+        touchPitch={false}
         attributionControl={{ compact: true }}
         style={{ width: '100%', height: '100%' }}
       >
