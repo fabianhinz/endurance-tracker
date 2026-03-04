@@ -91,6 +91,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
         },
         transitions: {
           getWidth: 300,
+          getColor: 300,
         },
         parameters: ADDITIVE_BLEND,
         ...eventHandlers,

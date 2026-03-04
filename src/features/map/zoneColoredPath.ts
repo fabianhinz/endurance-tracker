@@ -52,7 +52,11 @@ const getPaceColor = (
 ): [number, number, number, number] | null => {
   const paceSec = 1000 / speed;
   const zone = getZoneForPace(paceSec, zones);
-  return zone ? hexToRgba(zone.color, SEGMENT_ALPHA) : null;
+  if (zone) return hexToRgba(zone.color, SEGMENT_ALPHA);
+  if (paceSec > zones[0].minPace) return hexToRgba(zones[0].color, SEGMENT_ALPHA);
+  if (paceSec < zones[zones.length - 1].maxPace)
+    return hexToRgba(zones[zones.length - 1].color, SEGMENT_ALPHA);
+  return null;
 };
 
 export const buildZoneColoredPath = (
