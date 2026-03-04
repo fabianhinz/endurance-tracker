@@ -76,6 +76,7 @@ export const GradeChart = (props: GradeChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
+        separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
         />
         {!compact && (

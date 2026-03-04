@@ -514,6 +514,11 @@
   "ui_zone_tempo": "Tempo",
   "ui_zone_threshold": "Threshold",
   "ui_zone_vo2max": "VO2max",
+  "ui_zone_aerobic": "Aerobic",
+  "ui_zone_active_recovery": "Active Recovery",
+  "ui_zone_endurance": "Endurance",
+  "ui_zone_anaerobic": "Anaerobic",
+  "ui_zone_neuromuscular": "Neuromuscular",
 
   "ui_btn_view_all": "View all",
 

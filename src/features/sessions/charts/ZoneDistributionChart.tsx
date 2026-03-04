@@ -60,6 +60,7 @@ const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
         labelStyle={chartTheme.tooltip.labelStyle}
         itemStyle={{ color: tokens.textPrimary }}
         isAnimationActive={chartTheme.tooltip.isAnimationActive}
+        separator={chartTheme.tooltip.separator}
         cursor={{ fill: `${tokens.accent}14` }}
         formatter={(
           value: number | undefined,
@@ -76,12 +77,32 @@ const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
   </ResponsiveContainer>
 );
 
+const ZONE_NAME_LABELS: Record<string, () => string> = {
+  recovery: m.ui_zone_recovery,
+  easy: m.ui_zone_easy,
+  tempo: m.ui_zone_tempo,
+  threshold: m.ui_zone_threshold,
+  vo2max: m.ui_zone_vo2max,
+  aerobic: m.ui_zone_aerobic,
+  active_recovery: m.ui_zone_active_recovery,
+  endurance: m.ui_zone_endurance,
+  anaerobic: m.ui_zone_anaerobic,
+  neuromuscular: m.ui_zone_neuromuscular,
+};
+
+const translateBuckets = (buckets: ZoneBucket[]): ZoneBucket[] =>
+  buckets.map((b) => {
+    const translatedName = ZONE_NAME_LABELS[b.name]?.() ?? b.name;
+    const label = /^Z\d/.test(b.zone) ? `${b.zone} ${translatedName}` : translatedName;
+    return { ...b, label };
+  });
+
 export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   const tabs = useMemo(() => {
     const all: TabConfig[] = [
-      { key: 'hr', label: m.ui_zones_tab_hr(), icon: Heart, data: props.hrZones },
-      { key: 'power', label: m.ui_zones_tab_power(), icon: Zap, data: props.powerZones },
-      { key: 'pace', label: m.ui_zones_tab_pace(), icon: Timer, data: props.paceZones },
+      { key: 'hr', label: m.ui_zones_tab_hr(), icon: Heart, data: translateBuckets(props.hrZones) },
+      { key: 'power', label: m.ui_zones_tab_power(), icon: Zap, data: translateBuckets(props.powerZones) },
+      { key: 'pace', label: m.ui_zones_tab_pace(), icon: Timer, data: translateBuckets(props.paceZones) },
     ];
     return all.filter((t) => t.data.length > 0);
   }, [props.hrZones, props.powerZones, props.paceZones]);

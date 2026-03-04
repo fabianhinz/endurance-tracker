@@ -106,6 +106,7 @@ export const MetricsChart = () => {
                 contentStyle={chartTheme.tooltip.contentStyle}
                 labelStyle={chartTheme.tooltip.labelStyle}
                 isAnimationActive={chartTheme.tooltip.isAnimationActive}
+        separator={chartTheme.tooltip.separator}
               />
               <Area
                 type="monotone"

@@ -39,5 +39,6 @@ export const chartTheme = {
     },
     labelStyle: { color: tokens.textSecondary },
     isAnimationActive: false,
+    separator: ': ',
   },
 } as const;

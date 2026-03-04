@@ -77,6 +77,7 @@ export const GradeAdjustedPaceChart = (props: GradeAdjustedPaceChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
+        separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
           formatter={(v: number | undefined, name: string | undefined) => [
             v !== undefined ? formatPaceTick(v) : '',
