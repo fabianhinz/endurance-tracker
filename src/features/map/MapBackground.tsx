@@ -61,10 +61,10 @@ export const MapBackground = () => {
         }}
         scrollZoom={popupState.interactive}
         dragPan={popupState.interactive}
-        dragRotate={popupState.interactive}
         doubleClickZoom={popupState.interactive}
-        touchZoomRotate={popupState.interactive}
         keyboard={popupState.interactive}
+        touchZoomRotate={false}
+        dragRotate={false}
         pitchWithRotate={false}
         touchPitch={false}
         attributionControl={{ compact: true }}

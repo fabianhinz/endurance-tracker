@@ -123,7 +123,7 @@ export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   }, [props.hrZones, props.powerZones, props.paceZones]);
 
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
-  const resolvedTab = zoneColorMode ?? activeTab ?? tabs[0]?.key;
+  const resolvedTab = activeTab ?? tabs[0]?.key;
 
   if (tabs.length === 0) return null;
 
