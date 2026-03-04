@@ -5,7 +5,9 @@ import { defineConfig } from 'vite';
 let commitSha = 'dev';
 try {
   commitSha = execSync('git rev-parse --short HEAD').toString().trim();
-} catch {}
+} catch {
+  /* empty */
+}
 
 process.env.VITE_APP_COMMIT = commitSha;
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
