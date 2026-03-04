@@ -171,14 +171,14 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       id: 'hovered-point',
       data: [{ position: hoveredPoint }],
       getPosition: (d) => d.position,
-      getRadius: 6,
+      getRadius: 12,
       radiusUnits: 'pixels',
-      getFillColor: [255, 255, 255, 230],
+      getFillColor: [255, 255, 255, trackModifiers.alpha.highlighted],
       filled: true,
       stroked: true,
-      getLineColor: [0, 0, 0, 180],
+      getLineColor: [0, 0, 0, trackModifiers.alpha.default],
       lineWidthUnits: 'pixels' as const,
-      getLineWidth: 2,
+      getLineWidth: 4,
       pickable: false,
     });
   }, [hoveredPoint]);
