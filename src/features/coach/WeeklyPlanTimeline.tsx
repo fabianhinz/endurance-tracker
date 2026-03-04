@@ -10,8 +10,10 @@ interface WeeklyPlanTimelineProps {
 }
 
 export const WeeklyPlanTimeline = (props: WeeklyPlanTimelineProps) => {
-  const firstTrainingId = props.plan.workouts.find((w) => w.type !== 'rest')?.id ?? null;
-  const [expandedId, setExpandedId] = useState<string | null>(firstTrainingId);
+  const todayString = new Date().toISOString().slice(0, 10);
+  const defaultId =
+    props.plan.workouts.find((w) => w.date === todayString && w.type !== 'rest')?.id ?? null;
+  const [expandedId, setExpandedId] = useState<string | null>(defaultId);
 
   const expandedWorkout = expandedId
     ? props.plan.workouts.find((w) => w.id === expandedId)

@@ -28,19 +28,14 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Generate Paraglide messages
-        run: npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/paraglide
-
-      - name: Format check
-        run: pnpm format:check
-
+      - run: pnpm paraglide:compile
+      - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
-
       - name: Run e2e tests
         run: pnpm test:e2e
 

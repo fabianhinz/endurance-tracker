@@ -8,6 +8,7 @@ import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { usePopupPosition } from './hooks/usePopupPosition.ts';
 import { useDismiss } from './hooks/useDismiss.ts';
 import type { TrainingSession } from '@/engine/types.ts';
+import { m } from '@/paraglide/messages.js';
 
 export interface PopupInfo {
   x: number;
@@ -31,9 +32,14 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
       <Card variant="compact" className="w-[380px] max-h-[300px] flex flex-col overflow-hidden">
         <CardHeader
           title={`${props.info.sessions.length} Sessions`}
-          subtitle="Sessions recorded near this location"
+          subtitle={m.ui_map_popup_sessions_subtitle()}
           actions={
-            <Button variant="ghost" size="icon" aria-label="Close" onClick={props.onClose}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={m.ui_btn_close()}
+              onClick={props.onClose}
+            >
               <X size={16} />
             </Button>
           }

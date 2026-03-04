@@ -15,6 +15,7 @@
 | State           | Zustand (`persist` middleware) for global state                                                                                                                                             |
 | Data Vis        | Recharts                                                                                                                                                                                    |
 | Icons           | `lucide-react`                                                                                                                                                                              |
+| i18n            | Paraglide.js (`src/paraglide/`) — import messages from `@/paraglide/messages.js`                                                                                                            |
 | File parsing    | `fit-file-parser` for .FIT binaries                                                                                                                                                         |
 | Storage         | IndexedDB via `idb` — `kv` store for Zustand persist, `session-records` store for time-series (`src/lib/db.ts`)                                                                             |
 | Package manager | **pnpm** (`pnpm add`, `pnpm dev`, `pnpm build`, etc.)                                                                                                                                       |
@@ -24,7 +25,7 @@
 - **Local-first absolute rule**: IDs are generated via `crypto.randomUUID()`. Never attempt to call an external API.
 - **Pure engine**: All business logic lives in `src/engine/` as pure functions — absolutely no React or state imports in this directory.
 - **Headless UI**: Import Radix primitive → wrap in `src/components/ui/` → style with Tailwind.
-- **Reuse UI components**: Before inlining layout or UI patterns in feature code, check `src/components/ui/` for existing components (`CardHeader`, `SettingToggle`, `ValueSkeleton`, etc.). Extract new shared components when a pattern appears in 2+ places.
+- **Reuse UI components**: Before inlining layout or UI patterns in feature code, check `src/components/ui/` for existing components (`CardHeader`, `StatItem`, `ValueSkeleton`, etc.). Extract new shared components when a pattern appears in 2+ places.
 - **Named exports only**: Use named exports everywhere.
 - **Arrow functions only**: Never use the `function` keyword — use arrow functions (`const fn = () => {}`) everywhere.
 - **No object destructuring** for component props and hook return values — access via `props.x` and `result.x` instead.
@@ -53,6 +54,7 @@
 
 Specific guidelines for features, testing, and state management are located in their respective directories. Read these files when working in these areas:
 
+- Route-level page components live in `src/pages/` (e.g. `DashboardPage.tsx`, `SessionDetailPage.tsx`). Pages are thin containers: they wire route params to features but contain no business logic.
 - `@src/features/CLAUDE.md`: Rules for feature-level hooks and store colocation.
 - `@src/store/CLAUDE.md`: Rules for Zustand store scope-naming and persist middleware.
 - `@tests/CLAUDE.md`: The testing strategy (Engine/Lib vs. Integration vs. UI).

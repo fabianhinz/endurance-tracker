@@ -6,6 +6,7 @@ import {
   DialogDescription,
 } from '@/components/ui/Dialog.tsx';
 import { Button } from '@/components/ui/Button.tsx';
+import { m } from '@/paraglide/messages.js';
 
 interface ReimportDialogProps {
   open: boolean;
@@ -35,11 +36,8 @@ export const ReimportDialog = (props: ReimportDialogProps) => {
           if (props.reimporting) e.preventDefault();
         }}
       >
-        <DialogTitle>Reimport All Sessions</DialogTitle>
-        <DialogDescription>
-          This will re-parse all stored FIT files using your current thresholds. TSS, zones, laps,
-          and personal bests will be recalculated. Existing session data will be overwritten.
-        </DialogDescription>
+        <DialogTitle>{m.ui_reimport_dialog_title()}</DialogTitle>
+        <DialogDescription>{m.ui_reimport_dialog_desc()}</DialogDescription>
 
         <div className="flex gap-3 justify-end pt-4">
           <Button
@@ -48,7 +46,7 @@ export const ReimportDialog = (props: ReimportDialogProps) => {
             onClick={() => props.onOpenChange(false)}
             disabled={props.reimporting}
           >
-            Cancel
+            {m.ui_btn_cancel()}
           </Button>
           <Button
             type="button"
@@ -59,10 +57,10 @@ export const ReimportDialog = (props: ReimportDialogProps) => {
             {props.reimporting ? (
               <span className="flex items-center gap-2">
                 <LoaderCircle className="size-4 animate-spin" />
-                Reimporting...
+                {m.ui_reimport_dialog_loading()}
               </span>
             ) : (
-              'Reimport All'
+              m.ui_reimport_dialog_confirm()
             )}
           </Button>
         </div>

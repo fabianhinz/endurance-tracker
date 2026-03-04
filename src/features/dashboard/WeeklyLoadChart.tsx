@@ -20,6 +20,7 @@ import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
 import { rangeMap } from '@/lib/timeRange.ts';
 import type { TimeRange } from '@/lib/timeRange.ts';
 import { useDashboardChartZoom } from './hooks/useDashboardChartZoom.ts';
+import { m } from '@/paraglide/messages.js';
 
 const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -111,6 +112,7 @@ export const WeeklyLoadChart = () => {
                 contentStyle={chartTheme.tooltip.contentStyle}
                 labelStyle={chartTheme.tooltip.labelStyle}
                 isAnimationActive={chartTheme.tooltip.isAnimationActive}
+                separator={chartTheme.tooltip.separator}
               />
               <Area
                 type="step"
@@ -119,7 +121,7 @@ export const WeeklyLoadChart = () => {
                 fillOpacity={1}
                 stroke="none"
                 dot={false}
-                name="TSS"
+                name={m.ui_chart_series_tss()}
               />
               {zoom.refAreaLeft && zoom.refAreaRight && (
                 <ReferenceArea

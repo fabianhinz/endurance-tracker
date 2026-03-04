@@ -12,6 +12,7 @@ import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { SpeedPoint } from '@/lib/chartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface SpeedChartProps {
   data: SpeedPoint[];
@@ -74,6 +75,7 @@ export const SpeedChart = (props: SpeedChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
+          separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
         />
         <Line
@@ -83,7 +85,7 @@ export const SpeedChart = (props: SpeedChartProps) => {
           stroke={tokens.chartSpeed}
           strokeWidth={1.5}
           dot={false}
-          name="Speed (km/h)"
+          name={m.ui_chart_series_speed()}
         />
         {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea

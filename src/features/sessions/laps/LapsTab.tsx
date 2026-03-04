@@ -16,6 +16,7 @@ import { LapPowerChart } from './LapPowerChart.tsx';
 import { LapDetailTable } from './LapDetailTable.tsx';
 import { SplitDistanceCard } from './SplitDistanceCard.tsx';
 import type { SessionLap, SessionRecord, TrainingSession } from '@/engine/types.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface LapsTabProps {
   laps: SessionLap[];
@@ -114,7 +115,7 @@ export const LapsTab = (props: LapsTabProps) => {
       />
 
       {hrData.length > 0 && (
-        <ChartPreviewCard title="Heart Rate per Lap" icon={Heart} color={tokens.chartHr}>
+        <ChartPreviewCard title={m.ui_laps_hr_chart_title()} icon={Heart} color={tokens.chartHr}>
           {(mode) => (
             <LapHrChart
               data={hrData}
@@ -127,7 +128,11 @@ export const LapsTab = (props: LapsTabProps) => {
       )}
 
       {powerData.length > 0 && (
-        <ChartPreviewCard title="Power per Lap" icon={Zap} color={tokens.chartPower}>
+        <ChartPreviewCard
+          title={m.ui_laps_power_chart_title()}
+          icon={Zap}
+          color={tokens.chartPower}
+        >
           {(mode) => (
             <LapPowerChart
               data={powerData}
@@ -141,7 +146,7 @@ export const LapsTab = (props: LapsTabProps) => {
 
       {splitsData.length > 0 && (
         <ChartPreviewCard
-          title={isRunning ? 'Pace per Lap' : 'Speed per Lap'}
+          title={isRunning ? m.ui_laps_pace_chart_title() : m.ui_laps_speed_chart_title()}
           icon={Timer}
           color={isRunning ? tokens.chartPace : tokens.chartSpeed}
         >

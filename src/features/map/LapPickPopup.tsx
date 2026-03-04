@@ -12,6 +12,7 @@ import { useUserStore } from '@/store/user.ts';
 import { formatPace, formatSpeed, formatLapTime, formatDistance } from '@/lib/utils.ts';
 import type { SessionLap, Sport, RunningZone } from '@/engine/types.ts';
 import type { LapAnalysis } from '@/engine/laps.ts';
+import { m } from '@/paraglide/messages.js';
 
 export interface LapPopupInfo {
   x: number;
@@ -78,7 +79,12 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
         <CardHeader
           title={`${analysis.length} Laps`}
           actions={
-            <Button variant="ghost" size="icon" aria-label="Close" onClick={props.onClose}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={m.ui_btn_close()}
+              onClick={props.onClose}
+            >
               <X size={16} />
             </Button>
           }

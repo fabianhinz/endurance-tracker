@@ -13,6 +13,7 @@ import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import { formatPaceTick } from '@/lib/utils.ts';
 import type { GAPPoint } from '@/lib/chartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface GradeAdjustedPaceChartProps {
   data: GAPPoint[];
@@ -76,6 +77,7 @@ export const GradeAdjustedPaceChart = (props: GradeAdjustedPaceChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
+          separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
           formatter={(v: number | undefined, name: string | undefined) => [
             v !== undefined ? formatPaceTick(v) : '',
@@ -89,7 +91,7 @@ export const GradeAdjustedPaceChart = (props: GradeAdjustedPaceChartProps) => {
           stroke={tokens.chartPace}
           strokeWidth={1.5}
           dot={false}
-          name="Pace"
+          name={m.ui_chart_series_pace()}
         />
         <Line
           yAxisId="left"
@@ -98,7 +100,7 @@ export const GradeAdjustedPaceChart = (props: GradeAdjustedPaceChartProps) => {
           stroke={tokens.chartGap}
           strokeWidth={1.5}
           dot={false}
-          name="GAP"
+          name={m.ui_chart_series_gap()}
         />
         {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea

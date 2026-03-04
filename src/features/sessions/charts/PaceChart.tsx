@@ -13,6 +13,7 @@ import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import { formatPaceTick } from '@/lib/utils.ts';
 import type { PacePoint } from '@/lib/chartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface PaceChartProps {
   data: PacePoint[];
@@ -76,6 +77,7 @@ export const PaceChart = (props: PaceChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
+          separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
           formatter={(v: number | undefined) => [v !== undefined ? formatPaceTick(v) : '', 'Pace']}
         />
@@ -86,7 +88,7 @@ export const PaceChart = (props: PaceChartProps) => {
           stroke={tokens.chartPace}
           strokeWidth={1.5}
           dot={false}
-          name="Pace (min/km)"
+          name={m.ui_chart_series_pace()}
         />
         {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea

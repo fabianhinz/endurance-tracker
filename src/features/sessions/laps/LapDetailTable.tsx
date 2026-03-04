@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils.ts';
 import { formatDistance, formatLapTime, formatPace, formatSpeed } from '@/lib/utils.ts';
 import type { LapAnalysis, LapRecordEnrichment } from '@/engine/laps.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface LapDetailTableProps {
   laps: LapAnalysis[];
@@ -41,7 +42,7 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
     <div className={cn(glassClass, 'rounded-2xl shadow-lg overflow-hidden')}>
       <div className="flex items-center px-4 py-2">
         <Typography variant="title" className="flex-1 text-left">
-          Lap Details
+          {m.ui_laps_table_title()}
         </Typography>
         {needsToggle && (
           <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
@@ -58,15 +59,21 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
           <thead>
             <tr className="text-text-tertiary text-xs">
               <th className="px-3 py-2 text-left font-medium">#</th>
-              <th className="px-3 py-2 text-right font-medium">Distance</th>
-              <th className="px-3 py-2 text-right font-medium">Time</th>
+              <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_distance()}</th>
+              <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_time()}</th>
               <th className="px-3 py-2 text-right font-medium">
-                {props.isRunning ? 'Pace' : 'Speed'}
+                {props.isRunning ? m.ui_laps_col_pace() : m.ui_laps_col_speed()}
               </th>
-              <th className="px-3 py-2 text-right font-medium">Avg HR</th>
-              {hasPower && <th className="px-3 py-2 text-right font-medium">Power</th>}
-              {hasCadence && <th className="px-3 py-2 text-right font-medium">Cadence</th>}
-              {hasElevation && <th className="px-3 py-2 text-right font-medium">Elev</th>}
+              <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_avg_hr()}</th>
+              {hasPower && (
+                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_power()}</th>
+              )}
+              {hasCadence && (
+                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_cadence()}</th>
+              )}
+              {hasElevation && (
+                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_elev()}</th>
+              )}
             </tr>
           </thead>
           <tbody onPointerLeave={clearHoveredLapIndex}>

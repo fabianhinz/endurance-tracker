@@ -12,6 +12,7 @@ import { avgDomain, chartTheme, formatTick } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import { formatPace, formatPaceInput } from '@/lib/utils.ts';
 import type { LapSplitPoint } from '@/lib/lapChartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface LapSplitsChartProps {
   data: LapSplitPoint[];
@@ -72,6 +73,7 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
+          separator={chartTheme.tooltip.separator}
           cursor={{ fill: `${tokens.accent}14` }}
           formatter={(
             _value: number | undefined,
@@ -80,22 +82,25 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           ) => {
             const p = entry.payload;
             if (!p)
-              return [props.isRunning ? '-- /km' : '-- km/h', props.isRunning ? 'Pace' : 'Speed'];
+              return [
+                props.isRunning ? '-- /km' : '-- km/h',
+                props.isRunning ? m.ui_chart_series_pace() : m.ui_chart_series_speed(),
+              ];
             if (props.isRunning) {
               const avg = formatPace(p.pace);
               if (p.minPace !== undefined) {
                 return [
                   `${avg} (${formatPaceInput(p.minPace)}–${formatPaceInput(p.maxPace)})`,
-                  'Pace',
+                  m.ui_chart_series_pace(),
                 ];
               }
-              return [avg, 'Pace'];
+              return [avg, m.ui_chart_series_pace()];
             }
             const avg = `${p.speed} km/h`;
             if (p.minSpeed !== undefined) {
-              return [`${avg} (${p.minSpeed}–${p.maxSpeed})`, 'Speed'];
+              return [`${avg} (${p.minSpeed}–${p.maxSpeed})`, m.ui_chart_series_speed()];
             }
-            return [avg, 'Speed'];
+            return [avg, m.ui_chart_series_speed()];
           }}
         />
         {hasRangeData && (
@@ -111,7 +116,7 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
         )}
         <Line
           dataKey={dataKey}
-          name={props.isRunning ? 'Pace' : 'Speed'}
+          name={props.isRunning ? m.ui_chart_series_pace() : m.ui_chart_series_speed()}
           type="monotone"
           stroke={fill}
           strokeWidth={2}

@@ -12,6 +12,7 @@ import {
 import { parseFitFile } from '@/parsers/fit.ts';
 import { computePBsForSessions } from '@/engine/records.ts';
 import { toast } from '@/components/ui/toastStore.ts';
+import { useCoachPlanStore } from '@/store/coachPlan.ts';
 
 interface ReimportState {
   reimporting: boolean;
@@ -107,6 +108,7 @@ export const useReimport = () => {
 
     if (updates.length > 0) {
       useSessionsStore.getState().replaceSessions(updates);
+      useCoachPlanStore.getState().clearPlan();
     }
 
     // Recompute PBs from scratch across all sessions
