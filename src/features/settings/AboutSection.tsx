@@ -1,8 +1,9 @@
-import { Code, BookOpen, GitCommit } from 'lucide-react';
+import { Code, BookOpen } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { List, ListItem } from '@/components/ui/List.tsx';
+import { Typography } from '@/components/ui/Typography';
 
 const GITHUB_URL = 'https://github.com/fabianhinz/PaceVault';
 const SOURCES_URL = 'https://github.com/fabianhinz/PaceVault/blob/main/src/engine/SOURCES.md';
@@ -10,7 +11,15 @@ const SOURCES_URL = 'https://github.com/fabianhinz/PaceVault/blob/main/src/engin
 const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 
 export const AboutSection = () => (
-  <Card>
+  <Card
+    footer={
+      <div className="flex justify-end">
+        <Typography variant="caption">
+          {m.ui_settings_about_version()}: {import.meta.env.VITE_APP_COMMIT}
+        </Typography>
+      </div>
+    }
+  >
     <CardHeader title={m.ui_settings_about_title()} subtitle={m.ui_settings_about_desc()} />
     <List>
       <ListItem
@@ -25,12 +34,6 @@ export const AboutSection = () => (
         primary={m.ui_settings_about_sources()}
         secondary={m.ui_settings_about_sources_desc()}
         onClick={() => openExternal(SOURCES_URL)}
-      />
-
-      <ListItem
-        icon={<GitCommit size={18} />}
-        primary={m.ui_settings_about_version()}
-        secondary={import.meta.env.VITE_APP_COMMIT}
       />
     </List>
   </Card>

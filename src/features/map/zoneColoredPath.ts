@@ -57,10 +57,7 @@ const getHrColor = (
   return null;
 };
 
-const getPowerColor = (
-  power: number,
-  ftp: number,
-): [number, number, number, number] | null => {
+const getPowerColor = (power: number, ftp: number): [number, number, number, number] | null => {
   const pct = power / ftp;
   const def = POWER_ZONE_DEFS.find((z) => pct >= z.minPct && pct < z.maxPct);
   return def ? hexToRgba(def.color, SEGMENT_ALPHA) : null;
@@ -106,7 +103,13 @@ export const buildZoneColoredPath = (
 
     if (mode === 'hr' && record.hr != null && record.hr > 0) {
       color = getHrColor(record.hr, thresholds);
-    } else if (mode === 'power' && record.power != null && record.power > 0 && thresholds.ftp && thresholds.ftp > 0) {
+    } else if (
+      mode === 'power' &&
+      record.power != null &&
+      record.power > 0 &&
+      thresholds.ftp &&
+      thresholds.ftp > 0
+    ) {
       color = getPowerColor(record.power, thresholds.ftp);
     } else if (mode === 'pace' && record.speed != null && record.speed > 0.5 && paceZones) {
       color = getPaceColor(record.speed, paceZones);
