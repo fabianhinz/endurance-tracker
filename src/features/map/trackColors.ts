@@ -10,8 +10,8 @@ export const ADDITIVE_BLEND = {
 } as const;
 
 export const trackModifiers = {
-  width: { default: 4, highlighted: 8 },
-  alpha: { default: 80, highlighted: 200 },
+  width: { default: 8, highlighted: 12 },
+  alpha: { default: 80, highlighted: 255 },
 };
 
 export const sportTrackColor: Record<Sport, [number, number, number, number]> = {

@@ -137,7 +137,6 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       updateTriggers: {
         getColor: [openedSessionId],
       },
-      parameters: ADDITIVE_BLEND,
       ...eventHandlers,
     });
   }, [hiresPaths, openedSessionId, sessions, eventHandlers, zoneColorMode]);
@@ -244,7 +243,6 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       jointRounded: true,
       capRounded: true,
       pickable: false,
-      parameters: ADDITIVE_BLEND,
       updateTriggers: { getColor: [zoneColorMode] },
       transitions: { getColor: 300 },
     });
