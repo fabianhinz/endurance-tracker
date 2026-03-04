@@ -503,5 +503,25 @@
   "ui_chart_series_tss": "TSS",
 
   "ui_stat_drift": "{percent}% drift",
-  "ui_stat_avg_power_short": "avg {value}W"
+  "ui_stat_avg_power_short": "avg {value}W",
+
+  "ui_chart_title_hr": "Heart Rate",
+  "ui_chart_title_grade": "Grade",
+  "ui_chart_title_zones": "Zone Distribution",
+
+  "ui_zone_recovery": "Recovery",
+  "ui_zone_easy": "Easy",
+  "ui_zone_tempo": "Tempo",
+  "ui_zone_threshold": "Threshold",
+  "ui_zone_vo2max": "VO2max",
+
+  "ui_btn_view_all": "View all",
+
+  "ui_records_running_subtitle": "Distance records",
+  "ui_records_cycling_subtitle": "Power & distance records",
+  "ui_records_swimming_subtitle": "Distance records",
+
+  "ui_sport_running": "Running",
+  "ui_sport_cycling": "Cycling",
+  "ui_sport_swimming": "Swimming"
 }

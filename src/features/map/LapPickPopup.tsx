@@ -79,7 +79,12 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
         <CardHeader
           title={`${analysis.length} Laps`}
           actions={
-            <Button variant="ghost" size="icon" aria-label={m.ui_btn_close()} onClick={props.onClose}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={m.ui_btn_close()}
+              onClick={props.onClose}
+            >
               <X size={16} />
             </Button>
           }

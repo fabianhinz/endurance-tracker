@@ -128,7 +128,11 @@ export const LapsTab = (props: LapsTabProps) => {
       )}
 
       {powerData.length > 0 && (
-        <ChartPreviewCard title={m.ui_laps_power_chart_title()} icon={Zap} color={tokens.chartPower}>
+        <ChartPreviewCard
+          title={m.ui_laps_power_chart_title()}
+          icon={Zap}
+          color={tokens.chartPower}
+        >
           {(mode) => (
             <LapPowerChart
               data={powerData}

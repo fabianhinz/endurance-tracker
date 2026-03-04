@@ -17,6 +17,13 @@ import { pbLabel, formatPBValue, formatDate } from '@/lib/utils.ts';
 import { rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
 import type { TimeRange } from '@/lib/timeRange.ts';
 import type { PersonalBest, Sport } from '@/engine/types.ts';
+import { m } from '@/paraglide/messages.js';
+
+const SPORT_NAMES: Record<Sport, () => string> = {
+  running: m.ui_sport_running,
+  cycling: m.ui_sport_cycling,
+  swimming: m.ui_sport_swimming,
+};
 
 const sports: Sport[] = ['running', 'cycling', 'swimming'];
 
@@ -28,7 +35,7 @@ const heroForSport = (pbs: PersonalBest[]): PersonalBest | undefined => {
 const ViewAllLink = (props: { to: string }) => (
   <Button asChild variant="ghost" size="sm">
     <Link to={props.to}>
-      View all <ChevronRight className="size-4" />
+      {m.ui_btn_view_all()} <ChevronRight className="size-4" />
     </Link>
   </Button>
 );
@@ -67,8 +74,8 @@ export const RecentActivityCard = () => {
   return (
     <Tabs defaultValue="log">
       <TabsList>
-        <TabsTrigger value="log">Log</TabsTrigger>
-        <TabsTrigger value="records">Records</TabsTrigger>
+        <TabsTrigger value="log">{m.ui_sessions_tab_log()}</TabsTrigger>
+        <TabsTrigger value="records">{m.ui_sessions_tab_records()}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="log">
@@ -103,9 +110,7 @@ export const RecentActivityCard = () => {
                 >
                   <SportBadge sport={sport} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <Typography variant="body1" className="capitalize">
-                      {sport}
-                    </Typography>
+                    <Typography variant="body1">{SPORT_NAMES[sport]()}</Typography>
                     <Typography variant="caption" as="p" className={hero ? '' : 'invisible'}>
                       {hero ? pbLabel(hero) : '\u00a0'}
                     </Typography>

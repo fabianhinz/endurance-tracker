@@ -7,11 +7,18 @@ import { SportBadge } from '@/features/sessions/SportBadge.tsx';
 import { pbLabel, formatPBValue, formatDate } from '@/lib/utils.ts';
 import { PB_SLOTS } from '@/engine/records.ts';
 import type { PersonalBest, Sport } from '@/engine/types.ts';
+import { m } from '@/paraglide/messages.js';
 
-const sportSubtitle: Record<Sport, string> = {
-  running: 'Distance records',
-  cycling: 'Power & distance records',
-  swimming: 'Distance records',
+const SPORT_NAMES: Record<Sport, () => string> = {
+  running: m.ui_sport_running,
+  cycling: m.ui_sport_cycling,
+  swimming: m.ui_sport_swimming,
+};
+
+const sportSubtitle: Record<Sport, () => string> = {
+  running: m.ui_records_running_subtitle,
+  cycling: m.ui_records_cycling_subtitle,
+  swimming: m.ui_records_swimming_subtitle,
 };
 
 export const SportRecordsCard = (props: {
@@ -28,8 +35,8 @@ export const SportRecordsCard = (props: {
     <Card>
       <CardHeader
         icon={<SportBadge sport={props.sport} size="md" />}
-        title={props.sport}
-        subtitle={sportSubtitle[props.sport]}
+        title={SPORT_NAMES[props.sport]()}
+        subtitle={sportSubtitle[props.sport]()}
       />
       <div className="space-y-1">
         {slots.map((slot) => {

@@ -65,9 +65,15 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
                 {props.isRunning ? m.ui_laps_col_pace() : m.ui_laps_col_speed()}
               </th>
               <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_avg_hr()}</th>
-              {hasPower && <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_power()}</th>}
-              {hasCadence && <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_cadence()}</th>}
-              {hasElevation && <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_elev()}</th>}
+              {hasPower && (
+                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_power()}</th>
+              )}
+              {hasCadence && (
+                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_cadence()}</th>
+              )}
+              {hasElevation && (
+                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_elev()}</th>
+              )}
             </tr>
           </thead>
           <tbody onPointerLeave={clearHoveredLapIndex}>

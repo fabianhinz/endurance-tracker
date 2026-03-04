@@ -43,6 +43,7 @@ import { GradeAdjustedPaceChart } from './GradeAdjustedPaceChart.tsx';
 import { ZoneDistributionChart } from './ZoneDistributionChart.tsx';
 import { tokens } from '@/lib/tokens.ts';
 import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface ChartEntry {
   key: string;
@@ -173,7 +174,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
     () => [
       {
         key: 'hr',
-        title: 'Heart Rate',
+        title: m.ui_chart_title_hr(),
         icon: Heart,
         color: tokens.chartHr,
         hasData: hrData.length > 0,
@@ -189,7 +190,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'power',
-        title: 'Power',
+        title: m.ui_zones_tab_power(),
         icon: Zap,
         color: tokens.chartPower,
         hasData: powerData.length > 0,
@@ -205,7 +206,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'speed',
-        title: 'Speed',
+        title: m.ui_laps_col_speed(),
         icon: Gauge,
         color: tokens.chartSpeed,
         hasData: speedData.length > 0,
@@ -221,7 +222,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'elevation',
-        title: 'Elevation',
+        title: m.ui_stat_elevation(),
         icon: Mountain,
         color: tokens.chartElevation,
         hasData: elevationData.length > 0,
@@ -237,7 +238,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'cadence',
-        title: 'Cadence',
+        title: m.ui_stat_cadence(),
         icon: cadenceIcon,
         color: tokens.chartCadence,
         hasData: cadenceData.length > 0,
@@ -253,7 +254,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'grade',
-        title: 'Grade',
+        title: m.ui_chart_title_grade(),
         icon: TrendingUp,
         color: tokens.chartGrade,
         hasData: gradeData.length > 0,
@@ -269,7 +270,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'pace',
-        title: 'Pace',
+        title: m.ui_zones_tab_pace(),
         icon: Timer,
         color: tokens.chartPace,
         hasData: paceData.length > 0,
@@ -285,7 +286,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'gap',
-        title: 'Grade Adjusted Pace',
+        title: m.exp_gradeAdjustedPace_friendlyName(),
         icon: ArrowUpDown,
         color: tokens.chartGap,
         hasData: gapData.length > 0,
@@ -301,7 +302,7 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       },
       {
         key: 'zones',
-        title: 'Zone Distribution',
+        title: m.ui_chart_title_zones(),
         icon: Activity,
         color: tokens.accent,
         hasData: hrZoneData.length > 0 || powerZoneData.length > 0 || paceZoneData.length > 0,

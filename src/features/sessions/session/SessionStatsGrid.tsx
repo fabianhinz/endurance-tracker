@@ -183,7 +183,9 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       label: m.ui_stat_pacing_trend(),
       value:
         overload.paceDriftPercent !== undefined
-          ? m.ui_stat_drift({ percent: `${overload.paceDriftPercent > 0 ? '+' : ''}${overload.paceDriftPercent}` })
+          ? m.ui_stat_drift({
+              percent: `${overload.paceDriftPercent > 0 ? '+' : ''}${overload.paceDriftPercent}`,
+            })
           : trend.label(),
       metricId: 'pacingTrend',
       subDetail: (

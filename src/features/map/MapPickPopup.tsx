@@ -34,7 +34,12 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
           title={`${props.info.sessions.length} Sessions`}
           subtitle={m.ui_map_popup_sessions_subtitle()}
           actions={
-            <Button variant="ghost" size="icon" aria-label={m.ui_btn_close()} onClick={props.onClose}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={m.ui_btn_close()}
+              onClick={props.onClose}
+            >
               <X size={16} />
             </Button>
           }

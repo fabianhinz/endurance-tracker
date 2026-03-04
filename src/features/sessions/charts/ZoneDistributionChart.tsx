@@ -65,9 +65,9 @@ const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
           value: number | undefined,
           _name: string | undefined,
           entry: { payload?: ZoneBucket },
-        ) => [`${value ?? 0}% · ${entry.payload?.rangeLabel ?? ''}`, 'Time']}
+        ) => [`${value ?? 0}% · ${entry.payload?.rangeLabel ?? ''}`, m.ui_laps_col_time()]}
       />
-      <Bar dataKey="percentage" name="Time">
+      <Bar dataKey="percentage" name={m.ui_laps_col_time()}>
         {props.data.map((entry, index) => (
           <Cell key={index} fill={entry.color} />
         ))}

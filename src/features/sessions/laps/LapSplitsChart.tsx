@@ -81,7 +81,10 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           ) => {
             const p = entry.payload;
             if (!p)
-              return [props.isRunning ? '-- /km' : '-- km/h', props.isRunning ? m.ui_chart_series_pace() : m.ui_chart_series_speed()];
+              return [
+                props.isRunning ? '-- /km' : '-- km/h',
+                props.isRunning ? m.ui_chart_series_pace() : m.ui_chart_series_speed(),
+              ];
             if (props.isRunning) {
               const avg = formatPace(p.pace);
               if (p.minPace !== undefined) {
