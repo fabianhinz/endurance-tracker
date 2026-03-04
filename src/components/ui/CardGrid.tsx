@@ -7,13 +7,13 @@ import { cn } from '@/lib/utils.ts';
 interface CardGridProps {
   children: ReactNode;
   collapsedRows?: number;
-  title?: string;
+  title: string;
 }
 
 export const CardGrid = (props: CardGridProps) => {
   const [expanded, setExpanded] = useState(false);
   const totalCount = Children.count(props.children);
-  const collapsible = props.collapsedRows !== undefined && props.title;
+  const collapsible = props.collapsedRows !== undefined;
   const maxVisible = collapsible ? props.collapsedRows! * 2 : totalCount;
   const needsToggle = collapsible && totalCount > maxVisible;
   const visibleChildren =
@@ -23,21 +23,17 @@ export const CardGrid = (props: CardGridProps) => {
 
   return (
     <>
-      {collapsible && (
-        <div className="mb-4 flex items-start justify-between gap-2">
-          <Typography variant="title" as="h3">
-            {props.title}
-          </Typography>
-          {needsToggle && (
-            <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
-              <Typography variant="caption">({totalCount})</Typography>
-              <ChevronRight
-                className={cn('size-4 transition-transform', expanded && 'rotate-90')}
-              />
-            </Button>
-          )}
-        </div>
-      )}
+      <div className="mb-4 flex items-start justify-between gap-2">
+        <Typography variant="title" as="h3">
+          {props.title}
+        </Typography>
+        {needsToggle && (
+          <Button variant="ghost" size="icon" onClick={() => setExpanded((prev) => !prev)}>
+            <Typography variant="caption">({totalCount})</Typography>
+            <ChevronRight className={cn('size-4 transition-transform', expanded && 'rotate-90')} />
+          </Button>
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-3">
         {Children.map(visibleChildren, (child) =>
           child != null ? (

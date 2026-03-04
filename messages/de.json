@@ -128,6 +128,10 @@
   "ui_stat_recovery_strong": "Starke Erholung",
   "ui_stat_recovery_adequate": "Ausreichende Erholung",
   "ui_stat_recovery_slow": "Langsame Erholung",
+  "ui_stat_sessions": "Einheiten",
+  "ui_stat_total_distance": "Gesamtdistanz",
+  "ui_stat_total_duration": "Gesamtdauer",
+  "ui_stat_total_elevation": "Gesamthöhenmeter",
 
   "ui_readiness_go": "Grün",
   "ui_readiness_no_go": "Stopp",
