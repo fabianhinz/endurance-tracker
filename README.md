@@ -2,90 +2,23 @@
 
 _Your training. Your device. Your edge._
 
-A local-first endurance training tracker built entirely in the browser. Import Garmin .FIT files, track training load with the Banister impulse-response model, detect personal bests, visualize GPS traces on a map, analyze sessions with advanced metrics (NP, GAP, efficiency, lap analysis), and get coaching recommendations — all without a server.
+A local-first endurance training tracker built entirely in the browser. Import Garmin .FIT files, track training load with the Banister impulse-response model, detect personal bests, visualize GPS traces on an interactive map, analyze sessions with advanced metrics (NP, GAP, efficiency, lap analysis), and get coaching recommendations — all without a server.
 
-## Tech Stack
-
-| Layer        | Choice                                           |
-| ------------ | ------------------------------------------------ |
-| Build        | Vite 7, TypeScript 5.9 strict                    |
-| Framework    | React 19                                         |
-| Routing      | React Router v7                                  |
-| UI           | Radix primitives, Tailwind v4, dark mode only    |
-| State        | Zustand (persisted to IndexedDB)                 |
-| Forms        | React Hook Form + Zod v4                         |
-| Charts       | Recharts                                         |
-| File parsing | fit-file-parser (.FIT binaries)                  |
-| Storage      | IndexedDB via `idb` (no localStorage, no server) |
+PaceVault is installable as a Progressive Web App. It works fully offline — once loaded, no network connection is needed. A service worker handles caching and auto-updates in the background. No account, no signup, no server.
 
 ## Getting Started
 
-```bash
-pnpm install
-pnpm dev
-```
+1. Fork and clone the repo
+2. `pnpm install && pnpm dev`
+3. Create a branch: `git checkout -b feat/my-thing`
+4. Read `CLAUDE.md` for architecture rules before writing code
+5. Run the full verification suite before opening a PR:
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+   ```bash
+   pnpm test
+   pnpm test:e2e
+   pnpm typecheck
+   pnpm lint --fix
+   ```
 
-## Scripts
-
-| Command          | Description                         |
-| ---------------- | ----------------------------------- |
-| `pnpm dev`       | Start dev server                    |
-| `pnpm build`     | Type-check and build for production |
-| `pnpm test`      | Run tests (vitest)                  |
-| `pnpm lint`      | Lint with ESLint                    |
-| `pnpm typecheck` | Type-check with tsc                 |
-| `pnpm preview`   | Preview production build            |
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── layout/          # AppLayout, Sidebar, Header
-│   └── ui/              # Radix-wrapped primitives (Button, Card, Dialog, …)
-├── engine/              # Pure business logic (no React, no state)
-│   ├── coaching.ts      # Training recommendations (TSB/ACWR thresholds)
-│   ├── defaults.ts      # Default profile factory
-│   ├── efficiency.ts    # Aerobic efficiency & decoupling
-│   ├── explanations.ts  # Metric explanation registry
-│   ├── filename.ts      # Filename utilities
-│   ├── gps.ts           # GPS processing
-│   ├── group-steps.ts   # Step grouping logic
-│   ├── laps.ts          # Lap & interval analysis
-│   ├── metrics.ts       # Banister model (CTL/ATL/TSB/ACWR)
-│   ├── normalize.ts     # Normalized power, grade-adjusted pace
-│   ├── prescription.ts  # Weekly plan generation
-│   ├── records.ts       # Personal best detection (rolling windows)
-│   ├── stress.ts        # TSS & TRIMP calculation
-│   ├── validation.ts    # Sensor data quality checks
-│   └── zones.ts         # Training zone definitions
-├── features/
-│   ├── coach/           # Coaching recommendations & weekly plan
-│   ├── dashboard/       # Dashboard page
-│   ├── map/             # GPS trace visualization (MapLibre + Deck.gl)
-│   ├── records/         # Personal best display
-│   ├── settings/        # Profile, thresholds, data management
-│   └── training/        # Session list & detail pages
-├── hooks/               # Shared React hooks
-├── lib/
-│   ├── db.ts            # Typed IDB schema & singleton connection
-│   ├── idb-storage.ts   # Zustand StateStorage adapter for IndexedDB
-│   ├── indexeddb.ts     # Session records CRUD (time-series data)
-│   ├── use-hydrated.ts  # Async hydration gate hook
-│   └── utils.ts         # cn(), formatters
-├── parsers/
-│   └── fit.ts           # .FIT file parser → session + records
-├── store/               # Zustand stores (user, sessions, notifications)
-└── types/               # Shared TypeScript interfaces
-```
-
-## Storage Architecture
-
-All data lives in IndexedDB via the `idb` package:
-
-- **`session-records`** store: time-series data from .FIT files (HR, power, cadence, GPS, etc.)
-- **`kv`** store: Zustand-persisted state (user profile, training sessions, personal bests)
-
-No data leaves the browser. Export/import is available as JSON from the Settings page.
+6. Open a PR against `main`
