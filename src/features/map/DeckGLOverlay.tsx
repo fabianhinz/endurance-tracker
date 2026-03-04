@@ -236,8 +236,8 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const layers = useMemo(
     () => [
       ...(openedSessionId ? [] : [trackLayers]),
-      ...(zoneColoredLayer ? [zoneColoredLayer] : []),
       ...(hiresLayer && !zoneColoredLayer ? [hiresLayer] : []),
+      ...(zoneColoredLayer ? [zoneColoredLayer] : []),
       ...(pickCircleLayer ? [pickCircleLayer] : []),
       ...(hoveredPointLayer ? [hoveredPointLayer] : []),
       ...lapMarkerLayers,
