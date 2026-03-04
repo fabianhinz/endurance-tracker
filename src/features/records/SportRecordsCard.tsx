@@ -65,7 +65,7 @@ export const SportRecordsCard = (props: {
                   <ValueSkeleton />
                 ) : (
                   <>
-                    <Typography variant="subtitle1" color={pb ? 'textPrimary' : 'textQuaternary'}>
+                    <Typography variant="subtitle1" color={pb ? 'textPrimary' : 'textTertiary'}>
                       {pb ? formatPBValue(pb) : '--'}
                     </Typography>
                     <Typography variant="caption" as="p" className={pb ? '' : 'invisible'}>

@@ -1,16 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Heart,
-  Zap,
-  Gauge,
-  Mountain,
-  Timer,
-  TrendingUp,
-  ArrowUpDown,
-  Activity,
-} from 'lucide-react';
+import { Heart, Zap, Gauge, Mountain, Timer, TrendingUp, ArrowUpDown } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useUserStore } from '@/store/user.ts';
 import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
 import { downsample } from '@/engine/downsample.ts';
 import {
@@ -26,11 +16,6 @@ import {
   filterTimeSeries,
 } from '@/lib/chartData.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
-import {
-  computeHrZoneDistribution,
-  computePowerZoneDistribution,
-  computePaceZoneDistribution,
-} from '@/engine/zoneDistribution.ts';
 import { sportIcon } from '@/lib/sportIcons.ts';
 import { HrChart } from './HrChart.tsx';
 import { PowerChart } from './PowerChart.tsx';
@@ -40,7 +25,6 @@ import { ElevationChart } from './ElevationChart.tsx';
 import { GradeChart } from './GradeChart.tsx';
 import { PaceChart } from './PaceChart.tsx';
 import { GradeAdjustedPaceChart } from './GradeAdjustedPaceChart.tsx';
-import { ZoneDistributionChart } from './ZoneDistributionChart.tsx';
 import { tokens } from '@/lib/tokens.ts';
 import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
@@ -61,7 +45,6 @@ interface SessionChartsExplorerProps {
 }
 
 export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
-  const profile = useUserStore((s) => s.profile);
   const isRunning = props.session.sport === 'running';
 
   const sampled = useMemo(() => downsample(props.records), [props.records]);
@@ -78,25 +61,6 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
     () => (isRunning && gradeData.length > 0 ? prepareGAPData(sampled) : []),
     [sampled, isRunning, gradeData.length],
   );
-
-  // Zone data
-  const hrZoneData = useMemo(() => {
-    const thresholds = profile?.thresholds;
-    if (!thresholds?.maxHr || !thresholds?.restHr) return [];
-    return computeHrZoneDistribution(props.records, thresholds.maxHr, thresholds.restHr);
-  }, [props.records, profile?.thresholds]);
-
-  const powerZoneData = useMemo(() => {
-    const ftp = profile?.thresholds?.ftp;
-    if (!ftp) return [];
-    return computePowerZoneDistribution(props.records, ftp);
-  }, [props.records, profile?.thresholds?.ftp]);
-
-  const paceZoneData = useMemo(() => {
-    const thresholdPace = profile?.thresholds?.thresholdPace;
-    if (!thresholdPace || !isRunning) return [];
-    return computePaceZoneDistribution(props.records, thresholdPace);
-  }, [props.records, profile?.thresholds?.thresholdPace, isRunning]);
 
   const gpsLookup = useMemo(() => buildTimeToGpsLookup(sampled), [sampled]);
 
@@ -300,22 +264,6 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
           />
         ),
       },
-      {
-        key: 'zones',
-        title: m.ui_chart_title_zones(),
-        icon: Activity,
-        color: tokens.accent,
-        hasData: hrZoneData.length > 0 || powerZoneData.length > 0 || paceZoneData.length > 0,
-        compactHeight: 'h-[250px]',
-        render: (mode: 'compact' | 'expanded') => (
-          <ZoneDistributionChart
-            hrZones={hrZoneData}
-            powerZones={powerZoneData}
-            paceZones={paceZoneData}
-            mode={mode}
-          />
-        ),
-      },
     ],
     [
       hrData,
@@ -335,9 +283,6 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
       filteredPaceData,
       filteredGapData,
       cadenceIcon,
-      hrZoneData,
-      powerZoneData,
-      paceZoneData,
       hasGps,
       onActiveTimeChange,
       handleZoomComplete,

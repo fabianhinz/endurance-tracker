@@ -10,6 +10,7 @@
   "ui_btn_rename": "Rename",
 
   "ui_settings_display": "Display",
+  "ui_settings_layout": "Layout",
   "ui_settings_language": "Language",
   "ui_settings_language_desc": "Choose your preferred language",
   "ui_settings_metric_help": "Show metric explanations",
@@ -18,6 +19,11 @@
   "ui_settings_compact_layout_desc": "Single-column layout and shift content right to reveal more of the map",
   "ui_settings_expanded_dock": "Expanded dock",
   "ui_settings_expanded_dock_desc": "Show labels beneath dock icons",
+  "ui_settings_map_pitch": "Map tilt",
+  "ui_settings_map_pitch_desc": "Camera pitch angle when viewing the map",
+  "ui_settings_map_pitch_flat": "Flat",
+  "ui_settings_map_pitch_low": "Low",
+  "ui_settings_map_pitch_high": "High",
   "ui_settings_tab_general": "General",
   "ui_settings_tab_data": "Data Management",
 
@@ -27,6 +33,7 @@
   "ui_settings_about_github_desc": "Found a bug or have a feature request? Open an issue",
   "ui_settings_about_sources": "Scientific Sources",
   "ui_settings_about_sources_desc": "Bibliography for all engine formulas and algorithms",
+  "ui_settings_about_version": "Build",
 
   "ui_thresholds_title": "Thresholds",
   "ui_thresholds_subtitle": "Your heart rate and power baselines",
@@ -497,6 +504,8 @@
   "ui_zones_tab_hr": "HR",
   "ui_zones_tab_power": "Power",
   "ui_zones_tab_pace": "Pace",
+  "ui_zone_color_title": "Zone Colors",
+  "ui_zone_color_desc": "Colors the route on the map by training zone",
 
   "ui_chart_series_cadence": "Cadence (rpm)",
   "ui_chart_series_hr": "HR (bpm)",

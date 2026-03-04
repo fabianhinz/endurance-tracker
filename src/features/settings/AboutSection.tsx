@@ -3,6 +3,7 @@ import { m } from '@/paraglide/messages.js';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { List, ListItem } from '@/components/ui/List.tsx';
+import { Typography } from '@/components/ui/Typography';
 
 const GITHUB_URL = 'https://github.com/fabianhinz/PaceVault';
 const SOURCES_URL = 'https://github.com/fabianhinz/PaceVault/blob/main/src/engine/SOURCES.md';
@@ -10,7 +11,15 @@ const SOURCES_URL = 'https://github.com/fabianhinz/PaceVault/blob/main/src/engin
 const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 
 export const AboutSection = () => (
-  <Card>
+  <Card
+    footer={
+      <div className="flex justify-end">
+        <Typography variant="caption">
+          {m.ui_settings_about_version()}: {import.meta.env.VITE_APP_COMMIT}
+        </Typography>
+      </div>
+    }
+  >
     <CardHeader title={m.ui_settings_about_title()} subtitle={m.ui_settings_about_desc()} />
     <List>
       <ListItem

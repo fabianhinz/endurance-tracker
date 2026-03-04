@@ -17,6 +17,8 @@ import { chartTheme } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { ZoneBucket } from '@/engine/zoneDistribution.ts';
 import { m } from '@/paraglide/messages.js';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
+import type { ZoneColorMode } from '@/features/map/zoneColoredPath.ts';
 
 interface TabConfig {
   key: string;
@@ -98,6 +100,9 @@ const translateBuckets = (buckets: ZoneBucket[]): ZoneBucket[] =>
   });
 
 export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
+  const zoneColorMode = useMapFocusStore((s) => s.zoneColorMode);
+  const setZoneColorMode = useMapFocusStore((s) => s.setZoneColorMode);
+
   const tabs = useMemo(() => {
     const all: TabConfig[] = [
       { key: 'hr', label: m.ui_zones_tab_hr(), icon: Heart, data: translateBuckets(props.hrZones) },
@@ -124,27 +129,30 @@ export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
 
   const isCompact = props.mode === 'compact';
 
-  const tabsTriggers = (
-    <TabsPrimitive.List className="inline-flex gap-1 mb-1">
-      {tabs.map((tab) => {
-        const Icon = tab.icon;
-        return (
-          <TabsTrigger
-            key={tab.key}
-            value={tab.key}
-            className="flex-none gap-1 rounded-lg px-2 py-1 text-xs"
-          >
-            <Icon size={12} />
-            {tab.label}
-          </TabsTrigger>
-        );
-      })}
-    </TabsPrimitive.List>
-  );
+  const handleTabChange = (newTab: string) => {
+    setActiveTab(newTab);
+    if (zoneColorMode !== null) setZoneColorMode(newTab as ZoneColorMode);
+  };
 
   return (
-    <Tabs value={resolvedTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-      {tabs.length > 1 && tabsTriggers}
+    <Tabs value={resolvedTab} onValueChange={handleTabChange} className="h-full flex flex-col">
+      {tabs.length > 1 && (
+        <TabsPrimitive.List className="inline-flex gap-1 mb-1">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <TabsTrigger
+                key={tab.key}
+                value={tab.key}
+                className="flex-none gap-1 rounded-lg px-2 py-1 text-xs"
+              >
+                <Icon size={12} />
+                {tab.label}
+              </TabsTrigger>
+            );
+          })}
+        </TabsPrimitive.List>
+      )}
       <div className="flex-1">
         {tabs.map((tab) => (
           <TabsContent key={tab.key} value={tab.key} className="mt-0 h-full">

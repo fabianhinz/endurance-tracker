@@ -28,7 +28,7 @@ export interface ZoneBucket {
 
 // --- HR Zones (5-zone model based on % of HR reserve) ---
 
-const HR_ZONE_DEFS = [
+export const HR_ZONE_DEFS = [
   { zone: 'Z1', name: 'recovery', label: 'Recovery', minPct: 0.5, maxPct: 0.6, color: '#60a5fa' },
   { zone: 'Z2', name: 'aerobic', label: 'Aerobic', minPct: 0.6, maxPct: 0.7, color: '#34d399' },
   { zone: 'Z3', name: 'tempo', label: 'Tempo', minPct: 0.7, maxPct: 0.8, color: '#fbbf24' },
@@ -85,7 +85,7 @@ export const computeHrZoneDistribution = (
 
 // --- Power Zones (7-zone Coggan model based on % FTP) ---
 
-const POWER_ZONE_DEFS = [
+export const POWER_ZONE_DEFS = [
   {
     zone: 'Z1',
     name: 'active_recovery',

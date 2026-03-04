@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { SessionLap, Sport } from '@/engine/types.ts';
 import type { LapMarker } from '@/engine/lapMarkers.ts';
+import type { ZoneColorMode } from '@/features/map/zoneColoredPath.ts';
 
 interface MapFocusState {
   openedSessionId: string | null;
@@ -23,6 +24,8 @@ interface MapFocusState {
   hoveredLapIndex: number | null;
   setHoveredLapIndex: (index: number) => void;
   clearHoveredLapIndex: () => void;
+  zoneColorMode: ZoneColorMode | null;
+  setZoneColorMode: (mode: ZoneColorMode | null) => void;
 }
 
 export const useMapFocusStore = create<MapFocusState>()((set) => ({
@@ -37,6 +40,7 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
             hoveredPoint: null,
             lapMarkers: [],
             hoveredLapIndex: null,
+            zoneColorMode: null,
           }
         : { openedSessionId: id },
     ),
@@ -58,4 +62,6 @@ export const useMapFocusStore = create<MapFocusState>()((set) => ({
   hoveredLapIndex: null,
   setHoveredLapIndex: (index) => set({ hoveredLapIndex: index }),
   clearHoveredLapIndex: () => set({ hoveredLapIndex: null }),
+  zoneColorMode: null,
+  setZoneColorMode: (mode) => set({ zoneColorMode: mode }),
 }));

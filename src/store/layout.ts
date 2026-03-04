@@ -9,6 +9,8 @@ interface LayoutState {
   toggleCompactLayout: () => void;
   onboardingComplete: boolean;
   completeOnboarding: () => void;
+  mapPitch: 0 | 30 | 60;
+  setMapPitch: (pitch: 0 | 30 | 60) => void;
 }
 
 export const useLayoutStore = create<LayoutState>()(
@@ -20,6 +22,8 @@ export const useLayoutStore = create<LayoutState>()(
       toggleCompactLayout: () => set((state) => ({ compactLayout: !state.compactLayout })),
       onboardingComplete: false,
       completeOnboarding: () => set({ onboardingComplete: true, compactLayout: true }),
+      mapPitch: 0,
+      setMapPitch: (pitch) => set({ mapPitch: pitch }),
     }),
     {
       name: 'store-layout',

@@ -34,7 +34,7 @@ export const MetricLabel = (props: MetricLabelProps) => {
         {size === 'default' ? (
           <>
             <Typography variant="subtitle2">{explanation.friendlyName}</Typography>
-            <Typography variant="caption" color="textQuaternary">
+            <Typography variant="caption" color="textTertiary">
               ({explanation.shortLabel})
             </Typography>
           </>
@@ -63,25 +63,30 @@ export const MetricLabel = (props: MetricLabelProps) => {
             </Button>
           </PopoverTrigger>
 
-          <PopoverContent side="top">
+          <PopoverContent side="top" className="space-y-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-text-primary">
+              <Typography variant="subtitle1" className="font-semibold">
                 {explanation.friendlyName}
-              </span>
-              <span className="text-xs rounded bg-white/10 px-1.5 py-0.5 text-text-tertiary">
+              </Typography>
+              <Typography variant="caption" className="rounded bg-white/10 px-1.5 py-0.5">
                 {explanation.shortLabel}
-              </span>
+              </Typography>
             </div>
 
-            <p className="mt-2 text-sm text-text-secondary">{explanation.oneLiner}</p>
+            <Typography>{explanation.oneLiner}</Typography>
 
-            <p className="mt-2 text-sm italic text-text-tertiary">
+            <Typography className="italic">
               {m.ui_think_of_it_as()} {explanation.analogy}
-            </p>
+            </Typography>
 
-            <p className="mt-2 border-t border-white/10 pt-2 text-xs text-text-quaternary">
+            <Typography
+              variant="caption"
+              as="p"
+              color="textTertiary"
+              className="border-t border-white/10 pt-2"
+            >
               {explanation.range}
-            </p>
+            </Typography>
           </PopoverContent>
         </PopoverRoot>
       )}

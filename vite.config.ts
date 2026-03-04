@@ -1,5 +1,15 @@
+import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { defineConfig } from 'vite';
+
+let commitSha = 'dev';
+try {
+  commitSha = execSync('git rev-parse --short HEAD').toString().trim();
+} catch {
+  /* empty */
+}
+
+process.env.VITE_APP_COMMIT = commitSha;
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
