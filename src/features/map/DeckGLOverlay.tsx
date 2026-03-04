@@ -51,6 +51,10 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   );
 
   const trackLayers = useMemo(() => {
+    if (openedSessionId) {
+      return null;
+    }
+
     const data: TrackPickData[] = props.tracks.map((t) => ({
       sessionId: t.sessionId,
       track: t,
@@ -94,18 +98,17 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
         ...eventHandlers,
       }),
     ];
-  }, [props.tracks, eventHandlers, highlightedSessionId, hoveredSessionId]);
+  }, [openedSessionId, props.tracks, highlightedSessionId, hoveredSessionId, eventHandlers]);
 
   const hiresPaths = useHiresPaths(hoveredSessionId, openedSessionId, sessions);
   const zoneColoredSegments = useZoneColoredPath();
 
   const hiresLayer = useMemo(() => {
-    if (hiresPaths.size === 0 || !openedSessionId) {
+    if (zoneColorMode !== null || hiresPaths.size === 0 || !openedSessionId) {
       return;
     }
 
     const path = hiresPaths.get(openedSessionId);
-
     const sport = sessions.find((session) => session.id === openedSessionId)?.sport;
     if (!sport || !path) {
       return;
@@ -137,10 +140,13 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       parameters: ADDITIVE_BLEND,
       ...eventHandlers,
     });
-  }, [hiresPaths, openedSessionId, sessions, eventHandlers]);
+  }, [hiresPaths, openedSessionId, sessions, eventHandlers, zoneColorMode]);
 
   const pickCircleLayer = useMemo(() => {
-    if (!pickCircle) return null;
+    if (!pickCircle) {
+      return null;
+    }
+
     return new ScatterplotLayer<{ center: [number, number] }>({
       id: 'pick-circle',
       data: [{ center: pickCircle }],
@@ -158,7 +164,10 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   }, [pickCircle]);
 
   const hoveredPointLayer = useMemo(() => {
-    if (!hoveredPoint) return null;
+    if (!hoveredPoint) {
+      return null;
+    }
+
     return new ScatterplotLayer<{ position: [number, number] }>({
       id: 'hovered-point',
       data: [{ position: hoveredPoint }],
@@ -176,9 +185,13 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   }, [hoveredPoint]);
 
   const lapMarkerLayers = useMemo(() => {
-    if (lapMarkers.length === 0 || !focusedSport) return [];
+    if (lapMarkers.length === 0 || !focusedSport) {
+      return null;
+    }
+
     const fill = sportMarkerColor[focusedSport];
     const [r, g, b] = sportTrackColor[focusedSport];
+
     return lapMarkers.flatMap((marker) => {
       const lineAlpha =
         hoveredLapIndex != null ? (marker.lapIndex === hoveredLapIndex ? 255 : 0) : 0;
@@ -216,7 +229,10 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   }, [lapMarkers, focusedSport, hoveredLapIndex]);
 
   const zoneColoredLayer = useMemo(() => {
-    if (zoneColoredSegments.length === 0) return null;
+    if (zoneColoredSegments.length === 0) {
+      return null;
+    }
+
     return new PathLayer<ZoneSegment>({
       id: 'zone-colored-track',
       data: zoneColoredSegments,
@@ -233,31 +249,19 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     });
   }, [zoneColoredSegments, zoneColorMode]);
 
-  const layers = useMemo(
-    () => [
-      ...(openedSessionId ? [] : [trackLayers]),
-      ...(hiresLayer && !zoneColoredLayer ? [hiresLayer] : []),
-      ...(zoneColoredLayer ? [zoneColoredLayer] : []),
-      ...(pickCircleLayer ? [pickCircleLayer] : []),
-      ...(hoveredPointLayer ? [hoveredPointLayer] : []),
-      ...lapMarkerLayers,
-    ],
-    [
-      openedSessionId,
+  const overlay = useControl<MapboxOverlay>(
+    () => new MapboxOverlay({ interleaved: false, pickingRadius: PICK_RADIUS }),
+  );
+
+  overlay.setProps({
+    layers: [
       trackLayers,
-      zoneColoredLayer,
       hiresLayer,
+      zoneColoredLayer,
       pickCircleLayer,
       hoveredPointLayer,
       lapMarkerLayers,
     ],
-  );
-
-  const overlay = useControl<MapboxOverlay>(
-    () => new MapboxOverlay({ interleaved: false, pickingRadius: PICK_RADIUS }),
-  );
-  overlay.setProps({
-    layers,
     pickingRadius: PICK_RADIUS,
     _onMetrics: useDeckMetricsStore.getState().update,
   });
