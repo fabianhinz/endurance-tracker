@@ -1,11 +1,9 @@
 import { m } from '@/paraglide/messages.js';
 import { useMetrics } from '@/hooks/useMetrics.ts';
-import { ChartCard } from '@/components/ui/ChartCard.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { cn } from '@/lib/utils.ts';
 import { acwrColorMap, acwrFill, ACWR_ZONES } from '@/lib/statusColors.ts';
 import { getACWRColor, getInjuryRisk } from '@/engine/coaching.ts';
-import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { GaugeDial } from '@/components/ui/GaugeDial.tsx';
 
@@ -28,25 +26,7 @@ export const ACWRGauge = () => {
       <Typography variant="overline" as="p" className={acwrColorMap[color].text}>
         {m.ui_acwr_risk({ risk })}
       </Typography>
+      <MetricLabel metricId="acwr" size="sm" contextLabel="asd" />
     </div>
   );
 };
-
-export const ACWRIndicator = () => (
-  <ChartCard
-    titleSlot={
-      <div className="flex items-center gap-1">
-        <Typography variant="title" as="h3">
-          {METRIC_EXPLANATIONS.acwr.friendlyName}
-        </Typography>
-        <MetricLabel metricId="acwr" size="sm" />
-      </div>
-    }
-    title=""
-    subtitle={METRIC_EXPLANATIONS.acwr.oneLiner}
-    scrollable={false}
-    minHeight="min-h-28"
-  >
-    <ACWRGauge />
-  </ChartCard>
-);

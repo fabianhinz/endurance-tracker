@@ -445,5 +445,63 @@
   "exp_cadence_analogy": "Kadenz ist wie der Drehzahlmesser im Auto. Zu niedrig und du würgst den Motor; zu hoch und du überdrehst. Der Sweet Spot hängt von den Bedingungen und deinem Motor ab.",
   "exp_cadence_whyItMatters": "Für Läufer ist eine höhere Kadenz (170–180 spm) mit einem geringeren Verletzungsrisiko und besserer Laufökonomie verbunden. Für Radfahrer beeinflusst die Kadenz die Ermüdungsverteilung zwischen kardiovaskulärem und muskulärem System.",
   "exp_cadence_range": "Laufen: 160–180+ spm (Elite oft 180+). Radfahren: 80–100 rpm (variiert nach Gelände und Anstrengung). Niedrigere Kadenz = mehr muskuläre Belastung, höhere Kadenz = mehr kardiovaskuläre Belastung.",
-  "exp_cadence_limitations": "Handgelenkbasierte Kadenzerkennung kann ungenau sein, besonders bei niedrigen Geschwindigkeiten. Die optimale Kadenz ist individuell — eine bestimmte Kadenz zu erzwingen, die nicht zur eigenen Biomechanik passt, kann das Verletzungsrisiko erhöhen."
+  "exp_cadence_limitations": "Handgelenkbasierte Kadenzerkennung kann ungenau sein, besonders bei niedrigen Geschwindigkeiten. Die optimale Kadenz ist individuell — eine bestimmte Kadenz zu erzwingen, die nicht zur eigenen Biomechanik passt, kann das Verletzungsrisiko erhöhen.",
+
+  "ui_btn_close": "Schließen",
+
+  "ui_reimport_dialog_title": "Alle Einheiten neu importieren",
+  "ui_reimport_dialog_desc": "Alle gespeicherten FIT-Dateien werden mit deinen aktuellen Schwellenwerten neu eingelesen. TSS, Zonen, Runden und persönliche Bestleistungen werden neu berechnet. Bestehende Einheitendaten werden überschrieben.",
+  "ui_reimport_dialog_confirm": "Alle neu importieren",
+  "ui_reimport_dialog_loading": "Importiere...",
+
+  "ui_metrics_chart_title": "Leistungsmetriken",
+  "ui_metrics_chart_subtitle": "Langfristige Fitness-, Erschöpfungs- und Bereitschaftstrends",
+
+  "ui_laps_hr_chart_title": "Herzfrequenz pro Runde",
+  "ui_laps_power_chart_title": "Leistung pro Runde",
+  "ui_laps_pace_chart_title": "Tempo pro Runde",
+  "ui_laps_speed_chart_title": "Geschwindigkeit pro Runde",
+
+  "ui_laps_table_title": "Rundendetails",
+  "ui_laps_col_distance": "Distanz",
+  "ui_laps_col_time": "Zeit",
+  "ui_laps_col_pace": "Tempo",
+  "ui_laps_col_speed": "Geschwindigkeit",
+  "ui_laps_col_avg_hr": "Ø HF",
+  "ui_laps_col_power": "Leistung",
+  "ui_laps_col_cadence": "Kadenz",
+  "ui_laps_col_elev": "Höhe",
+
+  "ui_splits_title": "Teilstreckendistanz",
+  "ui_splits_desc": "Benutzerdefinierte Teilstrecken unterteilen die Route in gleichmäßige Segmente. Gerät verwendet die vom Sportuhr aufgezeichneten Runden.",
+  "ui_splits_device_label": "Gerät",
+  "ui_splits_device_subtitle": "Geräteaufgezeichnete Runden werden verwendet",
+
+  "ui_pb_title": "Persönliche Bestleistungen",
+  "ui_pb_subtitle": "In dieser Einheit erzielte neue Rekorde",
+  "ui_records_title": "Rekorde",
+
+  "ui_map_popup_sessions_subtitle": "In der Nähe dieses Ortes aufgezeichnete Einheiten",
+
+  "ui_zones_tab_hr": "HF",
+  "ui_zones_tab_power": "Leistung",
+  "ui_zones_tab_pace": "Tempo",
+
+  "ui_chart_series_cadence": "Kadenz (rpm)",
+  "ui_chart_series_hr": "HF (bpm)",
+  "ui_chart_series_pace": "Tempo (min/km)",
+  "ui_chart_series_elevation": "Höhe (m)",
+  "ui_chart_series_power": "Leistung (W)",
+  "ui_chart_series_speed": "Geschwindigkeit (km/h)",
+  "ui_chart_series_grade": "Steigung (%)",
+  "ui_chart_series_gap": "GAP",
+  "ui_chart_series_avg_hr": "Ø HF",
+  "ui_chart_series_avg_power": "Ø Leistung",
+  "ui_chart_series_fitness": "Fitness (CTL)",
+  "ui_chart_series_fatigue": "Erschöpfung (ATL)",
+  "ui_chart_series_form": "Form (TSB)",
+  "ui_chart_series_tss": "TSS",
+
+  "ui_stat_drift": "{percent}% Drift",
+  "ui_stat_avg_power_short": "Ø {value}W"
 }

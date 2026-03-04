@@ -12,6 +12,7 @@ import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { PowerPoint } from '@/lib/chartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface PowerChartProps {
   data: PowerPoint[];
@@ -83,7 +84,7 @@ export const PowerChart = (props: PowerChartProps) => {
           stroke={tokens.chartPower}
           strokeWidth={1.5}
           dot={false}
-          name="Power (W)"
+          name={m.ui_chart_series_power()}
         />
         {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea

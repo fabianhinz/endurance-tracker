@@ -13,6 +13,7 @@ import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { GradePoint } from '@/lib/chartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface GradeChartProps {
   data: GradePoint[];
@@ -92,7 +93,7 @@ export const GradeChart = (props: GradeChartProps) => {
           stroke={tokens.chartGrade}
           strokeWidth={1.5}
           dot={false}
-          name="Grade (%)"
+          name={m.ui_chart_series_grade()}
         />
         {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea

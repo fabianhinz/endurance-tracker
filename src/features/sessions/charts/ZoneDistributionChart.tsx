@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsTrigger } from '@/components/ui/Tabs.tsx';
 import { chartTheme } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { ZoneBucket } from '@/engine/zoneDistribution.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface TabConfig {
   key: string;
@@ -78,9 +79,9 @@ const ZoneBarChart = (props: { data: ZoneBucket[]; compact: boolean }) => (
 export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   const tabs = useMemo(() => {
     const all: TabConfig[] = [
-      { key: 'hr', label: 'HR', icon: Heart, data: props.hrZones },
-      { key: 'power', label: 'Power', icon: Zap, data: props.powerZones },
-      { key: 'pace', label: 'Pace', icon: Timer, data: props.paceZones },
+      { key: 'hr', label: m.ui_zones_tab_hr(), icon: Heart, data: props.hrZones },
+      { key: 'power', label: m.ui_zones_tab_power(), icon: Zap, data: props.powerZones },
+      { key: 'pace', label: m.ui_zones_tab_pace(), icon: Timer, data: props.paceZones },
     ];
     return all.filter((t) => t.data.length > 0);
   }, [props.hrZones, props.powerZones, props.paceZones]);

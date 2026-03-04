@@ -445,5 +445,63 @@
   "exp_cadence_analogy": "Cadence is like the RPM gauge in a car. Too low and you are lugging the engine; too high and you are over-revving. The sweet spot depends on the conditions and your engine.",
   "exp_cadence_whyItMatters": "For runners, higher cadence (170–180 spm) is associated with lower injury risk and better running economy. For cyclists, cadence affects fatigue distribution between cardiovascular and muscular systems.",
   "exp_cadence_range": "Running: 160–180+ spm (elite often 180+). Cycling: 80–100 rpm (varies by terrain and effort). Lower cadence = more muscular load, higher cadence = more cardiovascular load.",
-  "exp_cadence_limitations": "Wrist-based cadence detection can be inaccurate, especially at low speeds. Optimal cadence is individual — forcing a specific cadence that does not match your biomechanics can increase injury risk."
+  "exp_cadence_limitations": "Wrist-based cadence detection can be inaccurate, especially at low speeds. Optimal cadence is individual — forcing a specific cadence that does not match your biomechanics can increase injury risk.",
+
+  "ui_btn_close": "Close",
+
+  "ui_reimport_dialog_title": "Reimport All Sessions",
+  "ui_reimport_dialog_desc": "This will re-parse all stored FIT files using your current thresholds. TSS, zones, laps, and personal bests will be recalculated. Existing session data will be overwritten.",
+  "ui_reimport_dialog_confirm": "Reimport All",
+  "ui_reimport_dialog_loading": "Reimporting...",
+
+  "ui_metrics_chart_title": "Performance Metrics",
+  "ui_metrics_chart_subtitle": "Long-term fitness, fatigue, and readiness trends",
+
+  "ui_laps_hr_chart_title": "Heart Rate per Lap",
+  "ui_laps_power_chart_title": "Power per Lap",
+  "ui_laps_pace_chart_title": "Pace per Lap",
+  "ui_laps_speed_chart_title": "Speed per Lap",
+
+  "ui_laps_table_title": "Lap Details",
+  "ui_laps_col_distance": "Distance",
+  "ui_laps_col_time": "Time",
+  "ui_laps_col_pace": "Pace",
+  "ui_laps_col_speed": "Speed",
+  "ui_laps_col_avg_hr": "Avg HR",
+  "ui_laps_col_power": "Power",
+  "ui_laps_col_cadence": "Cadence",
+  "ui_laps_col_elev": "Elev",
+
+  "ui_splits_title": "Split Distance",
+  "ui_splits_desc": "Custom splits divide the route into equal-distance segments. Device uses the laps recorded by your watch or bike computer.",
+  "ui_splits_device_label": "Device",
+  "ui_splits_device_subtitle": "Using device-recorded laps",
+
+  "ui_pb_title": "Personal Bests",
+  "ui_pb_subtitle": "New records achieved in this session",
+  "ui_records_title": "Records",
+
+  "ui_map_popup_sessions_subtitle": "Sessions recorded near this location",
+
+  "ui_zones_tab_hr": "HR",
+  "ui_zones_tab_power": "Power",
+  "ui_zones_tab_pace": "Pace",
+
+  "ui_chart_series_cadence": "Cadence (rpm)",
+  "ui_chart_series_hr": "HR (bpm)",
+  "ui_chart_series_pace": "Pace (min/km)",
+  "ui_chart_series_elevation": "Elevation (m)",
+  "ui_chart_series_power": "Power (W)",
+  "ui_chart_series_speed": "Speed (km/h)",
+  "ui_chart_series_grade": "Grade (%)",
+  "ui_chart_series_gap": "GAP",
+  "ui_chart_series_avg_hr": "Avg HR",
+  "ui_chart_series_avg_power": "Avg Power",
+  "ui_chart_series_fitness": "Fitness (CTL)",
+  "ui_chart_series_fatigue": "Fatigue (ATL)",
+  "ui_chart_series_form": "Form (TSB)",
+  "ui_chart_series_tss": "TSS",
+
+  "ui_stat_drift": "{percent}% drift",
+  "ui_stat_avg_power_short": "avg {value}W"
 }

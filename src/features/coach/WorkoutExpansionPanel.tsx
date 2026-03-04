@@ -7,6 +7,7 @@ import { STEP_LABELS } from './workoutDisplay.ts';
 import type { RunningZone } from '@/engine/types.ts';
 import type { PrescribedWorkout, WorkoutStep } from '@/types/index.ts';
 import { X } from 'lucide-react';
+import { m } from '@/paraglide/messages.js';
 
 export const WorkoutExpansionPanel = (props: {
   workout: PrescribedWorkout;
@@ -24,7 +25,7 @@ export const WorkoutExpansionPanel = (props: {
             {props.workout.dayLabel} — {props.workout.date}
           </Typography>
         </div>
-        <Button variant="ghost" size="icon" aria-label="Close" onClick={props.onClose}>
+        <Button variant="ghost" size="icon" aria-label={m.ui_btn_close()} onClick={props.onClose}>
           <X size={16} />
         </Button>
       </div>

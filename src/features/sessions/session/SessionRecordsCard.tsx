@@ -4,6 +4,7 @@ import { StatItem } from '@/components/ui/StatItem.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { pbLabel, formatPBValue, formatDate } from '@/lib/utils.ts';
 import type { PersonalBest } from '@/engine/types.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface SessionRecordsCardProps {
   sessionPBs: PersonalBest[];
@@ -12,7 +13,7 @@ interface SessionRecordsCardProps {
 export const SessionRecordsCard = (props: SessionRecordsCardProps) => {
   return (
     <Card>
-      <CardGrid collapsedRows={1} title="Records">
+      <CardGrid collapsedRows={1} title={m.ui_records_title()}>
         {props.sessionPBs.map((pb, idx) => (
           <StatItem
             key={idx}

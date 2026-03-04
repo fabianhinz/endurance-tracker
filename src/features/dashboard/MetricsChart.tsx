@@ -19,6 +19,7 @@ import { tokens } from '@/lib/tokens.ts';
 import { rangeMap } from '@/lib/timeRange.ts';
 import type { TimeRange } from '@/lib/timeRange.ts';
 import { useDashboardChartZoom } from './hooks/useDashboardChartZoom.ts';
+import { m } from '@/paraglide/messages.js';
 
 export const MetricsChart = () => {
   const metrics = useFilteredMetrics();
@@ -44,8 +45,8 @@ export const MetricsChart = () => {
 
   return (
     <ChartPreviewCard
-      title="Performance Metrics"
-      subtitle="Long-term fitness, fatigue, and readiness trends"
+      title={m.ui_metrics_chart_title()}
+      subtitle={m.ui_metrics_chart_subtitle()}
       compactHeight="h-64"
       footer={
         <div className="flex items-center justify-center gap-6">
@@ -120,7 +121,7 @@ export const MetricsChart = () => {
                 stroke={tokens.chartFitness}
                 strokeWidth={2}
                 dot={false}
-                name="Fitness (CTL)"
+                name={m.ui_chart_series_fitness()}
               />
               <Line
                 type="monotone"
@@ -128,7 +129,7 @@ export const MetricsChart = () => {
                 stroke={tokens.chartFatigue}
                 strokeWidth={2}
                 dot={false}
-                name="Fatigue (ATL)"
+                name={m.ui_chart_series_fatigue()}
               />
               <Line
                 type="monotone"
@@ -137,7 +138,7 @@ export const MetricsChart = () => {
                 strokeWidth={1.5}
                 strokeDasharray="4 4"
                 dot={false}
-                name="Form (TSB)"
+                name={m.ui_chart_series_form()}
               />
               {zoom.refAreaLeft && zoom.refAreaRight && (
                 <ReferenceArea

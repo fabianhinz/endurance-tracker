@@ -11,6 +11,7 @@ import {
 import { avgDomain, chartTheme, formatTick } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { LapPowerPoint } from '@/lib/lapChartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface LapPowerChartProps {
   data: LapPowerPoint[];
@@ -64,8 +65,8 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
             entry: { payload?: LapPowerPoint },
           ) => {
             const p = entry.payload;
-            if (!p) return [`-- W`, 'Avg Power'];
-            return [`${p.avgPower} W (${p.minPower}–${p.maxPower})`, 'Avg Power'];
+            if (!p) return [`-- W`, m.ui_chart_series_avg_power()];
+            return [`${p.avgPower} W (${p.minPower}–${p.maxPower})`, m.ui_chart_series_avg_power()];
           }}
         />
         <Area
@@ -79,7 +80,7 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
         />
         <Line
           dataKey="avgPower"
-          name="Avg Power"
+          name={m.ui_chart_series_avg_power()}
           type="monotone"
           stroke={tokens.chartPower}
           strokeWidth={2}

@@ -12,6 +12,7 @@ import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { CadencePoint } from '@/lib/chartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface CadenceChartProps {
   data: CadencePoint[];
@@ -83,7 +84,7 @@ export const CadenceChart = (props: CadenceChartProps) => {
           stroke={tokens.chartCadence}
           strokeWidth={1.5}
           dot={false}
-          name="Cadence (rpm)"
+          name={m.ui_chart_series_cadence()}
         />
         {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea

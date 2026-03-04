@@ -115,7 +115,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       metricId: 'normalizedPower',
       subDetail: (
         <Typography variant="caption" as="p">
-          avg {props.session.avgPower}W
+          {m.ui_stat_avg_power_short({ value: props.session.avgPower })}
         </Typography>
       ),
     });
@@ -183,7 +183,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       label: m.ui_stat_pacing_trend(),
       value:
         overload.paceDriftPercent !== undefined
-          ? `${overload.paceDriftPercent > 0 ? '+' : ''}${overload.paceDriftPercent}% drift`
+          ? m.ui_stat_drift({ percent: `${overload.paceDriftPercent > 0 ? '+' : ''}${overload.paceDriftPercent}` })
           : trend.label(),
       metricId: 'pacingTrend',
       subDetail: (

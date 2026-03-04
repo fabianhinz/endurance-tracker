@@ -11,6 +11,7 @@ import {
 import { avgDomain, chartTheme, formatTick } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { LapHrPoint } from '@/lib/lapChartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface LapHrChartProps {
   data: LapHrPoint[];
@@ -64,8 +65,8 @@ export const LapHrChart = (props: LapHrChartProps) => {
             entry: { payload?: LapHrPoint },
           ) => {
             const p = entry.payload;
-            if (!p) return [`-- bpm`, 'Avg HR'];
-            return [`${p.avgHr} bpm (${p.minHr}–${p.maxHr})`, 'Avg HR'];
+            if (!p) return [`-- bpm`, m.ui_chart_series_avg_hr()];
+            return [`${p.avgHr} bpm (${p.minHr}–${p.maxHr})`, m.ui_chart_series_avg_hr()];
           }}
         />
         <Area
@@ -79,7 +80,7 @@ export const LapHrChart = (props: LapHrChartProps) => {
         />
         <Line
           dataKey="avgHr"
-          name="Avg HR"
+          name={m.ui_chart_series_avg_hr()}
           type="monotone"
           stroke={tokens.chartHr}
           strokeWidth={2}

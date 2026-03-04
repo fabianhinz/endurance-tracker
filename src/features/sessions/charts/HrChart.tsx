@@ -12,6 +12,7 @@ import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { HrPoint } from '@/lib/chartData.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface HrChartProps {
   data: HrPoint[];
@@ -83,7 +84,7 @@ export const HrChart = (props: HrChartProps) => {
           stroke={tokens.chartHr}
           strokeWidth={1.5}
           dot={false}
-          name="HR (bpm)"
+          name={m.ui_chart_series_hr()}
         />
         {zoom.refAreaLeft && zoom.refAreaRight && (
           <ReferenceArea

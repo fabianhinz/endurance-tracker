@@ -1,11 +1,9 @@
 import { m } from '@/paraglide/messages.js';
 import { useMetrics } from '@/hooks/useMetrics.ts';
-import { ChartCard } from '@/components/ui/ChartCard.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { cn } from '@/lib/utils.ts';
 import { tokens } from '@/lib/tokens.ts';
 import { statusTextClass, statusFill } from '@/lib/statusColors.ts';
-import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { GaugeDial } from '@/components/ui/GaugeDial.tsx';
 
@@ -48,25 +46,7 @@ export const ReadinessGauge = () => {
             ? m.ui_readiness_no_go()
             : metrics.coaching.status}
       </Typography>
+      <MetricLabel metricId="tsb" size="sm" />
     </div>
   );
 };
-
-export const ReadinessDial = () => (
-  <ChartCard
-    titleSlot={
-      <div className="flex items-center gap-1">
-        <Typography variant="title" as="h3">
-          {METRIC_EXPLANATIONS.tsb.friendlyName}
-        </Typography>
-        <MetricLabel metricId="tsb" size="sm" />
-      </div>
-    }
-    title=""
-    subtitle={METRIC_EXPLANATIONS.tsb.oneLiner}
-    scrollable={false}
-    minHeight="min-h-28"
-  >
-    <ReadinessGauge />
-  </ChartCard>
-);

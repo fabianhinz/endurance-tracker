@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/Slider.tsx';
 import { Switch } from '@/components/ui/Switch.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import type { Sport } from '@/engine/types.ts';
+import { m } from '@/paraglide/messages.js';
 
 const formatDistanceKm = (metres: number): string => {
   const km = metres / 1000;
@@ -36,22 +37,21 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
     <Card
       footer={
         <Typography variant="caption" color="textSecondary" as="p">
-          Custom splits divide the route into equal-distance segments. Device uses the laps recorded
-          by your watch or bike computer.
+          {m.ui_splits_desc()}
         </Typography>
       }
     >
       <CardHeader
-        title="Split Distance"
+        title={m.ui_splits_title()}
         subtitle={
           props.isDevice
-            ? 'Using device-recorded laps'
+            ? m.ui_splits_device_subtitle()
             : `${formatDistanceKm(Math.round(localSliderKm * 1000))} splits`
         }
         actions={
           <div className="flex items-center gap-2">
             <Typography variant="caption" color="textSecondary">
-              Device
+              {m.ui_splits_device_label()}
             </Typography>
             <Switch checked={props.isDevice} onCheckedChange={props.onDeviceToggle} />
           </div>
