@@ -11,7 +11,8 @@ interface WeeklyPlanTimelineProps {
 
 export const WeeklyPlanTimeline = (props: WeeklyPlanTimelineProps) => {
   const todayString = new Date().toISOString().slice(0, 10);
-  const defaultId = props.plan.workouts.find((w) => w.date === todayString && w.type !== 'rest')?.id ?? null;
+  const defaultId =
+    props.plan.workouts.find((w) => w.date === todayString && w.type !== 'rest')?.id ?? null;
   const [expandedId, setExpandedId] = useState<string | null>(defaultId);
 
   const expandedWorkout = expandedId
