@@ -82,7 +82,6 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
             ? trackModifiers.width.highlighted
             : trackModifiers.width.default,
         widthMinPixels: 1,
-        widthMaxPixels: 5,
         jointRounded: true,
         capRounded: true,
         pickable: true,
@@ -91,7 +90,6 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
           getWidth: [highlightedSessionId],
         },
         transitions: {
-          getColor: 300,
           getWidth: 300,
         },
         parameters: ADDITIVE_BLEND,
@@ -130,7 +128,6 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       },
       getWidth: trackModifiers.width.highlighted,
       widthMinPixels: 1,
-      widthMaxPixels: 5,
       jointRounded: true,
       capRounded: true,
       pickable: true,
@@ -239,12 +236,10 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       getColor: (d) => d.color,
       getWidth: trackModifiers.width.highlighted,
       widthMinPixels: 1,
-      widthMaxPixels: 5,
       jointRounded: true,
       capRounded: true,
       pickable: false,
       updateTriggers: { getColor: [zoneColorMode] },
-      transitions: { getColor: 300 },
     });
   }, [zoneColoredSegments, zoneColorMode]);
 
