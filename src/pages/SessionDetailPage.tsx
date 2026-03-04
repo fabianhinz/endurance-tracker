@@ -122,7 +122,7 @@ export const SessionDetailPage = () => {
           {subSportLabel && (
             <Typography
               variant="caption"
-              color="textQuaternary"
+              color="textTertiary"
               className="flex items-center rounded-md bg-white/10 px-2 py-0.5"
             >
               {subSportLabel}

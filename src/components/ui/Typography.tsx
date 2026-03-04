@@ -20,7 +20,7 @@ const variants = {
 const colorMap = {
   textPrimary: 'text-text-primary',
   textSecondary: 'text-text-secondary',
-  textQuaternary: 'text-text-quaternary',
+  textTertiary: 'text-text-tertiary',
   success: 'text-status-success',
   error: 'text-status-danger',
   warning: 'text-status-warning',

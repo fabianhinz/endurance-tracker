@@ -83,60 +83,24 @@ export const buildZoneColoredPath = (
       : null;
 
   const segments: ZoneSegment[] = [];
-  let currentColor: [number, number, number, number] | null = null;
-  let currentPath: [number, number][] = [];
+  const validRecords = records.filter((r) => r.lat != null && r.lng != null);
 
-  const flush = (nextColor: [number, number, number, number] | null, point: [number, number]) => {
-    if (currentPath.length >= 2) {
-      segments.push({ path: currentPath, color: currentColor ?? FALLBACK_COLOR });
-    }
-    currentPath = currentPath.length > 0 ? [currentPath[currentPath.length - 1], point] : [point];
-    currentColor = nextColor;
-  };
+  for (let i = 0; i < validRecords.length - 1; i++) {
+    const r = validRecords[i];
+    const point: [number, number] = [r.lng!, r.lat!];
+    const next: [number, number] = [validRecords[i + 1].lng!, validRecords[i + 1].lat!];
 
-  for (const record of records) {
-    if (record.lat == null || record.lng == null) continue;
+    let color: [number, number, number, number] = FALLBACK_COLOR;
 
-    const point: [number, number] = [record.lng, record.lat];
-
-    let color: [number, number, number, number] | null = null;
-
-    if (mode === 'hr' && record.hr != null && record.hr > 0) {
-      color = getHrColor(record.hr, thresholds);
-    } else if (
-      mode === 'power' &&
-      record.power != null &&
-      record.power > 0 &&
-      thresholds.ftp &&
-      thresholds.ftp > 0
-    ) {
-      color = getPowerColor(record.power, thresholds.ftp);
-    } else if (mode === 'pace' && record.speed != null && record.speed > 0.5 && paceZones) {
-      color = getPaceColor(record.speed, paceZones);
+    if (mode === 'hr' && r.hr != null && r.hr > 0) {
+      color = getHrColor(r.hr, thresholds) ?? FALLBACK_COLOR;
+    } else if (mode === 'power' && r.power != null && r.power > 0 && thresholds.ftp) {
+      color = getPowerColor(r.power, thresholds.ftp) ?? FALLBACK_COLOR;
+    } else if (mode === 'pace' && r.speed != null && r.speed > 0.5 && paceZones) {
+      color = getPaceColor(r.speed, paceZones) ?? FALLBACK_COLOR;
     }
 
-    if (color === null) {
-      if (currentPath.length > 0) {
-        currentPath.push(point);
-      }
-      continue;
-    }
-
-    const colorChanged =
-      currentColor === null ||
-      color[0] !== currentColor[0] ||
-      color[1] !== currentColor[1] ||
-      color[2] !== currentColor[2];
-
-    if (colorChanged) {
-      flush(color, point);
-    } else {
-      currentPath.push(point);
-    }
-  }
-
-  if (currentPath.length >= 2) {
-    segments.push({ path: currentPath, color: currentColor ?? FALLBACK_COLOR });
+    segments.push({ path: [point, next], color });
   }
 
   return segments;

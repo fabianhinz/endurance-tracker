@@ -36,10 +36,10 @@ export const WorkoutCard = (props: WorkoutCardProps) => {
 
       {!isRest && (
         <div className="flex gap-2 mt-auto">
-          <Typography variant="caption" color="textQuaternary">
+          <Typography variant="caption" color="textTertiary">
             {formatDuration(props.workout.estimatedDurationSec)}
           </Typography>
-          <Typography variant="caption" color="textQuaternary">
+          <Typography variant="caption" color="textTertiary">
             {props.workout.estimatedTss}T
           </Typography>
         </div>

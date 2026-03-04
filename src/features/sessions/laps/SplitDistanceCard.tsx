@@ -67,10 +67,10 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
           disabled={props.isDevice}
         />
         <div className="flex justify-between">
-          <Typography variant="caption" color="textQuaternary">
+          <Typography variant="caption" color="textTertiary">
             1 km
           </Typography>
-          <Typography variant="caption" color="textQuaternary">
+          <Typography variant="caption" color="textTertiary">
             {props.maxKm} km
           </Typography>
         </div>

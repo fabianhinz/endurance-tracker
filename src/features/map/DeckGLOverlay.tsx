@@ -91,8 +91,8 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
           getWidth: [highlightedSessionId],
         },
         transitions: {
-          getColor: 150,
-          getWidth: 150,
+          getColor: 300,
+          getWidth: 300,
         },
         parameters: ADDITIVE_BLEND,
         ...eventHandlers,
@@ -246,6 +246,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       pickable: false,
       parameters: ADDITIVE_BLEND,
       updateTriggers: { getColor: [zoneColorMode] },
+      transitions: { getColor: 300 },
     });
   }, [zoneColoredSegments, zoneColorMode]);
 
