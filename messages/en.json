@@ -231,8 +231,8 @@
   "coach_workout_easy": "45min Easy",
   "coach_workout_long_run": "90min Long Run",
   "coach_workout_tempo": "45min Tempo",
-  "coach_workout_threshold": "5x5min @ Threshold",
-  "coach_workout_vo2max": "5x3min @ VO2max",
+  "coach_workout_threshold": "5x5min Threshold",
+  "coach_workout_vo2max": "5x3min VO2max",
 
   "coach_step_warmup": "Warm-up",
   "coach_step_work": "Run",
