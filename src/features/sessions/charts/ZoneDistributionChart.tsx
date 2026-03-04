@@ -101,8 +101,18 @@ export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   const tabs = useMemo(() => {
     const all: TabConfig[] = [
       { key: 'hr', label: m.ui_zones_tab_hr(), icon: Heart, data: translateBuckets(props.hrZones) },
-      { key: 'power', label: m.ui_zones_tab_power(), icon: Zap, data: translateBuckets(props.powerZones) },
-      { key: 'pace', label: m.ui_zones_tab_pace(), icon: Timer, data: translateBuckets(props.paceZones) },
+      {
+        key: 'power',
+        label: m.ui_zones_tab_power(),
+        icon: Zap,
+        data: translateBuckets(props.powerZones),
+      },
+      {
+        key: 'pace',
+        label: m.ui_zones_tab_pace(),
+        icon: Timer,
+        data: translateBuckets(props.paceZones),
+      },
     ];
     return all.filter((t) => t.data.length > 0);
   }, [props.hrZones, props.powerZones, props.paceZones]);

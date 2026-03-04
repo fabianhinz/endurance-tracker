@@ -20,7 +20,15 @@ export const useCoachPlan = (): {
   const cachedPlan = useCoachPlanStore((s) => s.cachedPlan);
   const cacheKey = useCoachPlanStore((s) => s.cacheKey);
 
-  const [today] = useState(() => toDateString(Date.now()));
+  const [today, setToday] = useState(() => toDateString(Date.now()));
+
+  useEffect(() => {
+    const now = new Date();
+    const msUntilMidnight =
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+    const id = setTimeout(() => setToday(toDateString(Date.now())), msUntilMidnight);
+    return () => clearTimeout(id);
+  }, [today]);
 
   const result = useMemo(() => {
     const thresholdPace = profile?.thresholds.thresholdPace;

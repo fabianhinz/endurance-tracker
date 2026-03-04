@@ -75,7 +75,7 @@ export const SpeedChart = (props: SpeedChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
-        separator={chartTheme.tooltip.separator}
+          separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
         />
         <Line

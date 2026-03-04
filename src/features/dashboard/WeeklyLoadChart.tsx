@@ -112,7 +112,7 @@ export const WeeklyLoadChart = () => {
                 contentStyle={chartTheme.tooltip.contentStyle}
                 labelStyle={chartTheme.tooltip.labelStyle}
                 isAnimationActive={chartTheme.tooltip.isAnimationActive}
-        separator={chartTheme.tooltip.separator}
+                separator={chartTheme.tooltip.separator}
               />
               <Area
                 type="step"

@@ -16,25 +16,29 @@ type ListItemProps = {
   primary: ReactNode;
   secondary?: ReactNode;
   children?: ReactNode;
+  icon?: ReactNode;
   onClick?: () => void;
 };
 
 export const ListItem = (props: ListItemProps) => {
   const content = (
     <>
-      <div className="min-w-0">
-        <Typography>{props.primary}</Typography>
-        {props.secondary && (
-          <Typography variant="caption" as="p">
-            {props.secondary}
-          </Typography>
-        )}
+      <div className="flex items-center gap-3 min-w-0">
+        {props.icon && <div className="shrink-0 text-primary">{props.icon}</div>}
+        <div className="min-w-0">
+          <Typography>{props.primary}</Typography>
+          {props.secondary && (
+            <Typography variant="caption" as="p">
+              {props.secondary}
+            </Typography>
+          )}
+        </div>
       </div>
       {props.children && <div className="ml-auto text-right shrink-0">{props.children}</div>}
     </>
   );
 
-  const baseClass = 'flex w-full items-center justify-between';
+  const baseClass = 'flex gap-2 w-full items-center justify-between';
 
   if (props.onClick) {
     return (

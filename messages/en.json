@@ -21,6 +21,13 @@
   "ui_settings_tab_general": "General",
   "ui_settings_tab_data": "Data Management",
 
+  "ui_settings_about_title": "About PaceVault",
+  "ui_settings_about_desc": "PaceVault is a local-first fitness activity analyzer. All your data stays on your device — nothing is sent to any server. If you encounter a bug or have a feature request, head over to GitHub.",
+  "ui_settings_about_github": "GitHub Repository",
+  "ui_settings_about_github_desc": "Found a bug or have a feature request? Open an issue",
+  "ui_settings_about_sources": "Scientific Sources",
+  "ui_settings_about_sources_desc": "Bibliography for all engine formulas and algorithms",
+
   "ui_thresholds_title": "Thresholds",
   "ui_thresholds_subtitle": "Your heart rate and power baselines",
   "ui_thresholds_gender": "Gender",

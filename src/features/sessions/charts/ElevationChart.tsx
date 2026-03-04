@@ -75,7 +75,7 @@ export const ElevationChart = (props: ElevationChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
-        separator={chartTheme.tooltip.separator}
+          separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
         />
         <Area

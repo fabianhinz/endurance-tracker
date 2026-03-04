@@ -58,7 +58,7 @@ export const LapPowerChart = (props: LapPowerChartProps) => {
           contentStyle={chartTheme.tooltip.contentStyle}
           labelStyle={chartTheme.tooltip.labelStyle}
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
-        separator={chartTheme.tooltip.separator}
+          separator={chartTheme.tooltip.separator}
           cursor={{ fill: `${tokens.accent}14` }}
           formatter={(
             _value: number | undefined,

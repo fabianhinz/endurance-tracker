@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { getAllFitFileSessionIds } from '@/lib/indexeddb.ts';
+import { RotateCcw, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { List, ListItem } from '@/components/ui/List.tsx';
@@ -76,11 +77,13 @@ export const DataManagementSection = () => {
           <ListItem
             primary={m.ui_data_reimport()}
             secondary={m.ui_data_reimport_desc()}
+            icon={<RotateCcw size={16} />}
             onClick={() => setReimportOpen(true)}
           />
           <ListItem
             primary={m.ui_data_delete_all()}
             secondary={m.ui_data_delete_all_desc()}
+            icon={<Trash2 size={16} />}
             onClick={() => setDeleteOpen(true)}
           />
         </List>
