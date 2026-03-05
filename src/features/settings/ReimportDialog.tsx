@@ -1,4 +1,3 @@
-import { LoaderCircle } from 'lucide-react';
 import {
   DialogRoot,
   DialogContent,
@@ -52,16 +51,9 @@ export const ReimportDialog = (props: ReimportDialogProps) => {
             type="button"
             variant="danger"
             onClick={handleReimport}
-            disabled={props.reimporting}
+            loading={props.reimporting}
           >
-            {props.reimporting ? (
-              <span className="flex items-center gap-2">
-                <LoaderCircle className="size-4 animate-spin" />
-                {m.ui_reimport_dialog_loading()}
-              </span>
-            ) : (
-              m.ui_reimport_dialog_confirm()
-            )}
+            {props.reimporting ? m.ui_reimport_dialog_loading() : m.ui_reimport_dialog_confirm()}
           </Button>
         </div>
       </DialogContent>

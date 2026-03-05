@@ -6,21 +6,25 @@ import { Simplify as simplify } from 'simplify-ts';
 import type { SessionRecord, GPSPoint, GPSBounds, SessionGPS } from './types.ts';
 
 /**
+ * Test whether a record contains geographically valid coordinates (non-null and within WGS-84 range).
+ */
+export const isValidCoordinate = (r: { lat?: number | null; lng?: number | null }): boolean =>
+  r.lat != null &&
+  r.lng != null &&
+  r.lat >= -90 &&
+  r.lat <= 90 &&
+  r.lng >= -180 &&
+  r.lng <= 180;
+
+/**
  * Extract valid GPS points from an array of session records, filtering out nulls and out-of-range values.
  * @param records - Raw time-series records from a parsed FIT file.
  * @returns Array of `{lat, lng}` objects containing only geographically valid coordinates.
  */
 const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
   records.reduce<GPSPoint[]>((acc, r) => {
-    if (
-      r.lat != null &&
-      r.lng != null &&
-      r.lat >= -90 &&
-      r.lat <= 90 &&
-      r.lng >= -180 &&
-      r.lng <= 180
-    ) {
-      acc.push({ lat: r.lat, lng: r.lng });
+    if (isValidCoordinate(r)) {
+      acc.push({ lat: r.lat!, lng: r.lng! });
     }
     return acc;
   }, []);
@@ -32,15 +36,8 @@ const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
  */
 export const extractPathFromRecords = (records: SessionRecord[]): [number, number][] =>
   records.reduce<[number, number][]>((acc, r) => {
-    if (
-      r.lat != null &&
-      r.lng != null &&
-      r.lat >= -90 &&
-      r.lat <= 90 &&
-      r.lng >= -180 &&
-      r.lng <= 180
-    ) {
-      acc.push([r.lng, r.lat]);
+    if (isValidCoordinate(r)) {
+      acc.push([r.lng!, r.lat!]);
     }
     return acc;
   }, []);

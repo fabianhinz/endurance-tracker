@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { m } from '@/paraglide/messages.js';
 import {
   DialogRoot,
@@ -25,6 +25,7 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const sessionCount = useSessionsStore((s) => s.sessions.length);
   const hasProfile = useUserStore((s) => s.profile !== null);
+  const navigate = useNavigate();
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -42,6 +43,7 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
     setIsDeleting(false);
     props.onOpenChange(false);
     toast(m.ui_delete_dialog_toast(), undefined, 'success');
+    navigate('/');
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -87,17 +89,10 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
             type="button"
             variant="danger"
             onClick={handleDelete}
-            disabled={isDeleting}
+            loading={isDeleting}
             aria-label={m.ui_delete_dialog_confirm()}
           >
-            {isDeleting ? (
-              <span className="flex items-center gap-2">
-                <LoaderCircle className="size-4 animate-spin" />
-                {m.ui_delete_dialog_deleting()}
-              </span>
-            ) : (
-              m.ui_delete_dialog_confirm()
-            )}
+            {isDeleting ? m.ui_delete_dialog_deleting() : m.ui_delete_dialog_confirm()}
           </Button>
         </div>
       </DialogContent>

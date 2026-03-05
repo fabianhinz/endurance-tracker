@@ -1,4 +1,5 @@
 import { Slot } from '@radix-ui/react-slot';
+import { LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -8,6 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   asChild?: boolean;
+  loading?: boolean;
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -27,7 +29,16 @@ const sizeClasses: Record<ButtonSize, string> = {
 };
 
 export const Button = (props: ButtonProps) => {
-  const { variant = 'primary', size = 'md', asChild = false, className, disabled, ...rest } = props;
+  const {
+    variant = 'primary',
+    size = 'md',
+    asChild = false,
+    loading = false,
+    className,
+    disabled,
+    children,
+    ...rest
+  } = props;
   const Comp = asChild ? Slot : 'button';
   return (
     <Comp
@@ -37,8 +48,11 @@ export const Button = (props: ButtonProps) => {
         sizeClasses[size],
         className,
       )}
-      disabled={disabled}
+      disabled={disabled || loading}
       {...rest}
-    />
+    >
+      {loading && <LoaderCircle className="size-4 animate-spin" />}
+      {children}
+    </Comp>
   );
 };
