@@ -251,6 +251,8 @@ export const ThresholdsSection = (
     saveThresholdPace(formatted);
   };
 
+  const variant = props.variant ?? 'standalone';
+
   const fields = (
     <>
       <div className="space-y-4">
@@ -337,8 +339,6 @@ export const ThresholdsSection = (
       />
     </>
   );
-
-  const variant = props.variant ?? 'standalone';
 
   if (variant === 'embedded') {
     return fields;
