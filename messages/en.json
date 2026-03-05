@@ -89,6 +89,8 @@
   "ui_count_sessions_other": "{count} sessions",
   "ui_onboarding_get_started": "Get Started",
   "ui_onboarding_upload_fit": "Upload .FIT Files",
+  "ui_onboarding_welcome_title": "Welcome to PaceVault",
+  "ui_onboarding_welcome_desc": "Track your training load, spot personal bests, and analyze every session — all right here in your browser.",
   "ui_onboarding_choose_path_title": "Choose Your Path",
   "ui_onboarding_choose_path_desc": "How would you like to get started?",
   "ui_onboarding_your_data_title": "Your Data",

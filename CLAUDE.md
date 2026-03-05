@@ -58,6 +58,7 @@ Specific guidelines for features, testing, and state management are located in t
 - `@src/features/CLAUDE.md`: Rules for feature-level hooks and store colocation.
 - `@src/store/CLAUDE.md`: Rules for Zustand store scope-naming and persist middleware.
 - `@tests/CLAUDE.md`: The testing strategy (Engine/Lib vs. Integration vs. UI).
+- `@messages/CLAUDE.md`: Translation tone, placeholder rules, and microcopy guidelines.
 
 ## 5. Dev Workflow & Actionable Verification
 

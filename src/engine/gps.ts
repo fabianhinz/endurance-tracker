@@ -9,12 +9,7 @@ import type { SessionRecord, GPSPoint, GPSBounds, SessionGPS } from './types.ts'
  * Test whether a record contains geographically valid coordinates (non-null and within WGS-84 range).
  */
 export const isValidCoordinate = (r: { lat?: number | null; lng?: number | null }): boolean =>
-  r.lat != null &&
-  r.lng != null &&
-  r.lat >= -90 &&
-  r.lat <= 90 &&
-  r.lng >= -180 &&
-  r.lng <= 180;
+  r.lat != null && r.lng != null && r.lat >= -90 && r.lat <= 90 && r.lng >= -180 && r.lng <= 180;
 
 /**
  * Extract valid GPS points from an array of session records, filtering out nulls and out-of-range values.

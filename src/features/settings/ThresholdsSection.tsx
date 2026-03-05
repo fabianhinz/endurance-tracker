@@ -19,9 +19,7 @@ import { Info } from 'lucide-react';
 
 const DEBOUNCE_MS = 500;
 
-export const ThresholdsSection = (
-  props: { variant?: 'standalone' | 'embedded' },
-) => {
+export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }) => {
   const profile = useUserStore((s) => s.profile);
   const setProfile = useUserStore((s) => s.setProfile);
   const updateThresholds = useUserStore((s) => s.updateThresholds);
