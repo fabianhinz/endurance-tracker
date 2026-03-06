@@ -91,8 +91,6 @@
   "ui_onboarding_upload_fit": ".FIT-Dateien hochladen",
   "ui_onboarding_welcome_title": "Willkommen bei PaceVault",
   "ui_onboarding_welcome_desc": "Verfolge deine Trainingsbelastung, entdecke persönliche Bestleistungen und analysiere jede Einheit — direkt in deinem Browser.",
-  "ui_onboarding_choose_path_title": "W\u00e4hle deinen Weg",
-  "ui_onboarding_choose_path_desc": "Wie m\u00f6chtest du loslegen?",
   "ui_onboarding_your_data_title": "Deine Daten",
   "ui_onboarding_your_data_desc": "Importiere .FIT-Dateien von deinem Garmin, Wahoo oder anderen Ger\u00e4t.",
   "ui_onboarding_testdata_title": "Testdaten",
@@ -100,6 +98,7 @@
   "ui_onboarding_testdata_detail": "Wir erstellen ~70 Lauf-, Rad- und Schwimmeinheiten \u2014 12 Wochen Training einer fiktiven Athletin. Sp\u00e4ter eigene Daten nutzen? Unter Einstellungen \u2192 Datenverwaltung die Testdaten l\u00f6schen und eigene .FIT-Dateien importieren.",
   "ui_onboarding_testdata_generate": "Generieren",
   "ui_onboarding_testdata_generating": "Wird generiert\u2026",
+  "ui_onboarding_testdata_failed": "Generierung fehlgeschlagen",
 
   "ui_session_not_found": "Einheit nicht gefunden.",
   "ui_session_tab_overview": "Übersicht",
