@@ -1,3 +1,4 @@
+import { isValidCoordinate } from '@/engine/gps.ts';
 import type { SessionRecord } from '@/engine/types.ts';
 import { HR_ZONE_DEFS, POWER_ZONE_DEFS } from '@/engine/zoneDistribution.ts';
 import { computeRunningZones, getZoneForPace } from '@/engine/zones.ts';
@@ -70,7 +71,7 @@ export const buildZoneColoredPath = (
       : null;
 
   const segments: ZoneSegment[] = [];
-  const validRecords = records.filter((r) => r.lat != null && r.lng != null);
+  const validRecords = records.filter(isValidCoordinate);
   if (validRecords.length < 2) return segments;
 
   const colorForRecord = (r: SessionRecord): [number, number, number, number] => {

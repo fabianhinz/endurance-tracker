@@ -7,6 +7,7 @@ import { bulkSaveSessionData, saveFitFile } from '@/lib/indexeddb.ts';
 import { detectNewPBs, mergePBs } from '@/engine/records.ts';
 import { mapWithConcurrency } from '@/lib/concurrency.ts';
 import { toast } from '@/components/ui/toastStore.ts';
+import { m } from '@/paraglide/messages.js';
 import { findDuplicates } from '@/engine/fingerprint.ts';
 import type { TrainingSession, SessionRecord, SessionLap } from '@/engine/types.ts';
 
@@ -49,14 +50,18 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
         if (file.name.toLowerCase().endsWith('.fit')) {
           fitFiles.push(file);
         } else {
-          toast('Invalid file', `${file.name} is not a .FIT file`, 'error');
+          toast(
+            m.toast_invalid_file_title(),
+            m.toast_invalid_file_desc({ fileName: file.name }),
+            'error',
+          );
           failed++;
         }
       }
 
       if (fitFiles.length === 0) {
         if (failed > 0) {
-          toast(`${failed} failed`, undefined, 'error');
+          toast(m.toast_files_failed_title({ count: failed }), undefined, 'error');
         }
         return;
       }
@@ -86,7 +91,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           parsed.push(result.value);
         } else {
           console.error('Parse error:', result.reason);
-          toast('Parse failed', 'Could not parse FIT file', 'error');
+          toast(m.toast_parse_failed_title(), m.toast_parse_failed_desc(), 'error');
           failed++;
         }
       }
@@ -171,16 +176,31 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           }
         } catch (err) {
           console.error('Save error:', err);
-          toast('Save failed', 'Could not save sessions to database', 'error');
+          toast(m.toast_save_failed_title(), m.toast_save_failed_desc(), 'error');
         }
       }
 
       const uploaded = unique.length;
       const parts: string[] = [];
-      if (uploaded > 0) parts.push(`${uploaded} session${uploaded !== 1 ? 's' : ''} uploaded`);
-      if (duplicated > 0) parts.push(`${duplicated} duplicate${duplicated !== 1 ? 's' : ''}`);
-      if (newPBCount > 0) parts.push(`${newPBCount} new PB${newPBCount !== 1 ? 's' : ''}`);
-      if (failed > 0) parts.push(`${failed} failed`);
+      if (uploaded > 0)
+        parts.push(
+          uploaded === 1
+            ? m.toast_upload_sessions({ count: uploaded })
+            : m.toast_upload_sessions_plural({ count: uploaded }),
+        );
+      if (duplicated > 0)
+        parts.push(
+          duplicated === 1
+            ? m.toast_upload_duplicates({ count: duplicated })
+            : m.toast_upload_duplicates_plural({ count: duplicated }),
+        );
+      if (newPBCount > 0)
+        parts.push(
+          newPBCount === 1
+            ? m.toast_upload_pbs({ count: newPBCount })
+            : m.toast_upload_pbs_plural({ count: newPBCount }),
+        );
+      if (failed > 0) parts.push(m.toast_upload_failed({ count: failed }));
       if (parts.length > 0) {
         finishProgress(
           parts.join(', '),

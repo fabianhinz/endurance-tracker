@@ -16,7 +16,7 @@ import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
 import { cn } from '@/lib/utils.ts';
 import { cardClass } from '@/components/ui/Card.tsx';
 import { useSlideIndicator } from '@/components/ui/SlideIndicator.tsx';
-import { useLayoutStore } from '@/store/layout.ts';
+import { useDockExpanded } from '@/lib/hooks/useDockExpanded.ts';
 import { useFiltersStore } from '@/store/filters.ts';
 import { Button } from '@/components/ui/Button.tsx';
 import { DockRevealPanel } from './DockRevealPanel.tsx';
@@ -63,7 +63,7 @@ export const Dock = () => {
   const dockBarRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLElement | null)[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const dockExpanded = useLayoutStore((s) => s.dockExpanded);
+  const dockExpanded = useDockExpanded();
   const indicatorElement = useSlideIndicator(dockBarRef, tabRefs, activeIndex, dockExpanded);
   const upload = useFileUpload(fileInputRef);
 

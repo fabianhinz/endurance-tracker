@@ -6,6 +6,9 @@ test.describe('Onboarding flow', () => {
   test('set thresholds → upload FIT → complete onboarding', async ({ page }) => {
     await page.goto('/');
 
+    // Select the "Your Data" path to reveal thresholds
+    await page.getByText(/your data/i).click();
+
     // Onboarding page should be shown (thresholds card visible)
     const thresholdsCard = page.locator('#thresh-restHr');
     await expect(thresholdsCard).toBeVisible();
@@ -25,14 +28,7 @@ test.describe('Onboarding flow', () => {
     // Upload a FIT file via the hidden input
     await uploadFitFiles(page, [RUNNING_FIT]);
 
-    // After upload, the "Get started" button should appear (canFinish state)
-    const getStartedButton = page.getByRole('button', { name: /get started/i });
-    await expect(getStartedButton).toBeVisible({ timeout: 10_000 });
-
-    // Click "Get started" to complete onboarding
-    await getStartedButton.click();
-
-    // Verify: dock should now be visible (onboarding is complete)
+    // After upload, onboarding auto-completes — dock should now be visible
     await expect(page.locator('[data-layout="dock"]')).toBeVisible();
 
     // Verify: onboarding content should be gone
@@ -41,6 +37,9 @@ test.describe('Onboarding flow', () => {
 
   test('upload button is disabled until thresholds are set', async ({ page }) => {
     await page.goto('/');
+
+    // Select the "Your Data" path to reveal thresholds and upload
+    await page.getByText(/your data/i).click();
 
     // Upload button should be disabled before thresholds
     const uploadButton = page.getByRole('button', { name: /upload/i }).first();

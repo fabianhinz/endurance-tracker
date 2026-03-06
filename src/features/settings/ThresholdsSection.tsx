@@ -19,7 +19,7 @@ import { Info } from 'lucide-react';
 
 const DEBOUNCE_MS = 500;
 
-export const ThresholdsSection = () => {
+export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }) => {
   const profile = useUserStore((s) => s.profile);
   const setProfile = useUserStore((s) => s.setProfile);
   const updateThresholds = useUserStore((s) => s.updateThresholds);
@@ -249,10 +249,10 @@ export const ThresholdsSection = () => {
     saveThresholdPace(formatted);
   };
 
-  return (
-    <Card>
-      <CardHeader title={m.ui_thresholds_title()} subtitle={m.ui_thresholds_subtitle()} />
+  const variant = props.variant ?? 'standalone';
 
+  const fields = (
+    <>
       <div className="space-y-4">
         <div>
           <Label>{m.ui_thresholds_gender()}</Label>
@@ -335,6 +335,17 @@ export const ThresholdsSection = () => {
         onOpenChange={setEstimatorOpen}
         onSave={handleEstimatorSave}
       />
+    </>
+  );
+
+  if (variant === 'embedded') {
+    return fields;
+  }
+
+  return (
+    <Card>
+      <CardHeader title={m.ui_thresholds_title()} subtitle={m.ui_thresholds_subtitle()} />
+      {fields}
     </Card>
   );
 };

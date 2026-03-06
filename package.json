@@ -16,6 +16,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "generate-test-data": "tsx scripts/generateTestData.ts",
     "generate-pwa-assets": "pwa-assets-generator",
     "paraglide:compile": "npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/paraglide"
   },
@@ -72,6 +73,7 @@
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.1.18",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
     "vite": "^7.3.1",
