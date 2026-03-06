@@ -120,7 +120,11 @@ export const useReimport = () => {
 
     const parts: string[] = [];
     if (updates.length > 0) {
-      parts.push(updates.length === 1 ? m.toast_reimport_sessions({ count: updates.length }) : m.toast_reimport_sessions_plural({ count: updates.length }));
+      parts.push(
+        updates.length === 1
+          ? m.toast_reimport_sessions({ count: updates.length })
+          : m.toast_reimport_sessions_plural({ count: updates.length }),
+      );
     }
     if (failed > 0) {
       parts.push(m.toast_reimport_failed({ count: failed }));

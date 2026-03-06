@@ -50,7 +50,11 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
         if (file.name.toLowerCase().endsWith('.fit')) {
           fitFiles.push(file);
         } else {
-          toast(m.toast_invalid_file_title(), m.toast_invalid_file_desc({ fileName: file.name }), 'error');
+          toast(
+            m.toast_invalid_file_title(),
+            m.toast_invalid_file_desc({ fileName: file.name }),
+            'error',
+          );
           failed++;
         }
       }
@@ -178,9 +182,24 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
 
       const uploaded = unique.length;
       const parts: string[] = [];
-      if (uploaded > 0) parts.push(uploaded === 1 ? m.toast_upload_sessions({ count: uploaded }) : m.toast_upload_sessions_plural({ count: uploaded }));
-      if (duplicated > 0) parts.push(duplicated === 1 ? m.toast_upload_duplicates({ count: duplicated }) : m.toast_upload_duplicates_plural({ count: duplicated }));
-      if (newPBCount > 0) parts.push(newPBCount === 1 ? m.toast_upload_pbs({ count: newPBCount }) : m.toast_upload_pbs_plural({ count: newPBCount }));
+      if (uploaded > 0)
+        parts.push(
+          uploaded === 1
+            ? m.toast_upload_sessions({ count: uploaded })
+            : m.toast_upload_sessions_plural({ count: uploaded }),
+        );
+      if (duplicated > 0)
+        parts.push(
+          duplicated === 1
+            ? m.toast_upload_duplicates({ count: duplicated })
+            : m.toast_upload_duplicates_plural({ count: duplicated }),
+        );
+      if (newPBCount > 0)
+        parts.push(
+          newPBCount === 1
+            ? m.toast_upload_pbs({ count: newPBCount })
+            : m.toast_upload_pbs_plural({ count: newPBCount }),
+        );
       if (failed > 0) parts.push(m.toast_upload_failed({ count: failed }));
       if (parts.length > 0) {
         finishProgress(
