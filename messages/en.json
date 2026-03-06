@@ -87,7 +87,6 @@
 
   "ui_count_sessions_one": "1 session",
   "ui_count_sessions_other": "{count} sessions",
-  "ui_onboarding_get_started": "Get Started",
   "ui_onboarding_upload_fit": "Upload .FIT Files",
   "ui_onboarding_welcome_title": "Welcome to PaceVault",
   "ui_onboarding_welcome_desc": "Track your training load, spot personal bests, and analyze every session — all right here in your browser.",
@@ -553,5 +552,28 @@
 
   "ui_sport_running": "Running",
   "ui_sport_cycling": "Cycling",
-  "ui_sport_swimming": "Swimming"
+  "ui_sport_swimming": "Swimming",
+
+  "toast_invalid_file_title": "Invalid file",
+  "toast_invalid_file_desc": "{fileName} is not a .FIT file",
+  "toast_files_failed_title": "{count} failed",
+  "toast_parse_failed_title": "Parse failed",
+  "toast_parse_failed_desc": "Could not parse FIT file",
+  "toast_save_failed_title": "Save failed",
+  "toast_save_failed_desc": "Could not save sessions to database",
+  "toast_upload_sessions": "{count} session uploaded",
+  "toast_upload_sessions_plural": "{count} sessions uploaded",
+  "toast_upload_duplicates": "{count} duplicate",
+  "toast_upload_duplicates_plural": "{count} duplicates",
+  "toast_upload_pbs": "{count} new PB",
+  "toast_upload_pbs_plural": "{count} new PBs",
+  "toast_upload_failed": "{count} failed",
+  "toast_reimport_no_profile_title": "No profile",
+  "toast_reimport_no_profile_desc": "Set up your thresholds before reimporting",
+  "toast_reimport_no_files_title": "No FIT files",
+  "toast_reimport_no_files_desc": "No stored FIT files to reimport",
+  "toast_reimport_complete_title": "Reimport complete",
+  "toast_reimport_sessions": "{count} session reimported",
+  "toast_reimport_sessions_plural": "{count} sessions reimported",
+  "toast_reimport_failed": "{count} failed"
 }

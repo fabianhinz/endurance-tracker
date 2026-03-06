@@ -28,14 +28,7 @@ test.describe('Onboarding flow', () => {
     // Upload a FIT file via the hidden input
     await uploadFitFiles(page, [RUNNING_FIT]);
 
-    // After upload, the "Get started" button should appear (canFinish state)
-    const getStartedButton = page.getByRole('button', { name: /get started/i });
-    await expect(getStartedButton).toBeVisible({ timeout: 10_000 });
-
-    // Click "Get started" to complete onboarding
-    await getStartedButton.click();
-
-    // Verify: dock should now be visible (onboarding is complete)
+    // After upload, onboarding auto-completes — dock should now be visible
     await expect(page.locator('[data-layout="dock"]')).toBeVisible();
 
     // Verify: onboarding content should be gone

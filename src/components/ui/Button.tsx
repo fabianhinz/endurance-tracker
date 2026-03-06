@@ -1,4 +1,4 @@
-import { Slot } from '@radix-ui/react-slot';
+import { Slot, Slottable } from '@radix-ui/react-slot';
 import { LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 
@@ -52,7 +52,7 @@ export const Button = (props: ButtonProps) => {
       {...rest}
     >
       {loading && <LoaderCircle className="size-4 animate-spin" />}
-      {children}
+      {asChild ? <Slottable>{children}</Slottable> : children}
     </Comp>
   );
 };

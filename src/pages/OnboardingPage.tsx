@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Upload, ArrowRight, Database, FolderUp } from 'lucide-react';
+import { Upload, Database, FolderUp } from 'lucide-react';
 import { useUserStore } from '@/store/user.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useLayoutStore } from '@/store/layout.ts';
@@ -17,7 +17,6 @@ type OnboardingPath = 'your-data' | 'test-data' | null;
 
 export const OnboardingPage = () => {
   const profile = useUserStore((s) => s.profile);
-  const sessionCount = useSessionsStore((s) => s.sessions.length);
   const completeOnboarding = useLayoutStore((s) => s.completeOnboarding);
   const uploading = useUploadProgressStore((s) => s.uploading);
 
@@ -26,22 +25,14 @@ export const OnboardingPage = () => {
 
   const [path, setPath] = useState<OnboardingPath>(null);
 
-  const canFinish = profile !== null && sessionCount > 0;
-
   const handleGenerate = async () => {
     try {
       await generateDevData();
+      completeOnboarding();
     } catch {
       useUploadProgressStore.getState().finish(m.ui_onboarding_testdata_failed(), 'error');
     }
   };
-
-  const getStartedButton = (
-    <Button onClick={completeOnboarding}>
-      {m.ui_onboarding_get_started()}
-      <ArrowRight size={16} />
-    </Button>
-  );
 
   return (
     <ActionPromptCard
@@ -81,9 +72,7 @@ export const OnboardingPage = () => {
 
       {path !== null && (
         <div className="flex justify-end w-full">
-          {canFinish ? (
-            getStartedButton
-          ) : path === 'your-data' ? (
+          {path === 'your-data' ? (
             <>
               <Button disabled={!profile || uploading} onClick={upload.triggerUpload}>
                 <Upload size={16} />
@@ -95,7 +84,14 @@ export const OnboardingPage = () => {
                 accept=".fit"
                 multiple
                 className="hidden"
-                onChange={(e) => e.target.files && upload.handleFiles(e.target.files)}
+                onChange={async (e) => {
+                  if (e.target.files) {
+                    await upload.handleFiles(e.target.files);
+                    if (useSessionsStore.getState().sessions.length > 0) {
+                      completeOnboarding();
+                    }
+                  }
+                }}
                 disabled={uploading}
               />
             </>

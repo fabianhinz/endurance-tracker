@@ -12,6 +12,7 @@ import {
 import { parseFitFile } from '@/parsers/fit.ts';
 import { computePBsForSessions } from '@/engine/records.ts';
 import { toast } from '@/components/ui/toastStore.ts';
+import { m } from '@/paraglide/messages.js';
 import { useCoachPlanStore } from '@/store/coachPlan.ts';
 
 interface ReimportState {
@@ -30,7 +31,7 @@ export const useReimport = () => {
   const reimportAll = useCallback(async () => {
     const profile = useUserStore.getState().profile;
     if (!profile) {
-      toast('No profile', 'Set up your thresholds before reimporting', 'error');
+      toast(m.toast_reimport_no_profile_title(), m.toast_reimport_no_profile_desc(), 'error');
       return;
     }
 
@@ -38,7 +39,7 @@ export const useReimport = () => {
 
     const fitFiles = await getAllFitFiles();
     if (fitFiles.length === 0) {
-      toast('No FIT files', 'No stored FIT files to reimport', 'warning');
+      toast(m.toast_reimport_no_files_title(), m.toast_reimport_no_files_desc(), 'warning');
       setState({ reimporting: false, processed: 0, total: 0 });
       return;
     }
@@ -119,12 +120,12 @@ export const useReimport = () => {
 
     const parts: string[] = [];
     if (updates.length > 0) {
-      parts.push(`${updates.length} session${updates.length !== 1 ? 's' : ''} reimported`);
+      parts.push(updates.length === 1 ? m.toast_reimport_sessions({ count: updates.length }) : m.toast_reimport_sessions_plural({ count: updates.length }));
     }
     if (failed > 0) {
-      parts.push(`${failed} failed`);
+      parts.push(m.toast_reimport_failed({ count: failed }));
     }
-    toast('Reimport complete', parts.join(', '), failed > 0 ? 'error' : 'success');
+    toast(m.toast_reimport_complete_title(), parts.join(', '), failed > 0 ? 'error' : 'success');
   }, []);
 
   return {

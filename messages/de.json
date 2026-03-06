@@ -87,7 +87,6 @@
 
   "ui_count_sessions_one": "1 Einheit",
   "ui_count_sessions_other": "{count} Einheiten",
-  "ui_onboarding_get_started": "Los geht's",
   "ui_onboarding_upload_fit": ".FIT-Dateien hochladen",
   "ui_onboarding_welcome_title": "Willkommen bei PaceVault",
   "ui_onboarding_welcome_desc": "Verfolge deine Trainingsbelastung, entdecke persönliche Bestleistungen und analysiere jede Einheit — direkt in deinem Browser.",
@@ -553,5 +552,28 @@
 
   "ui_sport_running": "Laufen",
   "ui_sport_cycling": "Radfahren",
-  "ui_sport_swimming": "Schwimmen"
+  "ui_sport_swimming": "Schwimmen",
+
+  "toast_invalid_file_title": "Ungültige Datei",
+  "toast_invalid_file_desc": "{fileName} ist keine .FIT-Datei",
+  "toast_files_failed_title": "{count} fehlgeschlagen",
+  "toast_parse_failed_title": "Einlesen fehlgeschlagen",
+  "toast_parse_failed_desc": "FIT-Datei konnte nicht eingelesen werden",
+  "toast_save_failed_title": "Speichern fehlgeschlagen",
+  "toast_save_failed_desc": "Einheiten konnten nicht in der Datenbank gespeichert werden",
+  "toast_upload_sessions": "{count} Einheit hochgeladen",
+  "toast_upload_sessions_plural": "{count} Einheiten hochgeladen",
+  "toast_upload_duplicates": "{count} Duplikat",
+  "toast_upload_duplicates_plural": "{count} Duplikate",
+  "toast_upload_pbs": "{count} neue Bestleistung",
+  "toast_upload_pbs_plural": "{count} neue Bestleistungen",
+  "toast_upload_failed": "{count} fehlgeschlagen",
+  "toast_reimport_no_profile_title": "Kein Profil",
+  "toast_reimport_no_profile_desc": "Richte deine Schwellenwerte ein, bevor du neu importierst",
+  "toast_reimport_no_files_title": "Keine FIT-Dateien",
+  "toast_reimport_no_files_desc": "Keine gespeicherten FIT-Dateien zum Reimport vorhanden",
+  "toast_reimport_complete_title": "Reimport abgeschlossen",
+  "toast_reimport_sessions": "{count} Einheit neu importiert",
+  "toast_reimport_sessions_plural": "{count} Einheiten neu importiert",
+  "toast_reimport_failed": "{count} fehlgeschlagen"
 }
