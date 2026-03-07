@@ -94,7 +94,6 @@
   "ui_onboarding_your_data_desc": "Import .FIT files from your Garmin, Wahoo, or other device.",
   "ui_onboarding_testdata_title": "Test Data",
   "ui_onboarding_testdata_desc": "Explore the app with ~70 generated sessions for an experienced athlete.",
-  "ui_onboarding_testdata_detail": "We'll create ~70 running, cycling, and swimming sessions \u2014 12 weeks of training for a fictional athlete. Want to switch to your own data later? Go to Settings \u2192 Data Management and delete the test data, then import your .FIT files.",
   "ui_onboarding_testdata_generate": "Generate",
   "ui_onboarding_testdata_generating": "Generating\u2026",
   "ui_onboarding_testdata_failed": "Generation failed",
@@ -575,5 +574,8 @@
   "toast_reimport_complete_title": "Reimport complete",
   "toast_reimport_sessions": "{count} session reimported",
   "toast_reimport_sessions_plural": "{count} sessions reimported",
-  "toast_reimport_failed": "{count} failed"
+  "toast_reimport_failed": "{count} failed",
+
+  "ui_demo_banner_text": "You're exploring PaceVault with test data",
+  "ui_demo_banner_action": "Use your own data"
 }

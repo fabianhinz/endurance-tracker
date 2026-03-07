@@ -94,7 +94,6 @@
   "ui_onboarding_your_data_desc": "Importiere .FIT-Dateien von deinem Garmin, Wahoo oder anderen Ger\u00e4t.",
   "ui_onboarding_testdata_title": "Testdaten",
   "ui_onboarding_testdata_desc": "Entdecke die App mit ~70 generierten Einheiten einer erfahrenen Athletin.",
-  "ui_onboarding_testdata_detail": "Wir erstellen ~70 Lauf-, Rad- und Schwimmeinheiten \u2014 12 Wochen Training einer fiktiven Athletin. Sp\u00e4ter eigene Daten nutzen? Unter Einstellungen \u2192 Datenverwaltung die Testdaten l\u00f6schen und eigene .FIT-Dateien importieren.",
   "ui_onboarding_testdata_generate": "Generieren",
   "ui_onboarding_testdata_generating": "Wird generiert\u2026",
   "ui_onboarding_testdata_failed": "Generierung fehlgeschlagen",
@@ -575,5 +574,8 @@
   "toast_reimport_complete_title": "Reimport abgeschlossen",
   "toast_reimport_sessions": "{count} Einheit neu importiert",
   "toast_reimport_sessions_plural": "{count} Einheiten neu importiert",
-  "toast_reimport_failed": "{count} fehlgeschlagen"
+  "toast_reimport_failed": "{count} fehlgeschlagen",
+
+  "ui_demo_banner_text": "Du erkundest PaceVault mit Testdaten",
+  "ui_demo_banner_action": "Eigene Daten verwenden"
 }

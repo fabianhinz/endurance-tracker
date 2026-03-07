@@ -32,7 +32,7 @@ export const DeleteAllDataDialog = (props: DeleteAllDataDialogProps) => {
     useSessionsStore.getState().clearAll();
     useUserStore.getState().resetProfile();
     useCoachPlanStore.getState().clearPlan();
-    useLayoutStore.setState({ onboardingComplete: false });
+    useLayoutStore.setState({ onboardingComplete: false, demoMode: false });
     useFiltersStore.setState({
       timeRange: 'all',
       customRange: null,

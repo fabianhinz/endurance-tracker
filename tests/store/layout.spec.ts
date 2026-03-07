@@ -7,6 +7,7 @@ describe('useLayoutStore', () => {
       dockExpanded: true,
       compactLayout: false,
       onboardingComplete: false,
+      demoMode: false,
     });
   });
 
@@ -55,5 +56,20 @@ describe('useLayoutStore', () => {
     useLayoutStore.getState().completeOnboarding();
     expect(useLayoutStore.getState().onboardingComplete).toBe(true);
     expect(useLayoutStore.getState().compactLayout).toBe(true);
+  });
+
+  it('defaults demoMode to false', () => {
+    expect(useLayoutStore.getState().demoMode).toBe(false);
+  });
+
+  it('setDemoMode(true) sets demoMode to true', () => {
+    useLayoutStore.getState().setDemoMode(true);
+    expect(useLayoutStore.getState().demoMode).toBe(true);
+  });
+
+  it('setDemoMode(false) sets demoMode back to false', () => {
+    useLayoutStore.getState().setDemoMode(true);
+    useLayoutStore.getState().setDemoMode(false);
+    expect(useLayoutStore.getState().demoMode).toBe(false);
   });
 });

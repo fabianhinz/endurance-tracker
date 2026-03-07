@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/Button.tsx';
 import { ActionTile } from '@/components/ui/ActionTile.tsx';
 import { ThresholdsSection } from '@/features/settings/ThresholdsSection.tsx';
 import { ActionPromptCard } from '@/components/ui/ActionPromptCard.tsx';
-import { Typography } from '@/components/ui/Typography.tsx';
 
 type OnboardingPath = 'your-data' | 'test-data' | null;
 
@@ -29,6 +28,7 @@ export const OnboardingPage = () => {
     try {
       await generateDevData();
       completeOnboarding();
+      useLayoutStore.getState().setDemoMode(true);
     } catch {
       useUploadProgressStore.getState().finish(m.ui_onboarding_testdata_failed(), 'error');
     }
@@ -38,7 +38,7 @@ export const OnboardingPage = () => {
     <ActionPromptCard
       title={m.ui_onboarding_welcome_title()}
       description={m.ui_onboarding_welcome_desc()}
-      className="bg-[linear-gradient(rgba(3,7,18,0.9),rgba(3,7,18,0.9)),url('/logo.svg')] bg-[#030712] bg-left-top bg-no-repeat bg-[length:12rem] p-5"
+      className="bg-[linear-gradient(color-mix(in_srgb,var(--color-surface-base)_90%,transparent),color-mix(in_srgb,var(--color-surface-base)_90%,transparent)),url('/logo.svg')] bg-surface-base bg-left-top bg-no-repeat bg-[length:12rem] p-5"
     >
       <hr className="border-white/10 w-full" />
       <div className="grid grid-cols-2 gap-3 w-full">
@@ -62,12 +62,6 @@ export const OnboardingPage = () => {
         <div className="w-full">
           <ThresholdsSection variant="embedded" />
         </div>
-      )}
-
-      {path === 'test-data' && (
-        <Typography variant="body1" color="textSecondary">
-          {m.ui_onboarding_testdata_detail()}
-        </Typography>
       )}
 
       {path !== null && (

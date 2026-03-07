@@ -31,6 +31,7 @@
   --color-cyan-400: #22d3ee;
 
   /* ── Semantic: Surfaces ── */
+  --color-surface-base: #030712;
   --color-surface-sunken: var(--color-gray-950);
   --color-surface: var(--color-gray-900);
   --color-surface-elevated: var(--color-gray-800);
