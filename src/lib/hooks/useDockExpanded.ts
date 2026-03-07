@@ -1,8 +1,9 @@
 import { useLayoutStore } from '@/store/layout.ts';
-import { useMediaQuery } from './useMediaQuery.ts';
+import { useIsDesktop } from './useIsDesktop.ts';
 
 export const useDockExpanded = () => {
   const dockExpanded = useLayoutStore((s) => s.dockExpanded);
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useIsDesktop();
+
   return dockExpanded && isDesktop;
 };

@@ -33,6 +33,25 @@ test.describe('Onboarding flow', () => {
 
     // Verify: onboarding content should be gone
     await expect(page.locator('#thresh-restHr')).not.toBeVisible();
+
+    // Demo banner should NOT be visible after uploading real data
+    await expect(page.getByText(/test data/i)).not.toBeVisible();
+  });
+
+  test('generate test data → complete onboarding', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByText(/test data/i).click();
+
+    const generateButton = page.getByRole('button', { name: 'Generate', exact: true });
+    await expect(generateButton).toBeVisible();
+    await generateButton.click();
+
+    await expect(page.locator('[data-layout="dock"]')).toBeVisible({ timeout: 30000 });
+    await expect(generateButton).not.toBeVisible();
+
+    // Demo banner should be visible after generating test data
+    await expect(page.getByText(/test data/i)).toBeVisible();
   });
 
   test('upload button is disabled until thresholds are set', async ({ page }) => {

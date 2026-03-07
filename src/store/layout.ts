@@ -11,6 +11,8 @@ interface LayoutState {
   completeOnboarding: () => void;
   mapPitch: 0 | 30 | 60;
   setMapPitch: (pitch: 0 | 30 | 60) => void;
+  demoMode: boolean;
+  setDemoMode: (v: boolean) => void;
 }
 
 export const useLayoutStore = create<LayoutState>()(
@@ -24,12 +26,20 @@ export const useLayoutStore = create<LayoutState>()(
       completeOnboarding: () => set({ onboardingComplete: true, compactLayout: true }),
       mapPitch: 0,
       setMapPitch: (pitch) => set({ mapPitch: pitch }),
+      demoMode: false,
+      setDemoMode: (v) => set({ demoMode: v }),
     }),
     {
       name: 'store-layout',
       storage: createJSONStorage(() => idbStorage),
       skipHydration: true,
-      version: 1,
+      version: 2,
+      migrate: (persisted, version) => {
+        if (version < 2) {
+          return { ...(persisted as object), demoMode: false };
+        }
+        return persisted as LayoutState;
+      },
     },
   ),
 );

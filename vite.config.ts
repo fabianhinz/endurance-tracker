@@ -14,6 +14,7 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { SURFACE_BASE } from './src/lib/colors.ts';
 
 export default defineConfig({
   resolve: {
@@ -38,8 +39,8 @@ export default defineConfig({
         name: 'PaceVault',
         short_name: 'PaceVault',
         description: 'Offline-first endurance training tracker',
-        theme_color: '#030712',
-        background_color: '#030712',
+        theme_color: SURFACE_BASE,
+        background_color: SURFACE_BASE,
         display: 'standalone',
         icons: [
           { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
