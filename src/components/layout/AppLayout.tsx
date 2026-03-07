@@ -4,7 +4,6 @@ import { useDockExpanded } from '@/lib/hooks/useDockExpanded.ts';
 import { MapBackground } from '@/features/map/MapBackground.tsx';
 import { Dock } from './Dock.tsx';
 import { DemoBanner } from './DemoBanner.tsx';
-import { UploadProgress } from './UploadProgress.tsx';
 import { OnboardingPage } from '@/pages/OnboardingPage.tsx';
 import { Outlet } from 'react-router-dom';
 import { useIsDesktop } from '@/lib/hooks/useIsDesktop.ts';
@@ -24,7 +23,6 @@ export const AppLayout = () => {
         <main data-layout="main" className="relative z-10 p-6 pt-24 w-full mx-auto max-w-2xl">
           <OnboardingPage />
         </main>
-        <UploadProgress />
       </div>
     );
   }
@@ -46,7 +44,6 @@ export const AppLayout = () => {
         <DemoBanner />
         <Outlet />
       </main>
-      <UploadProgress />
     </div>
   );
 };
