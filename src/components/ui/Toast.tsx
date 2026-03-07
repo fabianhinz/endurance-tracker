@@ -1,7 +1,7 @@
 import * as ToastPrimitive from '@radix-ui/react-toast';
 import { cn } from '@/lib/utils.ts';
 import { useToastStore } from './toastStore.ts';
-import type { MessageToastItem, ProgressToastItem } from './toastStore.ts';
+import type { ProgressToastItem } from './toastStore.ts';
 
 const variantClasses: Record<string, string> = {
   default: 'border-white/10',
@@ -71,26 +71,25 @@ export const ToastViewport = () => {
           );
         }
 
-        const msg = t as MessageToastItem;
         return (
           <ToastPrimitive.Root
-            key={msg.id}
+            key={t.id}
             className={cn(
               'rounded-lg border p-4 shadow-lg bg-white/5 backdrop-blur-xl',
-              variantClasses[msg.variant ?? 'default'],
+              variantClasses[t.variant ?? 'default'],
             )}
             onOpenChange={(open) => {
-              if (!open) removeToast(msg.id);
+              if (!open) removeToast(t.id);
             }}
-            duration={msg.persistent ? Infinity : 4000}
-            {...(msg.testId ? { 'data-testid': msg.testId } : {})}
+            duration={t.persistent ? Infinity : 4000}
+            {...(t.testId ? { 'data-testid': t.testId } : {})}
           >
             <ToastPrimitive.Title className="text-sm font-semibold text-text-primary">
-              {msg.title}
+              {t.title}
             </ToastPrimitive.Title>
-            {msg.description && (
+            {t.description && (
               <ToastPrimitive.Description className="mt-1 text-sm text-text-tertiary">
-                {msg.description}
+                {t.description}
               </ToastPrimitive.Description>
             )}
           </ToastPrimitive.Root>

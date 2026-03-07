@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { useToastStore } from '@/components/ui/toastStore.ts';
+import { m } from '@/paraglide/messages.js';
 
 interface UploadProgressState {
   uploading: boolean;
@@ -23,8 +24,12 @@ export const useUploadProgressStore = create<UploadProgressState>()((set, get) =
       total,
       fileCount: total,
     });
+    const label =
+      total === 1
+        ? m.toast_upload_processing({ count: total })
+        : m.toast_upload_processing_plural({ count: total });
     useToastStore.getState().upsertProgress({
-      label: `${total} session${total !== 1 ? 's' : ''} processing`,
+      label,
       processed: 0,
       total,
       saving: false,
@@ -36,10 +41,13 @@ export const useUploadProgressStore = create<UploadProgressState>()((set, get) =
     const processed = state.processed;
     const total = state.total;
     const saving = processed >= total && total > 0;
+    const label = saving
+      ? m.toast_upload_saving()
+      : state.fileCount === 1
+        ? m.toast_upload_processing({ count: state.fileCount })
+        : m.toast_upload_processing_plural({ count: state.fileCount });
     useToastStore.getState().upsertProgress({
-      label: saving
-        ? 'Saving\u2026'
-        : `${state.fileCount} session${state.fileCount !== 1 ? 's' : ''} processing`,
+      label,
       processed,
       total,
       saving,
