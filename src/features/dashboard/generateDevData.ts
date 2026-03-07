@@ -240,7 +240,7 @@ export const generateDevData = async (): Promise<number> => {
       ftp: PERSONA.ftp,
       thresholdPace: PERSONA.thresholdPace,
     },
-    showMetricHelp: false,
+    showMetricHelp: true,
   });
 
   const now = Date.now();
