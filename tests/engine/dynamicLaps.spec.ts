@@ -75,8 +75,8 @@ describe('computeDynamicLaps', () => {
     // Random-walk speed with terrain can produce slower laps on uphills.
     result.analysis.forEach((lap) => {
       expect(lap.paceSecPerKm).toBeDefined();
-      expect(lap.paceSecPerKm!).toBeGreaterThan(150);
-      expect(lap.paceSecPerKm!).toBeLessThan(600);
+      expect(lap.paceSecPerKm!).toBeGreaterThan(180);
+      expect(lap.paceSecPerKm!).toBeLessThan(500);
     });
   });
 

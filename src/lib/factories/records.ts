@@ -165,7 +165,7 @@ const buildPowerArray = (
       currentPower = randomWalk(currentPower, 0.7, 5, 0.2, 30);
 
       // Grade influence: uphill = more power, downhill = slightly less
-      currentPower += grades[i] * 1;
+      currentPower += grades[i];
 
       // Speed influence
       currentPower += (speeds[i] - baseSpeed) * 2;
