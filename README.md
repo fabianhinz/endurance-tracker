@@ -6,6 +6,8 @@ A local-first endurance training tracker built entirely in the browser. Import G
 
 PaceVault is installable as a Progressive Web App. It works fully offline — once loaded, no network connection is needed. A service worker handles caching and auto-updates in the background. No account, no signup, no server.
 
+![app with test data](./app.png)
+
 ## Getting Started
 
 1. Fork and clone the repo
