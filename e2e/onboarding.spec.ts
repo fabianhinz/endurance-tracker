@@ -35,6 +35,19 @@ test.describe('Onboarding flow', () => {
     await expect(page.locator('#thresh-restHr')).not.toBeVisible();
   });
 
+  test('generate test data → complete onboarding', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByText(/test data/i).click();
+
+    const generateButton = page.getByRole('button', { name: 'Generate', exact: true });
+    await expect(generateButton).toBeVisible();
+    await generateButton.click();
+
+    await expect(page.locator('[data-layout="dock"]')).toBeVisible({ timeout: 30000 });
+    await expect(generateButton).not.toBeVisible();
+  });
+
   test('upload button is disabled until thresholds are set', async ({ page }) => {
     await page.goto('/');
 

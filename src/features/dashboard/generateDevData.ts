@@ -1,17 +1,17 @@
 import { decode } from '@googlemaps/polyline-codec';
-import type { Sport, SessionRecord } from '@/engine/types.ts';
+import type { Sport, SessionRecord, SessionLap, TrainingSession } from '@/engine/types.ts';
 import { buildSessionGPS } from '@/engine/gps.ts';
 import { calculateSessionStress } from '@/engine/stress.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useUserStore } from '@/store/user.ts';
-import { saveSessionRecords, saveSessionLaps, saveSessionGPS } from '@/lib/indexeddb.ts';
+import { bulkSaveSessionData, saveSessionGPS } from '@/lib/indexeddb.ts';
 import { useUploadProgressStore } from '@/store/uploadProgress.ts';
 import {
   makeRunningRecords,
   makeCyclingRecords,
   makeSwimmingRecords,
-  makeLaps,
-} from '../../../tests/factories/records.ts';
+  makeLapsFromRecords,
+} from '@/lib/factories/records.ts';
 
 type RouteEntry = { name: string; polyline: string; distanceM: number };
 type RouteData = { running: RouteEntry[]; cycling: RouteEntry[] };
@@ -26,6 +26,7 @@ type ScheduledSession = {
 
 const fetchRouteData = async (): Promise<RouteData> => {
   const res = await fetch('/testData.json');
+  if (!res.ok) throw new Error(`Failed to load route data (${res.status})`);
   return res.json() as Promise<RouteData>;
 };
 
@@ -249,9 +250,7 @@ export const generateDevData = async (): Promise<number> => {
   const schedule = generateAllSessions(daySpan);
 
   // Build session data
-  const sessionsToAdd: Array<
-    Omit<import('@/engine/types.ts').TrainingSession, 'id' | 'createdAt'>
-  > = [];
+  const sessionsToAdd: Array<Omit<TrainingSession, 'id' | 'createdAt'>> = [];
   const sessionMeta: Array<{ sport: Sport; durationSec: number; intent: SessionIntent }> = [];
 
   for (const entry of schedule) {
@@ -279,8 +278,14 @@ export const generateDevData = async (): Promise<number> => {
 
   const updates: Array<{
     id: string;
-    session: Omit<import('@/engine/types.ts').TrainingSession, 'id' | 'createdAt'>;
+    session: Omit<TrainingSession, 'id' | 'createdAt'>;
   }> = [];
+
+  const bulkEntries: Array<{
+    records: SessionRecord[];
+    laps: SessionLap[];
+  }> = [];
+  const gpsPromises: Promise<void>[] = [];
 
   for (let i = 0; i < sessionIds.length; i++) {
     const sessionId = sessionIds[i];
@@ -352,17 +357,17 @@ export const generateDevData = async (): Promise<number> => {
       },
     });
 
-    const lapCount = Math.max(1, Math.floor(durationSec / 300));
-    const laps = makeLaps(sessionId, lapCount);
+    const laps = makeLapsFromRecords(sessionId, records, 300);
     const gps = buildSessionGPS(sessionId, records);
 
-    await saveSessionRecords(records);
-    await saveSessionLaps(laps);
+    bulkEntries.push({ records, laps });
     if (gps) {
-      await saveSessionGPS(gps);
+      gpsPromises.push(saveSessionGPS(gps));
     }
     useUploadProgressStore.getState().advance();
   }
+
+  await Promise.all([bulkSaveSessionData(bulkEntries), ...gpsPromises]);
 
   useSessionsStore.getState().replaceSessions(updates);
   useUploadProgressStore.getState().finish(`Generated ${sessionIds.length} sessions`, 'success');
