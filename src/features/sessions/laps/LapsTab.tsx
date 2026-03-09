@@ -64,6 +64,11 @@ export const LapsTab = (props: LapsTabProps) => {
   const clearLapMarkers = useMapFocusStore((s) => s.clearLapMarkers);
   const setHoveredLapIndex = useMapFocusStore((s) => s.setHoveredLapIndex);
   const clearHoveredLapIndex = useMapFocusStore((s) => s.clearHoveredLapIndex);
+  const setActiveLapData = useMapFocusStore((s) => s.setActiveLapData);
+
+  useEffect(() => {
+    setActiveLapData(analysis, enrichments, isDevice ? null : splitDistance);
+  }, [analysis, enrichments, isDevice, splitDistance, setActiveLapData]);
 
   const handleActiveLapChange = useCallback(
     (lapIndex: number | null) => {

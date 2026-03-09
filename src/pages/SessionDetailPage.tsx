@@ -4,6 +4,7 @@ import { Activity, Ellipsis, Pencil, Trash2 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
+import { analyzeLaps, enrichAllLaps } from '@/engine/laps.ts';
 import {
   getSessionRecords,
   getSessionLaps,
@@ -78,15 +79,19 @@ export const SessionDetailPage = () => {
 
   const setFocusedLaps = useMapFocusStore((s) => s.setFocusedLaps);
   const clearFocusedLaps = useMapFocusStore((s) => s.clearFocusedLaps);
+  const setActiveLapData = useMapFocusStore((s) => s.setActiveLapData);
 
   useEffect(() => {
     if (laps.length > 0 && session) {
-      setFocusedLaps(laps, session.sport);
+      setFocusedLaps(laps, session.sport, records);
+      const deviceAnalysis = analyzeLaps(laps);
+      const deviceEnrichments = enrichAllLaps(laps, records);
+      setActiveLapData(deviceAnalysis, deviceEnrichments, null);
     }
     return () => {
       clearFocusedLaps();
     };
-  }, [laps, session, setFocusedLaps, clearFocusedLaps]);
+  }, [laps, records, session, setFocusedLaps, clearFocusedLaps, setActiveLapData]);
 
   if (!session) {
     return (
