@@ -34,7 +34,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
   const style = usePopupPosition(props.info.x, props.info.y);
 
   return createPortal(
-    <div ref={popupRef} style={expandCard.isExpanded ? undefined : style}>
+    <div ref={popupRef} style={style}>
       <Card
         ref={cardRef}
         variant="compact"

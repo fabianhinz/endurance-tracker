@@ -117,6 +117,8 @@ export const useExpandCard = (
     el.style.width = `${size.width}px`;
     el.style.height = `${size.height}px`;
     el.style.zIndex = '50';
+    el.style.maxWidth = 'none';
+    el.style.maxHeight = 'none';
 
     const lastRect = el.getBoundingClientRect();
 

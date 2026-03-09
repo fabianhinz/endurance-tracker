@@ -143,7 +143,7 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
   const hasElevation = analysis.elevationGain > 0;
 
   return createPortal(
-    <div ref={popupRef} style={expandCard.isExpanded ? undefined : style}>
+    <div ref={popupRef} style={style}>
       <Card
         ref={cardRef}
         variant="compact"
