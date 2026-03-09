@@ -8,7 +8,7 @@ import {
   enrichAllLaps,
   findLapIndexAtCoordinate,
   findDynamicLapIndexAtCoordinate,
-} from '@/engine/laps.ts';
+} from '@/lib/laps.ts';
 import type { SessionLap, SessionRecord } from '@/engine/types.ts';
 import { makeLaps, makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
 
@@ -553,10 +553,7 @@ describe('findDynamicLapIndexAtCoordinate', () => {
   });
 
   it('clamps to last lap when distance exceeds total', () => {
-    const records = [
-      makeDistRecord(0, 48.1, 11.1, 0),
-      makeDistRecord(100, 48.2, 11.2, 5000),
-    ];
+    const records = [makeDistRecord(0, 48.1, 11.1, 0), makeDistRecord(100, 48.2, 11.2, 5000)];
     // 5000m with 1000m splits → index 5, but only 3 laps → clamp to 2
     expect(findDynamicLapIndexAtCoordinate([11.2, 48.2], records, 1000, 3)).toBe(2);
   });

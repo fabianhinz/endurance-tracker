@@ -82,17 +82,17 @@ export const usePopupPosition = (x: number, y: number): React.CSSProperties => {
       safeZone.right = mainRect.left - SAFE_ZONE_PADDING;
     }
 
-    const pos = computePopupPosition(x, y, safeZone);
+    const safeWidth = safeZone.right - safeZone.left;
+    const safeHeight = safeZone.bottom - safeZone.top;
+    const popupW = Math.min(POPUP_WIDTH, safeWidth);
+    const popupH = Math.min(POPUP_HEIGHT, safeHeight);
 
-    const transforms: string[] = [];
-    if (pos.flipX) transforms.push('translateX(-100%)');
-    if (pos.flipY) transforms.push('translateY(-100%)');
+    const pos = computePopupPosition(x, y, safeZone);
 
     return {
       position: 'fixed' as const,
-      left: pos.left,
-      top: pos.top,
-      ...(transforms.length > 0 && { transform: transforms.join(' ') }),
+      left: pos.flipX ? pos.left - popupW : pos.left,
+      top: pos.flipY ? pos.top - popupH : pos.top,
       zIndex: 50,
     };
   }, [x, y]);

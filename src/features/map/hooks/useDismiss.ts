@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-export const useDismiss = (onClose: () => void) => {
+export const useDismiss = (onClose: () => void, escapeEnabled = true) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && escapeEnabled) onClose();
     };
     const handleClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -18,7 +18,7 @@ export const useDismiss = (onClose: () => void) => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('pointerdown', handleClickOutside);
     };
-  }, [onClose]);
+  }, [onClose, escapeEnabled]);
 
   return ref;
 };

@@ -4,7 +4,7 @@ import { glassClass } from '@/components/ui/Card.tsx';
 import { Button } from '@/components/ui/Button.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { cn, formatDistance, formatLapTime, formatPaceOrSpeed } from '@/lib/utils.ts';
-import type { LapAnalysis, LapRecordEnrichment } from '@/engine/laps.ts';
+import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { m } from '@/paraglide/messages.js';
 

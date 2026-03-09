@@ -102,7 +102,14 @@ export const useExpandCard = (
     placeholderRef.current = placeholder;
 
     // Last: apply fixed centered positioning
-    const padding = getResponsivePadding(window.innerWidth);
+    const padding = { ...getResponsivePadding(window.innerWidth) };
+    if (window.innerWidth < SMALL_BREAKPOINT) {
+      const dock = document.querySelector<HTMLElement>('[data-layout="dock"]');
+      if (dock) {
+        const dockHeight = window.innerHeight - dock.getBoundingClientRect().top;
+        if (dockHeight > 0) padding.bottom = padding.bottom + dockHeight;
+      }
+    }
     const size = computeExpandedSize(window.innerWidth, window.innerHeight, padding);
     el.style.position = 'fixed';
     el.style.inset = `${padding.top}px ${padding.x}px ${padding.bottom}px ${padding.x}px`;

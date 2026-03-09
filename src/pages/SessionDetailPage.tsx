@@ -4,7 +4,7 @@ import { Activity, Ellipsis, Pencil, Trash2 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
-import { analyzeLaps, enrichAllLaps } from '@/engine/laps.ts';
+import { analyzeLaps, enrichAllLaps } from '@/lib/laps.ts';
 import {
   getSessionRecords,
   getSessionLaps,

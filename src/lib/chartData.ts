@@ -1,6 +1,6 @@
 import type { SessionRecord } from '@/engine/types.ts';
 import { gradeAdjustedPaceFactor } from '@/engine/normalize.ts';
-import { filterValidPower } from '@/engine/validation.ts';
+import { filterValidPower } from '@/lib/validation.ts';
 
 export interface TimeSeriesPoint {
   time: number;

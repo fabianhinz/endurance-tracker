@@ -10,7 +10,7 @@ import {
   saveSessionLaps,
 } from '@/lib/indexeddb.ts';
 import { parseFitFile } from '@/parsers/fit.ts';
-import { computePBsForSessions } from '@/engine/records.ts';
+import { computePBsForSessions } from '@/lib/records.ts';
 import { toast } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
 import { useCoachPlanStore } from '@/store/coachPlan.ts';

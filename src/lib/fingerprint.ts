@@ -1,4 +1,4 @@
-import type { TrainingSession, Sport } from './types.ts';
+import type { TrainingSession, Sport } from '@/engine/types.ts';
 
 // ---------------------------------------------------------------------------
 // Interfaces

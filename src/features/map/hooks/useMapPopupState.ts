@@ -6,7 +6,7 @@ import type { MapTrack } from './useMapTracks.ts';
 import type { PopupInfo } from '@/features/map/MapPickPopup.tsx';
 import type { LapPopupInfo } from '@/features/map/LapPickPopup.tsx';
 import { decodeCached, PICK_RADIUS } from './types.ts';
-import { findLapIndexAtCoordinate, findDynamicLapIndexAtCoordinate } from '@/engine/laps.ts';
+import { findLapIndexAtCoordinate, findDynamicLapIndexAtCoordinate } from '@/lib/laps.ts';
 import type { PickingInfo } from '@deck.gl/core';
 
 export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks: MapTrack[]) => {

@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ComposedChart,
   Line,
@@ -8,30 +9,27 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from 'recharts';
-import { X } from 'lucide-react';
+import { Maximize2, Minimize2, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
+import { useExpandCard } from '@/lib/hooks/useExpandCard.ts';
 import { usePopupPosition } from './hooks/usePopupPosition.ts';
 import { useDismiss } from './hooks/useDismiss.ts';
+import { cn } from '@/lib/utils.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
-import { filterRecordsByLap } from '@/engine/laps.ts';
+import { filterRecordsByLap } from '@/lib/laps.ts';
 import {
   prepareHrData,
   preparePowerData,
   prepareSpeedData,
   preparePaceData,
 } from '@/lib/chartData.ts';
-import {
-  formatLapTime,
-  formatDistance,
-  formatPaceTick,
-  formatPaceOrSpeed,
-} from '@/lib/utils.ts';
+import { formatLapTime, formatDistance, formatPaceTick, formatPaceOrSpeed } from '@/lib/utils.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { SessionLap, SessionRecord, Sport } from '@/engine/types.ts';
-import type { LapAnalysis, LapRecordEnrichment } from '@/engine/laps.ts';
+import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
 import { m } from '@/paraglide/messages.js';
 
 export interface LapPopupInfo {
@@ -103,7 +101,9 @@ const getLapRecords = (
 };
 
 export const LapPickPopup = (props: LapPickPopupProps) => {
-  const popupRef = useDismiss(props.onClose);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const expandCard = useExpandCard(cardRef);
+  const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
   const style = usePopupPosition(props.info.x, props.info.y);
   const clickedLapIndex = useMapFocusStore((s) => s.clickedLapIndex);
   const activeLapAnalysis = useMapFocusStore((s) => s.activeLapAnalysis);
@@ -142,28 +142,47 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
   const hasCadence = analysis.avgCadence !== undefined;
   const hasElevation = analysis.elevationGain > 0;
 
-  return (
-    <div ref={popupRef} style={style}>
-      <Card variant="compact" className="w-[380px] max-h-[420px] flex flex-col overflow-hidden">
+  return createPortal(
+    <div ref={popupRef} style={expandCard.isExpanded ? undefined : style}>
+      <Card
+        ref={cardRef}
+        variant="compact"
+        className={cn(
+          'flex flex-col overflow-hidden',
+          expandCard.isExpanded ? '' : 'w-[380px] max-h-[420px]',
+        )}
+      >
         <CardHeader
           title={m.ui_lap_popup_title({
             current: lapNumber,
             total: totalLaps,
           })}
           actions={
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={m.ui_btn_close()}
-              onClick={props.onClose}
-            >
-              <X size={16} />
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={expandCard.isExpanded ? 'Collapse' : 'Expand'}
+                onClick={expandCard.toggle}
+              >
+                {expandCard.isExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={m.ui_btn_close()}
+                onClick={props.onClose}
+              >
+                <X size={16} />
+              </Button>
+            </>
           }
         />
 
         {hasChartData && (hasHrData || hasPaceOrSpeed || hasPowerData) && (
-          <div className="h-[200px] px-2">
+          <div
+            className={cn(expandCard.isExpanded ? 'flex-1 min-h-0 px-4 pb-2' : 'h-[200px] px-2')}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />
@@ -295,6 +314,7 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
           </table>
         </div>
       </Card>
-    </div>
+    </div>,
+    document.body,
   );
 };

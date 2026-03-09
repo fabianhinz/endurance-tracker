@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { SessionLap, SessionRecord, Sport } from '@/engine/types.ts';
-import type { LapAnalysis, LapRecordEnrichment } from '@/engine/laps.ts';
-import type { LapMarker } from '@/engine/lapMarkers.ts';
+import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
+import type { LapMarker } from '@/lib/lapMarkers.ts';
 import type { ZoneColorMode } from '@/features/map/zoneColoredPath.ts';
 
 interface MapFocusState {
