@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { detectNewPBs, mergePBs } from '@/engine/records.ts';
+import { detectNewPBs, mergePBs } from '@/lib/records.ts';
 import {
   makeCyclingRecords,
   makeRunningRecords,

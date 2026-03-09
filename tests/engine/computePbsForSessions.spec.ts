@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computePBsForSessions } from '@/engine/records.ts';
+import { computePBsForSessions } from '@/lib/records.ts';
 import {
   makeCyclingRecords,
   makeRunningRecords,

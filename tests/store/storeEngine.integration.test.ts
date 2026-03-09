@@ -3,7 +3,7 @@ import { useUserStore } from '@/store/user.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { computeMetrics } from '@/engine/metrics.ts';
 import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
-import { detectNewPBs } from '@/engine/records.ts';
+import { detectNewPBs } from '@/lib/records.ts';
 import { makeUserProfile } from '@tests/factories/profiles.ts';
 import { makeSession } from '@tests/factories/sessions.ts';
 import { makeCyclingRecords } from '@tests/factories/records.ts';

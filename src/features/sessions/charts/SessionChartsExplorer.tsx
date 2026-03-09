@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Heart, Zap, Gauge, Mountain, Timer, TrendingUp, ArrowUpDown } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
-import { downsample } from '@/engine/downsample.ts';
+import { downsample } from '@/lib/downsample.ts';
 import {
   prepareHrData,
   preparePowerData,

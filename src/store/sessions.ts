@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { TrainingSession, PersonalBest } from '@/engine/types.ts';
 import { idbStorage } from '@/lib/idbStorage.ts';
-import { mergePBs } from '@/engine/records.ts';
+import { mergePBs } from '@/lib/records.ts';
 
 interface SessionsState {
   sessions: TrainingSession[];

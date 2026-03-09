@@ -6,7 +6,7 @@ import { StatItem } from '@/components/ui/StatItem.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { cn, formatDuration, formatDistance, formatPace, formatSpeed } from '@/lib/utils.ts';
 import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
-import { detectIntervals, detectProgressiveOverload } from '@/engine/laps.ts';
+import { detectIntervals, detectProgressiveOverload } from '@/lib/laps.ts';
 import type { TrainingSession, SessionLap } from '@/engine/types.ts';
 
 interface SessionStatsGridProps {

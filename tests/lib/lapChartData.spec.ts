@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { prepareLapSplitsData, prepareLapHrData, prepareLapPowerData } from '@/lib/lapChartData.ts';
-import { analyzeLaps, enrichAllLaps, type LapRecordEnrichment } from '@/engine/laps.ts';
+import { analyzeLaps, enrichAllLaps, type LapRecordEnrichment } from '@/lib/laps.ts';
 import { makeLaps, makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
 
 describe('prepareLapSplitsData', () => {

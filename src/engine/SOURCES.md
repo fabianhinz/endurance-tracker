@@ -47,12 +47,6 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 | `[Fellrnr]`            | Fellrnr. "TRIMP." <https://fellrnr.com/wiki/TRIMP>                                                                                                                                  |
 | `[TP-PMC]`             | TrainingPeaks. "The Science of the Performance Manager." <https://www.trainingpeaks.com/learn/articles/the-science-of-the-performance-manager/>                                     |
 
-## Custom / App-Specific Formulas (No Published Source)
+## App-Specific Logic
 
-These are explicitly **not** from published literature:
-
-- **`fingerprint.ts`** — Session deduplication heuristic.
-- **`downsample.ts`** — Chart downsampling heuristic.
-- **`laps.ts`** — Lap analysis logic.
-- **`records.ts`** — Sliding-window personal-best detection.
-- **`validation.ts`** — Sensor-data thresholds.
+App-specific heuristics and feature logic (fingerprinting, downsampling, lap analysis, PB detection, sensor validation) live in `src/lib/`, not in the engine.

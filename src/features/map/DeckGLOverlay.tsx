@@ -12,7 +12,7 @@ import {
   sportTrackColor,
   trackModifiers,
 } from './trackColors.ts';
-import type { LapMarker } from '@/engine/lapMarkers.ts';
+import type { LapMarker } from '@/lib/lapMarkers.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useLayoutStore } from '@/store/layout.ts';

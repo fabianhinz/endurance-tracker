@@ -8,12 +8,17 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   variant?: 'default' | 'compact';
   footer?: React.ReactNode;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 export const Card = (props: CardProps) => {
-  const { className, children, variant = 'default', footer, ...rest } = props;
+  const { className, children, variant = 'default', footer, ref, ...rest } = props;
   return (
-    <div className={cn(cardClass, variant === 'compact' ? 'p-2' : 'p-4', className)} {...rest}>
+    <div
+      ref={ref}
+      className={cn(cardClass, variant === 'compact' ? 'p-2' : 'p-4', className)}
+      {...rest}
+    >
       {children}
       {footer && <div className="border-t border-white/10 mt-4 pt-3">{footer}</div>}
     </div>

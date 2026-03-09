@@ -6,6 +6,7 @@ import type { MapTrack } from './useMapTracks.ts';
 import type { PopupInfo } from '@/features/map/MapPickPopup.tsx';
 import type { LapPopupInfo } from '@/features/map/LapPickPopup.tsx';
 import { decodeCached, PICK_RADIUS } from './types.ts';
+import { findLapIndexAtCoordinate, findDynamicLapIndexAtCoordinate } from '@/lib/laps.ts';
 import type { PickingInfo } from '@deck.gl/core';
 
 export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks: MapTrack[]) => {
@@ -30,6 +31,22 @@ export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks:
 
       if (openedSessionId && focusedLaps.length > 0) {
         useMapFocusStore.getState().setPickCircle([center.lng, center.lat]);
+        if (info.coordinate) {
+          const state = useMapFocusStore.getState();
+          const coord: [number, number] = [info.coordinate[0], info.coordinate[1]];
+          const lapIndex =
+            state.activeSplitDistance != null
+              ? findDynamicLapIndexAtCoordinate(
+                  coord,
+                  state.focusedRecords,
+                  state.activeSplitDistance,
+                  state.activeLapAnalysis.length,
+                )
+              : findLapIndexAtCoordinate(coord, state.focusedRecords, focusedLaps);
+          if (lapIndex != null) {
+            state.setClickedLapIndex(lapIndex);
+          }
+        }
         setLapPopup({ x: info.x, y: info.y });
         return stopPropagation;
       }
@@ -63,7 +80,9 @@ export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks:
   const closePopup = useCallback(() => {
     setPopup(null);
     setLapPopup(null);
-    useMapFocusStore.getState().clearPickCircle();
+    const state = useMapFocusStore.getState();
+    state.clearPickCircle();
+    state.clearClickedLapIndex();
   }, []);
 
   const onHover = useCallback(

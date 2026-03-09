@@ -4,11 +4,11 @@ import { useSessionsStore } from '@/store/sessions.ts';
 import { useUploadProgressStore } from '@/store/uploadProgress.ts';
 import { parseFitFile } from '@/parsers/fit.ts';
 import { bulkSaveSessionData, saveFitFile } from '@/lib/indexeddb.ts';
-import { detectNewPBs, mergePBs } from '@/engine/records.ts';
+import { detectNewPBs, mergePBs } from '@/lib/records.ts';
 import { mapWithConcurrency } from '@/lib/concurrency.ts';
 import { toast } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
-import { findDuplicates } from '@/engine/fingerprint.ts';
+import { findDuplicates } from '@/lib/fingerprint.ts';
 import type { TrainingSession, SessionRecord, SessionLap } from '@/engine/types.ts';
 
 interface ParsedFile {

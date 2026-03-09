@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateRecords, filterValidPower } from '@/engine/validation.ts';
+import { validateRecords, filterValidPower } from '@/lib/validation.ts';
 import { calculateNormalizedPower } from '@/engine/normalize.ts';
 import { calculateSessionStress } from '@/engine/stress.ts';
 import {

@@ -32,6 +32,7 @@ export const MapBackground = () => {
   const setOpenedSession = useMapFocusStore((s) => s.setOpenedSession);
   const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
+  const focusedRecords = useMapFocusStore((s) => s.focusedRecords);
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
   const mapPitch = useLayoutStore((s) => s.mapPitch);
@@ -82,6 +83,7 @@ export const MapBackground = () => {
         <LapPickPopup
           info={popupState.lapPopup}
           laps={focusedLaps}
+          records={focusedRecords}
           sport={focusedSport}
           onClose={popupState.closePopup}
         />

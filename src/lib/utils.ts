@@ -99,6 +99,14 @@ export const formatPaceTick = (minPerKm: number): string => {
 
 import { m } from '@/paraglide/messages.js';
 import type { PersonalBest } from '@/engine/types.ts';
+import type { LapAnalysis } from '@/lib/laps.ts';
+
+export const formatPaceOrSpeed = (lap: LapAnalysis, isRunning: boolean): string => {
+  if (lap.paceSecPerKm === undefined) return '--';
+  if (isRunning) return formatPace(lap.paceSecPerKm);
+  const speedMs = 1000 / lap.paceSecPerKm;
+  return formatSpeed(speedMs);
+};
 
 const POWER_WINDOW_LABELS: Record<number, string> = {
   5: '5 sec',
