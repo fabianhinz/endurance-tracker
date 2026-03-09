@@ -23,11 +23,10 @@ import {
   preparePaceData,
 } from '@/lib/chartData.ts';
 import {
-  formatPace,
-  formatSpeed,
   formatLapTime,
   formatDistance,
   formatPaceTick,
+  formatPaceOrSpeed,
 } from '@/lib/utils.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
@@ -74,13 +73,6 @@ const buildLapChartData = (lapRecords: SessionRecord[], isRunning: boolean): Lap
   }
 
   return [...byTime.values()].sort((a, b) => a.time - b.time);
-};
-
-const formatPaceOrSpeed = (lap: LapAnalysis, isRunning: boolean): string => {
-  if (lap.paceSecPerKm === undefined) return '--';
-  if (isRunning) return formatPace(lap.paceSecPerKm);
-  const speedMs = 1000 / lap.paceSecPerKm;
-  return formatSpeed(speedMs);
 };
 
 /**

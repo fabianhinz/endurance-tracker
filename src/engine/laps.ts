@@ -204,13 +204,11 @@ const findClosestRecord = (
   coordinate: [number, number],
   records: SessionRecord[],
 ): SessionRecord | undefined => {
-  const gpsRecords = records.filter((r) => r.lat !== undefined && r.lng !== undefined);
-  if (gpsRecords.length === 0) return undefined;
-
   let minDist = Infinity;
   let closest: SessionRecord | undefined;
-  for (const r of gpsRecords) {
-    const dist = haversineDistance(coordinate, [r.lng!, r.lat!]);
+  for (const r of records) {
+    if (r.lat === undefined || r.lng === undefined) continue;
+    const dist = haversineDistance(coordinate, [r.lng, r.lat]);
     if (dist < minDist) {
       minDist = dist;
       closest = r;

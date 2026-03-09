@@ -3,8 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import { glassClass } from '@/components/ui/Card.tsx';
 import { Button } from '@/components/ui/Button.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
-import { cn } from '@/lib/utils.ts';
-import { formatDistance, formatLapTime, formatPace, formatSpeed } from '@/lib/utils.ts';
+import { cn, formatDistance, formatLapTime, formatPaceOrSpeed } from '@/lib/utils.ts';
 import type { LapAnalysis, LapRecordEnrichment } from '@/engine/laps.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { m } from '@/paraglide/messages.js';
@@ -16,13 +15,6 @@ interface LapDetailTableProps {
 }
 
 const COLLAPSED_COUNT = 6;
-
-const formatPaceOrSpeed = (lap: LapAnalysis, isRunning: boolean): string => {
-  if (lap.paceSecPerKm === undefined) return '--';
-  if (isRunning) return formatPace(lap.paceSecPerKm);
-  const speedMs = 1000 / lap.paceSecPerKm;
-  return formatSpeed(speedMs);
-};
 
 export const LapDetailTable = (props: LapDetailTableProps) => {
   const [expanded, setExpanded] = useState(false);

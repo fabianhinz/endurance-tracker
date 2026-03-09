@@ -80,8 +80,9 @@ export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks:
   const closePopup = useCallback(() => {
     setPopup(null);
     setLapPopup(null);
-    useMapFocusStore.getState().clearPickCircle();
-    useMapFocusStore.getState().clearClickedLapIndex();
+    const state = useMapFocusStore.getState();
+    state.clearPickCircle();
+    state.clearClickedLapIndex();
   }, []);
 
   const onHover = useCallback(
