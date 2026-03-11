@@ -24,14 +24,17 @@ export const useFiltersStore = create<FiltersState>()(
       sportFilter: 'all',
       setTimeRange: (r) => set({ timeRange: r, customRange: null, prevDashboardRange: null }),
       setDashboardChartRange: (from, to) =>
-        set((state) => ({
-          timeRange: 'custom',
-          customRange: { from, to },
-          prevDashboardRange:
-            state.timeRange === 'custom'
-              ? state.prevDashboardRange
-              : (state.timeRange as Exclude<TimeRange, 'custom'>),
-        })),
+        set((state) => {
+          let prevDashboardRange = state.timeRange as Exclude<TimeRange, 'custom'>;
+          if (state.timeRange === 'custom') {
+            prevDashboardRange = state.prevDashboardRange as Exclude<TimeRange, 'custom'>;
+          }
+          return {
+            timeRange: 'custom' as const,
+            customRange: { from, to },
+            prevDashboardRange,
+          };
+        }),
       clearDashboardChartRange: () =>
         set((state) => ({
           timeRange: state.prevDashboardRange ?? '90d',

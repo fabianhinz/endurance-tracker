@@ -70,7 +70,6 @@ const getHealthColor = (value: number, thresholds: NonNullable<MetricRow['thresh
 export const DeckMetricsOverlay = () => {
   const expanded = useDeckMetricsStore((s) => s.expanded);
   const metrics = useDeckMetricsStore((s) => s.metrics);
-  const toggle = useDeckMetricsStore((s) => s.toggle);
 
   const initialPos = { x: 16, y: 16 };
   const posRef = useRef(initialPos);
@@ -121,7 +120,10 @@ export const DeckMetricsOverlay = () => {
         >
           <GripVertical className="size-4 text-text-tertiary" />
         </div>
-        <button onClick={toggle} className="cursor-pointer flex">
+        <button
+          onClick={() => useDeckMetricsStore.getState().toggle()}
+          className="cursor-pointer flex"
+        >
           <Typography variant="overline">Deck Metrics</Typography>
         </button>
       </div>

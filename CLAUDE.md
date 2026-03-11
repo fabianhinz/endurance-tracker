@@ -31,6 +31,8 @@
 - **No object destructuring** for component props and hook return values — access via `props.x` and `result.x` instead.
 - **Delete dead code**: Exported but never-imported code should be removed immediately, not left around.
 - **No `as any` for external data**: Use Zod schemas with `safeParse` + `z.infer` to validate and type data from untyped sources (file parsers, IndexedDB, etc.). Schemas live next to the parser/consumer (e.g. `fitSchemas.ts`). On failure: return a safe fallback (`undefined`, `[]`), never throw.
+- **Store actions via getState()**: Call Zustand actions with `useStore.getState().action()` at the call site. Do not extract actions via selectors (`const action = useStore(s => s.action)`). Keep selectors only for state values that trigger re-renders.
+- **No ternary operators in `.ts` files**: Use `if/else` instead of `condition ? a : b` in all `.ts` files (engine, lib, stores, hooks). Single-level ternaries are allowed in `.tsx` (JSX). Nested ternaries are banned everywhere.
 - **Syntax & Formatting**: Defer to ESLint and Prettier. Do not waste time manually formatting code or enforcing linting rules; focus on logic.
 
 ## 3. File Naming Conventions

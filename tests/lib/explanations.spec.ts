@@ -36,7 +36,6 @@ const REQUIRED_FIELDS: (keyof MetricExplanation)[] = [
   'range',
   'limitations',
   'sports',
-  'displayContext',
 ];
 
 const VALID_SPORTS = ['running', 'cycling', 'swimming', 'all'] as const;

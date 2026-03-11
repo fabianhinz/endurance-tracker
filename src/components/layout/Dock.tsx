@@ -97,9 +97,7 @@ export const Dock = () => {
 
   // Filter state
   const sportFilter = useFiltersStore((s) => s.sportFilter);
-  const setSportFilter = useFiltersStore((s) => s.setSportFilter);
   const timeRange = useFiltersStore((s) => s.timeRange);
-  const setTimeRange = useFiltersStore((s) => s.setTimeRange);
   const customRange = useFiltersStore((s) => s.customRange);
 
   const SportIcon = sportFilter === 'all' ? Activity : sportIcon[sportFilter];
@@ -151,7 +149,7 @@ export const Dock = () => {
             options={sportOptions}
             value={sportFilter}
             onValueChange={(v) => {
-              setSportFilter(v as Sport | 'all');
+              useFiltersStore.getState().setSportFilter(v as Sport | 'all');
               closeFrom('sport-filter');
             }}
           />
@@ -162,7 +160,7 @@ export const Dock = () => {
             options={timeFilterOptions}
             value={timeRange}
             onValueChange={(v) => {
-              setTimeRange(v as TimeRange);
+              useFiltersStore.getState().setTimeRange(v as TimeRange);
               closeFrom('time-filter');
             }}
           />

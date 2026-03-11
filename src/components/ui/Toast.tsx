@@ -50,7 +50,6 @@ const ProgressSpinner = (props: { item: ProgressToastItem }) => {
 
 export const ToastViewport = () => {
   const toasts = useToastStore((s) => s.toasts);
-  const removeToast = useToastStore((s) => s.removeToast);
 
   return (
     <ToastPrimitive.Provider swipeDirection="right">
@@ -79,7 +78,7 @@ export const ToastViewport = () => {
               variantClasses[t.variant ?? 'default'],
             )}
             onOpenChange={(open) => {
-              if (!open) removeToast(t.id);
+              if (!open) useToastStore.getState().removeToast(t.id);
             }}
             duration={t.persistent ? Infinity : 4000}
             {...(t.testId ? { 'data-testid': t.testId } : {})}

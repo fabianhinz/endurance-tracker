@@ -54,7 +54,12 @@ export const useSessionsStore = create<SessionsState>()(
 
       renameSession: (id, name) =>
         set((state) => ({
-          sessions: state.sessions.map((s) => (s.id === id ? { ...s, name } : s)),
+          sessions: state.sessions.map((s) => {
+            if (s.id === id) {
+              return { ...s, name };
+            }
+            return s;
+          }),
         })),
 
       replaceSessions: (updates) =>

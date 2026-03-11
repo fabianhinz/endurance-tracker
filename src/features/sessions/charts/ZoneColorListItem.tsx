@@ -10,11 +10,10 @@ interface ZoneColorListItemProps {
 
 export const ZoneColorListItem = (props: ZoneColorListItemProps) => {
   const zoneColorMode = useMapFocusStore((s) => s.zoneColorMode);
-  const setZoneColorMode = useMapFocusStore((s) => s.setZoneColorMode);
   const isActive = zoneColorMode !== null;
 
   const handleToggle = (checked: boolean) => {
-    setZoneColorMode(checked ? props.availableModes[0] : null);
+    useMapFocusStore.getState().setZoneColorMode(checked ? props.availableModes[0] : null);
   };
 
   return (

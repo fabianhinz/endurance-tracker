@@ -20,8 +20,6 @@ const COLLAPSED_COUNT = 6;
 export const LapDetailTable = (props: LapDetailTableProps) => {
   const [expanded, setExpanded] = useState(false);
   const hoveredLapIndex = useMapFocusStore((s) => s.hoveredLapIndex);
-  const setHoveredLapIndex = useMapFocusStore((s) => s.setHoveredLapIndex);
-  const clearHoveredLapIndex = useMapFocusStore((s) => s.clearHoveredLapIndex);
   const needsToggle = props.laps.length > COLLAPSED_COUNT;
   const visibleLaps = needsToggle && !expanded ? props.laps.slice(0, COLLAPSED_COUNT) : props.laps;
 
@@ -52,7 +50,13 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
         data={visibleLaps}
         rowKey={(lap) => lap.lapIndex}
         rowLabel={(lap) => `${lap.lapIndex + 1}`}
-        onRowHover={(lap) => (lap ? setHoveredLapIndex(lap.lapIndex) : clearHoveredLapIndex())}
+        onRowHover={(lap) => {
+          if (lap) {
+            useMapFocusStore.getState().setHoveredLapIndex(lap.lapIndex);
+          } else {
+            useMapFocusStore.getState().clearHoveredLapIndex();
+          }
+        }}
         rowClassName={(lap) =>
           cn(
             lap.intensity !== 'active' && 'text-text-quaternary',

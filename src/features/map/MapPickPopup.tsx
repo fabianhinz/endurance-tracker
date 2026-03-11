@@ -29,7 +29,7 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const expandCard = useExpandCard(cardRef);
   const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
-  const hover = useHoverIntent(useMapFocusStore((s) => s.setHoveredSession));
+  const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
 
   const style = usePopupPosition(props.info.x, props.info.y);
 

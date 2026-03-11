@@ -24,8 +24,12 @@ const dateTimeFmt = new Intl.DateTimeFormat(getLocale(), {
   minute: '2-digit',
 });
 
-export const formatDate = (timestamp: number, options?: FormatDateOptions): string =>
-  options?.includeTime ? dateTimeFmt.format(timestamp) : dateFmt.format(timestamp);
+export const formatDate = (timestamp: number, options?: FormatDateOptions): string => {
+  if (options?.includeTime) {
+    return dateTimeFmt.format(timestamp);
+  }
+  return dateFmt.format(timestamp);
+};
 
 export const formatDuration = (seconds: number): string => {
   const h = Math.floor(seconds / 3600);

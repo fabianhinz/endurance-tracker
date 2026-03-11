@@ -1,22 +1,27 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useLayoutEffect } from 'react';
 
 export const useHoverIntent = (setter: (id: string | null) => void, delay = 150) => {
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const setterRef = useRef(setter);
+
+  useLayoutEffect(() => {
+    setterRef.current = setter;
+  });
 
   useEffect(() => {
     return () => {
       clearTimeout(leaveTimer.current);
-      setter(null);
+      setterRef.current(null);
     };
-  }, [setter]);
+  }, []);
 
   return {
     onPointerEnter: (id: string) => {
       clearTimeout(leaveTimer.current);
-      setter(id);
+      setterRef.current(id);
     },
     onPointerLeave: () => {
-      leaveTimer.current = setTimeout(() => setter(null), delay);
+      leaveTimer.current = setTimeout(() => setterRef.current(null), delay);
     },
   };
 };

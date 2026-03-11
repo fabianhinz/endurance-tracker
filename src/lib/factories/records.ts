@@ -14,8 +14,18 @@ const randomWalk = (
 ): number => {
   const r = Math.random();
   if (r < stayProb) return current;
-  if (r < stayProb + smallProb) return current + (Math.random() < 0.5 ? -smallStep : smallStep);
-  return current + (Math.random() < 0.5 ? -bigStep : bigStep);
+  if (r < stayProb + smallProb) {
+    let smallDelta = smallStep;
+    if (Math.random() < 0.5) {
+      smallDelta = -smallStep;
+    }
+    return current + smallDelta;
+  }
+  let bigDelta = bigStep;
+  if (Math.random() < 0.5) {
+    bigDelta = -bigStep;
+  }
+  return current + bigDelta;
 };
 
 // Generate terrain segments: each segment has a length (in records) and a slope (m/record)
@@ -27,9 +37,10 @@ const generateTerrainSegments = (totalRecords: number): { length: number; slope:
   for (let s = 0; s < segmentCount && remaining > 0; s++) {
     const isLast = s === segmentCount - 1;
     const avgLen = Math.floor(totalRecords / segmentCount);
-    const length = isLast
-      ? remaining
-      : Math.max(10, avgLen + Math.floor((Math.random() - 0.5) * avgLen));
+    let length = Math.max(10, avgLen + Math.floor((Math.random() - 0.5) * avgLen));
+    if (isLast) {
+      length = remaining;
+    }
     const actualLen = Math.min(length, remaining);
     // slope in meters per record, range roughly -3% to +3% grade at ~3m/s -> -0.09 to +0.09 m/s
     const slope = (Math.random() - 0.5) * 0.18;
@@ -270,6 +281,10 @@ export const makeLaps = (sessionId: string, count: number): SessionLap[] => {
 
   for (let i = 0; i < count; i++) {
     const startMs = i * lapDuration * 1000;
+    let intensity = 'active';
+    if (i % 3 === 0) {
+      intensity = 'rest';
+    }
     laps.push({
       sessionId,
       lapIndex: i,
@@ -286,7 +301,7 @@ export const makeLaps = (sessionId: string, count: number): SessionLap[] => {
       minHr: 130 + i * 2,
       maxHr: 155 + i * 3,
       avgCadence: 82 + i,
-      intensity: i % 3 === 0 ? 'rest' : 'active',
+      intensity,
       repetitionNum: i + 1,
     });
   }
@@ -331,9 +346,35 @@ export const makeLapsFromRecords = (
       }
     }
 
-    const avgHr =
-      hrs.length > 0 ? Math.round(hrs.reduce((a, b) => a + b, 0) / hrs.length) : undefined;
-    const avgSpeed = speeds.length > 0 ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
+    let avgHr: number | undefined = undefined;
+    if (hrs.length > 0) {
+      avgHr = Math.round(hrs.reduce((a, b) => a + b, 0) / hrs.length);
+    }
+    let avgSpeed = 0;
+    if (speeds.length > 0) {
+      avgSpeed = speeds.reduce((a, b) => a + b, 0) / speeds.length;
+    }
+
+    let maxSpeed: number | undefined = undefined;
+    if (speeds.length > 0) {
+      maxSpeed = Math.max(...speeds);
+    }
+    let totalAscent: number | undefined = undefined;
+    if (elevationGain > 0) {
+      totalAscent = Math.round(elevationGain);
+    }
+    let minHr: number | undefined = undefined;
+    if (hrs.length > 0) {
+      minHr = Math.round(Math.min(...hrs));
+    }
+    let maxHr: number | undefined = undefined;
+    if (hrs.length > 0) {
+      maxHr = Math.round(Math.max(...hrs));
+    }
+    let avgCadence: number | undefined = undefined;
+    if (cadences.length > 0) {
+      avgCadence = Math.round(cadences.reduce((a, b) => a + b, 0) / cadences.length);
+    }
 
     laps.push({
       sessionId,
@@ -344,15 +385,12 @@ export const makeLapsFromRecords = (
       totalTimerTime: duration,
       distance,
       avgSpeed: Math.round(avgSpeed * 100) / 100,
-      maxSpeed: speeds.length > 0 ? Math.max(...speeds) : undefined,
-      totalAscent: elevationGain > 0 ? Math.round(elevationGain) : undefined,
+      maxSpeed,
+      totalAscent,
       avgHr,
-      minHr: hrs.length > 0 ? Math.round(Math.min(...hrs)) : undefined,
-      maxHr: hrs.length > 0 ? Math.round(Math.max(...hrs)) : undefined,
-      avgCadence:
-        cadences.length > 0
-          ? Math.round(cadences.reduce((a, b) => a + b, 0) / cadences.length)
-          : undefined,
+      minHr,
+      maxHr,
+      avgCadence,
       intensity: 'active',
       repetitionNum: lapIndex + 1,
     });

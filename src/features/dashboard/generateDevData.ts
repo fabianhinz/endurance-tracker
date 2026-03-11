@@ -73,7 +73,12 @@ const pickRoute = (routeData: RouteData, sport: 'running' | 'cycling', intent: S
   const routes = routeData[sport];
   if (intent === 'long-run') {
     // Pick the longest route
-    return routes.reduce((longest, r) => (r.distanceM > longest.distanceM ? r : longest));
+    return routes.reduce((longest, r) => {
+      if (r.distanceM > longest.distanceM) {
+        return r;
+      }
+      return longest;
+    });
   }
   if (intent === 'high-intensity') {
     // Pick one of the shorter routes
@@ -301,31 +306,39 @@ export const generateDevData = async (): Promise<number> => {
     const maxHrVal = Math.max(...hrRecords.map((r) => r.hr!));
     const speedRecords = records.filter((r) => r.speed != null);
     const avgSpeed = speedRecords.reduce((sum, r) => sum + (r.speed ?? 0), 0) / speedRecords.length;
-    const avgPace = avgSpeed > 0 ? 1000 / avgSpeed : undefined;
+    let avgPace: number | undefined = undefined;
+    if (avgSpeed > 0) {
+      avgPace = Math.round(1000 / avgSpeed);
+    }
 
-    const avgPower =
-      sport === 'cycling'
-        ? records.reduce((sum, r) => sum + (r.power ?? 0), 0) /
-          records.filter((r) => r.power != null).length
-        : undefined;
-    const maxPower =
-      sport === 'cycling'
-        ? Math.max(...records.filter((r) => r.power != null).map((r) => r.power!))
-        : undefined;
-    const avgCadence =
-      sport === 'cycling'
-        ? records.reduce((sum, r) => sum + (r.cadence ?? 0), 0) /
-          records.filter((r) => r.cadence != null).length
-        : undefined;
+    let avgPower: number | undefined = undefined;
+    let maxPower: number | undefined = undefined;
+    let avgCadence: number | undefined = undefined;
+    if (sport === 'cycling') {
+      const powerRecords = records.filter((r) => r.power != null);
+      avgPower = Math.round(
+        records.reduce((sum, r) => sum + (r.power ?? 0), 0) / powerRecords.length,
+      );
+      maxPower = Math.round(Math.max(...powerRecords.map((r) => r.power!)));
+      const cadenceRecords = records.filter((r) => r.cadence != null);
+      avgCadence = Math.round(
+        records.reduce((sum, r) => sum + (r.cadence ?? 0), 0) / cadenceRecords.length,
+      );
+    }
 
-    const elevationGain =
-      sport !== 'swimming'
-        ? records.reduce((sum, r, idx) => {
-            if (idx === 0 || r.elevation == null || records[idx - 1].elevation == null) return sum;
-            const diff = r.elevation - records[idx - 1].elevation!;
-            return diff > 0 ? sum + diff : sum;
-          }, 0)
-        : undefined;
+    let elevationGain: number | undefined = undefined;
+    if (sport !== 'swimming') {
+      elevationGain = Math.round(
+        records.reduce((sum, r, idx) => {
+          if (idx === 0 || r.elevation == null || records[idx - 1].elevation == null) return sum;
+          const diff = r.elevation - records[idx - 1].elevation!;
+          if (diff > 0) {
+            return sum + diff;
+          }
+          return sum;
+        }, 0),
+      );
+    }
 
     const stress = calculateSessionStress(
       records,
@@ -345,12 +358,12 @@ export const generateDevData = async (): Promise<number> => {
         avgHr: Math.round(avgHr),
         maxHr: Math.round(maxHrVal),
         avgSpeed: Math.round(avgSpeed * 100) / 100,
-        avgPace: avgPace ? Math.round(avgPace) : undefined,
-        avgPower: avgPower ? Math.round(avgPower) : undefined,
-        maxPower: maxPower ? Math.round(maxPower) : undefined,
+        avgPace,
+        avgPower,
+        maxPower,
         normalizedPower: stress.normalizedPower,
-        avgCadence: avgCadence ? Math.round(avgCadence) : undefined,
-        elevationGain: elevationGain ? Math.round(elevationGain) : undefined,
+        avgCadence,
+        elevationGain,
         calories: Math.round(durationSec * randomBetween(0.15, 0.25)),
         tss: stress.tss,
         stressMethod: stress.stressMethod,

@@ -27,21 +27,30 @@ export const useUserStore = create<UserState>()(
         }),
 
       updateProfile: (updates) =>
-        set((state) => ({
-          profile: state.profile ? { ...state.profile, ...updates } : null,
-        })),
+        set((state) => {
+          if (!state.profile) {
+            return { profile: null };
+          }
+          return { profile: { ...state.profile, ...updates } };
+        }),
 
       updateThresholds: (thresholds) =>
-        set((state) => ({
-          profile: state.profile ? { ...state.profile, thresholds } : null,
-        })),
+        set((state) => {
+          if (!state.profile) {
+            return { profile: null };
+          }
+          return { profile: { ...state.profile, thresholds } };
+        }),
 
       toggleMetricHelp: () =>
-        set((state) => ({
-          profile: state.profile
-            ? { ...state.profile, showMetricHelp: !state.profile.showMetricHelp }
-            : null,
-        })),
+        set((state) => {
+          if (!state.profile) {
+            return { profile: null };
+          }
+          return {
+            profile: { ...state.profile, showMetricHelp: !state.profile.showMetricHelp },
+          };
+        }),
 
       resetProfile: () => set({ profile: null }),
     }),

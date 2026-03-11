@@ -54,8 +54,6 @@ export const SessionDetailPage = () => {
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
   const session = useSessionsStore((s) => s.sessions.find((session) => session.id === params.id));
-  const deleteSession = useSessionsStore((s) => s.deleteSession);
-  const renameSession = useSessionsStore((s) => s.renameSession);
   const personalBests = useSessionsStore((s) => s.personalBests);
   const sessionPBs = useMemo(
     () => personalBests.filter((pb) => pb.sessionId === params.id),
@@ -77,21 +75,17 @@ export const SessionDetailPage = () => {
   const isRunning = session?.sport === 'running';
   const zoneData = useZoneData(records, isRunning);
 
-  const setFocusedLaps = useMapFocusStore((s) => s.setFocusedLaps);
-  const clearFocusedLaps = useMapFocusStore((s) => s.clearFocusedLaps);
-  const setActiveLapData = useMapFocusStore((s) => s.setActiveLapData);
-
   useEffect(() => {
     if (laps.length > 0 && session) {
-      setFocusedLaps(laps, session.sport, records);
+      useMapFocusStore.getState().setFocusedLaps(laps, session.sport, records);
       const deviceAnalysis = analyzeLaps(laps);
       const deviceEnrichments = enrichAllLaps(laps, records);
-      setActiveLapData(deviceAnalysis, deviceEnrichments, null);
+      useMapFocusStore.getState().setActiveLapData(deviceAnalysis, deviceEnrichments, null);
     }
     return () => {
-      clearFocusedLaps();
+      useMapFocusStore.getState().clearFocusedLaps();
     };
-  }, [laps, records, session, setFocusedLaps, clearFocusedLaps, setActiveLapData]);
+  }, [laps, records, session]);
 
   if (!session) {
     return (
@@ -230,7 +224,7 @@ export const SessionDetailPage = () => {
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && nameInput.trim()) {
-                renameSession(session.id, nameInput.trim());
+                useSessionsStore.getState().renameSession(session.id, nameInput.trim());
                 setShowRenameDialog(false);
               }
             }}
@@ -244,7 +238,7 @@ export const SessionDetailPage = () => {
             <Button
               onClick={() => {
                 if (nameInput.trim()) {
-                  renameSession(session.id, nameInput.trim());
+                  useSessionsStore.getState().renameSession(session.id, nameInput.trim());
                   setShowRenameDialog(false);
                 }
               }}
@@ -273,7 +267,7 @@ export const SessionDetailPage = () => {
             <Button
               className="bg-status-danger text-white hover:bg-status-danger/80"
               onClick={async () => {
-                deleteSession(session.id);
+                useSessionsStore.getState().deleteSession(session.id);
                 setShowDeleteDialog(false);
                 navigate('/sessions');
                 await Promise.all([

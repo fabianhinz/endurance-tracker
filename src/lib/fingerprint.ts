@@ -25,10 +25,10 @@ export const generateFingerprint = (
   fallback: FallbackFields,
 ): string => {
   if (fileId?.serial_number != null) {
-    const ts =
-      fileId.time_created instanceof Date
-        ? fileId.time_created.getTime()
-        : new Date(fileId.time_created).getTime();
+    let ts = new Date(fileId.time_created).getTime();
+    if (fileId.time_created instanceof Date) {
+      ts = fileId.time_created.getTime();
+    }
     return `${fileId.serial_number}:${ts}`;
   }
 

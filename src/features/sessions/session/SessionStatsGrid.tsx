@@ -39,12 +39,14 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
       ? intervalPairsWithHr.reduce((sum, p) => sum + p.hrRecovery!, 0) / intervalPairsWithHr.length
       : 0;
 
-  const recoveryMeta =
-    avgRecovery > 25
-      ? { label: m.ui_stat_recovery_strong(), className: 'text-status-success' }
-      : avgRecovery >= 15
-        ? { label: m.ui_stat_recovery_adequate(), className: 'text-text-secondary' }
-        : { label: m.ui_stat_recovery_slow(), className: 'text-status-warning' };
+  let recoveryMeta;
+  if (avgRecovery > 25) {
+    recoveryMeta = { label: m.ui_stat_recovery_strong(), className: 'text-status-success' };
+  } else if (avgRecovery >= 15) {
+    recoveryMeta = { label: m.ui_stat_recovery_adequate(), className: 'text-text-secondary' };
+  } else {
+    recoveryMeta = { label: m.ui_stat_recovery_slow(), className: 'text-status-warning' };
+  }
 
   const stats: Array<{
     key: string;

@@ -43,25 +43,26 @@ interface MapFocusState {
 
 export const useMapFocusStore = create<MapFocusState>()((set) => ({
   openedSessionId: null,
-  setOpenedSession: (id) =>
-    set(
-      id === null
-        ? {
-            openedSessionId: null,
-            focusedLaps: [],
-            focusedSport: null,
-            focusedRecords: [],
-            hoveredPoint: null,
-            lapMarkers: [],
-            hoveredLapIndex: null,
-            activeLapAnalysis: [],
-            activeLapEnrichments: [],
-            activeSplitDistance: null,
-            clickedLapIndex: null,
-            zoneColorMode: null,
-          }
-        : { openedSessionId: id },
-    ),
+  setOpenedSession: (id) => {
+    if (id === null) {
+      set({
+        openedSessionId: null,
+        focusedLaps: [],
+        focusedSport: null,
+        focusedRecords: [],
+        hoveredPoint: null,
+        lapMarkers: [],
+        hoveredLapIndex: null,
+        activeLapAnalysis: [],
+        activeLapEnrichments: [],
+        activeSplitDistance: null,
+        clickedLapIndex: null,
+        zoneColorMode: null,
+      });
+    } else {
+      set({ openedSessionId: id });
+    }
+  },
   hoveredSessionId: null,
   setHoveredSession: (id) => set({ hoveredSessionId: id }),
   focusedLaps: [],

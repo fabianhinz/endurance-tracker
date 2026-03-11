@@ -38,15 +38,39 @@ export const prepareLapSplitsData = (
     .filter((l) => l.paceSecPerKm !== undefined && l.intensity === 'active')
     .map((l) => {
       const speed = Math.round((3600 / l.paceSecPerKm!) * 10) / 10;
-      const maxSpeedKmh = l.maxSpeed !== undefined ? Math.round(l.maxSpeed * 3.6 * 10) / 10 : speed;
-      const maxPace =
-        l.maxSpeed !== undefined && l.maxSpeed > 0 ? 1000 / l.maxSpeed : l.paceSecPerKm!;
+
+      let maxSpeedKmh = speed;
+      if (l.maxSpeed !== undefined) {
+        maxSpeedKmh = Math.round(l.maxSpeed * 3.6 * 10) / 10;
+      }
+
+      let maxPace = l.paceSecPerKm!;
+      if (l.maxSpeed !== undefined && l.maxSpeed > 0) {
+        maxPace = 1000 / l.maxSpeed;
+      }
 
       const enrichment = enrichmentMap.get(l.lapIndex);
       const minSpeedMs = enrichment?.minSpeed;
-      const minSpeedKmh =
-        minSpeedMs !== undefined ? Math.round(minSpeedMs * 3.6 * 10) / 10 : undefined;
-      const minPace = minSpeedMs !== undefined && minSpeedMs > 0 ? 1000 / minSpeedMs : undefined;
+
+      let minSpeedKmh: number | undefined = undefined;
+      if (minSpeedMs !== undefined) {
+        minSpeedKmh = Math.round(minSpeedMs * 3.6 * 10) / 10;
+      }
+
+      let minPace: number | undefined = undefined;
+      if (minSpeedMs !== undefined && minSpeedMs > 0) {
+        minPace = 1000 / minSpeedMs;
+      }
+
+      let paceRange: [number, number] | undefined = undefined;
+      if (minPace !== undefined) {
+        paceRange = [maxPace, minPace];
+      }
+
+      let speedRange: [number, number] | undefined = undefined;
+      if (minSpeedKmh !== undefined) {
+        speedRange = [minSpeedKmh, maxSpeedKmh];
+      }
 
       return {
         lap: `Lap ${l.lapIndex + 1}`,
@@ -56,8 +80,8 @@ export const prepareLapSplitsData = (
         maxSpeed: maxSpeedKmh,
         minPace,
         minSpeed: minSpeedKmh,
-        paceRange: minPace !== undefined ? [maxPace, minPace] : undefined,
-        speedRange: minSpeedKmh !== undefined ? [minSpeedKmh, maxSpeedKmh] : undefined,
+        paceRange,
+        speedRange,
       };
     });
 };

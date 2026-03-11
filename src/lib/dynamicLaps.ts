@@ -38,23 +38,34 @@ export const computeDynamicLaps = (
     const duration = last.timestamp - first.timestamp;
     const movingTime = duration; // records are per-second; no stopped detection at record level
 
-    const paceSecPerKm = distance > 0 && duration > 0 ? (duration / distance) * 1000 : undefined;
+    let paceSecPerKm: number | undefined = undefined;
+    if (distance > 0 && duration > 0) {
+      paceSecPerKm = (duration / distance) * 1000;
+    }
 
     const hrs = slice.map((r) => r.hr).filter((h): h is number => h !== undefined && h > 0);
-    const avgHr =
-      hrs.length > 0 ? Math.round(hrs.reduce((a, b) => a + b, 0) / hrs.length) : undefined;
-    const maxHr = hrs.length > 0 ? Math.max(...hrs) : undefined;
+    let avgHr: number | undefined = undefined;
+    if (hrs.length > 0) {
+      avgHr = Math.round(hrs.reduce((a, b) => a + b, 0) / hrs.length);
+    }
+    let maxHr: number | undefined = undefined;
+    if (hrs.length > 0) {
+      maxHr = Math.max(...hrs);
+    }
 
     const cadences = slice
       .map((r) => r.cadence)
       .filter((c): c is number => c !== undefined && c > 0);
-    const avgCadence =
-      cadences.length > 0
-        ? Math.round(cadences.reduce((a, b) => a + b, 0) / cadences.length)
-        : undefined;
+    let avgCadence: number | undefined = undefined;
+    if (cadences.length > 0) {
+      avgCadence = Math.round(cadences.reduce((a, b) => a + b, 0) / cadences.length);
+    }
 
     const speeds = slice.map((r) => r.speed).filter((s): s is number => s !== undefined);
-    const maxSpeed = speeds.length > 0 ? Math.max(...speeds) : undefined;
+    let maxSpeed: number | undefined = undefined;
+    if (speeds.length > 0) {
+      maxSpeed = Math.max(...speeds);
+    }
 
     let elevationGain = 0;
     for (let i = 1; i < slice.length; i++) {

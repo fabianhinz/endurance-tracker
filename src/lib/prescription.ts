@@ -50,13 +50,17 @@ const step = (
   repeat?: number,
 ): WorkoutStep => {
   const range = zoneRange(zoneName, zones);
+  let spreadRepeat: { repeat: number } | Record<string, never> = {};
+  if (repeat !== undefined) {
+    spreadRepeat = { repeat };
+  }
   return {
     type,
     durationSec,
     zone: zoneName,
     targetPaceMin: range.min,
     targetPaceMax: range.max,
-    ...(repeat !== undefined ? { repeat } : {}),
+    ...spreadRepeat,
   };
 };
 
@@ -190,7 +194,11 @@ const getRationale = (context: PlanContext): string => {
     });
   }
   const risk = getInjuryRisk(context.acwr);
-  const tsb = `${context.tsb > 0 ? '+' : ''}${Math.round(context.tsb)}`;
+  let tsbSign = '';
+  if (context.tsb > 0) {
+    tsbSign = '+';
+  }
+  const tsb = `${tsbSign}${Math.round(context.tsb)}`;
   const base = m.coach_rationale_base({
     tsb,
     formStatus: context.formStatus,
@@ -297,17 +305,21 @@ export const generateWeeklyPlan = (
   historyDays: number,
 ): WeeklyPlan => {
   // Determine context
-  const context: PlanContext = currentMetrics
-    ? {
-        mode: 'normal',
-        formStatus: getFormStatus(currentMetrics.tsb),
-        tsb: currentMetrics.tsb,
-        acwr: currentMetrics.acwr,
-        dataMaturityDays: historyDays,
-      }
-    : { mode: 'no-data' };
+  let context: PlanContext = { mode: 'no-data' };
+  if (currentMetrics) {
+    context = {
+      mode: 'normal',
+      formStatus: getFormStatus(currentMetrics.tsb),
+      tsb: currentMetrics.tsb,
+      acwr: currentMetrics.acwr,
+      dataMaturityDays: historyDays,
+    };
+  }
 
-  const formKey = context.mode === 'no-data' ? 'no-data' : context.formStatus;
+  let formKey: FormStatus | 'no-data' = 'no-data';
+  if (context.mode === 'normal') {
+    formKey = context.formStatus;
+  }
 
   // Get base template and apply guards
   let template = WEEK_TEMPLATES[formKey];
@@ -326,7 +338,10 @@ export const generateWeeklyPlan = (
     const date = addDays(monday, i);
     const built = buildWorkout(type, zones);
     const durationSec = computeStepsDuration(built.steps);
-    const tssRate = type === 'rest' ? 0 : TSS_PER_HOUR[type];
+    let tssRate = 0;
+    if (type !== 'rest') {
+      tssRate = TSS_PER_HOUR[type];
+    }
     const estimatedTss = Math.round((durationSec / 3600) * tssRate);
 
     return {

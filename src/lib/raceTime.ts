@@ -24,7 +24,10 @@ export const parseRaceTime = (input: string, distance: RaceDistance): number | u
     const s = Number(match[3]);
     if (mins >= 60 || s >= 60) return undefined;
     const total = h * 60 + mins + s / 60;
-    return total > 0 ? total : undefined;
+    if (total > 0) {
+      return total;
+    }
+    return undefined;
   }
   const match = input.match(/^(\d{1,3}):(\d{2})$/);
   if (!match) return undefined;
@@ -32,5 +35,8 @@ export const parseRaceTime = (input: string, distance: RaceDistance): number | u
   const s = Number(match[2]);
   if (s >= 60) return undefined;
   const total = mins + s / 60;
-  return total > 0 ? total : undefined;
+  if (total > 0) {
+    return total;
+  }
+  return undefined;
 };

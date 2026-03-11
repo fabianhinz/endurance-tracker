@@ -16,7 +16,10 @@ const parseTime = (input: string): number | undefined => {
   const s = Number(match[3]);
   if (m >= 60 || s >= 60) return undefined;
   const total = h * 3600 + m * 60 + s;
-  return total > 0 ? total : undefined;
+  if (total > 0) {
+    return total;
+  }
+  return undefined;
 };
 
 const formatTime = (seconds: number): string => {
@@ -34,7 +37,10 @@ export const usePaceCalculator = () => {
 
   const computed = useMemo(() => {
     const pace = parsePaceInput(paceInput);
-    const distance = distanceInput ? Number(distanceInput) * 1000 : undefined;
+    let distance: number | undefined = undefined;
+    if (distanceInput) {
+      distance = Number(distanceInput) * 1000;
+    }
     const time = parseTime(timeInput);
 
     if (solveFor === 'time' && pace !== undefined && distance !== undefined && distance > 0) {

@@ -50,6 +50,11 @@ export function makeSessionSequence(
   const tssVariation = options?.tssVariation ?? 30;
   const daysBetween = options?.daysBetween ?? 1;
 
+  let stressMethod: 'tss' | 'trimp' = 'trimp';
+  if (sport === 'cycling') {
+    stressMethod = 'tss';
+  }
+
   const sessions: TrainingSession[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -63,7 +68,7 @@ export function makeSessionSequence(
         date,
         tss: Math.round(tss * 10) / 10,
         duration: 3600 + i * 60,
-        stressMethod: sport === 'cycling' ? 'tss' : 'trimp',
+        stressMethod,
         isPlanned: false,
         createdAt: date,
       }),

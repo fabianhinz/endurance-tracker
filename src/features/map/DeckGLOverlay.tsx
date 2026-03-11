@@ -190,8 +190,10 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     const [r, g, b] = sportTrackColor[focusedSport];
 
     return lapMarkers.flatMap((marker) => {
-      const lineAlpha =
-        hoveredLapIndex != null ? (marker.lapIndex === hoveredLapIndex ? 255 : 0) : 0;
+      let lineAlpha = 0;
+      if (hoveredLapIndex != null && marker.lapIndex === hoveredLapIndex) {
+        lineAlpha = 255;
+      }
       return [
         new ScatterplotLayer<LapMarker>({
           id: `lap-marker-circle-${marker.lapIndex}`,

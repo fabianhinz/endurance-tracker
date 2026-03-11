@@ -120,16 +120,20 @@ export const useReimport = () => {
 
     const parts: string[] = [];
     if (updates.length > 0) {
-      parts.push(
-        updates.length === 1
-          ? m.toast_reimport_sessions({ count: updates.length })
-          : m.toast_reimport_sessions_plural({ count: updates.length }),
-      );
+      let reimportMsg = m.toast_reimport_sessions_plural({ count: updates.length });
+      if (updates.length === 1) {
+        reimportMsg = m.toast_reimport_sessions({ count: updates.length });
+      }
+      parts.push(reimportMsg);
     }
     if (failed > 0) {
       parts.push(m.toast_reimport_failed({ count: failed }));
     }
-    toast(m.toast_reimport_complete_title(), parts.join(', '), failed > 0 ? 'error' : 'success');
+    let reimportVariant: 'success' | 'error' = 'success';
+    if (failed > 0) {
+      reimportVariant = 'error';
+    }
+    toast(m.toast_reimport_complete_title(), parts.join(', '), reimportVariant);
   }, []);
 
   return {

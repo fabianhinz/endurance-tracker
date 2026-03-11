@@ -35,8 +35,12 @@ const DEFAULT_PADDING: Required<ExpandPadding> = { x: 200, top: 200, bottom: 200
 const SMALL_PADDING: Required<ExpandPadding> = { x: 24, top: 24, bottom: 24 };
 const SMALL_BREAKPOINT = 768;
 
-export const getResponsivePadding = (viewportWidth: number): Required<ExpandPadding> =>
-  viewportWidth < SMALL_BREAKPOINT ? SMALL_PADDING : DEFAULT_PADDING;
+export const getResponsivePadding = (viewportWidth: number): Required<ExpandPadding> => {
+  if (viewportWidth < SMALL_BREAKPOINT) {
+    return SMALL_PADDING;
+  }
+  return DEFAULT_PADDING;
+};
 
 export const computeExpandedSize = (
   viewportWidth: number,
@@ -81,7 +85,10 @@ export const useExpandCard = (
   const getDuration = useCallback(() => {
     if (typeof window === 'undefined') return baseDuration;
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    return mq.matches ? 0 : baseDuration;
+    if (mq.matches) {
+      return 0;
+    }
+    return baseDuration;
   }, [baseDuration]);
 
   const expand = useCallback(() => {

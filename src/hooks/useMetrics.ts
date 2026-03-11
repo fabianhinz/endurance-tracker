@@ -14,7 +14,10 @@ export const useMetrics = (): {
 
   return useMemo(() => {
     const history = computeMetrics(sessions);
-    const current = history.length > 0 ? history[history.length - 1] : undefined;
+    let current: DailyMetrics | undefined = undefined;
+    if (history.length > 0) {
+      current = history[history.length - 1];
+    }
     const coaching = getCoachingRecommendation(current, history.length);
     return { history, current, coaching };
   }, [sessions]);

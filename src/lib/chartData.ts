@@ -142,7 +142,10 @@ export const prepareGAPData = (records: SessionRecord[]): GAPPoint[] => {
       gradient = r.grade / 100;
     } else if (i > 0 && valid[i - 1].elevation !== undefined && r.elevation !== undefined) {
       const dx = (r.distance ?? 0) - (valid[i - 1].distance ?? 0);
-      gradient = dx > 0 ? (r.elevation! - valid[i - 1].elevation!) / dx : 0;
+      gradient = 0;
+      if (dx > 0) {
+        gradient = (r.elevation! - valid[i - 1].elevation!) / dx;
+      }
     } else {
       gradient = 0;
     }

@@ -75,29 +75,41 @@ export const deriveMaxFromRecords = (
 };
 
 export const mapFitLaps = (fitLaps: FitLapInput[], sessionId: string): SessionLap[] => {
-  return fitLaps.map((lap, index) => ({
-    sessionId,
-    lapIndex: lap.message_index?.value ?? index,
-    startTime: lap.start_time ? new Date(lap.start_time).getTime() : 0,
-    endTime: lap.timestamp ? new Date(lap.timestamp).getTime() : 0,
-    totalElapsedTime: lap.total_elapsed_time ?? 0,
-    totalTimerTime: lap.total_timer_time ?? 0,
-    totalMovingTime: lap.total_moving_time,
-    distance: lap.total_distance ?? 0,
-    avgSpeed: lap.avg_speed ?? 0,
-    maxSpeed: lap.max_speed,
-    totalAscent: lap.total_ascent,
-    minAltitude: lap.min_altitude,
-    maxAltitude: lap.max_altitude,
-    avgGrade: lap.avg_grade,
-    avgHr: lap.avg_heart_rate,
-    minHr: lap.min_heart_rate,
-    maxHr: lap.max_heart_rate,
-    avgCadence: lap.avg_cadence,
-    maxCadence: lap.max_cadence,
-    intensity: lap.intensity,
-    repetitionNum: lap.repetition_num,
-  }));
+  return fitLaps.map((lap, index) => {
+    let startTime = 0;
+    if (lap.start_time) {
+      startTime = new Date(lap.start_time).getTime();
+    }
+
+    let endTime = 0;
+    if (lap.timestamp) {
+      endTime = new Date(lap.timestamp).getTime();
+    }
+
+    return {
+      sessionId,
+      lapIndex: lap.message_index?.value ?? index,
+      startTime,
+      endTime,
+      totalElapsedTime: lap.total_elapsed_time ?? 0,
+      totalTimerTime: lap.total_timer_time ?? 0,
+      totalMovingTime: lap.total_moving_time,
+      distance: lap.total_distance ?? 0,
+      avgSpeed: lap.avg_speed ?? 0,
+      maxSpeed: lap.max_speed,
+      totalAscent: lap.total_ascent,
+      minAltitude: lap.min_altitude,
+      maxAltitude: lap.max_altitude,
+      avgGrade: lap.avg_grade,
+      avgHr: lap.avg_heart_rate,
+      minHr: lap.min_heart_rate,
+      maxHr: lap.max_heart_rate,
+      avgCadence: lap.avg_cadence,
+      maxCadence: lap.max_cadence,
+      intensity: lap.intensity,
+      repetitionNum: lap.repetition_num,
+    };
+  });
 };
 
 export const parseFitFile = async (
@@ -123,9 +135,11 @@ export const parseFitFile = async (
   try {
     data = await parser.parseAsync(arrayBuffer);
   } catch (err) {
-    throw new Error(
-      `Failed to parse FIT file "${fileName}": ${err instanceof Error ? err.message : 'unknown error'}`,
-    );
+    let errorDetail = 'unknown error';
+    if (err instanceof Error) {
+      errorDetail = err.message;
+    }
+    throw new Error(`Failed to parse FIT file "${fileName}": ${errorDetail}`);
   }
 
   const fitSession = data.sessions?.[0];
@@ -136,53 +150,64 @@ export const parseFitFile = async (
 
   // Extract user profile from FIT file (if available)
   const profileResult = fitUserProfileSchema.safeParse(data.user_profile);
-  const fitUserProfile: FitUserProfile | undefined = profileResult.success
-    ? {
-        weight: profileResult.data.weight,
-        gender:
-          profileResult.data.gender === 'female'
-            ? 'female'
-            : profileResult.data.gender === 'male'
-              ? 'male'
-              : undefined,
-        restingHeartRate: profileResult.data.resting_heart_rate,
-      }
-    : undefined;
+  let fitUserProfile: FitUserProfile | undefined = undefined;
+  if (profileResult.success) {
+    let gender: 'male' | 'female' | undefined = undefined;
+    if (profileResult.data.gender === 'female') {
+      gender = 'female';
+    } else if (profileResult.data.gender === 'male') {
+      gender = 'male';
+    }
+    fitUserProfile = {
+      weight: profileResult.data.weight,
+      gender,
+      restingHeartRate: profileResult.data.resting_heart_rate,
+    };
+  }
 
   // Transform FIT records to app records
   const recordsResult = fitRecordsSchema.safeParse(fitRecords);
-  const records: SessionRecord[] = recordsResult.success
-    ? recordsResult.data.map((r) => ({
-        sessionId,
-        timestamp: r.elapsed_time ?? 0,
-        hr: r.heart_rate,
-        power: r.power,
-        cadence: r.cadence,
-        speed: r.speed,
-        lat: r.position_lat,
-        lng: r.position_long,
-        elevation: r.altitude,
-        distance: r.distance,
-        grade: r.grade,
-        timerTime: r.timer_time,
-      }))
-    : [];
+  let records: SessionRecord[] = [];
+  if (recordsResult.success) {
+    records = recordsResult.data.map((r) => ({
+      sessionId,
+      timestamp: r.elapsed_time ?? 0,
+      hr: r.heart_rate,
+      power: r.power,
+      cadence: r.cadence,
+      speed: r.speed,
+      lat: r.position_lat,
+      lng: r.position_long,
+      elevation: r.altitude,
+      distance: r.distance,
+      grade: r.grade,
+      timerTime: r.timer_time,
+    }));
+  }
 
   // Extract laps
   const lapsResult = fitLapsSchema.safeParse(data.laps ?? []);
-  const laps = mapFitLaps(lapsResult.success ? lapsResult.data : [], sessionId);
+  let lapsInput: FitLapInput[] = [];
+  if (lapsResult.success) {
+    lapsInput = lapsResult.data;
+  }
+  const laps = mapFitLaps(lapsInput, sessionId);
 
   // Derive moving time from laps; fall back to timer time per lap when moving time is unavailable
-  const movingTime =
-    laps.length > 0
-      ? laps.reduce((sum, lap) => sum + (lap.totalMovingTime ?? lap.totalTimerTime), 0)
-      : undefined;
+  let movingTime: number | undefined = undefined;
+  if (laps.length > 0) {
+    movingTime = laps.reduce((sum, lap) => sum + (lap.totalMovingTime ?? lap.totalTimerTime), 0);
+  }
 
   // Validate sensor data
   const sensorWarnings = validateRecords(records, sport).map((w) => w.message);
 
   // Calculate stress — use FTP for all sports with power data, not just cycling
   const hasPowerRecords = records.some((r) => r.power !== undefined && r.power > 0);
+  let stressFtp: number | undefined = undefined;
+  if (hasPowerRecords) {
+    stressFtp = userProfile.ftp;
+  }
   const stressResult = calculateSessionStress(
     records,
     fitSession?.total_timer_time ?? fitSession?.total_elapsed_time ?? 0,
@@ -190,14 +215,18 @@ export const parseFitFile = async (
     userProfile.restHr,
     userProfile.maxHr,
     userProfile.gender,
-    hasPowerRecords ? userProfile.ftp : undefined,
+    stressFtp,
   );
 
   // Compute advanced metrics from records
-  const gap = sport === 'running' ? calculateGAP(records) : undefined;
-  const sessionDate = fitSession?.start_time
-    ? new Date(fitSession.start_time).getTime()
-    : Date.now();
+  let gap: number | undefined = undefined;
+  if (sport === 'running') {
+    gap = calculateGAP(records);
+  }
+  let sessionDate = Date.now();
+  if (fitSession?.start_time) {
+    sessionDate = new Date(fitSession.start_time).getTime();
+  }
 
   const avgSpeed = fitSession?.avg_speed;
   const name = extractSessionName(fileName);
@@ -206,12 +235,21 @@ export const parseFitFile = async (
   const sessionDuration = fitSession?.total_timer_time ?? fitSession?.total_elapsed_time ?? 0;
   const sessionDistance = deriveDistanceFromRecords(records);
 
-  const fingerprint = generateFingerprint(fileIdResult.success ? fileIdResult.data : undefined, {
+  let fileIdData: Parameters<typeof generateFingerprint>[0] = undefined;
+  if (fileIdResult.success) {
+    fileIdData = fileIdResult.data;
+  }
+  const fingerprint = generateFingerprint(fileIdData, {
     sport,
     date: sessionDate,
     duration: sessionDuration,
     distance: sessionDistance,
   });
+
+  let avgPace: number | undefined = undefined;
+  if (sport === 'running' && avgSpeed && avgSpeed > 0) {
+    avgPace = 1000 / avgSpeed;
+  }
 
   const session: Omit<TrainingSession, 'id' | 'createdAt'> = {
     ...(name !== undefined && { name }),
@@ -226,7 +264,7 @@ export const parseFitFile = async (
     normalizedPower: stressResult.normalizedPower ?? fitSession?.normalized_power,
     avgCadence: deriveAvgFromRecords(records, 'cadence') ?? fitSession?.avg_cadence,
     avgSpeed,
-    avgPace: sport === 'running' && avgSpeed && avgSpeed > 0 ? 1000 / avgSpeed : undefined,
+    avgPace,
     calories: fitSession?.total_calories,
     elevationGain: fitSession?.total_ascent,
     elevationLoss: fitSession?.total_descent,

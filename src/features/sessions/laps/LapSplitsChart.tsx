@@ -61,13 +61,12 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           axisLine={false}
           tickCount={compact ? 3 : undefined}
           reversed={props.isRunning}
-          tickFormatter={(v: number) =>
-            props.isRunning
-              ? compact
-                ? formatPaceInput(v)
-                : formatPace(v)
-              : formatTick(v, compact ? undefined : 'km/h')
-          }
+          tickFormatter={(v: number) => {
+            if (props.isRunning) {
+              return compact ? formatPaceInput(v) : formatPace(v);
+            }
+            return formatTick(v, compact ? undefined : 'km/h');
+          }}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}

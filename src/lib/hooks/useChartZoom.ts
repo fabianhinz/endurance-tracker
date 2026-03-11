@@ -114,7 +114,10 @@ export const useChartZoom = <T>(options: UseChartZoomOptions<T>): UseChartZoomRe
   }, []);
 
   const isZoomed = startIndex !== null;
-  const zoomedData = isZoomed ? data.slice(startIndex, endIndex! + 1) : data;
+  let zoomedData = data;
+  if (isZoomed) {
+    zoomedData = data.slice(startIndex, endIndex! + 1);
+  }
 
   return {
     zoomedData,

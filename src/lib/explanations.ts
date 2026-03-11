@@ -43,7 +43,6 @@ export interface MetricExplanation {
   limitations: string;
   unit?: string;
   sports: ('running' | 'cycling' | 'swimming' | 'all')[];
-  displayContext: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -64,8 +63,6 @@ const tss: MetricExplanation = {
   limitations: m.exp_tss_limitations(),
   unit: 'TSS',
   sports: ['cycling'],
-  displayContext:
-    'Session detail view, session list, and weekly/monthly summaries. Display alongside the stress method label.',
 };
 
 const trimp: MetricExplanation = {
@@ -83,8 +80,6 @@ const trimp: MetricExplanation = {
   limitations: m.exp_trimp_limitations(),
   unit: 'TSS-equivalent',
   sports: ['all'],
-  displayContext:
-    'Session detail as the stress metric when power data is unavailable. Labeled as "estimated from heart rate".',
 };
 
 const duration: MetricExplanation = {
@@ -100,8 +95,6 @@ const duration: MetricExplanation = {
   limitations: m.exp_duration_limitations(),
   unit: 'TSS-equivalent',
   sports: ['all'],
-  displayContext:
-    'Session detail as the stress metric when no sensor data is available. Labeled as "estimated from duration".',
 };
 
 // ---------------------------------------------------------------------------
@@ -122,8 +115,6 @@ const ctl: MetricExplanation = {
   limitations: m.exp_ctl_limitations(),
   unit: 'TSS/day',
   sports: ['all'],
-  displayContext:
-    'Main dashboard PMC chart as a trend line. Label as "Fitness" for beginners. Warn when data history is under 6 weeks.',
 };
 
 const atl: MetricExplanation = {
@@ -140,8 +131,6 @@ const atl: MetricExplanation = {
   limitations: m.exp_atl_limitations(),
   unit: 'TSS/day',
   sports: ['all'],
-  displayContext:
-    'PMC chart alongside CTL. Label as "Fatigue" for beginners. Color-code the gap between CTL and ATL.',
 };
 
 const tsb: MetricExplanation = {
@@ -158,8 +147,6 @@ const tsb: MetricExplanation = {
   limitations: m.exp_tsb_limitations(),
   unit: 'TSS/day',
   sports: ['all'],
-  displayContext:
-    'Headline metric on the coaching/dashboard view. Show historical trend on PMC chart. Use form status labels for actionable advice.',
 };
 
 const acwr: MetricExplanation = {
@@ -175,8 +162,6 @@ const acwr: MetricExplanation = {
   range: m.exp_acwr_range(),
   limitations: m.exp_acwr_limitations(),
   sports: ['all'],
-  displayContext:
-    'Coaching dashboard alongside injury risk status. Use a color-coded gauge (green/yellow/red). Hide or grey out when data history is under 4 weeks.',
 };
 
 // ---------------------------------------------------------------------------
@@ -197,7 +182,6 @@ const normalizedPower: MetricExplanation = {
   limitations: m.exp_normalizedPower_limitations(),
   unit: 'W',
   sports: ['cycling'],
-  displayContext: 'Session detail view for cycling activities. Always pair with Average Power.',
 };
 
 const gradeAdjustedPace: MetricExplanation = {
@@ -215,8 +199,6 @@ const gradeAdjustedPace: MetricExplanation = {
   limitations: m.exp_gradeAdjustedPace_limitations(),
   unit: 'sec/km',
   sports: ['running'],
-  displayContext:
-    'Session detail for running activities with elevation data. Display alongside actual pace.',
 };
 
 // ---------------------------------------------------------------------------
@@ -235,8 +217,6 @@ const recovery: MetricExplanation = {
   range: m.exp_recovery_range(),
   limitations: m.exp_recovery_limitations(),
   sports: ['all'],
-  displayContext:
-    'Session detail view for sessions with detected work/rest interval pairs. Show average recovery with a color-coded label.',
 };
 
 const pacingTrend: MetricExplanation = {
@@ -253,8 +233,6 @@ const pacingTrend: MetricExplanation = {
   range: m.exp_pacingTrend_range(),
   limitations: m.exp_pacingTrend_limitations(),
   sports: ['running', 'cycling'],
-  displayContext:
-    'Session detail view for sessions with 3+ laps. Show drift percentage and a color-coded trend label.',
 };
 
 // ---------------------------------------------------------------------------
@@ -273,7 +251,6 @@ const trainingZones: MetricExplanation = {
   range: m.exp_trainingZones_range(),
   limitations: m.exp_trainingZones_limitations(),
   sports: ['running'],
-  displayContext: 'Coaching page as a quick reference. Show zone name, color, and pace range.',
 };
 
 // ---------------------------------------------------------------------------
@@ -294,8 +271,6 @@ const aerobicTE: MetricExplanation = {
   range: m.exp_aerobicTE_range(),
   limitations: m.exp_aerobicTE_limitations(),
   sports: ['all'],
-  displayContext:
-    'Session detail view as a gauge dial alongside Anaerobic TE. Only shown for sessions with HR data.',
 };
 
 const anaerobicTE: MetricExplanation = {
@@ -312,8 +287,6 @@ const anaerobicTE: MetricExplanation = {
   range: m.exp_anaerobicTE_range(),
   limitations: m.exp_anaerobicTE_limitations(),
   sports: ['all'],
-  displayContext:
-    'Session detail view as a gauge dial alongside Aerobic TE. Only shown for sessions with HR data.',
 };
 
 // ---------------------------------------------------------------------------
@@ -333,7 +306,6 @@ const avgHr: MetricExplanation = {
   limitations: m.exp_avgHr_limitations(),
   unit: 'bpm',
   sports: ['all'],
-  displayContext: 'Session detail stats grid. Always shown when HR data is available.',
 };
 
 const avgPace: MetricExplanation = {
@@ -349,7 +321,6 @@ const avgPace: MetricExplanation = {
   limitations: m.exp_avgPace_limitations(),
   unit: 'min/km',
   sports: ['running', 'swimming'],
-  displayContext: 'Session detail stats grid for running and swimming sessions.',
 };
 
 const avgSpeed: MetricExplanation = {
@@ -365,7 +336,6 @@ const avgSpeed: MetricExplanation = {
   limitations: m.exp_avgSpeed_limitations(),
   unit: 'km/h',
   sports: ['cycling'],
-  displayContext: 'Session detail stats grid for cycling sessions.',
 };
 
 const avgPower: MetricExplanation = {
@@ -381,8 +351,6 @@ const avgPower: MetricExplanation = {
   limitations: m.exp_avgPower_limitations(),
   unit: 'W',
   sports: ['cycling'],
-  displayContext:
-    'Session detail stats grid for cycling sessions with power data. Shown as subDetail when Normalized Power is available.',
 };
 
 const elevation: MetricExplanation = {
@@ -398,8 +366,6 @@ const elevation: MetricExplanation = {
   limitations: m.exp_elevation_limitations(),
   unit: 'm',
   sports: ['all'],
-  displayContext:
-    'Session detail stats grid. Shows gain/loss as primary value with altitude range as subDetail.',
 };
 
 const cadence: MetricExplanation = {
@@ -415,7 +381,6 @@ const cadence: MetricExplanation = {
   limitations: m.exp_cadence_limitations(),
   unit: 'rpm',
   sports: ['all'],
-  displayContext: 'Session detail stats grid when cadence data is available.',
 };
 
 // ---------------------------------------------------------------------------
@@ -434,7 +399,6 @@ const vdot: MetricExplanation = {
   range: m.exp_vdot_range(),
   limitations: m.exp_vdot_limitations(),
   sports: ['running'],
-  displayContext: 'Race predictor tool on the coaching page. Shown alongside predicted race times.',
 };
 
 // ---------------------------------------------------------------------------
