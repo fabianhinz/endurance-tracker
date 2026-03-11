@@ -26,7 +26,8 @@ export type MetricId =
   | 'avgSpeed'
   | 'avgPower'
   | 'elevation'
-  | 'cadence';
+  | 'cadence'
+  | 'vdot';
 
 export interface MetricExplanation {
   id: MetricId;
@@ -418,6 +419,25 @@ const cadence: MetricExplanation = {
 };
 
 // ---------------------------------------------------------------------------
+// VDOT (src/engine/vdot.ts)
+// ---------------------------------------------------------------------------
+
+const vdot: MetricExplanation = {
+  id: 'vdot',
+  shortLabel: m.exp_vdot_shortLabel(),
+  friendlyName: m.exp_vdot_friendlyName(),
+  name: m.exp_vdot_name(),
+  oneLiner: m.exp_vdot_oneLiner(),
+  fullExplanation: m.exp_vdot_fullExplanation(),
+  analogy: m.exp_vdot_analogy(),
+  whyItMatters: m.exp_vdot_whyItMatters(),
+  range: m.exp_vdot_range(),
+  limitations: m.exp_vdot_limitations(),
+  sports: ['running'],
+  displayContext: 'Race predictor tool on the coaching page. Shown alongside predicted race times.',
+};
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 
@@ -449,4 +469,6 @@ export const METRIC_EXPLANATIONS: Record<MetricId, MetricExplanation> = {
   avgPower,
   elevation,
   cadence,
+  // VDOT
+  vdot,
 };

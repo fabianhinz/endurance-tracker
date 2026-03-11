@@ -80,6 +80,7 @@
   "ui_pace_est_desc": "Gib ein aktuelles Wettkampfergebnis ein — dein Schwellentempo wird mit der Daniels-VDOT-Formel berechnet.",
   "ui_pace_est_distance": "Wettkampfdistanz",
   "ui_pace_est_race_time": "Wettkampfzeit ({format})",
+  "ui_pace_est_race_time_short": "Wettkampfzeit",
   "ui_pace_est_5k": "5 km",
   "ui_pace_est_10k": "10 km",
   "ui_pace_est_half_marathon": "Halbmarathon",
@@ -117,6 +118,23 @@
   "ui_coach_current_form_subtitle": "Wie bereit du bist",
   "ui_coach_weekly_plan": "Wochenplan",
   "ui_coach_weekly_plan_subtitle": "Woche vom {weekOf} — {tss} TSS",
+
+  "ui_coach_tab_plan": "Plan",
+  "ui_coach_tab_tools": "Tools",
+
+  "ui_coach_predictor_title": "Rennzeit-Prognose",
+  "ui_coach_predictor_subtitle": "Prognostiziere Rennzeiten anhand eines aktuellen Ergebnisses per VDOT",
+  "ui_coach_predictor_predicted_times": "Prognostizierte Zeiten",
+  "ui_coach_predictor_distance": "Distanz",
+  "ui_coach_predictor_time": "Zeit",
+  "ui_coach_predictor_pace": "Pace",
+
+  "ui_coach_converter_title": "Pace-Rechner",
+  "ui_coach_converter_subtitle": "Umrechnung zwischen Pace, Distanz und Zeit",
+  "ui_coach_converter_pace_short": "Pace",
+  "ui_coach_converter_distance_short": "Distanz",
+  "ui_coach_converter_time_short": "Zeit",
+  "ui_coach_converter_solve_for": "Berechne",
 
   "ui_stat_duration": "Dauer",
   "ui_stat_distance": "Distanz",
@@ -467,6 +485,16 @@
   "exp_cadence_whyItMatters": "Für Läufer: höhere Kadenz (170–180 spm) senkt das Verletzungsrisiko und verbessert die Laufökonomie. Für Radfahrer: die Kadenz verteilt die Ermüdung zwischen Herz-Kreislauf und Muskulatur.",
   "exp_cadence_range": "Laufen: 160–180+ spm (Elite oft 180+). Radfahren: 80–100 rpm (je nach Gelände und Anstrengung). Niedrig = mehr muskulär, hoch = mehr kardiovaskulär.",
   "exp_cadence_limitations": "Handgelenk-Kadenzmessung kann ungenau sein, besonders bei niedrigem Tempo. Die optimale Kadenz ist individuell — eine fremde Kadenz zu erzwingen kann das Verletzungsrisiko erhöhen statt senken.",
+
+  "exp_vdot_shortLabel": "VDOT",
+  "exp_vdot_friendlyName": "Fitness-Index",
+  "exp_vdot_name": "VDOT",
+  "exp_vdot_oneLiner": "Eine Kennzahl, die deine aktuelle Lauffitness anhand eines Rennergebnisses schätzt.",
+  "exp_vdot_fullExplanation": "VDOT ist Jack Daniels' Lauffitnessindex. Er nimmt Distanz und Zielzeit eines Rennens, schätzt daraus ein VO2max-Äquivalent und leitet Prognosen für andere Distanzen ab. Es ist keine direkte VO2max-Messung — Laufökonomie und Laktatschwelle fließen mit ein.",
+  "exp_vdot_analogy": "VDOT ist wie ein Schufa-Score fürs Laufen — eine Zahl, die viele Faktoren in einen schnellen Überblick zusammenfasst.",
+  "exp_vdot_whyItMatters": "Damit kannst du Trainingspaces nach deiner aktuellen Fitness setzen, nicht nach deinem Wunschdenken. Außerdem prognostiziert VDOT realistische Zielzeiten für noch nicht gelaufene Rennen.",
+  "exp_vdot_range": "Anfänger: 25–35. Freizeitläufer: 35–45. Wettkampf: 45–55. Elite: 55–70+. Weltklasse: 75–85.",
+  "exp_vdot_limitations": "Basiert auf einem einzelnen Rennen — ein schlechter Tag oder eine hügelige Strecke verfälscht den Wert. Nimmt flache Strecke auf Meeresniveau an. Berücksichtigt weder Hitze, Wind noch Vorermüdung.",
 
   "ui_btn_close": "Schließen",
 

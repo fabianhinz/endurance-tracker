@@ -73,6 +73,14 @@ export const formatLapTime = (seconds: number): string => {
   return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
+export const formatRaceTime = (seconds: number): string => {
+  const h = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.round(seconds % 60);
+  if (h > 0) return `${h}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
 export const parsePaceInput = (input: string): number | undefined => {
   const match = input.match(/^(\d{1,2}):(\d{2})$/);
   if (!match) return undefined;

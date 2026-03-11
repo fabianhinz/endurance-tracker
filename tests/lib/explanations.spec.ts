@@ -22,6 +22,7 @@ const ALL_METRIC_IDS: MetricId[] = [
   'avgPower',
   'elevation',
   'cadence',
+  'vdot',
 ];
 
 const REQUIRED_FIELDS: (keyof MetricExplanation)[] = [
