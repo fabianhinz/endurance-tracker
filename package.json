@@ -38,6 +38,7 @@
     "@radix-ui/react-toast": "^1.2.15",
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@tanstack/react-virtual": "^3.13.21",
     "clsx": "^2.1.1",
     "fit-file-parser": "^2.3.3",
     "idb": "^8.0.3",
