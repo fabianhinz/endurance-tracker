@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { Input } from '@/components/ui/Input.tsx';
 import { Label } from '@/components/ui/Label.tsx';
+import { DataTable } from '@/components/ui/DataTable.tsx';
 import { List, ListItem } from '@/components/ui/List.tsx';
 import {
   SelectRoot,
@@ -18,8 +19,6 @@ import {
 } from '@/components/ui/Select.tsx';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
-import { glassClass } from '@/components/ui/Card.tsx';
-import { cn } from '@/lib/utils.ts';
 
 const DISTANCE_KEYS = Object.keys(RACE_DISTANCE_METERS) as RaceDistance[];
 
@@ -60,37 +59,21 @@ export const RacePredictor = () => {
           </div>
         </div>
 
-        <div className={cn(glassClass, 'rounded-2xl overflow-hidden')}>
-          <table className="w-full text-sm tabular-nums">
-            <thead>
-              <tr className="text-text-tertiary text-xs">
-                <th className="px-3 py-2 text-left font-medium">
-                  {m.ui_coach_predictor_distance()}
-                </th>
-                <th className="px-3 py-2 text-right font-medium">{m.ui_coach_predictor_time()}</th>
-                <th className="px-3 py-2 text-right font-medium">{m.ui_coach_predictor_pace()}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DISTANCE_KEYS.map((key) => {
-                const pred = predictor.predictions?.[key];
-                return (
-                  <tr key={key}>
-                    <td className="px-3 py-1.5 font-medium">
-                      {DISTANCE_OPTIONS.find((opt) => opt.value === key)?.label}
-                    </td>
-                    <td className="px-3 py-1.5 text-right">
-                      {pred ? formatRaceTime(pred.timeSeconds) : '--'}
-                    </td>
-                    <td className="px-3 py-1.5 text-right">
-                      {pred ? `${formatPaceInput(pred.paceSecPerKm)} /km` : '--'}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          data={DISTANCE_KEYS.map((key) => ({ key, pred: predictor.predictions?.[key] }))}
+          rowKey={(row) => row.key}
+          rowLabel={(row) => DISTANCE_OPTIONS.find((opt) => opt.value === row.key)?.label}
+          fields={[
+            {
+              label: m.ui_coach_predictor_time(),
+              value: (row) => (row.pred ? formatRaceTime(row.pred.timeSeconds) : '--'),
+            },
+            {
+              label: m.ui_coach_predictor_pace(),
+              value: (row) => (row.pred ? `${formatPaceInput(row.pred.paceSecPerKm)} /km` : '--'),
+            },
+          ]}
+        />
 
         <List>
           <ListItem

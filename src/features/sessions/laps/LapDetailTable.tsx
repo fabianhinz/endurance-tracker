@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { glassClass } from '@/components/ui/Card.tsx';
 import { Button } from '@/components/ui/Button.tsx';
+import { DataTable } from '@/components/ui/DataTable.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { cn, formatDistance, formatLapTime, formatPaceOrSpeed } from '@/lib/utils.ts';
 import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
@@ -46,70 +47,53 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
         )}
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm tabular-nums">
-          <thead>
-            <tr className="text-text-tertiary text-xs">
-              <th className="px-3 py-2 text-left font-medium">#</th>
-              <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_distance()}</th>
-              <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_time()}</th>
-              <th className="px-3 py-2 text-right font-medium">
-                {props.isRunning ? m.ui_laps_col_pace() : m.ui_laps_col_speed()}
-              </th>
-              <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_avg_hr()}</th>
-              {hasPower && (
-                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_power()}</th>
-              )}
-              {hasCadence && (
-                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_cadence()}</th>
-              )}
-              {hasElevation && (
-                <th className="px-3 py-2 text-right font-medium">{m.ui_laps_col_elev()}</th>
-              )}
-            </tr>
-          </thead>
-          <tbody onPointerLeave={clearHoveredLapIndex}>
-            {visibleLaps.map((lap) => (
-              <tr
-                key={lap.lapIndex}
-                onPointerEnter={() => setHoveredLapIndex(lap.lapIndex)}
-                className={cn(
-                  'transition-colors',
-                  lap.intensity !== 'active' && 'text-text-quaternary',
-                  hoveredLapIndex === lap.lapIndex && 'bg-white/10',
-                )}
-              >
-                <td className="px-3 py-1.5 text-left">{lap.lapIndex + 1}</td>
-                <td className="px-3 py-1.5 text-right">{formatDistance(lap.distance)}</td>
-                <td className="px-3 py-1.5 text-right">{formatLapTime(lap.duration)}</td>
-                <td className="px-3 py-1.5 text-right">
-                  {formatPaceOrSpeed(lap, props.isRunning)}
-                </td>
-                <td className="px-3 py-1.5 text-right">
-                  {lap.avgHr !== undefined ? `${lap.avgHr}` : '--'}
-                </td>
-                {hasPower && (
-                  <td className="px-3 py-1.5 text-right">
-                    {props.enrichments?.get(lap.lapIndex)?.avgPower !== undefined
-                      ? `${props.enrichments.get(lap.lapIndex)!.avgPower} W`
-                      : '--'}
-                  </td>
-                )}
-                {hasCadence && (
-                  <td className="px-3 py-1.5 text-right">
-                    {lap.avgCadence !== undefined ? `${lap.avgCadence}` : '--'}
-                  </td>
-                )}
-                {hasElevation && (
-                  <td className="px-3 py-1.5 text-right">
-                    {lap.elevationGain > 0 ? `${Math.round(lap.elevationGain)} m` : '--'}
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        className="px-3 pb-3"
+        data={visibleLaps}
+        rowKey={(lap) => lap.lapIndex}
+        rowLabel={(lap) => `${lap.lapIndex + 1}`}
+        onRowHover={(lap) => (lap ? setHoveredLapIndex(lap.lapIndex) : clearHoveredLapIndex())}
+        rowClassName={(lap) =>
+          cn(
+            lap.intensity !== 'active' && 'text-text-quaternary',
+            hoveredLapIndex === lap.lapIndex && 'bg-white/10',
+          )
+        }
+        fields={[
+          { label: m.ui_laps_col_distance(), value: (lap) => formatDistance(lap.distance) },
+          { label: m.ui_laps_col_time(), value: (lap) => formatLapTime(lap.duration) },
+          {
+            label: props.isRunning ? m.ui_laps_col_pace() : m.ui_laps_col_speed(),
+            value: (lap) => formatPaceOrSpeed(lap, props.isRunning),
+          },
+          {
+            label: m.ui_laps_col_avg_hr(),
+            value: (lap) => (lap.avgHr !== undefined ? `${lap.avgHr}` : '--'),
+            priority: 'secondary',
+          },
+          {
+            label: m.ui_laps_col_power(),
+            value: (lap) => {
+              const p = props.enrichments?.get(lap.lapIndex)?.avgPower;
+              return p !== undefined ? `${p} W` : '--';
+            },
+            visible: hasPower,
+            priority: 'secondary',
+          },
+          {
+            label: m.ui_laps_col_cadence(),
+            value: (lap) => (lap.avgCadence !== undefined ? `${lap.avgCadence}` : '--'),
+            visible: hasCadence,
+            priority: 'secondary',
+          },
+          {
+            label: m.ui_laps_col_elev(),
+            value: (lap) => (lap.elevationGain > 0 ? `${Math.round(lap.elevationGain)} m` : '--'),
+            visible: hasElevation,
+            priority: 'secondary',
+          },
+        ]}
+      />
     </div>
   );
 };
