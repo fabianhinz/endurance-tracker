@@ -28,13 +28,9 @@ const ALL_METRIC_IDS: MetricId[] = [
 const REQUIRED_FIELDS: (keyof MetricExplanation)[] = [
   'shortLabel',
   'friendlyName',
-  'name',
   'oneLiner',
-  'fullExplanation',
   'analogy',
-  'whyItMatters',
   'range',
-  'limitations',
   'sports',
 ];
 
