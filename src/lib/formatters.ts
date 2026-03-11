@@ -56,17 +56,17 @@ export const toDateString = (timestamp: number): string => {
 
 export const formatDuration = (seconds: number): string => {
   const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
+  const mins = Math.floor((seconds % 3600) / 60);
   const s = Math.floor(seconds % 60);
-  if (h > 0) return `${h}h ${m}m`;
-  if (m > 0) return `${m}m ${s}s`;
+  if (h > 0) return `${h}h ${mins}m`;
+  if (mins > 0) return `${mins}m ${s}s`;
   return `${s}s`;
 };
 
 export const formatLapTime = (seconds: number): string => {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
+  const mins = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  return `${mins}:${s.toString().padStart(2, '0')}`;
 };
 
 /** Smart race-time: omits hours when < 1 h. */
@@ -81,9 +81,9 @@ export const formatRaceTime = (seconds: number): string => {
 /** Always shows hours: `H:MM:SS`. */
 export const formatTimeHMS = (seconds: number): string => {
   const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
+  const mins = Math.floor((seconds % 3600) / 60);
   const s = Math.round(seconds % 60);
-  return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  return `${h}:${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 };
 
 // ---------------------------------------------------------------------------
