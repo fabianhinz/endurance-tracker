@@ -1,7 +1,7 @@
 import { Typography } from '@/components/ui/Typography.tsx';
 import { Button } from '@/components/ui/Button.tsx';
 import { PaceRange } from '@/components/ui/PaceRange.tsx';
-import { formatDuration } from '@/lib/utils.ts';
+import { formatDuration } from '@/lib/formatters.ts';
 import { groupSteps } from '@/lib/groupSteps.ts';
 import { STEP_LABELS } from './workoutDisplay.ts';
 import type { RunningZone } from '@/engine/types.ts';

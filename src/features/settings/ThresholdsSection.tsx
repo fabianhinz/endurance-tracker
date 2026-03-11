@@ -13,7 +13,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/Select.tsx';
-import { parsePaceInput, formatPaceInput } from '@/lib/utils.ts';
+import { parsePaceInput, formatPaceInput } from '@/lib/formatters.ts';
 import { PaceEstimatorDialog } from './PaceEstimatorDialog.tsx';
 import { Info } from 'lucide-react';
 

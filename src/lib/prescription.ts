@@ -7,7 +7,7 @@ import type {
   WorkoutType,
   PlanContext,
 } from '@/types/index.ts';
-import { toDateString } from './utils.ts';
+import { toDateString } from './formatters.ts';
 import { getFormStatus, getInjuryRisk, getLoadState } from '@/engine/coaching.ts';
 import { getZoneMidPace } from '@/engine/zones.ts';
 

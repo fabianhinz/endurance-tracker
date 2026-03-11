@@ -26,7 +26,12 @@ import {
   prepareSpeedData,
   preparePaceData,
 } from '@/lib/chartData.ts';
-import { formatLapTime, formatDistance, formatPaceTick, formatPaceOrSpeed } from '@/lib/utils.ts';
+import {
+  formatLapTime,
+  formatDistance,
+  formatPaceTick,
+  formatPaceOrSpeed,
+} from '@/lib/formatters.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { SessionLap, SessionRecord, Sport } from '@/engine/types.ts';

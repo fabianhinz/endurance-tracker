@@ -1,4 +1,4 @@
-import { formatPace } from '@/lib/utils.ts';
+import { formatPace } from '@/lib/formatters.ts';
 
 export const PaceRange = (props: { minPace: number; maxPace: number }) => {
   return (

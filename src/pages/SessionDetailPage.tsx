@@ -29,7 +29,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/DropdownMenu.tsx';
-import { formatDate, formatSubSport } from '@/lib/utils.ts';
+import { formatDate, formatSubSport } from '@/lib/formatters.ts';
 import { SportChip } from '@/features/sessions/SportChip.tsx';
 import { SessionStatsGrid } from '@/features/sessions/session/SessionStatsGrid.tsx';
 import { SessionChartsExplorer } from '@/features/sessions/charts/SessionChartsExplorer.tsx';

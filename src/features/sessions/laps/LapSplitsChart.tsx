@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { avgDomain, chartTheme, formatTick } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
-import { formatPace, formatPaceInput } from '@/lib/utils.ts';
+import { formatPace, formatPaceInput } from '@/lib/formatters.ts';
 import type { LapSplitPoint } from '@/lib/lapChartData.ts';
 import { m } from '@/paraglide/messages.js';
 

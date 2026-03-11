@@ -2,7 +2,7 @@ import { m } from '@/paraglide/messages.js';
 import type { RaceDistance } from '@/engine/types.ts';
 import { RACE_DISTANCE_METERS } from '@/engine/vdot.ts';
 import { DISTANCE_OPTIONS, usesLongFormat } from '@/lib/raceTime.ts';
-import { formatPaceInput, formatRaceTime } from '@/lib/utils.ts';
+import { formatPaceInput, formatRaceTime } from '@/lib/formatters.ts';
 import { useRacePredictor } from '@/features/coach/hooks/useRacePredictor.ts';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';

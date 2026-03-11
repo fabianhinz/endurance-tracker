@@ -10,7 +10,7 @@ import { Typography } from '@/components/ui/Typography.tsx';
 import { DeleteAllDataDialog } from './DeleteAllDataDialog.tsx';
 import { ReimportDialog } from './ReimportDialog.tsx';
 import { useReimport } from './hooks/useReimport.ts';
-import { formatDate } from '@/lib/utils.ts';
+import { formatDate } from '@/lib/formatters.ts';
 
 export const DataManagementSection = () => {
   const sessionCount = useSessionsStore((s) => s.sessions.length);

@@ -8,7 +8,7 @@ import {
   formatLapTime,
   formatSubSport,
   toDateString,
-} from '@/lib/utils.ts';
+} from '@/lib/formatters.ts';
 
 describe('formatPace', () => {
   it('300 sec/km => "5:00 /km"', () => {

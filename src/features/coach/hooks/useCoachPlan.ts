@@ -6,7 +6,7 @@ import { computeMetrics } from '@/engine/metrics.ts';
 import { computeRunningZones } from '@/engine/zones.ts';
 import { generateWeeklyPlan } from '@/lib/prescription.ts';
 import { getMondayOfWeek, buildPlanCacheKey } from '@/lib/weekKey.ts';
-import { toDateString } from '@/lib/utils.ts';
+import { toDateString } from '@/lib/formatters.ts';
 import type { RunningZone } from '@/engine/types.ts';
 import type { WeeklyPlan } from '@/types/index.ts';
 

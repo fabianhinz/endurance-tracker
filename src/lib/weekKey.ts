@@ -1,4 +1,4 @@
-import { toDateString } from './utils.ts';
+import { toDateString } from './formatters.ts';
 
 /**
  * Returns the Monday (YYYY-MM-DD) of the ISO week containing `dateStr`.
