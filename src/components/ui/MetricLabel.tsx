@@ -28,19 +28,24 @@ export const MetricLabel = (props: MetricLabelProps) => {
       sensitivity: 'base',
     }) === 0;
 
+  let labelContent: ReactNode = null;
+  if (size === 'default') {
+    labelContent = (
+      <>
+        <Typography variant="subtitle2">{explanation.friendlyName}</Typography>
+        <Typography variant="caption" color="textTertiary">
+          ({explanation.shortLabel})
+        </Typography>
+      </>
+    );
+  } else if (!hideShortLabel) {
+    labelContent = <Typography variant="caption">{explanation.shortLabel}</Typography>;
+  }
+
   return (
     <span className={cn('inline-flex items-center gap-1', props.className)}>
       <span className="hidden sm:contents">
-        {size === 'default' ? (
-          <>
-            <Typography variant="subtitle2">{explanation.friendlyName}</Typography>
-            <Typography variant="caption" color="textTertiary">
-              ({explanation.shortLabel})
-            </Typography>
-          </>
-        ) : hideShortLabel ? null : (
-          <Typography variant="caption">{explanation.shortLabel}</Typography>
-        )}
+        {labelContent}
 
         {props.showValue && (
           <Typography variant="subtitle1" as="span">

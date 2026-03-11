@@ -15,7 +15,10 @@ export const useMapCameraEffect = (
     if (tracks.length === 0 || !mapRef.current || !mapLoaded) return;
 
     const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-    const rightPad = compactLayout && isDesktop ? window.innerWidth * 0.4 : 0;
+    let rightPad = 0;
+    if (compactLayout && isDesktop) {
+      rightPad = window.innerWidth * 0.4;
+    }
 
     if (openedSessionId) {
       const b = tracks[0].gps.bounds;

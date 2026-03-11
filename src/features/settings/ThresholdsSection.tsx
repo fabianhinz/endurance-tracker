@@ -13,7 +13,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/Select.tsx';
-import { parsePaceInput, formatPaceInput } from '@/lib/utils.ts';
+import { parsePaceInput, formatPaceInput } from '@/lib/formatters.ts';
 import { PaceEstimatorDialog } from './PaceEstimatorDialog.tsx';
 import { Info } from 'lucide-react';
 
@@ -21,9 +21,6 @@ const DEBOUNCE_MS = 500;
 
 export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }) => {
   const profile = useUserStore((s) => s.profile);
-  const setProfile = useUserStore((s) => s.setProfile);
-  const updateThresholds = useUserStore((s) => s.updateThresholds);
-  const updateProfile = useUserStore((s) => s.updateProfile);
   const [, startTransition] = useTransition();
 
   const thresholds = profile?.thresholds;
@@ -91,7 +88,7 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
     }
 
     startTransition(() =>
-      setProfile({
+      useUserStore.getState().setProfile({
         gender: nextGender,
         thresholds: newThresholds,
         showMetricHelp: true,
@@ -143,7 +140,7 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
         if (profile) {
           const current = { ...thresholds! };
           current[field] = undefined;
-          startTransition(() => updateThresholds(current));
+          startTransition(() => useUserStore.getState().updateThresholds(current));
         }
         return;
       }
@@ -187,7 +184,7 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
       (current as Record<string, number>)[field] = num;
     }
 
-    startTransition(() => updateThresholds(current));
+    startTransition(() => useUserStore.getState().updateThresholds(current));
   };
 
   const saveThresholdPace = (value: string) => {
@@ -196,7 +193,7 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
       if (profile) {
         const current = { ...thresholds! };
         current.thresholdPace = undefined;
-        startTransition(() => updateThresholds(current));
+        startTransition(() => useUserStore.getState().updateThresholds(current));
       }
       return;
     }
@@ -216,13 +213,13 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
 
     const current = { ...thresholds! };
     current.thresholdPace = parsed;
-    startTransition(() => updateThresholds(current));
+    startTransition(() => useUserStore.getState().updateThresholds(current));
   };
 
   const handleGenderChange = (v: Gender) => {
     setGender(v);
     if (profile) {
-      startTransition(() => updateProfile({ gender: v }));
+      startTransition(() => useUserStore.getState().updateProfile({ gender: v }));
     } else {
       tryCreateProfile(restHr, maxHr, v, ftp, thresholdPace);
     }

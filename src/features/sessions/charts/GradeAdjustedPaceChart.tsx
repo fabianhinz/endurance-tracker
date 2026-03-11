@@ -11,7 +11,7 @@ import {
 import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
-import { formatPaceTick } from '@/lib/utils.ts';
+import { formatPaceTick } from '@/lib/formatters.ts';
 import type { GAPPoint } from '@/lib/chartData.ts';
 import { m } from '@/paraglide/messages.js';
 

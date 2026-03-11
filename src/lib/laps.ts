@@ -75,8 +75,10 @@ export const analyzeLaps = (laps: SessionLap[]): LapAnalysis[] => {
 
   return laps.map((lap) => {
     const duration = lap.totalMovingTime ?? lap.totalTimerTime;
-    const paceSecPerKm =
-      lap.distance > 0 && duration > 0 ? (duration / lap.distance) * 1000 : undefined;
+    let paceSecPerKm: number | undefined = undefined;
+    if (lap.distance > 0 && duration > 0) {
+      paceSecPerKm = (duration / lap.distance) * 1000;
+    }
 
     return {
       lapIndex: lap.lapIndex,
@@ -112,16 +114,25 @@ export const detectIntervals = (laps: SessionLap[]): IntervalPair[] => {
     if (!analyzed[i].isInterval) continue;
 
     const active = analyzed[i];
-    const nextLap = i + 1 < analyzed.length ? analyzed[i + 1] : undefined;
-    const recovery = nextLap && !nextLap.isInterval ? nextLap : undefined;
+    let nextLap: LapAnalysis | undefined = undefined;
+    if (i + 1 < analyzed.length) {
+      nextLap = analyzed[i + 1];
+    }
+    let recovery: LapAnalysis | undefined = undefined;
+    if (nextLap && !nextLap.isInterval) {
+      recovery = nextLap;
+    }
 
     // HR recovery: drop from active max HR to recovery min HR
     const activeLap = laps[i];
-    const recoveryLap = recovery ? laps[i + 1] : undefined;
-    const hrRecovery =
-      activeLap.maxHr !== undefined && recoveryLap?.minHr !== undefined
-        ? activeLap.maxHr - recoveryLap.minHr
-        : undefined;
+    let recoveryLap: SessionLap | undefined = undefined;
+    if (recovery) {
+      recoveryLap = laps[i + 1];
+    }
+    let hrRecovery: number | undefined = undefined;
+    if (activeLap.maxHr !== undefined && recoveryLap?.minHr !== undefined) {
+      hrRecovery = activeLap.maxHr - recoveryLap.minHr;
+    }
 
     pairs.push({ active, recovery, hrRecovery });
   }
@@ -140,7 +151,10 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
   const intervalLaps = analyzed.filter((l) => l.isInterval);
 
   // If no intervals detected (steady state), use all laps
-  const targetLaps = intervalLaps.length > 0 ? intervalLaps : analyzed;
+  let targetLaps = analyzed;
+  if (intervalLaps.length > 0) {
+    targetLaps = intervalLaps;
+  }
 
   if (targetLaps.length < 2) {
     return {
@@ -154,15 +168,19 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
   const first = targetLaps[0];
   const last = targetLaps[targetLaps.length - 1];
 
-  const paceDriftPercent =
-    first.paceSecPerKm !== undefined && last.paceSecPerKm !== undefined && first.paceSecPerKm > 0
-      ? ((last.paceSecPerKm - first.paceSecPerKm) / first.paceSecPerKm) * 100
-      : undefined;
+  let paceDriftPercent: number | undefined = undefined;
+  if (
+    first.paceSecPerKm !== undefined &&
+    last.paceSecPerKm !== undefined &&
+    first.paceSecPerKm > 0
+  ) {
+    paceDriftPercent = ((last.paceSecPerKm - first.paceSecPerKm) / first.paceSecPerKm) * 100;
+  }
 
-  const hrDriftPercent =
-    first.avgHr !== undefined && last.avgHr !== undefined && first.avgHr > 0
-      ? ((last.avgHr - first.avgHr) / first.avgHr) * 100
-      : undefined;
+  let hrDriftPercent: number | undefined = undefined;
+  if (first.avgHr !== undefined && last.avgHr !== undefined && first.avgHr > 0) {
+    hrDriftPercent = ((last.avgHr - first.avgHr) / first.avgHr) * 100;
+  }
 
   let trend: ProgressiveOverload['trend'] = 'stable';
   if (paceDriftPercent !== undefined && paceDriftPercent > DRIFT_THRESHOLD_PERCENT) {
@@ -171,10 +189,18 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
     trend = 'building';
   }
 
+  let roundedPaceDrift: number | undefined = undefined;
+  if (paceDriftPercent !== undefined) {
+    roundedPaceDrift = Math.round(paceDriftPercent * 10) / 10;
+  }
+  let roundedHrDrift: number | undefined = undefined;
+  if (hrDriftPercent !== undefined) {
+    roundedHrDrift = Math.round(hrDriftPercent * 10) / 10;
+  }
+
   return {
-    paceDriftPercent:
-      paceDriftPercent !== undefined ? Math.round(paceDriftPercent * 10) / 10 : undefined,
-    hrDriftPercent: hrDriftPercent !== undefined ? Math.round(hrDriftPercent * 10) / 10 : undefined,
+    paceDriftPercent: roundedPaceDrift,
+    hrDriftPercent: roundedHrDrift,
     lapCount: targetLaps.length,
     trend,
   };
@@ -344,13 +370,30 @@ export const enrichLapFromRecords = (
   cadences.sort((a, b) => a - b);
   hrs.sort((a, b) => a - b);
 
-  const minSpeed = speeds.length > 0 ? speeds[0] : undefined;
-  const avgPower =
-    powers.length > 0 ? Math.round(powers.reduce((a, b) => a + b, 0) / powers.length) : undefined;
-  const minPower = powers.length > 0 ? powers[0] : undefined;
-  const maxPower = powers.length > 0 ? powers[powers.length - 1] : undefined;
-  const minCadence = cadences.length > 0 ? cadences[0] : undefined;
-  const minHr = hrs.length > 0 ? hrs[0] : undefined;
+  let minSpeed: number | undefined = undefined;
+  if (speeds.length > 0) {
+    minSpeed = speeds[0];
+  }
+  let avgPower: number | undefined = undefined;
+  if (powers.length > 0) {
+    avgPower = Math.round(powers.reduce((a, b) => a + b, 0) / powers.length);
+  }
+  let minPower: number | undefined = undefined;
+  if (powers.length > 0) {
+    minPower = powers[0];
+  }
+  let maxPower: number | undefined = undefined;
+  if (powers.length > 0) {
+    maxPower = powers[powers.length - 1];
+  }
+  let minCadence: number | undefined = undefined;
+  if (cadences.length > 0) {
+    minCadence = cadences[0];
+  }
+  let minHr: number | undefined = undefined;
+  if (hrs.length > 0) {
+    minHr = hrs[0];
+  }
 
   return { lapIndex, minSpeed, avgPower, minPower, maxPower, minCadence, minHr };
 };

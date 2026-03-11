@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils.ts';
-import { formatDate, formatDuration, formatDistance } from '@/lib/utils.ts';
+import { formatDate, formatDuration, formatDistance } from '@/lib/formatters.ts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { SportBadge } from './SportBadge.tsx';
 import { glassClass } from '@/components/ui/Card.tsx';

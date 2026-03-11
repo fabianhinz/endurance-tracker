@@ -119,7 +119,11 @@ export const calculateTrainingEffect = (
   if (maxHr <= restHr) return undefined;
 
   const hrRange = maxHr - restHr;
-  const coeff = BANISTER[gender === 'female' ? 'female' : 'male'];
+  let banisterKey: 'female' | 'male' = 'male';
+  if (gender === 'female') {
+    banisterKey = 'female';
+  }
+  const coeff = BANISTER[banisterKey];
 
   let aerobicTrimp = 0;
   let anaerobicImpulse = 0;
@@ -132,7 +136,10 @@ export const calculateTrainingEffect = (
 
     hasHr = true;
     const hrr = Math.max(0, Math.min(1, (record.hr - restHr) / hrRange));
-    const dt = prevTimestamp !== undefined ? (record.timestamp - prevTimestamp) / 60 : 1 / 60; // assume 1s for first record
+    let dt = 1 / 60; // assume 1s for first record
+    if (prevTimestamp !== undefined) {
+      dt = (record.timestamp - prevTimestamp) / 60;
+    }
     prevTimestamp = record.timestamp;
 
     if (dt <= 0) continue;

@@ -2,14 +2,24 @@ import { describe, it, expect } from 'vitest';
 import { groupPBsBySport } from '@/lib/records.ts';
 import type { PersonalBest } from '@/engine/types.ts';
 
-const makePB = (sport: 'running' | 'cycling' | 'swimming', window: number): PersonalBest => ({
-  sport,
-  category: sport === 'cycling' ? 'peak-power' : 'fastest-distance',
-  window,
-  value: sport === 'cycling' ? 250 : 300,
-  sessionId: crypto.randomUUID(),
-  date: Date.now(),
-});
+const makePB = (sport: 'running' | 'cycling' | 'swimming', window: number): PersonalBest => {
+  let category: PersonalBest['category'] = 'fastest-distance';
+  if (sport === 'cycling') {
+    category = 'peak-power';
+  }
+  let value = 300;
+  if (sport === 'cycling') {
+    value = 250;
+  }
+  return {
+    sport,
+    category,
+    window,
+    value,
+    sessionId: crypto.randomUUID(),
+    date: Date.now(),
+  };
+};
 
 describe('groupPBsBySport', () => {
   it('returns empty object for empty input', () => {

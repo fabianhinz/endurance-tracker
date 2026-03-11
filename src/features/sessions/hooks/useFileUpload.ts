@@ -24,13 +24,8 @@ const CHUNK_SIZE = 10;
 
 export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>) => {
   const profile = useUserStore((s) => s.profile);
-  const addSessions = useSessionsStore((s) => s.addSessions);
   const personalBests = useSessionsStore((s) => s.personalBests);
-  const updatePersonalBests = useSessionsStore((s) => s.updatePersonalBests);
   const uploading = useUploadProgressStore((s) => s.uploading);
-  const startUpload = useUploadProgressStore((s) => s.startUpload);
-  const advance = useUploadProgressStore((s) => s.advance);
-  const finishProgress = useUploadProgressStore((s) => s.finish);
 
   const triggerUpload = useCallback(() => {
     inputRef.current?.click();
@@ -66,7 +61,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
         return;
       }
 
-      startUpload(fitFiles.length);
+      useUploadProgressStore.getState().startUpload(fitFiles.length);
 
       // Phase 1 — Parse all files in parallel (concurrency of 6)
       const settled = await mapWithConcurrency(
@@ -82,7 +77,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           });
           return { ...result, rawData, fileName: file.name };
         },
-        advance,
+        () => useUploadProgressStore.getState().advance(),
       );
 
       const parsed: ParsedFile[] = [];
@@ -119,7 +114,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
 
       if (unique.length > 0) {
         try {
-          const sessionIds = addSessions(unique.map((p) => p.session));
+          const sessionIds = useSessionsStore.getState().addSessions(unique.map((p) => p.session));
 
           let accumulatedBests = [...personalBests];
 
@@ -138,8 +133,10 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
                 sessionId,
               }));
 
-              const lapsWithId =
-                entry.laps.length > 0 ? entry.laps.map((l) => ({ ...l, sessionId })) : [];
+              let lapsWithId: (SessionLap & { sessionId: string })[] = [];
+              if (entry.laps.length > 0) {
+                lapsWithId = entry.laps.map((l) => ({ ...l, sessionId }));
+              }
 
               idbEntries.push({
                 records: recordsWithId,
@@ -172,7 +169,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           }
 
           if (accumulatedBests.length > 0) {
-            updatePersonalBests(accumulatedBests);
+            useSessionsStore.getState().updatePersonalBests(accumulatedBests);
           }
         } catch (err) {
           console.error('Save error:', err);
@@ -182,44 +179,41 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
 
       const uploaded = unique.length;
       const parts: string[] = [];
-      if (uploaded > 0)
-        parts.push(
-          uploaded === 1
-            ? m.toast_upload_sessions({ count: uploaded })
-            : m.toast_upload_sessions_plural({ count: uploaded }),
-        );
-      if (duplicated > 0)
-        parts.push(
-          duplicated === 1
-            ? m.toast_upload_duplicates({ count: duplicated })
-            : m.toast_upload_duplicates_plural({ count: duplicated }),
-        );
-      if (newPBCount > 0)
-        parts.push(
-          newPBCount === 1
-            ? m.toast_upload_pbs({ count: newPBCount })
-            : m.toast_upload_pbs_plural({ count: newPBCount }),
-        );
+      if (uploaded > 0) {
+        let uploadMsg = m.toast_upload_sessions_plural({ count: uploaded });
+        if (uploaded === 1) {
+          uploadMsg = m.toast_upload_sessions({ count: uploaded });
+        }
+        parts.push(uploadMsg);
+      }
+      if (duplicated > 0) {
+        let dupMsg = m.toast_upload_duplicates_plural({ count: duplicated });
+        if (duplicated === 1) {
+          dupMsg = m.toast_upload_duplicates({ count: duplicated });
+        }
+        parts.push(dupMsg);
+      }
+      if (newPBCount > 0) {
+        let pbMsg = m.toast_upload_pbs_plural({ count: newPBCount });
+        if (newPBCount === 1) {
+          pbMsg = m.toast_upload_pbs({ count: newPBCount });
+        }
+        parts.push(pbMsg);
+      }
       if (failed > 0) parts.push(m.toast_upload_failed({ count: failed }));
       if (parts.length > 0) {
-        finishProgress(
-          parts.join(', '),
-          failed > 0 ? 'error' : uploaded === 0 ? 'warning' : 'success',
-        );
+        let variant: 'success' | 'error' | 'warning' = 'success';
+        if (failed > 0) {
+          variant = 'error';
+        } else if (uploaded === 0) {
+          variant = 'warning';
+        }
+        useUploadProgressStore.getState().finish(parts.join(', '), variant);
       }
 
       if (inputRef.current) inputRef.current.value = '';
     },
-    [
-      profile,
-      addSessions,
-      personalBests,
-      updatePersonalBests,
-      inputRef,
-      startUpload,
-      advance,
-      finishProgress,
-    ],
+    [profile, personalBests, inputRef],
   );
 
   return { uploading, profile, triggerUpload, handleFiles };

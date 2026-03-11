@@ -1,5 +1,6 @@
 import { Typography } from '@/components/ui/Typography.tsx';
-import { formatDuration, cn } from '@/lib/utils.ts';
+import { cn } from '@/lib/utils.ts';
+import { formatDuration } from '@/lib/formatters.ts';
 import { WORKOUT_ICONS } from './workoutDisplay.ts';
 import type { PrescribedWorkout } from '@/types/index.ts';
 

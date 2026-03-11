@@ -26,10 +26,7 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
   const isFullyExpanded = expandCard.isExpanded && !expandCard.isAnimating;
 
   return (
-    <div
-      ref={cardRef}
-      className={cn(glassClass, 'flex flex-col rounded-2xl shadow-lg overflow-hidden')}
-    >
+    <div ref={cardRef} className={cn(glassClass, 'flex flex-col rounded-2xl overflow-hidden')}>
       <div className="flex items-center px-4 py-2">
         {Icon && <Icon size={16} style={{ color: props.color }} />}
         {props.titleSlot ?? (

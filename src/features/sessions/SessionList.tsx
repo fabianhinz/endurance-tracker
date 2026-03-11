@@ -11,8 +11,7 @@ export const SessionList = () => {
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
-  const setHoveredSession = useMapFocusStore((s) => s.setHoveredSession);
-  const hover = useHoverIntent(setHoveredSession);
+  const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
 
   const filtered = useMemo(() => {
     let list: typeof sessions;

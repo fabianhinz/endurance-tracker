@@ -4,7 +4,7 @@ import { useFiltersStore } from '@/store/filters.ts';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardGrid } from '@/components/ui/CardGrid.tsx';
 import { StatItem } from '@/components/ui/StatItem.tsx';
-import { formatDistance, formatDuration } from '@/lib/utils.ts';
+import { formatDistance, formatDuration } from '@/lib/formatters.ts';
 import { rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
 import type { TimeRange } from '@/lib/timeRange.ts';
 import { m } from '@/paraglide/messages.js';

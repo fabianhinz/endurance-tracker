@@ -10,7 +10,7 @@ export const PopoverContent = (props: PopoverPrimitive.PopoverContentProps) => {
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         className={cn(
-          'z-50 max-w-xs rounded-xl border border-white/10 bg-surface-raised/95 backdrop-blur-xl p-4 shadow-xl',
+          'z-50 max-w-xs rounded-xl border border-white/10 bg-surface-raised/95 backdrop-blur-xl p-4',
           className,
         )}
         sideOffset={sideOffset}

@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { avgDomain, chartTheme, formatTick } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
-import { formatPace, formatPaceInput } from '@/lib/utils.ts';
+import { formatPace, formatPaceInput } from '@/lib/formatters.ts';
 import type { LapSplitPoint } from '@/lib/lapChartData.ts';
 import { m } from '@/paraglide/messages.js';
 
@@ -61,13 +61,12 @@ export const LapSplitsChart = (props: LapSplitsChartProps) => {
           axisLine={false}
           tickCount={compact ? 3 : undefined}
           reversed={props.isRunning}
-          tickFormatter={(v: number) =>
-            props.isRunning
-              ? compact
-                ? formatPaceInput(v)
-                : formatPace(v)
-              : formatTick(v, compact ? undefined : 'km/h')
-          }
+          tickFormatter={(v: number) => {
+            if (props.isRunning) {
+              return compact ? formatPaceInput(v) : formatPace(v);
+            }
+            return formatTick(v, compact ? undefined : 'km/h');
+          }}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}

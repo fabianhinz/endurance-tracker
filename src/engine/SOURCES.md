@@ -50,3 +50,7 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 ## App-Specific Logic
 
 App-specific heuristics and feature logic (fingerprinting, downsampling, lap analysis, PB detection, sensor validation) live in `src/lib/`, not in the engine.
+
+| Module              | Logic                                        | Notes                               |
+| ------------------- | -------------------------------------------- | ----------------------------------- |
+| `paceCalculator.ts` | Pace / distance / time arithmetic converters | Basic algebra, no published formula |

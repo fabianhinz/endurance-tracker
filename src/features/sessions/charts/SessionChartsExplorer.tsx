@@ -64,24 +64,21 @@ export const SessionChartsExplorer = (props: SessionChartsExplorerProps) => {
 
   const gpsLookup = useMemo(() => buildTimeToGpsLookup(sampled), [sampled]);
 
-  const setHoveredPoint = useMapFocusStore((s) => s.setHoveredPoint);
-  const clearHoveredPoint = useMapFocusStore((s) => s.clearHoveredPoint);
-
   const onActiveTimeChange = useCallback(
     (time: number | null) => {
       if (time == null) {
-        clearHoveredPoint();
+        useMapFocusStore.getState().clearHoveredPoint();
         return;
       }
       const point = gpsLookup.get(time);
       if (point) {
-        setHoveredPoint(point);
+        useMapFocusStore.getState().setHoveredPoint(point);
       }
     },
-    [gpsLookup, setHoveredPoint, clearHoveredPoint],
+    [gpsLookup],
   );
 
-  useEffect(() => clearHoveredPoint, [clearHoveredPoint]);
+  useEffect(() => () => useMapFocusStore.getState().clearHoveredPoint(), []);
 
   // Synced zoom state for compact mode
   const [zoomRange, setZoomRange] = useState<{ from: number; to: number } | null>(null);

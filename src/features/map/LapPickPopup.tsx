@@ -12,6 +12,7 @@ import {
 import { Maximize2, Minimize2, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button.tsx';
 import { Card } from '@/components/ui/Card.tsx';
+import { DataTable } from '@/components/ui/DataTable.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { useExpandCard } from '@/lib/hooks/useExpandCard.ts';
 import { usePopupPosition } from './hooks/usePopupPosition.ts';
@@ -25,7 +26,12 @@ import {
   prepareSpeedData,
   preparePaceData,
 } from '@/lib/chartData.ts';
-import { formatLapTime, formatDistance, formatPaceTick, formatPaceOrSpeed } from '@/lib/utils.ts';
+import {
+  formatLapTime,
+  formatDistance,
+  formatPaceTick,
+  formatPaceOrSpeed,
+} from '@/lib/formatters.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { SessionLap, SessionRecord, Sport } from '@/engine/types.ts';
@@ -273,46 +279,42 @@ export const LapPickPopup = (props: LapPickPopupProps) => {
           </div>
         )}
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs tabular-nums">
-            <thead>
-              <tr className="text-text-tertiary">
-                <th className="px-2 py-1 text-right font-medium">{m.ui_laps_col_distance()}</th>
-                <th className="px-2 py-1 text-right font-medium">{m.ui_laps_col_time()}</th>
-                <th className="px-2 py-1 text-right font-medium">
-                  {isRunning ? m.ui_laps_col_pace() : m.ui_laps_col_speed()}
-                </th>
-                {analysis.avgHr !== undefined && (
-                  <th className="px-2 py-1 text-right font-medium">{m.ui_laps_col_avg_hr()}</th>
-                )}
-                {hasPower && (
-                  <th className="px-2 py-1 text-right font-medium">{m.ui_laps_col_power()}</th>
-                )}
-                {hasCadence && (
-                  <th className="px-2 py-1 text-right font-medium">{m.ui_laps_col_cadence()}</th>
-                )}
-                {hasElevation && (
-                  <th className="px-2 py-1 text-right font-medium">{m.ui_laps_col_elev()}</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="text-text-primary">
-                <td className="px-2 py-1 text-right">{formatDistance(analysis.distance)}</td>
-                <td className="px-2 py-1 text-right">{formatLapTime(analysis.duration)}</td>
-                <td className="px-2 py-1 text-right">{formatPaceOrSpeed(analysis, isRunning)}</td>
-                {analysis.avgHr !== undefined && (
-                  <td className="px-2 py-1 text-right">{analysis.avgHr}</td>
-                )}
-                {hasPower && <td className="px-2 py-1 text-right">{enrichment.avgPower} W</td>}
-                {hasCadence && <td className="px-2 py-1 text-right">{analysis.avgCadence}</td>}
-                {hasElevation && (
-                  <td className="px-2 py-1 text-right">{Math.round(analysis.elevationGain)} m</td>
-                )}
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          data={[analysis]}
+          rowKey={() => 'single'}
+          fields={[
+            { label: m.ui_laps_col_distance(), value: (a) => formatDistance(a.distance) },
+            { label: m.ui_laps_col_time(), value: (a) => formatLapTime(a.duration) },
+            {
+              label: isRunning ? m.ui_laps_col_pace() : m.ui_laps_col_speed(),
+              value: (a) => formatPaceOrSpeed(a, isRunning),
+            },
+            {
+              label: m.ui_laps_col_avg_hr(),
+              value: (a) => `${a.avgHr}`,
+              visible: analysis.avgHr !== undefined,
+              priority: 'secondary',
+            },
+            {
+              label: m.ui_laps_col_power(),
+              value: () => (enrichment?.avgPower !== undefined ? `${enrichment.avgPower} W` : '--'),
+              visible: hasPower,
+              priority: 'secondary',
+            },
+            {
+              label: m.ui_laps_col_cadence(),
+              value: (a) => `${a.avgCadence}`,
+              visible: hasCadence,
+              priority: 'secondary',
+            },
+            {
+              label: m.ui_laps_col_elev(),
+              value: (a) => `${Math.round(a.elevationGain)} m`,
+              visible: hasElevation,
+              priority: 'secondary',
+            },
+          ]}
+        />
       </Card>
     </div>,
     document.body,

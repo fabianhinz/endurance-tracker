@@ -24,10 +24,10 @@ export const useUploadProgressStore = create<UploadProgressState>()((set, get) =
       total,
       fileCount: total,
     });
-    const label =
-      total === 1
-        ? m.toast_upload_processing({ count: total })
-        : m.toast_upload_processing_plural({ count: total });
+    let label = m.toast_upload_processing_plural({ count: total });
+    if (total === 1) {
+      label = m.toast_upload_processing({ count: total });
+    }
     useToastStore.getState().upsertProgress({
       label,
       processed: 0,
@@ -41,11 +41,14 @@ export const useUploadProgressStore = create<UploadProgressState>()((set, get) =
     const processed = state.processed;
     const total = state.total;
     const saving = processed >= total && total > 0;
-    const label = saving
-      ? m.toast_upload_saving()
-      : state.fileCount === 1
-        ? m.toast_upload_processing({ count: state.fileCount })
-        : m.toast_upload_processing_plural({ count: state.fileCount });
+    let label: string;
+    if (saving) {
+      label = m.toast_upload_saving();
+    } else if (state.fileCount === 1) {
+      label = m.toast_upload_processing({ count: state.fileCount });
+    } else {
+      label = m.toast_upload_processing_plural({ count: state.fileCount });
+    }
     useToastStore.getState().upsertProgress({
       label,
       processed,

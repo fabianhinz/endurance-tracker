@@ -29,7 +29,6 @@ export const MapBackground = () => {
   const backfill = useGPSBackfill();
   const mapTracks = useMapTracks(backfill.gpsData);
   const popupState = useMapPopupState(mapRef, mapTracks.tracks);
-  const setOpenedSession = useMapFocusStore((s) => s.setOpenedSession);
   const focusedLaps = useMapFocusStore((s) => s.focusedLaps);
   const focusedSport = useMapFocusStore((s) => s.focusedSport);
   const focusedRecords = useMapFocusStore((s) => s.focusedRecords);
@@ -39,8 +38,8 @@ export const MapBackground = () => {
 
   const match = useMatch('/sessions/:id');
   useEffect(() => {
-    setOpenedSession(match?.params.id ?? null);
-  }, [match?.params.id, setOpenedSession]);
+    useMapFocusStore.getState().setOpenedSession(match?.params.id ?? null);
+  }, [match?.params.id]);
 
   useMapCameraEffect(mapRef, mapTracks.tracks, openedSessionId, compactLayout, mapLoaded, mapPitch);
 

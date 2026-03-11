@@ -6,7 +6,7 @@ import { computeMetrics } from '@/engine/metrics.ts';
 import { computeRunningZones } from '@/engine/zones.ts';
 import { generateWeeklyPlan } from '@/lib/prescription.ts';
 import { getMondayOfWeek, buildPlanCacheKey } from '@/lib/weekKey.ts';
-import { toDateString } from '@/lib/utils.ts';
+import { toDateString } from '@/lib/formatters.ts';
 import type { RunningZone } from '@/engine/types.ts';
 import type { WeeklyPlan } from '@/types/index.ts';
 
@@ -47,7 +47,10 @@ export const useCoachPlan = (): {
 
     const zones = computeRunningZones(thresholdPace);
     const history = computeMetrics(sessions);
-    const current = history.length > 0 ? history[history.length - 1] : undefined;
+    let current = undefined;
+    if (history.length > 0) {
+      current = history[history.length - 1];
+    }
     const plan = generateWeeklyPlan(current, zones, today, history.length);
 
     return { plan, zones, hasThresholdPace: true, freshPlan: plan, freshKey: currentKey };

@@ -87,12 +87,12 @@ export const calculateGAP = (records: SessionRecord[]): number | undefined => {
 
     // Prefer native FIT grade field; fall back to elevation delta
     // FIT grade is percentage (e.g. 5 = 5%); gradeAdjustedPaceFactor expects fraction (0.05)
-    const gradient =
-      curr.grade !== undefined
-        ? curr.grade / 100
-        : dx > 0
-          ? ((curr.elevation ?? 0) - (prev.elevation ?? 0)) / dx
-          : 0;
+    let gradient = 0;
+    if (curr.grade !== undefined) {
+      gradient = curr.grade / 100;
+    } else if (dx > 0) {
+      gradient = ((curr.elevation ?? 0) - (prev.elevation ?? 0)) / dx;
+    }
 
     const factor = gradeAdjustedPaceFactor(gradient);
     const dt = curr.timestamp - prev.timestamp;

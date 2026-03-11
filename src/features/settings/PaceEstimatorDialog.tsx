@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { m } from '@/paraglide/messages.js';
 import type { RaceDistance } from '@/engine/types.ts';
 import { RACE_DISTANCE_METERS, thresholdPaceFromRace } from '@/engine/vdot.ts';
+import { DISTANCE_OPTIONS, usesLongFormat, parseRaceTime } from '@/lib/raceTime.ts';
 import {
   DialogRoot,
   DialogContent,
@@ -24,36 +25,6 @@ interface PaceEstimatorDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave: (paceSecPerKm: number) => void;
 }
-
-const DISTANCE_OPTIONS: Array<{ value: RaceDistance; label: string }> = [
-  { value: '5k', label: m.ui_pace_est_5k() },
-  { value: '10k', label: m.ui_pace_est_10k() },
-  { value: 'half-marathon', label: m.ui_pace_est_half_marathon() },
-  { value: 'marathon', label: m.ui_pace_est_marathon() },
-];
-
-const usesLongFormat = (distance: RaceDistance): boolean =>
-  distance === 'half-marathon' || distance === 'marathon';
-
-const parseRaceTime = (input: string, distance: RaceDistance): number | undefined => {
-  if (usesLongFormat(distance)) {
-    const match = input.match(/^(\d{1,2}):(\d{2}):(\d{2})$/);
-    if (!match) return undefined;
-    const h = Number(match[1]);
-    const m = Number(match[2]);
-    const s = Number(match[3]);
-    if (m >= 60 || s >= 60) return undefined;
-    const total = h * 60 + m + s / 60;
-    return total > 0 ? total : undefined;
-  }
-  const match = input.match(/^(\d{1,3}):(\d{2})$/);
-  if (!match) return undefined;
-  const m = Number(match[1]);
-  const s = Number(match[2]);
-  if (s >= 60) return undefined;
-  const total = m + s / 60;
-  return total > 0 ? total : undefined;
-};
 
 export const PaceEstimatorDialog = (props: PaceEstimatorDialogProps) => {
   const [distance, setDistance] = useState<RaceDistance>('5k');

@@ -22,7 +22,10 @@ export const rangeToCutoff = (
   now: number = Date.now(),
 ): number => {
   const days = rangeMap[range];
-  return days === Infinity ? 0 : now - days * 24 * 60 * 60 * 1000;
+  if (days === Infinity) {
+    return 0;
+  }
+  return now - days * 24 * 60 * 60 * 1000;
 };
 
 export const customRangeToCutoffs = (range: {
@@ -38,7 +41,10 @@ export const formatCustomRangeDuration = (range: { from: string; to: string }): 
     Math.round(
       (new Date(range.to).getTime() - new Date(range.from).getTime()) / (24 * 60 * 60 * 1000),
     ) + 1;
-  return days > 99 ? `~${Math.round(days / 30)}m` : `~${days}d`;
+  if (days > 99) {
+    return `~${Math.round(days / 30)}m`;
+  }
+  return `~${days}d`;
 };
 
 export const timeRangeOptions = [

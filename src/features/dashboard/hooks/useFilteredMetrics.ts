@@ -12,10 +12,15 @@ export const useFilteredMetrics = (): {
   const sportFilter = useFiltersStore((s) => s.sportFilter);
 
   return useMemo(() => {
-    const filtered =
-      sportFilter === 'all' ? sessions : sessions.filter((s) => s.sport === sportFilter);
+    let filtered = sessions;
+    if (sportFilter !== 'all') {
+      filtered = sessions.filter((s) => s.sport === sportFilter);
+    }
     const history = computeMetrics(filtered);
-    const current = history.length > 0 ? history[history.length - 1] : undefined;
+    let current: DailyMetrics | undefined = undefined;
+    if (history.length > 0) {
+      current = history[history.length - 1];
+    }
     return { history, current };
   }, [sessions, sportFilter]);
 };

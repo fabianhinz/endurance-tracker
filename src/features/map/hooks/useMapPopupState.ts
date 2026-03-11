@@ -34,15 +34,17 @@ export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks:
         if (info.coordinate) {
           const state = useMapFocusStore.getState();
           const coord: [number, number] = [info.coordinate[0], info.coordinate[1]];
-          const lapIndex =
-            state.activeSplitDistance != null
-              ? findDynamicLapIndexAtCoordinate(
-                  coord,
-                  state.focusedRecords,
-                  state.activeSplitDistance,
-                  state.activeLapAnalysis.length,
-                )
-              : findLapIndexAtCoordinate(coord, state.focusedRecords, focusedLaps);
+          let lapIndex: number | undefined;
+          if (state.activeSplitDistance != null) {
+            lapIndex = findDynamicLapIndexAtCoordinate(
+              coord,
+              state.focusedRecords,
+              state.activeSplitDistance,
+              state.activeLapAnalysis.length,
+            );
+          } else {
+            lapIndex = findLapIndexAtCoordinate(coord, state.focusedRecords, focusedLaps);
+          }
           if (lapIndex != null) {
             state.setClickedLapIndex(lapIndex);
           }

@@ -16,7 +16,6 @@ type OnboardingPath = 'your-data' | 'test-data' | null;
 
 export const OnboardingPage = () => {
   const profile = useUserStore((s) => s.profile);
-  const completeOnboarding = useLayoutStore((s) => s.completeOnboarding);
   const uploading = useUploadProgressStore((s) => s.uploading);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -27,7 +26,7 @@ export const OnboardingPage = () => {
   const handleGenerate = async () => {
     try {
       await generateDevData();
-      completeOnboarding();
+      useLayoutStore.getState().completeOnboarding();
       useLayoutStore.getState().setDemoMode(true);
     } catch {
       useUploadProgressStore.getState().finish(m.ui_onboarding_testdata_failed(), 'error');
@@ -82,7 +81,7 @@ export const OnboardingPage = () => {
                   if (e.target.files) {
                     await upload.handleFiles(e.target.files);
                     if (useSessionsStore.getState().sessions.length > 0) {
-                      completeOnboarding();
+                      useLayoutStore.getState().completeOnboarding();
                     }
                   }
                 }}

@@ -22,20 +22,16 @@ const ALL_METRIC_IDS: MetricId[] = [
   'avgPower',
   'elevation',
   'cadence',
+  'vdot',
 ];
 
 const REQUIRED_FIELDS: (keyof MetricExplanation)[] = [
   'shortLabel',
   'friendlyName',
-  'name',
   'oneLiner',
-  'fullExplanation',
   'analogy',
-  'whyItMatters',
   'range',
-  'limitations',
   'sports',
-  'displayContext',
 ];
 
 const VALID_SPORTS = ['running', 'cycling', 'swimming', 'all'] as const;

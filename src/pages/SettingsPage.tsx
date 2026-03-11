@@ -34,13 +34,9 @@ export const SettingsPage = () => {
   const tab = rawTab && validTabs.has(rawTab) ? rawTab : 'general';
 
   const profile = useUserStore((s) => s.profile);
-  const toggleMetricHelp = useUserStore((s) => s.toggleMetricHelp);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
-  const toggleCompactLayout = useLayoutStore((s) => s.toggleCompactLayout);
   const dockExpanded = useLayoutStore((s) => s.dockExpanded);
-  const toggleDock = useLayoutStore((s) => s.toggleDock);
   const mapPitch = useLayoutStore((s) => s.mapPitch);
-  const setMapPitch = useLayoutStore((s) => s.setMapPitch);
   const [, startTransition] = useTransition();
 
   const handleTabChange = (value: string) => {
@@ -86,7 +82,9 @@ export const SettingsPage = () => {
               >
                 <Switch
                   checked={profile?.showMetricHelp ?? true}
-                  onCheckedChange={() => startTransition(() => toggleMetricHelp())}
+                  onCheckedChange={() =>
+                    startTransition(() => useUserStore.getState().toggleMetricHelp())
+                  }
                 />
               </ListItem>
             </List>
@@ -99,13 +97,19 @@ export const SettingsPage = () => {
                 primary={m.ui_settings_compact_layout()}
                 secondary={m.ui_settings_compact_layout_desc()}
               >
-                <Switch checked={compactLayout} onCheckedChange={toggleCompactLayout} />
+                <Switch
+                  checked={compactLayout}
+                  onCheckedChange={() => useLayoutStore.getState().toggleCompactLayout()}
+                />
               </ListItem>
               <ListItem
                 primary={m.ui_settings_expanded_dock()}
                 secondary={m.ui_settings_expanded_dock_desc()}
               >
-                <Switch checked={dockExpanded} onCheckedChange={toggleDock} />
+                <Switch
+                  checked={dockExpanded}
+                  onCheckedChange={() => useLayoutStore.getState().toggleDock()}
+                />
               </ListItem>
               <ListItem
                 primary={m.ui_settings_map_pitch()}
@@ -113,7 +117,9 @@ export const SettingsPage = () => {
               >
                 <SelectRoot
                   value={String(mapPitch)}
-                  onValueChange={(v) => setMapPitch(Number(v) as 0 | 30 | 60)}
+                  onValueChange={(v) =>
+                    useLayoutStore.getState().setMapPitch(Number(v) as 0 | 30 | 60)
+                  }
                 >
                   <SelectTrigger className="w-32">
                     <SelectValue />

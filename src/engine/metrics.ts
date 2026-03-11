@@ -10,10 +10,16 @@ import { defaultFormatter } from './formatter.ts';
  * alpha = 1 - e^(-1/days), matching TrainingPeaks / WKO / GoldenCheetah.
  */
 const ewmaStep = (previous: number, todayTss: number, days: number): number => {
-  const safeTss = Number.isFinite(todayTss) ? todayTss : 0;
+  let safeTss = 0;
+  if (Number.isFinite(todayTss)) {
+    safeTss = todayTss;
+  }
   const alpha = 1 - Math.exp(-1 / days);
   const result = previous + (safeTss - previous) * alpha;
-  return Number.isFinite(result) ? result : previous;
+  if (Number.isFinite(result)) {
+    return result;
+  }
+  return previous;
 };
 
 /**
@@ -30,7 +36,10 @@ const getDateRange = (
   const start = new Date(sorted[0].date);
   start.setHours(0, 0, 0, 0);
 
-  const end = endDate ? new Date(endDate) : new Date();
+  let end = new Date();
+  if (endDate) {
+    end = new Date(endDate);
+  }
   end.setHours(0, 0, 0, 0);
 
   const dates: string[] = [];
@@ -79,7 +88,10 @@ export const computeMetrics = (
 ): DailyMetrics[] => {
   const fmt = options?.formatter ?? defaultFormatter;
   const historicalSessions = sessions.filter((s) => !s.isPlanned);
-  const allSessions = options?.includeGhosts ? sessions : historicalSessions;
+  let allSessions = historicalSessions;
+  if (options?.includeGhosts) {
+    allSessions = sessions;
+  }
 
   const dates = getDateRange(allSessions, options?.endDate, fmt.date);
   if (dates.length === 0) return [];
@@ -96,7 +108,10 @@ export const computeMetrics = (
     ctl = ewmaStep(ctl, tss, CTL_DAYS);
     atl = ewmaStep(atl, tss, ATL_DAYS);
     const tsb = ctl - atl;
-    const acwr = ctl > 0 ? atl / ctl : 0;
+    let acwr = 0;
+    if (ctl > 0) {
+      acwr = atl / ctl;
+    }
 
     metrics.push({
       date,

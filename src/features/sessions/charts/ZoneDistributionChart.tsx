@@ -101,7 +101,6 @@ const translateBuckets = (buckets: ZoneBucket[]): ZoneBucket[] =>
 
 export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
   const zoneColorMode = useMapFocusStore((s) => s.zoneColorMode);
-  const setZoneColorMode = useMapFocusStore((s) => s.setZoneColorMode);
 
   const tabs = useMemo(() => {
     const all: TabConfig[] = [
@@ -131,7 +130,8 @@ export const ZoneDistributionChart = (props: ZoneDistributionChartProps) => {
 
   const handleTabChange = (newTab: string) => {
     setActiveTab(newTab);
-    if (zoneColorMode !== null) setZoneColorMode(newTab as ZoneColorMode);
+    if (zoneColorMode !== null)
+      useMapFocusStore.getState().setZoneColorMode(newTab as ZoneColorMode);
   };
 
   return (

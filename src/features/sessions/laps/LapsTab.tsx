@@ -60,26 +60,19 @@ export const LapsTab = (props: LapsTabProps) => {
   const hrData = useMemo(() => prepareLapHrData(analysis, enrichments), [analysis, enrichments]);
   const powerData = useMemo(() => prepareLapPowerData(enrichments), [enrichments]);
 
-  const setLapMarkers = useMapFocusStore((s) => s.setLapMarkers);
-  const clearLapMarkers = useMapFocusStore((s) => s.clearLapMarkers);
-  const setHoveredLapIndex = useMapFocusStore((s) => s.setHoveredLapIndex);
-  const clearHoveredLapIndex = useMapFocusStore((s) => s.clearHoveredLapIndex);
-  const setActiveLapData = useMapFocusStore((s) => s.setActiveLapData);
-
   useEffect(() => {
-    setActiveLapData(analysis, enrichments, isDevice ? null : splitDistance);
-  }, [analysis, enrichments, isDevice, splitDistance, setActiveLapData]);
+    useMapFocusStore
+      .getState()
+      .setActiveLapData(analysis, enrichments, isDevice ? null : splitDistance);
+  }, [analysis, enrichments, isDevice, splitDistance]);
 
-  const handleActiveLapChange = useCallback(
-    (lapIndex: number | null) => {
-      if (lapIndex != null) {
-        setHoveredLapIndex(lapIndex);
-      } else {
-        clearHoveredLapIndex();
-      }
-    },
-    [setHoveredLapIndex, clearHoveredLapIndex],
-  );
+  const handleActiveLapChange = useCallback((lapIndex: number | null) => {
+    if (lapIndex != null) {
+      useMapFocusStore.getState().setHoveredLapIndex(lapIndex);
+    } else {
+      useMapFocusStore.getState().clearHoveredLapIndex();
+    }
+  }, []);
 
   const markerMode = useMemo((): LapMarkerMode | undefined => {
     if (isDevice) {
@@ -98,15 +91,15 @@ export const LapsTab = (props: LapsTabProps) => {
   useEffect(() => {
     if (markerMode) {
       const markers = computeLapMarkers(props.records, markerMode);
-      setLapMarkers(markers);
+      useMapFocusStore.getState().setLapMarkers(markers);
     } else {
-      clearLapMarkers();
+      useMapFocusStore.getState().clearLapMarkers();
     }
     return () => {
-      clearLapMarkers();
-      clearHoveredLapIndex();
+      useMapFocusStore.getState().clearLapMarkers();
+      useMapFocusStore.getState().clearHoveredLapIndex();
     };
-  }, [props.records, markerMode, setLapMarkers, clearLapMarkers, clearHoveredLapIndex]);
+  }, [props.records, markerMode]);
 
   return (
     <div className="space-y-3">

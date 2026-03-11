@@ -152,18 +152,21 @@ export const computePowerZoneDistribution = (
   const total = counts.reduce((s, c) => s + c, 0);
   if (total === 0) return [];
 
-  return POWER_ZONE_DEFS.map((def, i) => ({
-    zone: def.zone,
-    name: def.name,
-    label: `${def.zone} ${def.label}`,
-    seconds: counts[i],
-    percentage: Math.round((counts[i] / total) * 1000) / 10,
-    color: def.color,
-    rangeLabel:
-      def.maxPct === Infinity
-        ? `>${Math.round(ftp * def.minPct)} W`
-        : `${Math.round(ftp * def.minPct)}–${Math.round(ftp * def.maxPct)} W`,
-  }));
+  return POWER_ZONE_DEFS.map((def, i) => {
+    let rangeLabel = `${Math.round(ftp * def.minPct)}–${Math.round(ftp * def.maxPct)} W`;
+    if (def.maxPct === Infinity) {
+      rangeLabel = `>${Math.round(ftp * def.minPct)} W`;
+    }
+    return {
+      zone: def.zone,
+      name: def.name,
+      label: `${def.zone} ${def.label}`,
+      seconds: counts[i],
+      percentage: Math.round((counts[i] / total) * 1000) / 10,
+      color: def.color,
+      rangeLabel,
+    };
+  });
 };
 
 // --- Pace Zones (reuses computeRunningZones) ---

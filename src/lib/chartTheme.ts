@@ -23,7 +23,10 @@ export const avgDomain = (values: number[]): [number, number] => {
 export const formatTick = (v: number, unit?: string): string => {
   const rounded = Math.round(v * 10) / 10;
   const label = `${rounded}`;
-  return unit ? `${label} ${unit}` : label;
+  if (unit) {
+    return `${label} ${unit}`;
+  }
+  return label;
 };
 
 export const chartTheme = {

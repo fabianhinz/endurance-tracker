@@ -66,7 +66,11 @@ const calculateTRIMP = (
   const durationMin = durationSec / 60;
   const deltaHrRatio = (avgHr - restHr) / (maxHr - restHr);
 
-  const { a, b } = BANISTER[gender === 'female' ? 'female' : 'male'];
+  let banisterKey: 'female' | 'male' = 'male';
+  if (gender === 'female') {
+    banisterKey = 'female';
+  }
+  const { a, b } = BANISTER[banisterKey];
 
   const trimp = durationMin * deltaHrRatio * a * Math.exp(b * deltaHrRatio);
 

@@ -7,5 +7,8 @@ export const extractSessionName = (filename: string): string | undefined => {
   const match = filename.match(/^\d+_(.+)\.fit$/i);
   if (!match) return undefined;
   const name = match[1].replace(/_/g, ' ').trim();
-  return name.length > 0 ? name : undefined;
+  if (name.length > 0) {
+    return name;
+  }
+  return undefined;
 };

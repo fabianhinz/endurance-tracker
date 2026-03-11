@@ -33,4 +33,28 @@ export default defineConfig([
       ],
     },
   },
+  {
+    files: ['**/*.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ConditionalExpression',
+          message: 'Ternary operators are not allowed in .ts files. Use if/else.',
+        },
+      ],
+    },
+  },
+  {
+    files: ['**/*.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ConditionalExpression > ConditionalExpression',
+          message: 'Nested ternary operators are not allowed. Use if/else.',
+        },
+      ],
+    },
+  },
 ]);

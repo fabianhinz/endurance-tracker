@@ -89,10 +89,19 @@ export const usePopupPosition = (x: number, y: number): React.CSSProperties => {
 
     const pos = computePopupPosition(x, y, safeZone);
 
+    let finalLeft = pos.left;
+    if (pos.flipX) {
+      finalLeft = pos.left - popupW;
+    }
+    let finalTop = pos.top;
+    if (pos.flipY) {
+      finalTop = pos.top - popupH;
+    }
+
     return {
       position: 'fixed' as const,
-      left: pos.flipX ? pos.left - popupW : pos.left,
-      top: pos.flipY ? pos.top - popupH : pos.top,
+      left: finalLeft,
+      top: finalTop,
       zIndex: 50,
     };
   }, [x, y]);

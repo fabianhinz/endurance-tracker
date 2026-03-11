@@ -247,9 +247,10 @@ export const detectNewPBs = (
     const existing = existingBests.find(
       (pb) => pb.sport === sport && pb.category === peak.category && pb.window === peak.window,
     );
-    const isBetter = peak.higherIsBetter
-      ? !existing || peak.value > existing.value
-      : !existing || peak.value < existing.value;
+    let isBetter = !existing || peak.value < existing.value;
+    if (peak.higherIsBetter) {
+      isBetter = !existing || peak.value > existing.value;
+    }
     if (isBetter) {
       newPBs.push({
         sport,
@@ -320,13 +321,11 @@ export const computePBsForSessions = (
   const bestByKey = new Map<string, PersonalBest>();
 
   for (const session of sessions) {
-    const peaks = extractSessionPeaks(
-      session.sport,
-      session.records,
-      session.distance !== undefined || session.elevationGain !== undefined
-        ? { distance: session.distance ?? 0, elevationGain: session.elevationGain }
-        : undefined,
-    );
+    let sessionMeta: { distance: number; elevationGain?: number } | undefined = undefined;
+    if (session.distance !== undefined || session.elevationGain !== undefined) {
+      sessionMeta = { distance: session.distance ?? 0, elevationGain: session.elevationGain };
+    }
+    const peaks = extractSessionPeaks(session.sport, session.records, sessionMeta);
 
     for (const peak of peaks) {
       const key = `${session.sport}:${peak.category}:${peak.window}`;
@@ -339,9 +338,10 @@ export const computePBsForSessions = (
         date: session.date,
       };
       const existing = bestByKey.get(key);
-      const isBetter = peak.higherIsBetter
-        ? !existing || pb.value > existing.value
-        : !existing || pb.value < existing.value;
+      let isBetter = !existing || pb.value < existing.value;
+      if (peak.higherIsBetter) {
+        isBetter = !existing || pb.value > existing.value;
+      }
       if (isBetter) {
         bestByKey.set(key, pb);
       }

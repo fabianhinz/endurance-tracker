@@ -44,7 +44,10 @@ const getHrColor = (
 const getPowerColor = (power: number, ftp: number): [number, number, number, number] | null => {
   const pct = power / ftp;
   const def = POWER_ZONE_DEFS.find((z) => pct >= z.minPct && pct < z.maxPct);
-  return def ? hexToRgba(def.color, SEGMENT_ALPHA) : null;
+  if (def) {
+    return hexToRgba(def.color, SEGMENT_ALPHA);
+  }
+  return null;
 };
 
 const getPaceColor = (
@@ -65,10 +68,10 @@ export const buildZoneColoredPath = (
   mode: ZoneColorMode,
   thresholds: UserThresholds,
 ): ZoneSegment[] => {
-  const paceZones =
-    mode === 'pace' && thresholds.thresholdPace && thresholds.thresholdPace > 0
-      ? computeRunningZones(thresholds.thresholdPace)
-      : null;
+  let paceZones: ReturnType<typeof computeRunningZones> | null = null;
+  if (mode === 'pace' && thresholds.thresholdPace && thresholds.thresholdPace > 0) {
+    paceZones = computeRunningZones(thresholds.thresholdPace);
+  }
 
   const segments: ZoneSegment[] = [];
   const validRecords = records.filter(isValidCoordinate);
