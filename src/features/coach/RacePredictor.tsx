@@ -60,7 +60,7 @@ export const RacePredictor = () => {
           </div>
         </div>
 
-        <div className={cn(glassClass, 'rounded-2xl shadow-lg overflow-hidden')}>
+        <div className={cn(glassClass, 'rounded-2xl overflow-hidden')}>
           <table className="w-full text-sm tabular-nums">
             <thead>
               <tr className="text-text-tertiary text-xs">

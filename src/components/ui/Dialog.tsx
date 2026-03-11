@@ -25,7 +25,7 @@ export const DialogContent = (props: DialogPrimitive.DialogContentProps) => {
       <DialogOverlay />
       <DialogPrimitive.Content
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-xl focus:outline-none',
+          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 focus:outline-none',
           className,
         )}
         {...rest}

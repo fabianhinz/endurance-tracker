@@ -15,9 +15,7 @@ export const ActionTile = (props: ActionTileProps) => (
     type="button"
     className={cn(
       'flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all cursor-pointer',
-      props.selected
-        ? 'bg-white border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.25)]'
-        : 'border-white/10 bg-white/5 hover:bg-white/10',
+      props.selected ? 'bg-white border-white/20' : 'border-white/10 bg-white/5 hover:bg-white/10',
     )}
     onClick={props.onClick}
   >

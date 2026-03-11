@@ -140,8 +140,8 @@ export const Dock = () => {
         className={cn(
           cardClass,
           'fixed z-50 md:flex-row md:items-center',
-          'border-0 border-t rounded-none shadow-none bottom-0 inset-x-0',
-          'md:border md:rounded-2xl md:shadow-lg md:inset-x-auto md:bottom-auto md:left-3 md:top-1/2 md:-translate-y-1/2',
+          'border-0 border-t rounded-none bottom-0 inset-x-0',
+          'md:border md:rounded-2xl md:inset-x-auto md:bottom-auto md:left-3 md:top-1/2 md:-translate-y-1/2',
           'transition-all duration-300',
         )}
       >

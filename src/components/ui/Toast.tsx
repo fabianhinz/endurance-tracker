@@ -59,7 +59,7 @@ export const ToastViewport = () => {
           return (
             <ToastPrimitive.Root
               key={t.id}
-              className="rounded-lg border border-white/10 p-4 shadow-lg bg-white/5 backdrop-blur-xl flex items-center gap-2"
+              className="rounded-lg border border-white/10 p-4 bg-white/5 backdrop-blur-xl flex items-center gap-2"
               duration={Infinity}
               onSwipeStart={(e) => e.preventDefault()}
             >
@@ -75,7 +75,7 @@ export const ToastViewport = () => {
           <ToastPrimitive.Root
             key={t.id}
             className={cn(
-              'rounded-lg border p-4 shadow-lg bg-white/5 backdrop-blur-xl',
+              'rounded-lg border p-4 bg-white/5 backdrop-blur-xl',
               variantClasses[t.variant ?? 'default'],
             )}
             onOpenChange={(open) => {

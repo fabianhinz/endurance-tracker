@@ -31,7 +31,7 @@ export const LapDetailTable = (props: LapDetailTableProps) => {
     : false;
 
   return (
-    <div className={cn(glassClass, 'rounded-2xl shadow-lg overflow-hidden')}>
+    <div className={cn(glassClass, 'rounded-2xl overflow-hidden')}>
       <div className="flex items-center px-4 py-2">
         <Typography variant="title" className="flex-1 text-left">
           {m.ui_laps_table_title()}

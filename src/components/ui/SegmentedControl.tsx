@@ -20,7 +20,7 @@ export const SegmentedControl = (props: SegmentedControlProps) => {
       }}
       className={cn(
         'bg-white/5 backdrop-blur-2xl border border-white/10',
-        'flex flex-row gap-2 rounded-2xl shadow-lg w-full p-2',
+        'flex flex-row gap-2 rounded-2xl w-full p-2',
         props.className,
       )}
     >
