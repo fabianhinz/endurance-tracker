@@ -453,5 +453,12 @@
   "toast_reimport_sessions_plural": "{count} sessions reimported",
   "toast_reimport_failed": "{count} failed",
   "ui_demo_banner_text": "You're exploring PaceVault with test data",
-  "ui_demo_banner_action": "Use your own data"
+  "ui_demo_banner_action": "Use your own data",
+  "ui_sparkline_hr": "HR",
+  "ui_sparkline_power": "Power",
+  "ui_sparkline_pace": "Pace",
+  "ui_sparkline_speed": "Speed",
+  "ui_label_min": "Min",
+  "ui_label_avg": "Avg",
+  "ui_label_max": "Max"
 }

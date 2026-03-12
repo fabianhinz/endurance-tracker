@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
 import { Maximize2, Minimize2, X } from 'lucide-react';
@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/Button.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { SessionItem } from '@/features/sessions/SessionItem.tsx';
+import { SessionSparklines } from './SessionSparklines.tsx';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useExpandCard } from '@/lib/hooks/useExpandCard.ts';
 import { usePopupPosition } from './hooks/usePopupPosition.ts';
 import { useDismiss } from './hooks/useDismiss.ts';
+import { useSessionSparklines } from './hooks/useSessionSparklines.ts';
 import { cn } from '@/lib/utils.ts';
 import type { TrainingSession } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
@@ -30,6 +32,8 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
   const expandCard = useExpandCard(cardRef);
   const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
   const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
+  const syncId = useId();
+  const sparklines = useSessionSparklines(expandCard.isExpanded, props.info.sessions);
 
   const style = usePopupPosition(props.info.x, props.info.y);
 
@@ -80,6 +84,11 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
                 onClick={() => props.onClose()}
                 onPointerEnter={() => hover.onPointerEnter(session.id)}
                 onPointerLeave={hover.onPointerLeave}
+                sparklineContent={
+                  expandCard.isExpanded ? (
+                    <SessionSparklines data={sparklines.data.get(session.id)} domains={sparklines.domains} sport={session.sport} syncId={syncId} />
+                  ) : undefined
+                }
               />
             ))}
         </div>

@@ -453,5 +453,12 @@
   "toast_reimport_sessions_plural": "{count} Einheiten neu importiert",
   "toast_reimport_failed": "{count} fehlgeschlagen",
   "ui_demo_banner_text": "Du erkundest PaceVault mit Testdaten",
-  "ui_demo_banner_action": "Eigene Daten verwenden"
+  "ui_demo_banner_action": "Eigene Daten verwenden",
+  "ui_sparkline_hr": "HF",
+  "ui_sparkline_power": "Leistung",
+  "ui_sparkline_pace": "Pace",
+  "ui_sparkline_speed": "Tempo",
+  "ui_label_min": "Min",
+  "ui_label_avg": "Ø",
+  "ui_label_max": "Max"
 }

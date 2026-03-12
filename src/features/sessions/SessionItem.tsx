@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils.ts';
 import { formatDate, formatDuration, formatDistance } from '@/lib/formatters.ts';
@@ -10,6 +11,7 @@ interface SessionItemProps {
   session: TrainingSession;
   size?: 'sm' | 'md';
   className?: string;
+  sparklineContent?: ReactNode;
   onClick?: React.MouseEventHandler;
   onPointerEnter?: React.PointerEventHandler;
   onPointerLeave?: React.PointerEventHandler;
@@ -45,6 +47,7 @@ export const SessionItem = (props: SessionItemProps) => {
           {formatDistance(s.distance)} &middot; {formatDuration(s.duration)}
           {s.avgHr ? <> &middot; {s.avgHr} bpm</> : ''}
         </Typography>
+        {props.sparklineContent}
       </div>
     </Link>
   );
