@@ -3,14 +3,12 @@ import { Typography } from '@/components/ui/Typography.tsx';
 import { tokens } from '@/lib/tokens.ts';
 import { formatPaceTick } from '@/lib/formatters.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
-import type {
-  SparklineData,
-  SparklineDomains,
-  SparklineSeries,
-} from '../map/hooks/useSessionSparklines.ts';
+import type { SparklineData, SparklineDomains, SparklineSeries } from '@/lib/sparklineData.ts';
 import type { Sport } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 import { Card } from '@/components/ui/Card.tsx';
+import { useIsDesktop } from '@/lib/hooks/useIsDesktop';
+import { cn } from '@/lib/utils';
 
 interface SessionSparklinesProps {
   data: SparklineData | undefined;
@@ -27,10 +25,14 @@ interface SparklineCardProps {
   formatValue: (v: number) => string;
   syncId: string;
   domain: [number, number] | null;
+  delay: number;
 }
 
 const SparklineCard = (props: SparklineCardProps) => (
-  <Card>
+  <Card
+    className="motion-safe:animate-reveal opacity-0"
+    style={{ animationDelay: `${props.delay}ms` }}
+  >
     <Typography variant="overline" as="p">
       {props.label}
     </Typography>
@@ -76,10 +78,11 @@ const formatPace = (v: number): string => formatPaceTick(v);
 const formatSpeed = (v: number): string => `${v.toFixed(1)}`;
 
 export const SessionSparklines = (props: SessionSparklinesProps) => {
+  const isDesktop = useIsDesktop();
   const isRunning = props.sport === 'running';
 
   return (
-    <div className="grid grid-cols-3 gap-2 mt-2">
+    <div className={cn('grid gap-2 mt-2', isDesktop ? 'grid-cols-3' : 'grid-rows-3')}>
       <SparklineCard
         label={m.ui_sparkline_hr()}
         series={props.data?.hr ?? null}
@@ -88,6 +91,7 @@ export const SessionSparklines = (props: SessionSparklinesProps) => {
         formatValue={formatHr}
         syncId={props.syncId}
         domain={props.domains.hr}
+        delay={100}
       />
       <SparklineCard
         label={isRunning ? m.ui_sparkline_pace() : m.ui_sparkline_speed()}
@@ -97,6 +101,7 @@ export const SessionSparklines = (props: SessionSparklinesProps) => {
         formatValue={isRunning ? formatPace : formatSpeed}
         syncId={props.syncId}
         domain={isRunning ? props.domains.pace : props.domains.speed}
+        delay={200}
       />
       {props.data?.power && (
         <SparklineCard
@@ -107,6 +112,7 @@ export const SessionSparklines = (props: SessionSparklinesProps) => {
           formatValue={formatPower}
           syncId={props.syncId}
           domain={props.domains.power}
+          delay={300}
         />
       )}
     </div>

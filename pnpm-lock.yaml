@@ -71,6 +71,9 @@ importers:
       idb:
         specifier: ^8.0.3
         version: 8.0.3
+      immer:
+        specifier: ^11.1.4
+        version: 11.1.4
       lucide-react:
         specifier: ^0.563.0
         version: 0.563.0(react@19.2.4)

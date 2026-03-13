@@ -5,11 +5,8 @@ import { useFiltersStore } from '@/store/filters.ts';
 import { SessionItem } from './SessionItem.tsx';
 import { type TimeRange, rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
 
-// SessionItem md: p-4 (16px × 2) + ~42px two-line text content
-const ITEM_HEIGHT = 74;
-// matches Tailwind space-y-2 gap between items
-const GAP = 8;
-const ESTIMATED_ROW_SIZE = ITEM_HEIGHT + GAP;
+// SessionItem collapsed: p-4 (16px × 2) + ~42px two-line text content + 8px gap
+const ESTIMATED_ROW_SIZE = 82;
 
 export const SessionList = () => {
   const sessions = useSessionsStore((s) => s.sessions);
@@ -55,16 +52,19 @@ export const SessionList = () => {
         return (
           <div
             key={session.id}
+            data-index={virtualRow.index}
+            ref={virtualizer.measureElement}
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               width: '100%',
-              height: virtualRow.size - GAP,
               transform: `translateY(${virtualRow.start - scrollMargin}px)`,
             }}
           >
-            <SessionItem session={session} />
+            <div className="pb-2">
+              <SessionItem session={session} />
+            </div>
           </div>
         );
       })}

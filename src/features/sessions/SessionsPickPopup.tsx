@@ -1,21 +1,16 @@
 import { useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
 import { Maximize2, Minimize2, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { SessionItem } from '@/features/sessions/SessionItem.tsx';
-import { SessionItemToolbar } from './SessionItemToolbar.tsx';
 import { useExpandCard } from '@/lib/hooks/useExpandCard.ts';
 import { usePopupPosition } from '../map/hooks/usePopupPosition.ts';
 import { useDismiss } from '../map/hooks/useDismiss.ts';
-import { useSessionSparklines } from '../map/hooks/useSessionSparklines.ts';
-import { useItemToolbar } from '../map/hooks/useItemToolbar.ts';
 import { cn } from '@/lib/utils.ts';
 import type { TrainingSession } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
-import { SessionSparklines } from './SessionSparklines.tsx';
 
 export interface PopupInfo {
   x: number;
@@ -32,9 +27,6 @@ export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const expandCard = useExpandCard(cardRef);
   const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
-  const toolbar = useItemToolbar();
-  const sparklines = useSessionSparklines(toolbar.toggledIds, props.info.sessions);
-  const navigate = useNavigate();
 
   const style = usePopupPosition(props.info.x, props.info.y);
 
@@ -78,32 +70,13 @@ export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
           }
         />
         <div className={cn('overflow-y-auto min-h-0 space-y-2')}>
-          {sorted.map((session) => {
-            return (
-              <SessionItem
-                key={session.id}
-                session={session}
-                actions={
-                  <SessionItemToolbar
-                    onToggleSparkline={() => toolbar.toggleSparkline(session.id)}
-                    onOpen={() => {
-                      navigate(`/sessions/${session.id}`);
-                      props.onClose();
-                    }}
-                  />
-                }
-              >
-                {toolbar.toggledIds.has(session.id) && (
-                  <SessionSparklines
-                    data={sparklines.data.get(session.id)}
-                    domains={sparklines.domains}
-                    sport={session.sport}
-                    syncId={session.id}
-                  />
-                )}
-              </SessionItem>
-            );
-          })}
+          {sorted.map((session) => (
+            <SessionItem
+              key={session.id}
+              session={session}
+              onNavigate={props.onClose}
+            />
+          ))}
         </div>
       </Card>
     </div>,
