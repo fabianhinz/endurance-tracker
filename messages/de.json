@@ -461,5 +461,7 @@
   "ui_sparkline_speed": "Tempo",
   "ui_label_min": "Min",
   "ui_label_avg": "Ø",
-  "ui_label_max": "Max"
+  "ui_label_max": "Max",
+  "ui_tooltip_toggle_sparkline": "Diagramme ein-/ausblenden",
+  "ui_tooltip_open_session": "Einheit öffnen"
 }

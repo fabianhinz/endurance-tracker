@@ -461,5 +461,7 @@
   "ui_sparkline_speed": "Speed",
   "ui_label_min": "Min",
   "ui_label_avg": "Avg",
-  "ui_label_max": "Max"
+  "ui_label_max": "Max",
+  "ui_tooltip_toggle_sparkline": "Toggle charts",
+  "ui_tooltip_open_session": "Open session"
 }

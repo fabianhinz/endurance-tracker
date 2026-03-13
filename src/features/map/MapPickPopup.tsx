@@ -100,7 +100,6 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
                     actions={
                       isHovered ? (
                         <SessionItemToolbar
-                          isSparklineOpen={isToggled}
                           onToggleSparkline={() => toolbar.toggleSparkline(session.id)}
                           onOpen={() => {
                             navigate(`/sessions/${session.id}`);

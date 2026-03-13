@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/Button.tsx';
 import { m } from '@/paraglide/messages.js';
 
 interface SessionItemToolbarProps {
-  isSparklineOpen: boolean;
   onToggleSparkline: () => void;
   onOpen: () => void;
 }
@@ -13,12 +12,17 @@ export const SessionItemToolbar = (props: SessionItemToolbarProps) => (
     <Button
       variant="ghost"
       size="icon"
-      aria-label={m.ui_sparkline_hr()}
+      aria-label={m.ui_tooltip_toggle_sparkline()}
       onClick={props.onToggleSparkline}
     >
       <BarChart3 size={14} />
     </Button>
-    <Button variant="ghost" size="icon" aria-label={m.ui_btn_open()} onClick={props.onOpen}>
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={m.ui_tooltip_open_session()}
+      onClick={props.onOpen}
+    >
       <ExternalLink size={14} />
     </Button>
   </div>
