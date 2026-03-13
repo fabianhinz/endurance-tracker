@@ -108,17 +108,16 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
                         />
                       ) : undefined
                     }
-                    sparklineContent={
-                      isToggled ? (
-                        <SessionSparklines
-                          data={sparklines.data.get(session.id)}
-                          domains={sparklines.domains}
-                          sport={session.sport}
-                          syncId={session.id}
-                        />
-                      ) : undefined
-                    }
-                  />
+                  >
+                    {isToggled && (
+                      <SessionSparklines
+                        data={sparklines.data.get(session.id)}
+                        domains={sparklines.domains}
+                        sport={session.sport}
+                        syncId={session.id}
+                      />
+                    )}
+                  </SessionItem>
                 </Fragment>
               );
             }

@@ -13,7 +13,7 @@ interface SessionItemProps {
   className?: string;
   disableLink?: boolean;
   actions?: ReactNode;
-  sparklineContent?: ReactNode;
+  children?: ReactNode;
   onClick?: React.MouseEventHandler;
   onPointerEnter?: React.PointerEventHandler;
   onPointerLeave?: React.PointerEventHandler;
@@ -25,7 +25,6 @@ const sizeStyles = {
 } as const;
 
 export const SessionItem = (props: SessionItemProps) => {
-  const s = props.session;
   const className = cn(
     'relative flex items-center transition-colors',
     !props.disableLink && 'hover:bg-white/10',
@@ -36,17 +35,17 @@ export const SessionItem = (props: SessionItemProps) => {
   const content = (
     <>
       <div className="self-start">
-        <SportBadge sport={s.sport} size={props.size ?? 'md'} />
+        <SportBadge sport={props.session.sport} size={props.size ?? 'md'} />
       </div>
       <div className="flex-1 min-w-0">
         <Typography variant="subtitle1" className="truncate">
-          {s.name ?? formatDate(s.date)}
+          {props.session.name ?? formatDate(props.session.date)}
         </Typography>
         <Typography variant="caption" as="p">
-          {s.name && <>{formatDate(s.date)} &middot; </>}
-          {formatDistance(s.distance)} &middot; {formatDuration(s.duration)}
+          {props.session.name && <>{formatDate(props.session.date)} &middot; </>}
+          {formatDistance(props.session.distance)} &middot; {formatDuration(props.session.duration)}
         </Typography>
-        {props.sparklineContent}
+        {props.children}
       </div>
       {props.actions && (
         <div className="absolute right-2 top-6 -translate-y-1/2">{props.actions}</div>
@@ -69,7 +68,7 @@ export const SessionItem = (props: SessionItemProps) => {
 
   return (
     <Link
-      to={`/sessions/${s.id}`}
+      to={`/sessions/${props.session.id}`}
       className={className}
       onClick={props.onClick}
       onPointerEnter={props.onPointerEnter}
