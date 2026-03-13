@@ -92,16 +92,20 @@ const computeDomains = (data: Map<string, SparklineData>): SparklineDomains => {
 };
 
 export const useSessionSparklines = (
-  enabled: boolean,
+  enabledIds: Set<string>,
   sessions: TrainingSession[],
 ): SparklineResult => {
   const [snapshot, setSnapshot] = useState(() => new Map(sparklineCache));
 
   useEffect(() => {
-    if (!enabled) return;
+    if (enabledIds.size === 0) return;
 
     const uncached = sessions.filter(
-      (s) => s.hasDetailedRecords && !sparklineCache.has(s.id) && !loadingSet.has(s.id),
+      (s) =>
+        enabledIds.has(s.id) &&
+        s.hasDetailedRecords &&
+        !sparklineCache.has(s.id) &&
+        !loadingSet.has(s.id),
     );
     if (uncached.length === 0) return;
 
@@ -109,13 +113,28 @@ export const useSessionSparklines = (
       loadingSet.add(s.id);
     }
 
-    Promise.all(uncached.map((s) => loadSession(s.id))).then(() => {
+    const clearLoading = () => {
       for (const s of uncached) {
         loadingSet.delete(s.id);
       }
-      setSnapshot(new Map(sparklineCache));
-    });
-  }, [enabled, sessions]);
+    };
+
+    Promise.all(uncached.map((s) => loadSession(s.id)))
+      .then(() => {
+        clearLoading();
+        setSnapshot((prev) => {
+          const next = new Map(prev);
+          for (const s of uncached) {
+            const d = sparklineCache.get(s.id);
+            if (d) {
+              next.set(s.id, d);
+            }
+          }
+          return next;
+        });
+      })
+      .catch(clearLoading);
+  }, [enabledIds, sessions]);
 
   const domains = useMemo(() => computeDomains(snapshot), [snapshot]);
 

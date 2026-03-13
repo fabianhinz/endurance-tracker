@@ -11,6 +11,8 @@ interface SessionItemProps {
   session: TrainingSession;
   size?: 'sm' | 'md';
   className?: string;
+  disableLink?: boolean;
+  actions?: ReactNode;
   sparklineContent?: ReactNode;
   onClick?: React.MouseEventHandler;
   onPointerEnter?: React.PointerEventHandler;
@@ -24,19 +26,15 @@ const sizeStyles = {
 
 export const SessionItem = (props: SessionItemProps) => {
   const s = props.session;
+  const className = cn(
+    'relative flex items-center transition-colors',
+    !props.disableLink && 'hover:bg-white/10',
+    sizeStyles[props.size ?? 'md'],
+    props.className,
+  );
 
-  return (
-    <Link
-      to={`/sessions/${s.id}`}
-      className={cn(
-        'flex items-center transition-colors hover:bg-white/10',
-        sizeStyles[props.size ?? 'md'],
-        props.className,
-      )}
-      onClick={props.onClick}
-      onPointerEnter={props.onPointerEnter}
-      onPointerLeave={props.onPointerLeave}
-    >
+  const content = (
+    <>
       <div className="self-start">
         <SportBadge sport={s.sport} size={props.size ?? 'md'} />
       </div>
@@ -47,10 +45,37 @@ export const SessionItem = (props: SessionItemProps) => {
         <Typography variant="caption" as="p">
           {s.name && <>{formatDate(s.date)} &middot; </>}
           {formatDistance(s.distance)} &middot; {formatDuration(s.duration)}
-          {s.avgHr ? <> &middot; {s.avgHr} bpm</> : ''}
         </Typography>
         {props.sparklineContent}
       </div>
+      {props.actions && (
+        <div className="absolute right-2 top-6 -translate-y-1/2">{props.actions}</div>
+      )}
+    </>
+  );
+
+  if (props.disableLink) {
+    return (
+      <div
+        className={className}
+        onClick={props.onClick}
+        onPointerEnter={props.onPointerEnter}
+        onPointerLeave={props.onPointerLeave}
+      >
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      to={`/sessions/${s.id}`}
+      className={className}
+      onClick={props.onClick}
+      onPointerEnter={props.onPointerEnter}
+      onPointerLeave={props.onPointerLeave}
+    >
+      {content}
     </Link>
   );
 };

@@ -358,6 +358,7 @@
   "exp_vdot_analogy": "VDOT is like a credit score for your running — one number that summarizes a bunch of underlying factors into a quick snapshot of where you stand.",
   "exp_vdot_range": "Beginner: 25–35. Recreational: 35–45. Competitive: 45–55. Elite: 55–70+. World class: 75–85.",
   "ui_btn_close": "Close",
+  "ui_btn_open": "Open",
   "ui_reimport_dialog_title": "Reimport All Sessions",
   "ui_reimport_dialog_desc": "This re-parses all stored FIT files using your current thresholds. TSS, zones, laps, and personal bests get recalculated. Existing session data is overwritten.",
   "ui_reimport_dialog_confirm": "Reimport All",

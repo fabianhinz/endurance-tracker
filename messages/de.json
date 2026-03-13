@@ -358,6 +358,7 @@
   "exp_vdot_analogy": "VDOT ist wie ein Schufa-Score fürs Laufen — eine Zahl, die viele Faktoren in einen schnellen Überblick zusammenfasst.",
   "exp_vdot_range": "Anfänger: 25–35. Freizeitläufer: 35–45. Wettkampf: 45–55. Elite: 55–70+. Weltklasse: 75–85.",
   "ui_btn_close": "Schließen",
+  "ui_btn_open": "Öffnen",
   "ui_reimport_dialog_title": "Alle Einheiten neu importieren",
   "ui_reimport_dialog_desc": "Alle gespeicherten FIT-Dateien werden mit deinen aktuellen Schwellenwerten neu eingelesen. TSS, Zonen, Runden und Bestleistungen werden neu berechnet. Bestehende Daten werden überschrieben.",
   "ui_reimport_dialog_confirm": "Alle neu importieren",
