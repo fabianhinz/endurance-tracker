@@ -10,6 +10,7 @@ import type {
 } from '../map/hooks/useSessionSparklines.ts';
 import type { Sport } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
+import { Card } from '@/components/ui/Card.tsx';
 
 interface SessionSparklinesProps {
   data: SparklineData | undefined;
@@ -29,7 +30,7 @@ interface SparklineCardProps {
 }
 
 const SparklineCard = (props: SparklineCardProps) => (
-  <div className="min-w-0 rounded-xl border border-white/10 bg-white/5 p-2">
+  <Card>
     <Typography variant="overline" as="p">
       {props.label}
     </Typography>
@@ -66,7 +67,7 @@ const SparklineCard = (props: SparklineCardProps) => (
         {props.formatValue(props.series.max)}
       </Typography>
     )}
-  </div>
+  </Card>
 );
 
 const formatHr = (v: number): string => `${Math.round(v)}`;

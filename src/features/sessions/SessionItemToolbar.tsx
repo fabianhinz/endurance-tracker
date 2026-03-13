@@ -8,7 +8,7 @@ interface SessionItemToolbarProps {
 }
 
 export const SessionItemToolbar = (props: SessionItemToolbarProps) => (
-  <div className="flex items-center gap-0.5 shrink-0">
+  <div className="flex gap-1 items-center">
     <Button
       variant="ghost"
       size="icon"

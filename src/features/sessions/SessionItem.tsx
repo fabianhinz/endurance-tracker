@@ -1,17 +1,14 @@
 import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils.ts';
 import { formatDate, formatDuration, formatDistance } from '@/lib/formatters.ts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { SportBadge } from './SportBadge.tsx';
-import { glassClass } from '@/components/ui/Card.tsx';
+import { Card } from '@/components/ui/Card.tsx';
 import type { TrainingSession } from '@/engine/types.ts';
+import { cn } from '@/lib/utils.ts';
 
 interface SessionItemProps {
   session: TrainingSession;
-  size?: 'sm' | 'md';
   className?: string;
-  disableLink?: boolean;
   actions?: ReactNode;
   children?: ReactNode;
   onClick?: React.MouseEventHandler;
@@ -19,23 +16,16 @@ interface SessionItemProps {
   onPointerLeave?: React.PointerEventHandler;
 }
 
-const sizeStyles = {
-  sm: 'gap-3 rounded-lg px-3 py-2',
-  md: `gap-4 rounded-xl p-4 ${glassClass}`,
-} as const;
-
 export const SessionItem = (props: SessionItemProps) => {
-  const className = cn(
-    'relative flex items-center transition-colors',
-    !props.disableLink && 'hover:bg-white/10',
-    sizeStyles[props.size ?? 'md'],
-    props.className,
-  );
-
-  const content = (
-    <>
+  return (
+    <Card
+      className={cn('flex-row gap-2', props.className)}
+      onClick={props.onClick}
+      onPointerEnter={props.onPointerEnter}
+      onPointerLeave={props.onPointerLeave}
+    >
       <div className="self-start">
-        <SportBadge sport={props.session.sport} size={props.size ?? 'md'} />
+        <SportBadge sport={props.session.sport} />
       </div>
       <div className="flex-1 min-w-0">
         <Typography variant="subtitle1" className="truncate">
@@ -47,34 +37,7 @@ export const SessionItem = (props: SessionItemProps) => {
         </Typography>
         {props.children}
       </div>
-      {props.actions && (
-        <div className="absolute right-2 top-6 -translate-y-1/2">{props.actions}</div>
-      )}
-    </>
-  );
-
-  if (props.disableLink) {
-    return (
-      <div
-        className={className}
-        onClick={props.onClick}
-        onPointerEnter={props.onPointerEnter}
-        onPointerLeave={props.onPointerLeave}
-      >
-        {content}
-      </div>
-    );
-  }
-
-  return (
-    <Link
-      to={`/sessions/${props.session.id}`}
-      className={className}
-      onClick={props.onClick}
-      onPointerEnter={props.onPointerEnter}
-      onPointerLeave={props.onPointerLeave}
-    >
-      {content}
-    </Link>
+      {props.actions}
+    </Card>
   );
 };

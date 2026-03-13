@@ -1,14 +1,12 @@
-import { Fragment, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
 import { Maximize2, Minimize2, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { SessionItem } from '@/features/sessions/SessionItem.tsx';
 import { SessionItemToolbar } from './SessionItemToolbar.tsx';
-import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useExpandCard } from '@/lib/hooks/useExpandCard.ts';
 import { usePopupPosition } from '../map/hooks/usePopupPosition.ts';
 import { useDismiss } from '../map/hooks/useDismiss.ts';
@@ -34,7 +32,6 @@ export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const expandCard = useExpandCard(cardRef);
   const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
-  const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
   const toolbar = useItemToolbar();
   const sparklines = useSessionSparklines(toolbar.toggledIds, props.info.sessions);
   const navigate = useNavigate();
@@ -80,57 +77,31 @@ export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
             </>
           }
         />
-        <div
-          className={cn('overflow-y-auto min-h-0', expandCard.isExpanded ? 'flex-1' : 'space-y-1')}
-        >
-          {sorted.map((session, index) => {
-            if (expandCard.isExpanded) {
-              const isHovered = toolbar.hoveredId === session.id;
-              const isToggled = toolbar.toggledIds.has(session.id);
-
-              return (
-                <Fragment key={session.id}>
-                  {index > 0 && <div className="ml-14 border-t border-white/10" />}
-                  <SessionItem
-                    session={session}
-                    size="sm"
-                    disableLink
-                    onPointerEnter={() => toolbar.onPointerEnter(session.id)}
-                    onPointerLeave={toolbar.onPointerLeave}
-                    actions={
-                      isHovered ? (
-                        <SessionItemToolbar
-                          onToggleSparkline={() => toolbar.toggleSparkline(session.id)}
-                          onOpen={() => {
-                            navigate(`/sessions/${session.id}`);
-                            props.onClose();
-                          }}
-                        />
-                      ) : undefined
-                    }
-                  >
-                    {isToggled && (
-                      <SessionSparklines
-                        data={sparklines.data.get(session.id)}
-                        domains={sparklines.domains}
-                        sport={session.sport}
-                        syncId={session.id}
-                      />
-                    )}
-                  </SessionItem>
-                </Fragment>
-              );
-            }
-
+        <div className={cn('overflow-y-auto min-h-0 space-y-2')}>
+          {sorted.map((session) => {
             return (
               <SessionItem
                 key={session.id}
                 session={session}
-                size="sm"
-                onClick={() => props.onClose()}
-                onPointerEnter={() => hover.onPointerEnter(session.id)}
-                onPointerLeave={hover.onPointerLeave}
-              />
+                actions={
+                  <SessionItemToolbar
+                    onToggleSparkline={() => toolbar.toggleSparkline(session.id)}
+                    onOpen={() => {
+                      navigate(`/sessions/${session.id}`);
+                      props.onClose();
+                    }}
+                  />
+                }
+              >
+                {toolbar.toggledIds.has(session.id) && (
+                  <SessionSparklines
+                    data={sparklines.data.get(session.id)}
+                    domains={sparklines.domains}
+                    sport={session.sport}
+                    syncId={session.id}
+                  />
+                )}
+              </SessionItem>
             );
           })}
         </div>

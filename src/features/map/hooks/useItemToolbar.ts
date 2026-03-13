@@ -1,24 +1,12 @@
 import { useCallback, useState } from 'react';
 
 interface ItemToolbarState {
-  hoveredId: string | null;
   toggledIds: Set<string>;
-  onPointerEnter: (id: string) => void;
-  onPointerLeave: () => void;
   toggleSparkline: (id: string) => void;
 }
 
 export const useItemToolbar = (): ItemToolbarState => {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [toggledIds, setToggledIds] = useState<Set<string>>(() => new Set());
-
-  const onPointerEnter = useCallback((id: string) => {
-    setHoveredId(id);
-  }, []);
-
-  const onPointerLeave = useCallback(() => {
-    setHoveredId(null);
-  }, []);
 
   const toggleSparkline = useCallback((id: string) => {
     setToggledIds((prev) => {
@@ -32,5 +20,5 @@ export const useItemToolbar = (): ItemToolbarState => {
     });
   }, []);
 
-  return { hoveredId, toggledIds, onPointerEnter, onPointerLeave, toggleSparkline };
+  return { toggledIds, toggleSparkline };
 };
