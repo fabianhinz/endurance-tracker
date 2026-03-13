@@ -54,14 +54,17 @@ const toSeries = <T extends TimeSeriesPoint>(
   return { points, min, avg, max };
 };
 
+const normalizeTime = <T extends TimeSeriesPoint>(points: T[]): (T & { originalTime: number })[] =>
+  points.map((p, i) => ({ ...p, time: i, originalTime: p.time }));
+
 const loadSession = async (id: string): Promise<void> => {
   const records = await getSessionRecords(id);
   const sampled = downsample(records, SPARKLINE_SAMPLE_SIZE);
   const data: SparklineData = {
-    hr: toSeries(prepareHrData(sampled), 'hr'),
-    power: toSeries(preparePowerData(sampled), 'power'),
-    pace: toSeries(preparePaceData(sampled), 'pace'),
-    speed: toSeries(prepareSpeedData(sampled), 'speed'),
+    hr: toSeries(normalizeTime(prepareHrData(sampled)), 'hr'),
+    power: toSeries(normalizeTime(preparePowerData(sampled)), 'power'),
+    pace: toSeries(normalizeTime(preparePaceData(sampled)), 'pace'),
+    speed: toSeries(normalizeTime(prepareSpeedData(sampled)), 'speed'),
   };
   sparklineCache.set(id, data);
 };
@@ -89,13 +92,13 @@ const computeDomains = (data: Map<string, SparklineData>): SparklineDomains => {
 };
 
 export const useSessionSparklines = (
-  isExpanded: boolean,
+  enabled: boolean,
   sessions: TrainingSession[],
 ): SparklineResult => {
   const [snapshot, setSnapshot] = useState(() => new Map(sparklineCache));
 
   useEffect(() => {
-    if (!isExpanded) return;
+    if (!enabled) return;
 
     const uncached = sessions.filter(
       (s) => s.hasDetailedRecords && !sparklineCache.has(s.id) && !loadingSet.has(s.id),
@@ -112,7 +115,7 @@ export const useSessionSparklines = (
       }
       setSnapshot(new Map(sparklineCache));
     });
-  }, [isExpanded, sessions]);
+  }, [enabled, sessions]);
 
   const domains = useMemo(() => computeDomains(snapshot), [snapshot]);
 

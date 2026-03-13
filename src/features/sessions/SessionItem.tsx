@@ -37,7 +37,9 @@ export const SessionItem = (props: SessionItemProps) => {
       onPointerEnter={props.onPointerEnter}
       onPointerLeave={props.onPointerLeave}
     >
-      <SportBadge sport={s.sport} size={props.size ?? 'md'} />
+      <div className="self-start">
+        <SportBadge sport={s.sport} size={props.size ?? 'md'} />
+      </div>
       <div className="flex-1 min-w-0">
         <Typography variant="subtitle1" className="truncate">
           {s.name ?? formatDate(s.date)}

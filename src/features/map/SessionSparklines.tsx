@@ -1,19 +1,15 @@
-import {
-  LineChart,
-  Line,
-  YAxis,
-  ResponsiveContainer,
-  Tooltip as RechartsTooltip,
-} from 'recharts';
+import { LineChart, Line, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { tokens } from '@/lib/tokens.ts';
 import { formatPaceTick } from '@/lib/formatters.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
-import type { SparklineData, SparklineDomains, SparklineSeries } from './hooks/useSessionSparklines.ts';
+import type {
+  SparklineData,
+  SparklineDomains,
+  SparklineSeries,
+} from './hooks/useSessionSparklines.ts';
 import type { Sport } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
-
-const MOCK_POINTS = Array.from({ length: 60 }, (_, i) => ({ time: i }));
 
 interface SessionSparklinesProps {
   data: SparklineData | undefined;
@@ -37,16 +33,20 @@ const SparklineCard = (props: SparklineCardProps) => (
     <Typography variant="overline" as="p">
       {props.label}
     </Typography>
-    <div className="h-10 mt-1">
+    <div className="h-20 mt-1">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart syncId={props.syncId} data={props.series?.points ?? MOCK_POINTS}>
+        <LineChart syncId={props.syncId} data={props.series?.points ?? []}>
           {props.domain && <YAxis hide domain={props.domain} />}
           <RechartsTooltip
             contentStyle={chartTheme.tooltip.contentStyle}
             labelStyle={chartTheme.tooltip.labelStyle}
             isAnimationActive={chartTheme.tooltip.isAnimationActive}
             separator={chartTheme.tooltip.separator}
-            labelFormatter={(v) => formatChartTime(Number(v))}
+            labelFormatter={(_label, payload) => {
+              const originalTime = payload[0]?.payload?.originalTime;
+              if (originalTime == null) return '';
+              return formatChartTime(Number(originalTime));
+            }}
           />
           <Line
             dataKey={props.dataKey}
@@ -64,11 +64,6 @@ const SparklineCard = (props: SparklineCardProps) => (
         {m.ui_label_min()} {props.formatValue(props.series.min)} · {m.ui_label_avg()}{' '}
         {props.formatValue(props.series.avg)} · {m.ui_label_max()}{' '}
         {props.formatValue(props.series.max)}
-      </Typography>
-    )}
-    {!props.series && (
-      <Typography variant="caption" as="p" color="textTertiary" className="mt-1">
-        {m.ui_label_min()} · {m.ui_label_avg()} · {m.ui_label_max()}
       </Typography>
     )}
   </div>
@@ -102,15 +97,17 @@ export const SessionSparklines = (props: SessionSparklinesProps) => {
         syncId={props.syncId}
         domain={isRunning ? props.domains.pace : props.domains.speed}
       />
-      <SparklineCard
-        label={m.ui_sparkline_power()}
-        series={props.data?.power ?? null}
-        dataKey="power"
-        color={tokens.chartPower}
-        formatValue={formatPower}
-        syncId={props.syncId}
-        domain={props.domains.power}
-      />
+      {props.data?.power && (
+        <SparklineCard
+          label={m.ui_sparkline_power()}
+          series={props.data.power}
+          dataKey="power"
+          color={tokens.chartPower}
+          formatValue={formatPower}
+          syncId={props.syncId}
+          domain={props.domains.power}
+        />
+      )}
     </div>
   );
 };

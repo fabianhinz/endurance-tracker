@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react';
+import { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
 import { Maximize2, Minimize2, X } from 'lucide-react';
@@ -32,7 +32,6 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
   const expandCard = useExpandCard(cardRef);
   const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
   const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
-  const syncId = useId();
   const sparklines = useSessionSparklines(expandCard.isExpanded, props.info.sessions);
 
   const style = usePopupPosition(props.info.x, props.info.y);
@@ -86,7 +85,12 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
                 onPointerLeave={hover.onPointerLeave}
                 sparklineContent={
                   expandCard.isExpanded ? (
-                    <SessionSparklines data={sparklines.data.get(session.id)} domains={sparklines.domains} sport={session.sport} syncId={syncId} />
+                    <SessionSparklines
+                      data={sparklines.data.get(session.id)}
+                      domains={sparklines.domains}
+                      sport={session.sport}
+                      syncId={session.id}
+                    />
                   ) : undefined
                 }
               />
