@@ -9,22 +9,34 @@ import type { TrainingSession } from '@/engine/types.ts';
 import { cn } from '@/lib/utils.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useSparklineStore } from '@/store/sparklineStore.ts';
+import type { SparklineDomains } from '@/lib/sparklineData.ts';
 
 interface SessionItemProps {
   session: TrainingSession;
+  syncId: string;
+  isToggled: boolean;
+  domains: SparklineDomains;
+  onToggleSparkline: () => void;
   className?: string;
   onNavigate?: () => void;
 }
 
 export const SessionItem = (props: SessionItemProps) => {
   const navigate = useNavigate();
-  const isToggled = useSparklineStore((s) => s.toggledIds.has(props.session.id));
   const sparklineData = useSparklineStore((s) => s.cache.get(props.session.id));
-  const domains = useSparklineStore((s) => s.domains);
 
   return (
     <Card
-      className={cn('hover:bg-white/10', props.className)}
+      role="button"
+      tabIndex={0}
+      className={cn('hover:bg-white/10 cursor-pointer', props.className)}
+      onClick={props.onToggleSparkline}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          props.onToggleSparkline();
+        }
+      }}
       onPointerEnter={() => useMapFocusStore.getState().setHoveredSession(props.session.id)}
       onPointerLeave={() => useMapFocusStore.getState().setHoveredSession(null)}
     >
@@ -43,7 +55,6 @@ export const SessionItem = (props: SessionItemProps) => {
           </div>
         </div>
         <SessionItemToolbar
-          onToggleSparkline={() => useSparklineStore.getState().toggleSparkline(props.session.id)}
           onOpen={() => {
             navigate(`/sessions/${props.session.id}`);
             props.onNavigate?.();
@@ -51,13 +62,13 @@ export const SessionItem = (props: SessionItemProps) => {
         />
       </div>
 
-      {isToggled && (
+      {props.isToggled && (
         <div className="col-start-2 col-end-4 row-start-2">
           <SessionSparklines
             data={sparklineData}
-            domains={domains}
+            domains={props.domains}
             sport={props.session.sport}
-            syncId={props.session.id}
+            syncId={props.syncId}
           />
         </div>
       )}

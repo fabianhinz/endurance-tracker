@@ -3,6 +3,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useFiltersStore } from '@/store/filters.ts';
 import { SessionItem } from './SessionItem.tsx';
+import { useLocalSparklines } from './hooks/useLocalSparklines.ts';
 import { type TimeRange, rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
 
 // SessionItem collapsed: p-4 (16px × 2) + ~42px two-line text content + 8px gap
@@ -13,6 +14,7 @@ export const SessionList = () => {
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
+  const sparklines = useLocalSparklines();
   const [scrollMargin, setScrollMargin] = useState(0);
   const listRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
@@ -63,7 +65,13 @@ export const SessionList = () => {
             }}
           >
             <div className="pb-2">
-              <SessionItem session={session} />
+              <SessionItem
+              session={session}
+              syncId={`${session.id}-source:list`}
+              isToggled={sparklines.toggledIds.has(session.id)}
+              domains={sparklines.domains}
+              onToggleSparkline={() => sparklines.toggle(session.id)}
+            />
             </div>
           </div>
         );

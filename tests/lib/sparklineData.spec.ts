@@ -3,6 +3,8 @@ import {
   toSeries,
   normalizeTime,
   computeDomains,
+  recomputeDomains,
+  emptyDomains,
   buildSparklineData,
   type SparklineData,
 } from '@/lib/sparklineData.ts';
@@ -92,6 +94,62 @@ describe('computeDomains', () => {
     expect(result.hr![0]).toBeLessThan(90);
     expect(result.hr![1]).toBeGreaterThan(160);
     expect(result.power).toBeNull();
+  });
+});
+
+describe('recomputeDomains', () => {
+  const cache = new Map<string, SparklineData>([
+    [
+      'a',
+      {
+        hr: { points: [], min: 100, avg: 120, max: 140 },
+        power: null,
+        pace: null,
+        speed: null,
+      },
+    ],
+    [
+      'b',
+      {
+        hr: { points: [], min: 90, avg: 115, max: 160 },
+        power: null,
+        pace: null,
+        speed: null,
+      },
+    ],
+  ]);
+
+  it('returns emptyDomains when no ids are toggled', () => {
+    const result = recomputeDomains(new Set(), cache);
+    expect(result).toBe(emptyDomains);
+  });
+
+  it('filters cache to only toggled ids', () => {
+    const result = recomputeDomains(new Set(['a']), cache);
+    expect(result.hr).not.toBeNull();
+    expect(result.hr![0]).toBeLessThanOrEqual(100);
+    expect(result.hr![1]).toBeGreaterThanOrEqual(140);
+  });
+
+  it('includes all toggled ids present in cache', () => {
+    const result = recomputeDomains(new Set(['a', 'b']), cache);
+    expect(result.hr).not.toBeNull();
+    expect(result.hr![0]).toBeLessThan(90);
+    expect(result.hr![1]).toBeGreaterThan(160);
+  });
+
+  it('ignores toggled ids not in cache', () => {
+    const result = recomputeDomains(new Set(['missing']), cache);
+    expect(result).toBe(emptyDomains);
+  });
+});
+
+describe('emptyDomains', () => {
+  it('has all null fields', () => {
+    expect(emptyDomains.hr).toBeNull();
+    expect(emptyDomains.power).toBeNull();
+    expect(emptyDomains.pace).toBeNull();
+    expect(emptyDomains.speed).toBeNull();
   });
 });
 

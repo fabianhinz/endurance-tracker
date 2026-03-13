@@ -59,6 +59,28 @@ export const buildSparklineData = (records: SessionRecord[]): SparklineData => {
   };
 };
 
+export const emptyDomains: SparklineDomains = {
+  hr: null,
+  power: null,
+  pace: null,
+  speed: null,
+};
+
+export const recomputeDomains = (
+  toggledIds: Set<string>,
+  cache: Map<string, SparklineData>,
+): SparklineDomains => {
+  const filtered = new Map<string, SparklineData>();
+  for (const id of toggledIds) {
+    const d = cache.get(id);
+    if (d) {
+      filtered.set(id, d);
+    }
+  }
+  if (filtered.size === 0) return emptyDomains;
+  return computeDomains(filtered);
+};
+
 export const computeDomains = (data: Map<string, SparklineData>): SparklineDomains => {
   const collect = (key: keyof SparklineData): [number, number] | null => {
     const mins: number[] = [];
