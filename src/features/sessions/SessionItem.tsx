@@ -5,24 +5,21 @@ import { SportBadge } from './SportBadge.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import type { TrainingSession } from '@/engine/types.ts';
 import { cn } from '@/lib/utils.ts';
+import { useMapFocusStore } from '@/store/mapFocus.ts';
 
 interface SessionItemProps {
   session: TrainingSession;
   className?: string;
   actions?: ReactNode;
   children?: ReactNode;
-  onClick?: React.MouseEventHandler;
-  onPointerEnter?: React.PointerEventHandler;
-  onPointerLeave?: React.PointerEventHandler;
 }
 
 export const SessionItem = (props: SessionItemProps) => {
   return (
     <Card
-      className={cn('flex-row gap-2', props.className)}
-      onClick={props.onClick}
-      onPointerEnter={props.onPointerEnter}
-      onPointerLeave={props.onPointerLeave}
+      className={cn('flex-row gap-2 hover:bg-white/10', props.className)}
+      onPointerEnter={() => useMapFocusStore.getState().setHoveredSession(props.session.id)}
+      onPointerLeave={() => useMapFocusStore.getState().setHoveredSession(null)}
     >
       <div className="self-start">
         <SportBadge sport={props.session.sport} />

@@ -2,8 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useFiltersStore } from '@/store/filters.ts';
-import { useMapFocusStore } from '@/store/mapFocus.ts';
-import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
 import { SessionItem } from './SessionItem.tsx';
 import { type TimeRange, rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
 
@@ -18,7 +16,6 @@ export const SessionList = () => {
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
-  const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
   const [scrollMargin, setScrollMargin] = useState(0);
   const listRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
@@ -67,11 +64,7 @@ export const SessionList = () => {
               transform: `translateY(${virtualRow.start - scrollMargin}px)`,
             }}
           >
-            <SessionItem
-              session={session}
-              onPointerEnter={() => hover.onPointerEnter(session.id)}
-              onPointerLeave={hover.onPointerLeave}
-            />
+            <SessionItem session={session} />
           </div>
         );
       })}
