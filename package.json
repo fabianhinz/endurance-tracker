@@ -41,6 +41,7 @@
     "@tanstack/react-virtual": "^3.13.21",
     "clsx": "^2.1.1",
     "fit-file-parser": "^2.3.3",
+    "framer-motion": "^12.36.0",
     "idb": "^8.0.3",
     "immer": "^11.1.4",
     "lucide-react": "^0.563.0",

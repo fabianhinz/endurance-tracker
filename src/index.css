@@ -92,25 +92,11 @@
   --spacing-8: 32px;
   --spacing-12: 48px;
 
-  /* ── Animations ── */
-  --animate-reveal: reveal 300ms ease-in-out forwards;
-
   /* ── Border radius ── */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
-}
-
-@keyframes reveal {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0px);
-  }
 }
 
 * {
