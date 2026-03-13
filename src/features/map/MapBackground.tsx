@@ -8,8 +8,8 @@ import { useMapCameraEffect } from './hooks/useMapCameraEffect.ts';
 import { useMapPopupState } from './hooks/useMapPopupState.ts';
 import { DeckGLOverlay } from './DeckGLOverlay.tsx';
 import { DeckMetricsOverlay } from './DeckMetricsOverlay.tsx';
-import { MapPickPopup } from './MapPickPopup.tsx';
-import { LapPickPopup } from './LapPickPopup.tsx';
+import { SessionsPickPopup } from '../sessions/SessionsPickPopup.tsx';
+import { LapPickPopup } from '../sessions/laps/LapPickPopup.tsx';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useLayoutStore } from '@/store/layout.ts';
 import type { MapRef } from 'react-map-gl/maplibre';
@@ -77,7 +77,9 @@ export const MapBackground = () => {
         />
       </MapGL>
       <DeckMetricsOverlay />
-      {popupState.popup && <MapPickPopup info={popupState.popup} onClose={popupState.closePopup} />}
+      {popupState.popup && (
+        <SessionsPickPopup info={popupState.popup} onClose={popupState.closePopup} />
+      )}
       {popupState.lapPopup && focusedSport && (
         <LapPickPopup
           info={popupState.lapPopup}

@@ -7,7 +7,7 @@ import type {
   SparklineData,
   SparklineDomains,
   SparklineSeries,
-} from './hooks/useSessionSparklines.ts';
+} from '../map/hooks/useSessionSparklines.ts';
 import type { Sport } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 

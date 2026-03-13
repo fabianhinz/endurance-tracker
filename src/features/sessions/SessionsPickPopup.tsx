@@ -7,17 +7,17 @@ import { Button } from '@/components/ui/Button.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { SessionItem } from '@/features/sessions/SessionItem.tsx';
-import { SessionSparklines } from './SessionSparklines.tsx';
 import { SessionItemToolbar } from './SessionItemToolbar.tsx';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useExpandCard } from '@/lib/hooks/useExpandCard.ts';
-import { usePopupPosition } from './hooks/usePopupPosition.ts';
-import { useDismiss } from './hooks/useDismiss.ts';
-import { useSessionSparklines } from './hooks/useSessionSparklines.ts';
-import { useItemToolbar } from './hooks/useItemToolbar.ts';
+import { usePopupPosition } from '../map/hooks/usePopupPosition.ts';
+import { useDismiss } from '../map/hooks/useDismiss.ts';
+import { useSessionSparklines } from '../map/hooks/useSessionSparklines.ts';
+import { useItemToolbar } from '../map/hooks/useItemToolbar.ts';
 import { cn } from '@/lib/utils.ts';
 import type { TrainingSession } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
+import { SessionSparklines } from './SessionSparklines.tsx';
 
 export interface PopupInfo {
   x: number;
@@ -25,12 +25,12 @@ export interface PopupInfo {
   sessions: TrainingSession[];
 }
 
-interface MapPickPopupProps {
+interface SessionsPickPopupProps {
   info: PopupInfo;
   onClose: () => void;
 }
 
-export const MapPickPopup = (props: MapPickPopupProps) => {
+export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const expandCard = useExpandCard(cardRef);
   const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
