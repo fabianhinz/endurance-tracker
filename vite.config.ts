@@ -34,6 +34,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        maximumFileSizeToCacheInBytes: 4_000_000,
       },
       manifest: {
         name: 'PaceVault',
