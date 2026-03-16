@@ -14,7 +14,7 @@ test.describe('Session browsing', () => {
     await page.waitForURL('/sessions');
 
     // Session items are links containing sport badge, date, metrics
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks).toHaveCount(2, { timeout: 10_000 });
 
     // Each session item should have visible text content (name/date, distance, duration)
@@ -28,11 +28,14 @@ test.describe('Session browsing', () => {
     await page.getByRole('link', { name: /sessions/i }).click();
     await page.waitForURL('/sessions');
 
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks.first()).toBeVisible({ timeout: 10_000 });
 
-    // Click the first session
-    await sessionLinks.first().click();
+    // Click the open-session button inside the first session item
+    await sessionLinks
+      .first()
+      .getByRole('button', { name: /open session/i })
+      .click();
 
     // Should navigate to /sessions/:id
     await page.waitForURL(/\/sessions\/.+/);
@@ -49,11 +52,14 @@ test.describe('Session browsing', () => {
     await page.getByRole('link', { name: /sessions/i }).click();
     await page.waitForURL('/sessions');
 
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks.first()).toBeVisible({ timeout: 10_000 });
 
     // Go to detail
-    await sessionLinks.first().click();
+    await sessionLinks
+      .first()
+      .getByRole('button', { name: /open session/i })
+      .click();
     await page.waitForURL(/\/sessions\/.+/);
     await expect(page.getByText(/training effect/i)).toBeVisible({ timeout: 10_000 });
 
@@ -62,6 +68,8 @@ test.describe('Session browsing', () => {
     await page.waitForURL('/sessions');
 
     // Session list should be visible again
-    await expect(page.locator('a[href^="/sessions/"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="session-item"]').first()).toBeVisible({
+      timeout: 10_000,
+    });
   });
 });

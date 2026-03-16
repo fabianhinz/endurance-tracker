@@ -18,7 +18,7 @@ test.describe('File upload', () => {
 
     // Wait for the done banner to dismiss and verify session appears in the list
     // Session items are links to /sessions/:id
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks.first()).toBeVisible({ timeout: 10_000 });
   });
 
@@ -42,7 +42,7 @@ test.describe('File upload', () => {
     await page.getByRole('link', { name: /sessions/i }).click();
     await page.waitForURL('/sessions');
 
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks).toHaveCount(2, { timeout: 10_000 });
   });
 });
