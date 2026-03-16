@@ -8,7 +8,7 @@ interface SessionItemToolbarProps {
 
 export const SessionItemToolbar = (props: SessionItemToolbarProps) => {
   return (
-    <div className="flex gap-1 items-center">
+    <div className="flex gap-1 items-center" onClick={(e) => e.stopPropagation()}>
       <Button
         variant="ghost"
         size="icon"

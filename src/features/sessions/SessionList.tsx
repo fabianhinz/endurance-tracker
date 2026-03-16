@@ -66,12 +66,12 @@ export const SessionList = () => {
           >
             <div className="pb-2">
               <SessionItem
-              session={session}
-              syncId={`${session.id}-source:list`}
-              isToggled={sparklines.toggledIds.has(session.id)}
-              domains={sparklines.domains}
-              onToggleSparkline={() => sparklines.toggle(session.id)}
-            />
+                session={session}
+                syncId={`${session.id}-source:list`}
+                isToggled={sparklines.toggledIds.has(session.id)}
+                domains={sparklines.domains}
+                onToggleSparkline={() => sparklines.toggle(session.id)}
+              />
             </div>
           </div>
         );
