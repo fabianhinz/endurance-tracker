@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { WeeklyPlan } from '@/types/index.ts';
 import { idbStorage } from '@/lib/idbStorage.ts';
 
@@ -11,20 +12,22 @@ interface CoachPlanState {
 }
 
 export const useCoachPlanStore = create<CoachPlanState>()(
-  persist(
-    (set) => ({
-      cachedPlan: null,
-      cacheKey: null,
+  immer(
+    persist(
+      (set) => ({
+        cachedPlan: null,
+        cacheKey: null,
 
-      setPlan: (plan, key) => set({ cachedPlan: plan, cacheKey: key }),
+        setPlan: (plan, key) => set({ cachedPlan: plan, cacheKey: key }),
 
-      clearPlan: () => set({ cachedPlan: null, cacheKey: null }),
-    }),
-    {
-      name: 'store-coach-plan',
-      storage: createJSONStorage(() => idbStorage),
-      skipHydration: true,
-      version: 1,
-    },
+        clearPlan: () => set({ cachedPlan: null, cacheKey: null }),
+      }),
+      {
+        name: 'store-coach-plan',
+        storage: createJSONStorage(() => idbStorage),
+        skipHydration: true,
+        version: 1,
+      },
+    ),
   ),
 );

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 import type { SessionLap, SessionRecord, Sport } from '@/engine/types.ts';
 import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
 import type { LapMarker } from '@/lib/lapMarkers.ts';
@@ -41,69 +42,71 @@ interface MapFocusState {
   setZoneColorMode: (mode: ZoneColorMode | null) => void;
 }
 
-export const useMapFocusStore = create<MapFocusState>()((set) => ({
-  openedSessionId: null,
-  setOpenedSession: (id) => {
-    if (id === null) {
+export const useMapFocusStore = create<MapFocusState>()(
+  immer((set) => ({
+    openedSessionId: null,
+    setOpenedSession: (id) => {
+      if (id === null) {
+        set({
+          openedSessionId: null,
+          focusedLaps: [],
+          focusedSport: null,
+          focusedRecords: [],
+          hoveredPoint: null,
+          lapMarkers: [],
+          hoveredLapIndex: null,
+          activeLapAnalysis: [],
+          activeLapEnrichments: [],
+          activeSplitDistance: null,
+          clickedLapIndex: null,
+          zoneColorMode: null,
+        });
+      } else {
+        set({ openedSessionId: id });
+      }
+    },
+    hoveredSessionId: null,
+    setHoveredSession: (id) => set({ hoveredSessionId: id }),
+    focusedLaps: [],
+    focusedSport: null,
+    focusedRecords: [],
+    setFocusedLaps: (laps, sport, records) =>
+      set({ focusedLaps: laps, focusedSport: sport, focusedRecords: records }),
+    clearFocusedLaps: () =>
       set({
-        openedSessionId: null,
         focusedLaps: [],
         focusedSport: null,
         focusedRecords: [],
-        hoveredPoint: null,
-        lapMarkers: [],
-        hoveredLapIndex: null,
         activeLapAnalysis: [],
         activeLapEnrichments: [],
         activeSplitDistance: null,
         clickedLapIndex: null,
-        zoneColorMode: null,
-      });
-    } else {
-      set({ openedSessionId: id });
-    }
-  },
-  hoveredSessionId: null,
-  setHoveredSession: (id) => set({ hoveredSessionId: id }),
-  focusedLaps: [],
-  focusedSport: null,
-  focusedRecords: [],
-  setFocusedLaps: (laps, sport, records) =>
-    set({ focusedLaps: laps, focusedSport: sport, focusedRecords: records }),
-  clearFocusedLaps: () =>
-    set({
-      focusedLaps: [],
-      focusedSport: null,
-      focusedRecords: [],
-      activeLapAnalysis: [],
-      activeLapEnrichments: [],
-      activeSplitDistance: null,
-      clickedLapIndex: null,
-    }),
-  activeLapAnalysis: [],
-  activeLapEnrichments: [],
-  activeSplitDistance: null,
-  setActiveLapData: (analysis, enrichments, splitDistance) =>
-    set({
-      activeLapAnalysis: analysis,
-      activeLapEnrichments: enrichments,
-      activeSplitDistance: splitDistance,
-    }),
-  clickedLapIndex: null,
-  setClickedLapIndex: (index) => set({ clickedLapIndex: index }),
-  clearClickedLapIndex: () => set({ clickedLapIndex: null }),
-  hoveredPoint: null,
-  setHoveredPoint: (point) => set({ hoveredPoint: point }),
-  clearHoveredPoint: () => set({ hoveredPoint: null }),
-  pickCircle: null,
-  setPickCircle: (center) => set({ pickCircle: center }),
-  clearPickCircle: () => set({ pickCircle: null }),
-  lapMarkers: [],
-  setLapMarkers: (markers) => set({ lapMarkers: markers }),
-  clearLapMarkers: () => set({ lapMarkers: [] }),
-  hoveredLapIndex: null,
-  setHoveredLapIndex: (index) => set({ hoveredLapIndex: index }),
-  clearHoveredLapIndex: () => set({ hoveredLapIndex: null }),
-  zoneColorMode: null,
-  setZoneColorMode: (mode) => set({ zoneColorMode: mode }),
-}));
+      }),
+    activeLapAnalysis: [],
+    activeLapEnrichments: [],
+    activeSplitDistance: null,
+    setActiveLapData: (analysis, enrichments, splitDistance) =>
+      set({
+        activeLapAnalysis: analysis,
+        activeLapEnrichments: enrichments,
+        activeSplitDistance: splitDistance,
+      }),
+    clickedLapIndex: null,
+    setClickedLapIndex: (index) => set({ clickedLapIndex: index }),
+    clearClickedLapIndex: () => set({ clickedLapIndex: null }),
+    hoveredPoint: null,
+    setHoveredPoint: (point) => set({ hoveredPoint: point }),
+    clearHoveredPoint: () => set({ hoveredPoint: null }),
+    pickCircle: null,
+    setPickCircle: (center) => set({ pickCircle: center }),
+    clearPickCircle: () => set({ pickCircle: null }),
+    lapMarkers: [],
+    setLapMarkers: (markers) => set({ lapMarkers: markers }),
+    clearLapMarkers: () => set({ lapMarkers: [] }),
+    hoveredLapIndex: null,
+    setHoveredLapIndex: (index) => set({ hoveredLapIndex: index }),
+    clearHoveredLapIndex: () => set({ hoveredLapIndex: null }),
+    zoneColorMode: null,
+    setZoneColorMode: (mode) => set({ zoneColorMode: mode }),
+  })),
+);
