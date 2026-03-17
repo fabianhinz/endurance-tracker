@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import { idbStorage } from '@/lib/idbStorage.ts';
 
 interface LayoutState {
@@ -16,30 +17,38 @@ interface LayoutState {
 }
 
 export const useLayoutStore = create<LayoutState>()(
-  persist(
-    (set) => ({
-      dockExpanded: true,
-      toggleDock: () => set((state) => ({ dockExpanded: !state.dockExpanded })),
-      compactLayout: false,
-      toggleCompactLayout: () => set((state) => ({ compactLayout: !state.compactLayout })),
-      onboardingComplete: false,
-      completeOnboarding: () => set({ onboardingComplete: true, compactLayout: true }),
-      mapPitch: 0,
-      setMapPitch: (pitch) => set({ mapPitch: pitch }),
-      demoMode: false,
-      setDemoMode: (v) => set({ demoMode: v }),
-    }),
-    {
-      name: 'store-layout',
-      storage: createJSONStorage(() => idbStorage),
-      skipHydration: true,
-      version: 2,
-      migrate: (persisted, version) => {
-        if (version < 2) {
-          return { ...(persisted as object), demoMode: false };
-        }
-        return persisted as LayoutState;
+  immer(
+    persist(
+      (set) => ({
+        dockExpanded: true,
+        toggleDock: () =>
+          set((draft) => {
+            draft.dockExpanded = !draft.dockExpanded;
+          }),
+        compactLayout: false,
+        toggleCompactLayout: () =>
+          set((draft) => {
+            draft.compactLayout = !draft.compactLayout;
+          }),
+        onboardingComplete: false,
+        completeOnboarding: () => set({ onboardingComplete: true, compactLayout: true }),
+        mapPitch: 0,
+        setMapPitch: (pitch) => set({ mapPitch: pitch }),
+        demoMode: false,
+        setDemoMode: (v) => set({ demoMode: v }),
+      }),
+      {
+        name: 'store-layout',
+        storage: createJSONStorage(() => idbStorage),
+        skipHydration: true,
+        version: 2,
+        migrate: (persisted, version) => {
+          if (version < 2) {
+            return { ...(persisted as object), demoMode: false };
+          }
+          return persisted as LayoutState;
+        },
       },
-    },
+    ),
   ),
 );

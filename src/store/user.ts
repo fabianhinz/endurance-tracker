@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import type { UserProfile } from '@/types/index.ts';
 import { idbStorage } from '@/lib/idbStorage.ts';
 
@@ -13,52 +14,49 @@ interface UserState {
 }
 
 export const useUserStore = create<UserState>()(
-  persist(
-    (set) => ({
-      profile: null,
+  immer(
+    persist(
+      (set) => ({
+        profile: null,
 
-      setProfile: (data) =>
-        set({
-          profile: {
-            ...data,
-            id: crypto.randomUUID(),
-            createdAt: Date.now(),
-          },
-        }),
+        setProfile: (data) =>
+          set({
+            profile: {
+              ...data,
+              id: crypto.randomUUID(),
+              createdAt: Date.now(),
+            },
+          }),
 
-      updateProfile: (updates) =>
-        set((state) => {
-          if (!state.profile) {
-            return { profile: null };
-          }
-          return { profile: { ...state.profile, ...updates } };
-        }),
+        updateProfile: (updates) =>
+          set((draft) => {
+            if (draft.profile) {
+              Object.assign(draft.profile, updates);
+            }
+          }),
 
-      updateThresholds: (thresholds) =>
-        set((state) => {
-          if (!state.profile) {
-            return { profile: null };
-          }
-          return { profile: { ...state.profile, thresholds } };
-        }),
+        updateThresholds: (thresholds) =>
+          set((draft) => {
+            if (draft.profile) {
+              draft.profile.thresholds = thresholds;
+            }
+          }),
 
-      toggleMetricHelp: () =>
-        set((state) => {
-          if (!state.profile) {
-            return { profile: null };
-          }
-          return {
-            profile: { ...state.profile, showMetricHelp: !state.profile.showMetricHelp },
-          };
-        }),
+        toggleMetricHelp: () =>
+          set((draft) => {
+            if (draft.profile) {
+              draft.profile.showMetricHelp = !draft.profile.showMetricHelp;
+            }
+          }),
 
-      resetProfile: () => set({ profile: null }),
-    }),
-    {
-      name: 'store-user',
-      storage: createJSONStorage(() => idbStorage),
-      skipHydration: true,
-      version: 1,
-    },
+        resetProfile: () => set({ profile: null }),
+      }),
+      {
+        name: 'store-user',
+        storage: createJSONStorage(() => idbStorage),
+        skipHydration: true,
+        version: 1,
+      },
+    ),
   ),
 );

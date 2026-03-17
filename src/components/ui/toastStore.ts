@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 
 interface MessageToastItem {
   id: string;
@@ -31,43 +32,46 @@ interface ToastState {
   replaceProgressWithMessage: (title: string, variant: 'success' | 'error' | 'warning') => void;
 }
 
-export const useToastStore = create<ToastState>()((set) => ({
-  toasts: [],
-  addToast: (toast) =>
-    set((state) => {
-      const id = toast.id ?? crypto.randomUUID();
-      if (toast.id && state.toasts.some((t) => t.id === id)) return state;
-      const updated = [...state.toasts, { ...toast, id, kind: 'message' as const }];
-      return { toasts: updated.slice(-5) };
-    }),
-  removeToast: (id) =>
-    set((state) => ({
-      toasts: state.toasts.filter((t) => t.id !== id),
-    })),
-  upsertProgress: (data) =>
-    set((state) => {
-      const item: ProgressToastItem = { ...data, id: PROGRESS_TOAST_ID, kind: 'progress' };
-      const idx = state.toasts.findIndex((t) => t.id === PROGRESS_TOAST_ID);
-      if (idx >= 0) {
-        const updated = [...state.toasts];
-        updated[idx] = item;
-        return { toasts: updated };
-      }
-      return { toasts: [...state.toasts, item].slice(-5) };
-    }),
-  replaceProgressWithMessage: (title, variant) =>
-    set((state) => {
-      const messageToast: MessageToastItem = {
-        id: crypto.randomUUID(),
-        kind: 'message',
-        title,
-        variant,
-        testId: 'upload-done',
-      };
-      const toasts = state.toasts.filter((t) => t.id !== PROGRESS_TOAST_ID);
-      return { toasts: [...toasts, messageToast].slice(-5) };
-    }),
-}));
+export const useToastStore = create<ToastState>()(
+  immer((set) => ({
+    toasts: [],
+    addToast: (toast) =>
+      set((draft) => {
+        const id = toast.id ?? crypto.randomUUID();
+        if (toast.id && draft.toasts.some((t) => t.id === id)) return;
+        draft.toasts.push({ ...toast, id, kind: 'message' as const });
+        draft.toasts = draft.toasts.slice(-5);
+      }),
+    removeToast: (id) =>
+      set((draft) => {
+        draft.toasts = draft.toasts.filter((t) => t.id !== id);
+      }),
+    upsertProgress: (data) =>
+      set((draft) => {
+        const item: ProgressToastItem = { ...data, id: PROGRESS_TOAST_ID, kind: 'progress' };
+        const idx = draft.toasts.findIndex((t) => t.id === PROGRESS_TOAST_ID);
+        if (idx >= 0) {
+          draft.toasts[idx] = item;
+        } else {
+          draft.toasts.push(item);
+          draft.toasts = draft.toasts.slice(-5);
+        }
+      }),
+    replaceProgressWithMessage: (title, variant) =>
+      set((draft) => {
+        const messageToast: MessageToastItem = {
+          id: crypto.randomUUID(),
+          kind: 'message',
+          title,
+          variant,
+          testId: 'upload-done',
+        };
+        draft.toasts = draft.toasts.filter((t) => t.id !== PROGRESS_TOAST_ID);
+        draft.toasts.push(messageToast);
+        draft.toasts = draft.toasts.slice(-5);
+      }),
+  })),
+);
 
 export const toast = (
   title: string,

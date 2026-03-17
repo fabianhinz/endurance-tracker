@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 
 export interface DeckMetrics {
   fps: number;
@@ -24,12 +25,17 @@ interface DeckMetricsState {
   update: (m: Record<string, number>) => void;
 }
 
-export const useDeckMetricsStore = create<DeckMetricsState>()((set, get) => ({
-  expanded: false,
-  metrics: null,
-  toggle: () => set((s) => ({ expanded: !s.expanded })),
-  update: (m) => {
-    if (!get().expanded) return;
-    set({ metrics: m as unknown as DeckMetrics });
-  },
-}));
+export const useDeckMetricsStore = create<DeckMetricsState>()(
+  immer((set, get) => ({
+    expanded: false,
+    metrics: null,
+    toggle: () =>
+      set((draft) => {
+        draft.expanded = !draft.expanded;
+      }),
+    update: (m) => {
+      if (!get().expanded) return;
+      set({ metrics: m as unknown as DeckMetrics });
+    },
+  })),
+);
