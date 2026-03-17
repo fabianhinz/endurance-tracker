@@ -1,9 +1,11 @@
-import { ExternalLink } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/Button.tsx';
 import { m } from '@/paraglide/messages.js';
+import { cn } from '@/lib/utils.ts';
 
 interface SessionItemToolbarProps {
-  onOpen: () => void;
+  isToggled: boolean;
+  onToggleSparkline: () => void;
 }
 
 export const SessionItemToolbar = (props: SessionItemToolbarProps) => {
@@ -12,10 +14,14 @@ export const SessionItemToolbar = (props: SessionItemToolbarProps) => {
       <Button
         variant="ghost"
         size="icon"
-        aria-label={m.ui_tooltip_open_session()}
-        onClick={props.onOpen}
+        aria-label={m.ui_tooltip_toggle_sparkline()}
+        aria-expanded={props.isToggled}
+        onClick={props.onToggleSparkline}
       >
-        <ExternalLink size={14} />
+        <ChevronDown
+          size={14}
+          className={cn('transition-transform duration-300', props.isToggled && 'rotate-180')}
+        />
       </Button>
     </div>
   );

@@ -31,11 +31,8 @@ test.describe('Session browsing', () => {
     const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks.first()).toBeVisible({ timeout: 10_000 });
 
-    // Click the open-session button inside the first session item
-    await sessionLinks
-      .first()
-      .getByRole('button', { name: /open session/i })
-      .click();
+    // Click the session item to navigate to its detail page
+    await sessionLinks.first().click();
 
     // Should navigate to /sessions/:id
     await page.waitForURL(/\/sessions\/.+/);
@@ -56,10 +53,7 @@ test.describe('Session browsing', () => {
     await expect(sessionLinks.first()).toBeVisible({ timeout: 10_000 });
 
     // Go to detail
-    await sessionLinks
-      .first()
-      .getByRole('button', { name: /open session/i })
-      .click();
+    await sessionLinks.first().click();
     await page.waitForURL(/\/sessions\/.+/);
     await expect(page.getByText(/training effect/i)).toBeVisible({ timeout: 10_000 });
 

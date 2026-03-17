@@ -69,7 +69,6 @@ export const SessionList = () => {
                 session={session}
                 syncId={`${session.id}-source:list`}
                 isToggled={sparklines.toggledIds.has(session.id)}
-                domains={sparklines.domains}
                 onToggleSparkline={() => sparklines.toggle(session.id)}
               />
             </div>

@@ -5,7 +5,6 @@ import {
   preparePaceData,
   prepareSpeedData,
 } from '@/lib/chartData.ts';
-import { avgDomain } from '@/lib/chartTheme.ts';
 import type { TimeSeriesPoint } from '@/lib/chartData.ts';
 import type { SessionRecord } from '@/engine/types.ts';
 
@@ -22,13 +21,6 @@ export interface SparklineData {
   pace: SparklineSeries | null;
   speed: SparklineSeries | null;
 }
-
-export type SparklineDomains = {
-  hr: [number, number] | null;
-  power: [number, number] | null;
-  pace: [number, number] | null;
-  speed: [number, number] | null;
-};
 
 const SPARKLINE_SAMPLE_SIZE = 60;
 
@@ -56,49 +48,5 @@ export const buildSparklineData = (records: SessionRecord[]): SparklineData => {
     power: toSeries(normalizeTime(preparePowerData(sampled)), 'power'),
     pace: toSeries(normalizeTime(preparePaceData(sampled)), 'pace'),
     speed: toSeries(normalizeTime(prepareSpeedData(sampled)), 'speed'),
-  };
-};
-
-export const emptyDomains: SparklineDomains = {
-  hr: null,
-  power: null,
-  pace: null,
-  speed: null,
-};
-
-export const recomputeDomains = (
-  toggledIds: Set<string>,
-  cache: Map<string, SparklineData>,
-): SparklineDomains => {
-  const filtered = new Map<string, SparklineData>();
-  for (const id of toggledIds) {
-    const d = cache.get(id);
-    if (d) {
-      filtered.set(id, d);
-    }
-  }
-  if (filtered.size === 0) return emptyDomains;
-  return computeDomains(filtered);
-};
-
-export const computeDomains = (data: Map<string, SparklineData>): SparklineDomains => {
-  const collect = (key: keyof SparklineData): [number, number] | null => {
-    const mins: number[] = [];
-    const maxes: number[] = [];
-    for (const d of data.values()) {
-      const s = d[key];
-      if (s) {
-        mins.push(s.min);
-        maxes.push(s.max);
-      }
-    }
-    if (mins.length === 0) return null;
-    return avgDomain([Math.min(...mins), Math.max(...maxes)]);
-  };
-  return {
-    hr: collect('hr'),
-    power: collect('power'),
-    pace: collect('pace'),
-    speed: collect('speed'),
   };
 };
