@@ -7,8 +7,8 @@ import { SessionSparklines } from './SessionSparklines.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import type { TrainingSession } from '@/engine/types.ts';
 import { cn } from '@/lib/utils.ts';
-import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useSparklineStore } from '@/store/sparklineStore.ts';
+import { useSessionHover } from './hooks/useSessionHover.ts';
 
 interface SessionItemProps {
   session: TrainingSession;
@@ -28,6 +28,8 @@ export const SessionItem = (props: SessionItemProps) => {
     props.onNavigate?.();
   };
 
+  const sessionHover = useSessionHover(props.session.id);
+
   return (
     <Card
       data-testid="session-item"
@@ -41,8 +43,8 @@ export const SessionItem = (props: SessionItemProps) => {
           handleNavigate();
         }
       }}
-      onPointerEnter={() => useMapFocusStore.getState().setHoveredSession(props.session.id)}
-      onPointerLeave={() => useMapFocusStore.getState().setHoveredSession(null)}
+      onPointerEnter={sessionHover.onPointerEnter}
+      onPointerLeave={sessionHover.onPointerLeave}
     >
       <div className="flex justify-between gap-3">
         <div className="flex gap-2 min-w-0">
