@@ -1,4 +1,4 @@
-import { LineChart, Line, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { LineChart, Line, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { tokens } from '@/lib/tokens.ts';
 import { formatPaceTick } from '@/lib/formatters.ts';
@@ -22,6 +22,7 @@ interface SparklineCardProps {
   color: string;
   formatValue: (v: number) => string;
   syncId: string;
+  reversed?: boolean;
 }
 
 const SparklineCard = (props: SparklineCardProps) => (
@@ -32,6 +33,7 @@ const SparklineCard = (props: SparklineCardProps) => (
     <div className="h-20 mt-1">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart syncId={props.syncId} data={props.series?.points ?? []}>
+          {props.reversed && <YAxis reversed hide />}
           <RechartsTooltip
             contentStyle={chartTheme.tooltip.contentStyle}
             labelStyle={chartTheme.tooltip.labelStyle}
@@ -90,6 +92,7 @@ export const SessionSparklines = (props: SessionSparklinesProps) => {
           color={isRunning ? tokens.chartPace : tokens.chartSpeed}
           formatValue={isRunning ? formatPace : formatSpeed}
           syncId={props.syncId}
+          reversed={isRunning}
         />
         {props.data?.power && (
           <SparklineCard

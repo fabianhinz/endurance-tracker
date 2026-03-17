@@ -78,7 +78,6 @@ export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
               session={session}
               syncId={`${session.id}-source:pickPopup`}
               isToggled={sparklines.toggledIds.has(session.id)}
-              domains={sparklines.domains}
               onToggleSparkline={() => sparklines.toggle(session.id)}
               onNavigate={props.onClose}
             />
