@@ -5,6 +5,7 @@ import {
   makeRunningRecords,
   makeSwimmingRecords,
 } from '@tests/factories/records.ts';
+import type { PersonalBest } from '@/engine/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -271,7 +272,7 @@ describe('multi-file upload PB accumulation', () => {
     const mediumRecords = makeRunningRecords('medium', 3600, { baseSpeed: 3.5 });
     const fastRecords = makeRunningRecords('fast', 3600, { baseSpeed: 4.5 });
 
-    let accumulatedBests: import('../../src/types/index.ts').PersonalBest[] = [];
+    let accumulatedBests: PersonalBest[] = [];
 
     const slowPBs = detectNewPBs('slow', now, 'running', slowRecords, accumulatedBests);
     accumulatedBests = mergePBs(accumulatedBests, slowPBs);

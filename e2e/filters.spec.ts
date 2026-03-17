@@ -30,7 +30,7 @@ test.describe('Dock filters', () => {
     });
 
     test('shows all sessions by default', async ({ page }) => {
-      const sessionLinks = page.locator('a[href^="/sessions/"]');
+      const sessionLinks = page.locator('[data-testid="session-item"]');
       await expect(sessionLinks).toHaveCount(3);
     });
 
@@ -38,7 +38,7 @@ test.describe('Dock filters', () => {
       await dockButton(page, /sport filter/i).click();
       await openPanelRadio(page, /cycle/i).click();
 
-      const sessionLinks = page.locator('a[href^="/sessions/"]');
+      const sessionLinks = page.locator('[data-testid="session-item"]');
       await expect(sessionLinks).toHaveCount(1);
       await expect(sessionLinks.first()).toContainText('Evening Ride');
     });
@@ -47,18 +47,18 @@ test.describe('Dock filters', () => {
       await dockButton(page, /sport filter/i).click();
       await openPanelRadio(page, /run$/i).click();
 
-      const sessionLinks = page.locator('a[href^="/sessions/"]');
+      const sessionLinks = page.locator('[data-testid="session-item"]');
       await expect(sessionLinks).toHaveCount(2);
     });
 
     test('switching back to all restores full list', async ({ page }) => {
       await dockButton(page, /sport filter/i).click();
       await openPanelRadio(page, /cycle/i).click();
-      await expect(page.locator('a[href^="/sessions/"]')).toHaveCount(1);
+      await expect(page.locator('[data-testid="session-item"]')).toHaveCount(1);
 
       await dockButton(page, /sport filter/i).click();
       await openPanelRadio(page, /all/i).click();
-      await expect(page.locator('a[href^="/sessions/"]')).toHaveCount(3);
+      await expect(page.locator('[data-testid="session-item"]')).toHaveCount(3);
     });
   });
 
@@ -76,7 +76,7 @@ test.describe('Dock filters', () => {
     });
 
     test('shows all sessions with "All" time filter', async ({ page }) => {
-      const sessionLinks = page.locator('a[href^="/sessions/"]');
+      const sessionLinks = page.locator('[data-testid="session-item"]');
       await expect(sessionLinks).toHaveCount(4);
     });
 
@@ -84,7 +84,7 @@ test.describe('Dock filters', () => {
       await dockButton(page, /time range filter/i).click();
       await openPanelRadio(page, /^7d$/i).click();
 
-      const sessionLinks = page.locator('a[href^="/sessions/"]');
+      const sessionLinks = page.locator('[data-testid="session-item"]');
       await expect(sessionLinks).toHaveCount(1);
       await expect(sessionLinks.first()).toContainText('Recent Run');
     });
@@ -93,7 +93,7 @@ test.describe('Dock filters', () => {
       await dockButton(page, /time range filter/i).click();
       await openPanelRadio(page, /^30d$/i).click();
 
-      const sessionLinks = page.locator('a[href^="/sessions/"]');
+      const sessionLinks = page.locator('[data-testid="session-item"]');
       await expect(sessionLinks).toHaveCount(2);
     });
 
@@ -101,18 +101,18 @@ test.describe('Dock filters', () => {
       await dockButton(page, /time range filter/i).click();
       await openPanelRadio(page, /^90d$/i).click();
 
-      const sessionLinks = page.locator('a[href^="/sessions/"]');
+      const sessionLinks = page.locator('[data-testid="session-item"]');
       await expect(sessionLinks).toHaveCount(3);
     });
 
     test('switching back to all restores full list', async ({ page }) => {
       await dockButton(page, /time range filter/i).click();
       await openPanelRadio(page, /^7d$/i).click();
-      await expect(page.locator('a[href^="/sessions/"]')).toHaveCount(1);
+      await expect(page.locator('[data-testid="session-item"]')).toHaveCount(1);
 
       await dockButton(page, /time range filter/i).click();
       await openPanelRadio(page, /^all$/i).click();
-      await expect(page.locator('a[href^="/sessions/"]')).toHaveCount(4);
+      await expect(page.locator('[data-testid="session-item"]')).toHaveCount(4);
     });
   });
 });

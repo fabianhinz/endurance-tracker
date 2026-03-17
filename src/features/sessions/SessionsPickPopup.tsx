@@ -1,15 +1,14 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
 import { Maximize2, Minimize2, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button.tsx';
 import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { SessionItem } from '@/features/sessions/SessionItem.tsx';
-import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useExpandCard } from '@/lib/hooks/useExpandCard.ts';
-import { usePopupPosition } from './hooks/usePopupPosition.ts';
-import { useDismiss } from './hooks/useDismiss.ts';
+import { useLocalSparklines } from './hooks/useLocalSparklines.ts';
+import { usePopupPosition } from '../map/hooks/usePopupPosition.ts';
+import { useDismiss } from '../map/hooks/useDismiss.ts';
 import { cn } from '@/lib/utils.ts';
 import type { TrainingSession } from '@/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
@@ -20,18 +19,23 @@ export interface PopupInfo {
   sessions: TrainingSession[];
 }
 
-interface MapPickPopupProps {
+interface SessionsPickPopupProps {
   info: PopupInfo;
   onClose: () => void;
 }
 
-export const MapPickPopup = (props: MapPickPopupProps) => {
+export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const expandCard = useExpandCard(cardRef);
   const popupRef = useDismiss(props.onClose, !expandCard.isExpanded);
-  const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
+  const sparklines = useLocalSparklines();
 
   const style = usePopupPosition(props.info.x, props.info.y);
+
+  const sorted = useMemo(
+    () => props.info.sessions.toSorted((a, b) => b.date - a.date),
+    [props.info.sessions],
+  );
 
   return createPortal(
     <div ref={popupRef} style={style}>
@@ -44,14 +48,14 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
         )}
       >
         <CardHeader
-          title={`${props.info.sessions.length} Sessions`}
+          title={m.ui_map_popup_sessions_title({ count: String(props.info.sessions.length) })}
           subtitle={m.ui_map_popup_sessions_subtitle()}
           actions={
             <>
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={expandCard.isExpanded ? 'Collapse' : 'Expand'}
+                aria-label={expandCard.isExpanded ? m.ui_btn_collapse() : m.ui_btn_expand()}
                 onClick={expandCard.toggle}
               >
                 {expandCard.isExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
@@ -67,21 +71,17 @@ export const MapPickPopup = (props: MapPickPopupProps) => {
             </>
           }
         />
-        <div
-          className={cn('overflow-y-auto min-h-0', expandCard.isExpanded ? 'flex-1' : 'space-y-1')}
-        >
-          {props.info.sessions
-            .toSorted((a, b) => b.date - a.date)
-            .map((session) => (
-              <SessionItem
-                key={session.id}
-                session={session}
-                size="sm"
-                onClick={() => props.onClose()}
-                onPointerEnter={() => hover.onPointerEnter(session.id)}
-                onPointerLeave={hover.onPointerLeave}
-              />
-            ))}
+        <div className={cn('overflow-y-auto min-h-0 space-y-2')}>
+          {sorted.map((session) => (
+            <SessionItem
+              key={session.id}
+              session={session}
+              syncId={`${session.id}-source:pickPopup`}
+              isToggled={sparklines.toggledIds.has(session.id)}
+              onToggleSparkline={() => sparklines.toggle(session.id)}
+              onNavigate={props.onClose}
+            />
+          ))}
         </div>
       </Card>
     </div>,

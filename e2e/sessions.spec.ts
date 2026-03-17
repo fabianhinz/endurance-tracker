@@ -14,7 +14,7 @@ test.describe('Session browsing', () => {
     await page.waitForURL('/sessions');
 
     // Session items are links containing sport badge, date, metrics
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks).toHaveCount(2, { timeout: 10_000 });
 
     // Each session item should have visible text content (name/date, distance, duration)
@@ -28,10 +28,10 @@ test.describe('Session browsing', () => {
     await page.getByRole('link', { name: /sessions/i }).click();
     await page.waitForURL('/sessions');
 
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks.first()).toBeVisible({ timeout: 10_000 });
 
-    // Click the first session
+    // Click the session item to navigate to its detail page
     await sessionLinks.first().click();
 
     // Should navigate to /sessions/:id
@@ -49,7 +49,7 @@ test.describe('Session browsing', () => {
     await page.getByRole('link', { name: /sessions/i }).click();
     await page.waitForURL('/sessions');
 
-    const sessionLinks = page.locator('a[href^="/sessions/"]');
+    const sessionLinks = page.locator('[data-testid="session-item"]');
     await expect(sessionLinks.first()).toBeVisible({ timeout: 10_000 });
 
     // Go to detail
@@ -62,6 +62,8 @@ test.describe('Session browsing', () => {
     await page.waitForURL('/sessions');
 
     // Session list should be visible again
-    await expect(page.locator('a[href^="/sessions/"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="session-item"]').first()).toBeVisible({
+      timeout: 10_000,
+    });
   });
 });

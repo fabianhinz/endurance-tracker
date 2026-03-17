@@ -24,8 +24,8 @@ describe('delete all data', () => {
     useSessionsStore.getState().updatePersonalBests([
       {
         sport: 'cycling',
-        metric: 'power',
-        duration: 300,
+        category: 'peak-power',
+        window: 300,
         value: 280,
         sessionId,
         date: Date.now(),

@@ -4,6 +4,9 @@ import { useUserStore } from '@/store/user.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useCoachPlanStore } from '@/store/coachPlan.ts';
 import { resetDBInstance } from '@/lib/db.ts';
+import { enableMapSet } from 'immer';
+
+enableMapSet();
 
 beforeEach(() => {
   // Only fake Date (not setTimeout/setInterval) to avoid blocking async IndexedDB

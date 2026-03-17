@@ -79,7 +79,10 @@ export const PaceChart = (props: PaceChartProps) => {
           isAnimationActive={chartTheme.tooltip.isAnimationActive}
           separator={chartTheme.tooltip.separator}
           labelFormatter={(v) => formatChartTime(Number(v))}
-          formatter={(v: number | undefined) => [v !== undefined ? formatPaceTick(v) : '', 'Pace']}
+          formatter={(v: number | undefined) => [
+            v !== undefined ? formatPaceTick(v) : '',
+            m.ui_chart_series_pace(),
+          ]}
         />
         <Line
           yAxisId="left"

@@ -3,24 +3,17 @@ import { sportColorClass } from '@/lib/statusColors.ts';
 import { sportIcon } from '@/lib/sportIcons.ts';
 import type { Sport } from '@/engine/types.ts';
 
-const sizeMap = {
-  sm: { container: 'h-8 w-8 rounded-md', iconSize: 16 },
-  md: { container: 'h-10 w-10 rounded-lg', iconSize: 18 },
-} as const;
-
 export const SportBadge = (props: { sport: Sport; size?: 'sm' | 'md' }) => {
-  const config = sizeMap[props.size ?? 'md'];
   const Icon = sportIcon[props.sport];
 
   return (
     <div
       className={cn(
-        'flex items-center justify-center font-bold',
-        config.container,
+        'flex items-center justify-center font-bold h-10 w-10 rounded-lg',
         sportColorClass[props.sport],
       )}
     >
-      <Icon size={config.iconSize} strokeWidth={2} />
+      <Icon size={18} strokeWidth={2} />
     </div>
   );
 };

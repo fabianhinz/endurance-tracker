@@ -6,6 +6,9 @@ import { SessionsPage } from './pages/SessionsPage.tsx';
 import { SessionDetailPage } from './pages/SessionDetailPage.tsx';
 import { SettingsPage } from './pages/SettingsPage.tsx';
 import { CoachPage } from './pages/CoachPage.tsx';
+import { enableMapSet } from 'immer';
+
+enableMapSet();
 
 export const App = () => {
   const hydrated = useStoresHydrated();

@@ -9,7 +9,7 @@ import {
   ReferenceArea,
 } from 'recharts';
 import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
-import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
+import { chartTheme, formatChartTime, formatTick } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import type { SpeedPoint } from '@/lib/chartData.ts';
 import { m } from '@/paraglide/messages.js';
@@ -69,7 +69,7 @@ export const SpeedChart = (props: SpeedChartProps) => {
           tickLine={false}
           axisLine={false}
           tickCount={compact ? 3 : undefined}
-          tickFormatter={(v: number) => (compact ? `${v}` : `${v} km/h`)}
+          tickFormatter={(v: number) => formatTick(v, compact ? undefined : 'km/h')}
         />
         <RechartsTooltip
           contentStyle={chartTheme.tooltip.contentStyle}

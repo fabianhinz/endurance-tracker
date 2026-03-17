@@ -1,51 +1,87 @@
-import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils.ts';
+import { useNavigate } from 'react-router-dom';
 import { formatDate, formatDuration, formatDistance } from '@/lib/formatters.ts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { SportBadge } from './SportBadge.tsx';
-import { glassClass } from '@/components/ui/Card.tsx';
+import { SessionItemToolbar } from './SessionItemToolbar.tsx';
+import { SessionSparklines } from './SessionSparklines.tsx';
+import { Card } from '@/components/ui/Card.tsx';
 import type { TrainingSession } from '@/engine/types.ts';
+import { cn } from '@/lib/utils.ts';
+import { useSparklineStore } from '@/store/sparklineStore.ts';
+import { useSessionHover } from './hooks/useSessionHover.ts';
 
 interface SessionItemProps {
   session: TrainingSession;
-  size?: 'sm' | 'md';
+  syncId: string;
+  isToggled: boolean;
+  onToggleSparkline: () => void;
   className?: string;
-  onClick?: React.MouseEventHandler;
-  onPointerEnter?: React.PointerEventHandler;
-  onPointerLeave?: React.PointerEventHandler;
+  onNavigate?: () => void;
 }
 
-const sizeStyles = {
-  sm: 'gap-3 rounded-lg px-3 py-2',
-  md: `gap-4 rounded-xl p-4 ${glassClass}`,
-} as const;
-
 export const SessionItem = (props: SessionItemProps) => {
-  const s = props.session;
+  const navigate = useNavigate();
+  const sparklineData = useSparklineStore((s) => s.cache.get(props.session.id));
+
+  const handleNavigate = () => {
+    navigate(`/sessions/${props.session.id}`);
+    props.onNavigate?.();
+  };
+
+  const sessionHover = useSessionHover(props.session.id);
 
   return (
-    <Link
-      to={`/sessions/${s.id}`}
-      className={cn(
-        'flex items-center transition-colors hover:bg-white/10',
-        sizeStyles[props.size ?? 'md'],
-        props.className,
-      )}
-      onClick={props.onClick}
-      onPointerEnter={props.onPointerEnter}
-      onPointerLeave={props.onPointerLeave}
+    <Card
+      data-testid="session-item"
+      role="button"
+      tabIndex={0}
+      className={cn('hover:bg-white/10 cursor-pointer', props.className)}
+      onClick={handleNavigate}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleNavigate();
+        }
+      }}
+      onPointerEnter={sessionHover.onPointerEnter}
+      onPointerLeave={sessionHover.onPointerLeave}
     >
-      <SportBadge sport={s.sport} size={props.size ?? 'md'} />
-      <div className="flex-1 min-w-0">
-        <Typography variant="subtitle1" className="truncate">
-          {s.name ?? formatDate(s.date)}
-        </Typography>
-        <Typography variant="caption" as="p">
-          {s.name && <>{formatDate(s.date)} &middot; </>}
-          {formatDistance(s.distance)} &middot; {formatDuration(s.duration)}
-          {s.avgHr ? <> &middot; {s.avgHr} bpm</> : ''}
-        </Typography>
+      <div className="flex justify-between gap-3">
+        <div className="flex gap-2 min-w-0">
+          <SportBadge sport={props.session.sport} />
+          <div className="min-w-0">
+            <Typography variant="subtitle1" className="truncate">
+              {props.session.name ?? formatDate(props.session.date)}
+            </Typography>
+            <Typography variant="caption" as="p">
+              {props.session.name && <>{formatDate(props.session.date)} &middot; </>}
+              {formatDistance(props.session.distance)} &middot;{' '}
+              {formatDuration(props.session.duration)}
+            </Typography>
+          </div>
+        </div>
+        <SessionItemToolbar
+          isToggled={props.isToggled}
+          onToggleSparkline={props.onToggleSparkline}
+        />
       </div>
-    </Link>
+
+      <div
+        className={cn(
+          'grid transition-[grid-template-rows] duration-300 ease-out',
+          props.isToggled ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+        )}
+      >
+        <div className="overflow-hidden min-h-0">
+          {sparklineData && (
+            <SessionSparklines
+              data={sparklineData}
+              sport={props.session.sport}
+              syncId={props.syncId}
+            />
+          )}
+        </div>
+      </div>
+    </Card>
   );
 };

@@ -2,23 +2,19 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useFiltersStore } from '@/store/filters.ts';
-import { useMapFocusStore } from '@/store/mapFocus.ts';
-import { useHoverIntent } from '@/hooks/useHoverIntent.ts';
 import { SessionItem } from './SessionItem.tsx';
+import { useLocalSparklines } from './hooks/useLocalSparklines.ts';
 import { type TimeRange, rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
 
-// SessionItem md: p-4 (16px × 2) + ~42px two-line text content
-const ITEM_HEIGHT = 74;
-// matches Tailwind space-y-2 gap between items
-const GAP = 8;
-const ESTIMATED_ROW_SIZE = ITEM_HEIGHT + GAP;
+// SessionItem collapsed: p-4 (16px × 2) + ~42px two-line text content + 8px gap
+const ESTIMATED_ROW_SIZE = 82;
 
 export const SessionList = () => {
   const sessions = useSessionsStore((s) => s.sessions);
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
-  const hover = useHoverIntent((id) => useMapFocusStore.getState().setHoveredSession(id));
+  const sparklines = useLocalSparklines();
   const [scrollMargin, setScrollMargin] = useState(0);
   const listRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
@@ -58,20 +54,24 @@ export const SessionList = () => {
         return (
           <div
             key={session.id}
+            data-index={virtualRow.index}
+            ref={virtualizer.measureElement}
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               width: '100%',
-              height: virtualRow.size - GAP,
               transform: `translateY(${virtualRow.start - scrollMargin}px)`,
             }}
           >
-            <SessionItem
-              session={session}
-              onPointerEnter={() => hover.onPointerEnter(session.id)}
-              onPointerLeave={hover.onPointerLeave}
-            />
+            <div className="pb-2">
+              <SessionItem
+                session={session}
+                syncId={`${session.id}-source:list`}
+                isToggled={sparklines.toggledIds.has(session.id)}
+                onToggleSparkline={() => sparklines.toggle(session.id)}
+              />
+            </div>
           </div>
         );
       })}

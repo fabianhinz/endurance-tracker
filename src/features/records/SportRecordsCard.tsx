@@ -34,7 +34,7 @@ export const SportRecordsCard = (props: {
   return (
     <Card>
       <CardHeader
-        icon={<SportBadge sport={props.sport} size="md" />}
+        icon={<SportBadge sport={props.sport} />}
         title={SPORT_NAMES[props.sport]()}
         subtitle={sportSubtitle[props.sport]()}
       />

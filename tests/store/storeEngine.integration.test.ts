@@ -87,8 +87,8 @@ describe('store + engine integration (no React)', () => {
     useSessionsStore.getState().updatePersonalBests([
       {
         sport: 'cycling',
-        metric: 'power',
-        duration: 300,
+        category: 'peak-power',
+        window: 300,
         value: 280,
         sessionId: 's1',
         date: Date.now(),
