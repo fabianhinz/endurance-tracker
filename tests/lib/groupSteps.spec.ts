@@ -5,7 +5,7 @@ import type { WorkoutStep } from '@/types/index.ts';
 const makeStep = (overrides: Partial<WorkoutStep> = {}): WorkoutStep => ({
   type: 'work',
   durationSec: 300,
-  zone: 'z3',
+  zone: 'tempo',
   targetPaceMin: 270,
   targetPaceMax: 290,
   ...overrides,
