@@ -29,6 +29,11 @@ export const formatTick = (v: number, unit?: string): string => {
   return label;
 };
 
+export const formatChartDate = (isoDate: string): string => {
+  const d = new Date(isoDate);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+};
+
 export const chartTheme = {
   tick: { fill: tokens.textTertiary, fontSize: 11 },
   axisLine: { stroke: tokens.border },

@@ -14,7 +14,7 @@ import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
-import { chartTheme } from '@/lib/chartTheme.ts';
+import { chartTheme, formatChartDate } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
 import { rangeMap } from '@/lib/timeRange.ts';
@@ -121,6 +121,7 @@ export const WeeklyLoadChart = () => {
                 labelStyle={chartTheme.tooltip.labelStyle}
                 isAnimationActive={chartTheme.tooltip.isAnimationActive}
                 separator={chartTheme.tooltip.separator}
+                labelFormatter={(v) => formatChartDate(String(v))}
               />
               <Area
                 type="step"

@@ -14,7 +14,7 @@ import { useFilteredMetrics } from './hooks/useFilteredMetrics.ts';
 import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
-import { chartTheme } from '@/lib/chartTheme.ts';
+import { chartTheme, formatChartDate } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
 import { rangeMap } from '@/lib/timeRange.ts';
 import type { TimeRange } from '@/lib/timeRange.ts';
@@ -107,6 +107,7 @@ export const MetricsChart = () => {
                 labelStyle={chartTheme.tooltip.labelStyle}
                 isAnimationActive={chartTheme.tooltip.isAnimationActive}
                 separator={chartTheme.tooltip.separator}
+                labelFormatter={(v) => formatChartDate(String(v))}
               />
               <Area
                 type="monotone"
