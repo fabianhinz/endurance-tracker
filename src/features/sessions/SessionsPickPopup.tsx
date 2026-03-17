@@ -48,14 +48,14 @@ export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
         )}
       >
         <CardHeader
-          title={`${props.info.sessions.length} Sessions`}
+          title={m.ui_map_popup_sessions_title({ count: String(props.info.sessions.length) })}
           subtitle={m.ui_map_popup_sessions_subtitle()}
           actions={
             <>
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={expandCard.isExpanded ? 'Collapse' : 'Expand'}
+                aria-label={expandCard.isExpanded ? m.ui_btn_collapse() : m.ui_btn_expand()}
                 onClick={expandCard.toggle}
               >
                 {expandCard.isExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}

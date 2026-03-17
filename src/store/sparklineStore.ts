@@ -1,10 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { enableMapSet } from 'immer';
 import { getSessionRecords } from '@/lib/indexeddb.ts';
 import { buildSparklineData, type SparklineData } from '@/lib/sparklineData.ts';
-
-enableMapSet();
 
 interface SparklineStoreState {
   cache: Map<string, SparklineData>;

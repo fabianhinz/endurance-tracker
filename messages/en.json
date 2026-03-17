@@ -463,5 +463,18 @@
   "ui_label_avg": "Avg",
   "ui_label_max": "Max",
   "ui_tooltip_toggle_sparkline": "Toggle charts",
-  "ui_tooltip_open_session": "Open session"
+  "ui_tooltip_open_session": "Open session",
+  "ui_day_mon": "Mon",
+  "ui_day_tue": "Tue",
+  "ui_day_wed": "Wed",
+  "ui_day_thu": "Thu",
+  "ui_day_fri": "Fri",
+  "ui_day_sat": "Sat",
+  "ui_day_sun": "Sun",
+  "ui_lap_label": "Lap {number}",
+  "ui_splits_subtitle_custom": "{distance} splits",
+  "ui_btn_collapse": "Collapse",
+  "ui_btn_expand": "Expand",
+  "ui_map_popup_sessions_title": "{count} Sessions",
+  "toast_devdata_generated": "Generated {count} sessions"
 }

@@ -1,4 +1,5 @@
 import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
+import { m } from '@/paraglide/messages.js';
 
 export interface LapSplitPoint {
   lap: string;
@@ -73,7 +74,7 @@ export const prepareLapSplitsData = (
       }
 
       return {
-        lap: `Lap ${l.lapIndex + 1}`,
+        lap: m.ui_lap_label({ number: String(l.lapIndex + 1) }),
         pace: l.paceSecPerKm!,
         speed,
         maxPace,
@@ -90,7 +91,7 @@ export const prepareLapPowerData = (enrichments: LapRecordEnrichment[]): LapPowe
   enrichments
     .filter((e) => e.avgPower !== undefined && e.minPower !== undefined && e.maxPower !== undefined)
     .map((e) => ({
-      lap: `Lap ${e.lapIndex + 1}`,
+      lap: m.ui_lap_label({ number: String(e.lapIndex + 1) }),
       avgPower: e.avgPower!,
       minPower: e.minPower!,
       maxPower: e.maxPower!,
@@ -110,7 +111,7 @@ export const prepareLapHrData = (
       const minHr = enrichment?.minHr ?? l.minHr ?? l.avgHr!;
       const maxHr = l.maxHr ?? l.avgHr!;
       return {
-        lap: `Lap ${l.lapIndex + 1}`,
+        lap: m.ui_lap_label({ number: String(l.lapIndex + 1) }),
         avgHr: l.avgHr!,
         minHr,
         maxHr,

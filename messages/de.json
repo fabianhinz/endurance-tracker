@@ -463,5 +463,18 @@
   "ui_label_avg": "Ø",
   "ui_label_max": "Max",
   "ui_tooltip_toggle_sparkline": "Diagramme ein-/ausblenden",
-  "ui_tooltip_open_session": "Einheit öffnen"
+  "ui_tooltip_open_session": "Einheit öffnen",
+  "ui_day_mon": "Mo",
+  "ui_day_tue": "Di",
+  "ui_day_wed": "Mi",
+  "ui_day_thu": "Do",
+  "ui_day_fri": "Fr",
+  "ui_day_sat": "Sa",
+  "ui_day_sun": "So",
+  "ui_lap_label": "Runde {number}",
+  "ui_splits_subtitle_custom": "{distance} Abschnitte",
+  "ui_btn_collapse": "Einklappen",
+  "ui_btn_expand": "Ausklappen",
+  "ui_map_popup_sessions_title": "{count} Einheiten",
+  "toast_devdata_generated": "{count} Einheiten generiert"
 }

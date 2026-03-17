@@ -22,7 +22,15 @@ import type { TimeRange } from '@/lib/timeRange.ts';
 import { useDashboardChartZoom } from './hooks/useDashboardChartZoom.ts';
 import { m } from '@/paraglide/messages.js';
 
-const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const dayLabels = [
+  m.ui_day_mon,
+  m.ui_day_tue,
+  m.ui_day_wed,
+  m.ui_day_thu,
+  m.ui_day_fri,
+  m.ui_day_sat,
+  m.ui_day_sun,
+];
 
 export const WeeklyLoadChart = () => {
   const metrics = useFilteredMetrics();
@@ -55,7 +63,7 @@ export const WeeklyLoadChart = () => {
   const tickFormatter = (v: string) => {
     const d = new Date(v);
     if (dashboardZoom.range === '7d') {
-      return dayLabels[(d.getDay() + 6) % 7];
+      return dayLabels[(d.getDay() + 6) % 7]();
     }
     return `${d.getMonth() + 1}/${d.getDate()}`;
   };

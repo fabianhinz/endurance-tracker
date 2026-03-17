@@ -46,7 +46,9 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
         subtitle={
           props.isDevice
             ? m.ui_splits_device_subtitle()
-            : `${formatDistanceKm(Math.round(localSliderKm * 1000))} splits`
+            : m.ui_splits_subtitle_custom({
+                distance: formatDistanceKm(Math.round(localSliderKm * 1000)),
+              })
         }
         actions={
           <div className="flex items-center gap-2">

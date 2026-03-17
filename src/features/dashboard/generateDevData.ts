@@ -6,6 +6,7 @@ import { useSessionsStore } from '@/store/sessions.ts';
 import { useUserStore } from '@/store/user.ts';
 import { bulkSaveSessionData, saveSessionGPS } from '@/lib/indexeddb.ts';
 import { useUploadProgressStore } from '@/store/uploadProgress.ts';
+import { m } from '@/paraglide/messages.js';
 import {
   makeRunningRecords,
   makeCyclingRecords,
@@ -383,7 +384,9 @@ export const generateDevData = async (): Promise<number> => {
   await Promise.all([bulkSaveSessionData(bulkEntries), ...gpsPromises]);
 
   useSessionsStore.getState().replaceSessions(updates);
-  useUploadProgressStore.getState().finish(`Generated ${sessionIds.length} sessions`, 'success');
+  useUploadProgressStore
+    .getState()
+    .finish(m.toast_devdata_generated({ count: String(sessionIds.length) }), 'success');
 
   return sessionIds.length;
 };
