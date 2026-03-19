@@ -239,9 +239,9 @@ describe('prepareGAPData', () => {
     ];
     const result = prepareGAPData(records);
     expect(result.length).toBeGreaterThan(0);
-    // 10% grade → factor > 1 → gap should be higher than pace
+    // 10% uphill grade → factor > 1 → gap should be lower (faster) than pace
     const point = result[result.length - 1];
-    expect(point.gap).toBeGreaterThan(point.pace);
+    expect(point.gap).toBeLessThan(point.pace);
   });
 
   it('returns empty for fewer than 2 valid records', () => {
@@ -255,5 +255,16 @@ describe('prepareGAPData', () => {
       { sessionId: 's1', timestamp: 60, speed: 3.5 },
     ];
     expect(prepareGAPData(records)).toHaveLength(0);
+  });
+
+  it('downhill grade produces gap higher (slower) than pace', () => {
+    const records: SessionRecord[] = [
+      { sessionId: 's1', timestamp: 0, speed: 3.5, grade: -10, distance: 0 },
+      { sessionId: 's1', timestamp: 60, speed: 3.5, grade: -10, distance: 210 },
+    ];
+    const result = prepareGAPData(records);
+    expect(result.length).toBeGreaterThan(0);
+    const point = result[result.length - 1];
+    expect(point.gap).toBeGreaterThan(point.pace);
   });
 });

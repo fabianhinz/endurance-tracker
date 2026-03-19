@@ -26,7 +26,7 @@ describe('calculateGAP with native grade', () => {
     // Uphill grade should make GAP faster (lower sec/km) than actual pace
     // because metabolic cost is higher uphill
     const flatPace = (1 / 3.0) * 1000; // ~333 sec/km
-    expect(gap!).toBeGreaterThan(flatPace);
+    expect(gap!).toBeLessThan(flatPace);
   });
 
   it('falls back to elevation delta when grade is missing', () => {
@@ -123,5 +123,48 @@ describe('calculateGAP with native grade', () => {
   it('returns undefined for fewer than 2 records', () => {
     const records = [makeRecord({ timestamp: 0, speed: 3, distance: 0, grade: 0 })];
     expect(calculateGAP(records)).toBeUndefined();
+  });
+
+  it('downhill grade produces GAP slower (higher sec/km) than actual pace', () => {
+    const records: SessionRecord[] = [];
+    for (let i = 0; i < 10; i++) {
+      records.push(
+        makeRecord({
+          timestamp: i,
+          speed: 3.0,
+          distance: i * 3,
+          grade: -5,
+        }),
+      );
+    }
+
+    const gap = calculateGAP(records);
+    expect(gap).toBeDefined();
+    const flatPace = (1 / 3.0) * 1000;
+    expect(gap!).toBeGreaterThan(flatPace);
+  });
+
+  it('uphill GAP is faster than flat, downhill GAP is slower than flat', () => {
+    const makeRecordsWithGrade = (grade: number): SessionRecord[] => {
+      const recs: SessionRecord[] = [];
+      for (let i = 0; i < 10; i++) {
+        recs.push(
+          makeRecord({
+            timestamp: i,
+            speed: 3.0,
+            distance: i * 3,
+            grade,
+          }),
+        );
+      }
+      return recs;
+    };
+
+    const flatPace = (1 / 3.0) * 1000;
+    const uphillGap = calculateGAP(makeRecordsWithGrade(8))!;
+    const downhillGap = calculateGAP(makeRecordsWithGrade(-8))!;
+
+    expect(uphillGap).toBeLessThan(flatPace);
+    expect(downhillGap).toBeGreaterThan(flatPace);
   });
 });
