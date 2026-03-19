@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
+import { useFileDropEffect } from '@/features/sessions/hooks/useFileDropEffect.ts';
 import { cn } from '@/lib/utils.ts';
 import { cardClass } from '@/components/ui/Card.tsx';
 import { useSlideIndicator } from '@/components/ui/SlideIndicator.tsx';
@@ -66,6 +67,7 @@ export const Dock = () => {
   const dockExpanded = useDockExpanded();
   const indicatorElement = useSlideIndicator(dockBarRef, tabRefs, activeIndex, dockExpanded);
   const upload = useFileUpload(fileInputRef);
+  useFileDropEffect(upload.handleFiles, !upload.uploading);
 
   const [revealStack, setRevealStack] = useState<DockRevealLayer[]>([]);
 
@@ -321,7 +323,7 @@ export const Dock = () => {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".fit"
+          accept=".fit,.zip"
           multiple
           className="hidden"
           onChange={(e) => e.target.files && upload.handleFiles(e.target.files)}

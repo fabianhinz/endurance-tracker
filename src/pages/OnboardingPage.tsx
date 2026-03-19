@@ -5,6 +5,7 @@ import { useSessionsStore } from '@/store/sessions.ts';
 import { useLayoutStore } from '@/store/layout.ts';
 import { useUploadProgressStore } from '@/store/uploadProgress.ts';
 import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
+
 import { generateDevData } from '@/features/dashboard/generateDevData.ts';
 import { m } from '@/paraglide/messages.js';
 import { Button } from '@/components/ui/Button.tsx';
@@ -74,7 +75,7 @@ export const OnboardingPage = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".fit"
+                accept=".fit,.zip"
                 multiple
                 className="hidden"
                 onChange={async (e) => {

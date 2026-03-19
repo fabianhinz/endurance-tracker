@@ -322,3 +322,5 @@ export const seedCoachWithThresholdPace = async (
 export const FIXTURES_DIR = path.resolve(__dirname, '../fixtures');
 export const CYCLING_FIT = path.join(FIXTURES_DIR, 'cycling.fit');
 export const RUNNING_FIT = path.join(FIXTURES_DIR, 'running.fit');
+export const CYCLING_ONLY_ZIP = path.join(FIXTURES_DIR, 'cycling-only.zip');
+export const ACTIVITIES_ZIP = path.join(FIXTURES_DIR, 'activities.zip');
