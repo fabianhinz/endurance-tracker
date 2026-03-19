@@ -60,7 +60,7 @@ export const gradeAdjustedPaceFactor = (gradient: number): number => {
 };
 
 /**
- * Calculate Grade Adjusted Pace (GAP) from time-series records by dividing each segment's elapsed time by its Minetti cost factor.
+ * Calculate Grade Adjusted Pace (GAP) from time-series records by scaling each segment's distance by its Minetti cost factor to compute equivalent flat-ground distance.
  * @param records - Full time-series session records; records must have `speed > 0`, `distance`, and either `grade` or `elevation`; fewer than 2 valid records returns `undefined`.
  * @returns GAP in seconds per kilometre adjusted for elevation gain/loss, or `undefined` when there is insufficient data.
  */
@@ -75,8 +75,8 @@ export const calculateGAP = (records: SessionRecord[]): number | undefined => {
 
   if (validRecords.length < 2) return undefined;
 
-  let totalAdjustedTime = 0;
-  let totalDistance = 0;
+  let totalTime = 0;
+  let totalAdjustedDistance = 0;
 
   for (let i = 1; i < validRecords.length; i++) {
     const prev = validRecords[i - 1];
@@ -97,12 +97,12 @@ export const calculateGAP = (records: SessionRecord[]): number | undefined => {
     const factor = gradeAdjustedPaceFactor(gradient);
     const dt = curr.timestamp - prev.timestamp;
 
-    totalAdjustedTime += dt / factor;
-    totalDistance += dx;
+    totalTime += dt;
+    totalAdjustedDistance += dx * factor;
   }
 
-  if (totalDistance === 0) return undefined;
+  if (totalAdjustedDistance === 0) return undefined;
 
   // Return sec/km
-  return (totalAdjustedTime / totalDistance) * 1000;
+  return (totalTime / totalAdjustedDistance) * 1000;
 };

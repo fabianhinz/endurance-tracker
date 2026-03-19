@@ -167,4 +167,34 @@ describe('calculateGAP with native grade', () => {
     expect(uphillGap).toBeLessThan(flatPace);
     expect(downhillGap).toBeGreaterThan(flatPace);
   });
+
+  it('mixed uphill+downhill route has no Jensen inequality bias', () => {
+    // Symmetric route: half at +10%, half at -10%, same speed and spacing.
+    // The Minetti curve is inherently asymmetric (uphill costs more than
+    // downhill saves), so GAP won't equal flat pace exactly — but the
+    // distance-adjusted formula keeps deviation under ~15%.
+    // The old dt/factor formula would exceed 25% due to 1/x convexity.
+    const records: SessionRecord[] = [];
+    for (let i = 0; i < 11; i++) {
+      let grade = -10;
+      if (i < 6) {
+        grade = 10;
+      }
+      records.push(
+        makeRecord({
+          timestamp: i,
+          speed: 3.0,
+          distance: i * 3,
+          grade,
+        }),
+      );
+    }
+
+    const gap = calculateGAP(records);
+    const flatPace = (1 / 3.0) * 1000;
+    expect(gap).toBeDefined();
+    // Distance-adjusted: ~11% deviation (Minetti asymmetry)
+    // Old dt/factor would be ~27% — this threshold catches regressions
+    expect(Math.abs(gap! - flatPace) / flatPace).toBeLessThan(0.15);
+  });
 });
