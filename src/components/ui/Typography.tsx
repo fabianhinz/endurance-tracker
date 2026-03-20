@@ -26,11 +26,11 @@ const colorMap = {
   warning: 'text-status-warning',
 } as const;
 
-type Variant = keyof typeof variants;
+export type TypographyVariants = keyof typeof variants;
 type Color = keyof typeof colorMap;
 
 interface TypographyProps extends HTMLAttributes<HTMLElement> {
-  variant?: Variant;
+  variant?: TypographyVariants;
   color?: Color;
   as?: ElementType;
   tabularNums?: boolean;

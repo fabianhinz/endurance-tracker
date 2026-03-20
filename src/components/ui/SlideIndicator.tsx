@@ -44,6 +44,6 @@ export const useSlideIndicator = (
   }, [containerRef, itemRefs, activeIndex, recalcKey]);
 
   return activeIndex >= 0 ? (
-    <span className="absolute bg-accent rounded-full transition-all duration-300 bottom-1 left-[var(--tab-x)] h-1 w-5 md:bottom-auto md:left-1 md:top-[var(--tab-y)] md:w-1 md:h-5" />
+    <span className="absolute bg-accent rounded-full transition-all duration-300 bottom-1 left-[var(--tab-x)] h-1 w-5 lg:bottom-auto lg:left-1 lg:top-[var(--tab-y)] lg:w-1 lg:h-5" />
   ) : null;
 };

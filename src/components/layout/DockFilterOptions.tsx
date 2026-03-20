@@ -14,7 +14,7 @@ interface DockFilterOptionsProps {
 }
 
 const itemClass =
-  'w-12 md:w-10 h-12 rounded-lg font-medium text-text-tertiary hover:bg-white/10 hover:text-text-primary flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors data-[state=on]:bg-white/10 data-[state=on]:text-text-primary data-[state=on]:data-[variant=accent]:text-accent';
+  'w-12 lg:w-10 h-12 rounded-lg font-medium text-text-tertiary hover:bg-white/10 hover:text-text-primary flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors data-[state=on]:bg-white/10 data-[state=on]:text-text-primary data-[state=on]:data-[variant=accent]:text-accent';
 
 export const DockFilterOptions = (props: DockFilterOptionsProps) => {
   return (
@@ -22,7 +22,7 @@ export const DockFilterOptions = (props: DockFilterOptionsProps) => {
       type="single"
       value={props.value}
       onValueChange={(v) => v && props.onValueChange(v)}
-      className="flex flex-row md:flex-col gap-1"
+      className="flex flex-row lg:flex-col gap-1"
     >
       {props.options.map((opt) => (
         <ToggleGroupPrimitive.Item

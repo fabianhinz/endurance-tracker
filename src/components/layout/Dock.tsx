@@ -47,13 +47,13 @@ const sportOptions = [
 ];
 
 const dockItemMiniClass =
-  'w-12 md:w-10 h-10 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary';
+  'w-12 lg:w-10 h-10 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary';
 
 const dockItemMaxiClass =
-  'w-14 md:w-16 h-14 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5';
+  'w-14 lg:w-16 h-14 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5';
 
 const revealItemClass =
-  'w-12 md:w-10 h-12 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5';
+  'w-12 lg:w-10 h-12 rounded-lg text-text-tertiary hover:bg-white/10 hover:text-text-primary flex-col gap-0.5';
 
 type DockRevealLayer = 'menu' | 'sport-filter' | 'time-filter';
 
@@ -140,14 +140,14 @@ export const Dock = () => {
         data-layout="dock"
         className={cn(
           cardClass,
-          'fixed z-50 md:flex-row md:items-center',
+          'fixed z-50 lg:flex-row lg:items-center',
           'border-0 border-t rounded-none bottom-0 inset-x-0',
-          'md:border md:rounded-2xl md:inset-x-auto md:bottom-auto md:left-3 md:top-1/2 md:-translate-y-1/2',
+          'lg:border lg:rounded-2xl lg:inset-x-auto lg:bottom-auto lg:left-3 lg:top-1/2 lg:-translate-y-1/2',
           'transition-all duration-300',
         )}
       >
         {/* Filter options panels (Level C) — top on mobile, rightmost on desktop */}
-        <DockRevealPanel open={isOpen('sport-filter')} className="md:order-3">
+        <DockRevealPanel open={isOpen('sport-filter')} className="lg:order-3">
           <DockFilterOptions
             options={sportOptions}
             value={sportFilter}
@@ -158,7 +158,7 @@ export const Dock = () => {
           />
         </DockRevealPanel>
 
-        <DockRevealPanel open={isOpen('time-filter')} className="md:order-3">
+        <DockRevealPanel open={isOpen('time-filter')} className="lg:order-3">
           <DockFilterOptions
             options={timeFilterOptions}
             value={timeRange}
@@ -170,7 +170,7 @@ export const Dock = () => {
         </DockRevealPanel>
 
         {/* Mini dock menu panel (Level B) — between dock bar and filters on desktop */}
-        <DockRevealPanel open={isOpen('menu') && !dockExpanded} className="md:order-2">
+        <DockRevealPanel open={isOpen('menu') && !dockExpanded} className="lg:order-2">
           <Button
             variant="ghost"
             size="icon"
@@ -216,7 +216,7 @@ export const Dock = () => {
         {/* Main dock bar */}
         <div
           ref={dockBarRef}
-          className="relative flex flex-row md:flex-col items-center justify-center p-2 md:order-1"
+          className="relative flex flex-row lg:flex-col items-center justify-center p-2 lg:order-1"
         >
           {indicatorElement}
 
@@ -233,7 +233,7 @@ export const Dock = () => {
               className={({ isActive }) =>
                 cn(
                   'relative flex items-center justify-center rounded-lg transition-all duration-300 overflow-hidden',
-                  dockExpanded ? dockItemMaxiClass : 'w-12 md:w-10 h-10',
+                  dockExpanded ? dockItemMaxiClass : 'w-12 lg:w-10 h-10',
                   isActive
                     ? 'text-text-primary'
                     : 'text-text-tertiary hover:bg-white/10 hover:text-text-primary',
@@ -249,7 +249,7 @@ export const Dock = () => {
           <div
             className={cn(
               'bg-white/10 shrink-0 transition-all duration-300',
-              'w-px h-6 mx-1 md:w-6 md:h-px md:my-1 md:mx-0',
+              'w-px h-6 mx-1 lg:w-6 lg:h-px lg:my-1 lg:mx-0',
             )}
           />
 
@@ -288,7 +288,7 @@ export const Dock = () => {
               <div
                 className={cn(
                   'bg-white/10 shrink-0 transition-all duration-300',
-                  'w-px h-6 mx-1 md:w-6 md:h-px md:my-1 md:mx-0',
+                  'w-px h-6 mx-1 lg:w-6 lg:h-px lg:my-1 lg:mx-0',
                 )}
               />
 
