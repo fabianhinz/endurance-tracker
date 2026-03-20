@@ -29,7 +29,8 @@ export const SelectContent = (props: SelectPrimitive.SelectContentProps) => {
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          'relative z-50 max-h-64 overflow-hidden rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl',
+          'relative z-50 w-[var(--radix-select-trigger-width)] max-h-64 overflow-hidden rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl',
+          'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
           className,
         )}
         position="popper"

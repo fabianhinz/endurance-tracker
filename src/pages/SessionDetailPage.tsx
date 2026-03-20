@@ -1,50 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Activity, Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
-import { useUserStore } from '@/store/user.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { analyzeLaps, enrichAllLaps } from '@/lib/laps.ts';
-import {
-  getSessionRecords,
-  getSessionLaps,
-  deleteSessionRecords,
-  deleteSessionLaps,
-  deleteSessionGPS,
-  deleteFitFile,
-} from '@/lib/indexeddb.ts';
-import { Button } from '@/components/ui/Button.tsx';
+import { getSessionRecords, getSessionLaps } from '@/lib/indexeddb.ts';
 import { Typography } from '@/components/ui/Typography.tsx';
-import { PageGrid } from '@/components/ui/PageGrid.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
-import {
-  DialogRoot,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/Dialog.tsx';
-import {
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/DropdownMenu.tsx';
-import { formatDate, formatSubSport } from '@/lib/formatters.ts';
+import { formatSubSport } from '@/lib/formatters.ts';
 import { useSessionTitle } from '@/features/sessions/hooks/useSessionTitle.ts';
-import { AutoSessionNamesToggle } from '@/features/sessions/AutoSessionNamesToggle.tsx';
 import { SportChip } from '@/features/sessions/SportChip.tsx';
-import { SessionStatsGrid } from '@/features/sessions/session/SessionStatsGrid.tsx';
-import { SessionChartsExplorer } from '@/features/sessions/charts/SessionChartsExplorer.tsx';
-import { ZoneColorListItem } from '@/features/sessions/charts/ZoneColorListItem.tsx';
-import { ZoneDistributionChart } from '@/features/sessions/charts/ZoneDistributionChart.tsx';
-import { useZoneData } from '@/features/sessions/charts/hooks/useZoneData.ts';
-import { TrainingEffectCard } from '@/features/sessions/session/TrainingEffectCard.tsx';
-import { SessionRecordsCard } from '@/features/sessions/session/SessionRecordsCard.tsx';
+import { SessionActionsMenu } from '@/features/sessions/session/SessionActionsMenu.tsx';
+import { OverviewTab } from '@/features/sessions/session/OverviewTab.tsx';
 import { LapsTab } from '@/features/sessions/laps/LapsTab.tsx';
-import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
-import { List } from '@/components/ui/List.tsx';
-import { tokens } from '@/lib/tokens.ts';
 import type { SessionRecord, SessionLap } from '@/engine/types.ts';
 
 const validTabs = new Set(['overview', 'laps']);
@@ -55,20 +23,10 @@ export const SessionDetailPage = () => {
   const tab = rawTab && validTabs.has(rawTab) ? rawTab : 'overview';
 
   const params = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const session = useSessionsStore((s) => s.sessions.find((session) => session.id === params.id));
   const sessionTitle = useSessionTitle(session);
-  const useAutoNames = useUserStore((s) => s.profile?.useAutoSessionNames ?? false);
-  const personalBests = useSessionsStore((s) => s.personalBests);
-  const sessionPBs = useMemo(
-    () => personalBests.filter((pb) => pb.sessionId === params.id),
-    [personalBests, params.id],
-  );
   const [records, setRecords] = useState<SessionRecord[]>([]);
   const [laps, setLaps] = useState<SessionLap[]>([]);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showRenameDialog, setShowRenameDialog] = useState(false);
-  const [nameInput, setNameInput] = useState('');
 
   useEffect(() => {
     if (params.id && session?.hasDetailedRecords) {
@@ -76,9 +34,6 @@ export const SessionDetailPage = () => {
       getSessionLaps(params.id).then(setLaps);
     }
   }, [params.id, session?.hasDetailedRecords]);
-
-  const isRunning = session?.sport === 'running';
-  const zoneData = useZoneData(records, isRunning);
 
   useEffect(() => {
     if (laps.length > 0 && session) {
@@ -132,31 +87,7 @@ export const SessionDetailPage = () => {
               {subSportLabel}
             </Typography>
           )}
-          <DropdownMenuRoot>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={m.ui_session_actions()}>
-                <Ellipsis size={18} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onSelect={() => {
-                  setNameInput(session.name ?? formatDate(session.date));
-                  setShowRenameDialog(true);
-                }}
-              >
-                <Pencil size={14} />
-                {m.ui_btn_rename()}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-status-danger focus:text-status-danger"
-                onSelect={() => setShowDeleteDialog(true)}
-              >
-                <Trash2 size={14} />
-                {m.ui_btn_delete()}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenuRoot>
+          <SessionActionsMenu session={session} />
         </div>
       </div>
 
@@ -167,132 +98,13 @@ export const SessionDetailPage = () => {
         </TabsList>
 
         <TabsContent value="overview">
-          <PageGrid>
-            <div className="md:col-span-2">
-              <TrainingEffectCard records={records} session={session} />
-            </div>
-
-            <ChartPreviewCard
-              title={m.ui_chart_title_zones()}
-              icon={Activity}
-              color={tokens.accent}
-              compactHeight="h-[250px]"
-              footer={
-                <List>
-                  <ZoneColorListItem availableModes={zoneData.availableModes} />
-                </List>
-              }
-            >
-              {(mode) => (
-                <ZoneDistributionChart
-                  hrZones={zoneData.hrZoneData}
-                  powerZones={zoneData.powerZoneData}
-                  paceZones={zoneData.paceZoneData}
-                  mode={mode}
-                />
-              )}
-            </ChartPreviewCard>
-
-            {sessionPBs.length > 0 && (
-              <div className="md:col-span-2">
-                <SessionRecordsCard sessionPBs={sessionPBs} />
-              </div>
-            )}
-
-            <div className="md:col-span-2">
-              <SessionChartsExplorer records={records} session={session} />
-            </div>
-
-            <div className="md:col-span-2">
-              <SessionStatsGrid session={session} laps={laps} />
-            </div>
-          </PageGrid>
+          <OverviewTab session={session} records={records} laps={laps} />
         </TabsContent>
 
         <TabsContent value="laps">
           <LapsTab laps={laps} session={session} records={records} />
         </TabsContent>
       </Tabs>
-
-      <DialogRoot
-        open={showRenameDialog}
-        onOpenChange={(open) => {
-          if (!open) setShowRenameDialog(false);
-        }}
-      >
-        <DialogContent>
-          <DialogTitle>{m.ui_session_rename_title()}</DialogTitle>
-          <DialogDescription>{m.ui_session_rename_desc()}</DialogDescription>
-          <div className="mt-4">
-            <AutoSessionNamesToggle />
-          </div>
-          <input
-            type="text"
-            value={useAutoNames ? sessionTitle.title : nameInput}
-            onChange={(e) => setNameInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !useAutoNames && nameInput.trim()) {
-                useSessionsStore.getState().renameSession(session.id, nameInput.trim());
-                setShowRenameDialog(false);
-              }
-            }}
-            disabled={useAutoNames}
-            className="mt-4 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-primary outline-none focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed"
-            autoFocus
-          />
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setShowRenameDialog(false)}>
-              {m.ui_btn_cancel()}
-            </Button>
-            <Button
-              disabled={useAutoNames}
-              onClick={() => {
-                if (nameInput.trim()) {
-                  useSessionsStore.getState().renameSession(session.id, nameInput.trim());
-                  setShowRenameDialog(false);
-                }
-              }}
-            >
-              {m.ui_btn_save()}
-            </Button>
-          </div>
-        </DialogContent>
-      </DialogRoot>
-
-      <DialogRoot
-        open={showDeleteDialog}
-        onOpenChange={(open) => {
-          if (!open) setShowDeleteDialog(false);
-        }}
-      >
-        <DialogContent>
-          <DialogTitle>{m.ui_session_delete_title()}</DialogTitle>
-          <DialogDescription>
-            {m.ui_session_delete_desc({ sport: session.sport, date: formatDate(session.date) })}
-          </DialogDescription>
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setShowDeleteDialog(false)}>
-              {m.ui_btn_cancel()}
-            </Button>
-            <Button
-              className="bg-status-danger text-white hover:bg-status-danger/80"
-              onClick={async () => {
-                useSessionsStore.getState().deleteSession(session.id);
-                setShowDeleteDialog(false);
-                navigate('/sessions');
-                await Promise.all([
-                  deleteSessionRecords(session.id),
-                  deleteSessionLaps(session.id),
-                  deleteSessionGPS(session.id),
-                  deleteFitFile(session.id),
-                ]);
-              }}
-            >
-              {m.ui_btn_delete()}
-            </Button>
-          </div>
-        </DialogContent>
-      </DialogRoot>
     </div>
   );
 };
