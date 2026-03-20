@@ -30,6 +30,7 @@ import {
   formatCustomRangeDuration,
 } from '@/lib/timeRange.ts';
 import type { Sport } from '@/engine/types.ts';
+import { UPLOAD_EXTENSIONS } from '@/lib/archive.ts';
 
 const tabs = [
   { to: '/', label: m.ui_nav_dashboard, icon: LayoutDashboard },
@@ -323,7 +324,7 @@ export const Dock = () => {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".fit,.zip"
+          accept={UPLOAD_EXTENSIONS.join(',')}
           multiple
           className="hidden"
           onChange={(e) => e.target.files && upload.handleFiles(e.target.files)}

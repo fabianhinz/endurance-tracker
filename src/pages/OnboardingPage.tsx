@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/Button.tsx';
 import { ActionTile } from '@/components/ui/ActionTile.tsx';
 import { ThresholdsSection } from '@/features/settings/ThresholdsSection.tsx';
 import { ActionPromptCard } from '@/components/ui/ActionPromptCard.tsx';
+import { UPLOAD_EXTENSIONS } from '@/lib/archive';
 
 type OnboardingPath = 'your-data' | 'test-data' | null;
 
@@ -75,7 +76,7 @@ export const OnboardingPage = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".fit,.zip"
+                accept={UPLOAD_EXTENSIONS.join(',')}
                 multiple
                 className="hidden"
                 onChange={async (e) => {

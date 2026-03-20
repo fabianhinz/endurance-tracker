@@ -3,10 +3,6 @@ import type { Sport } from '@/engine/types.ts';
 import { HR_ZONE_DEFS } from '@/engine/zoneDistribution.ts';
 import { formatDate } from '@/lib/formatters.ts';
 
-// ---------------------------------------------------------------------------
-// Time-of-day bucketing
-// ---------------------------------------------------------------------------
-
 const getTimeOfDayLabel = (hour: number): string => {
   if (hour >= 5 && hour <= 11) {
     return m.ui_time_morning();
@@ -20,20 +16,11 @@ const getTimeOfDayLabel = (hour: number): string => {
   return m.ui_time_night();
 };
 
-// ---------------------------------------------------------------------------
-// Sport noun mapping
-// ---------------------------------------------------------------------------
-
 const SPORT_NOUN_MAP: Record<Sport, () => string> = {
   running: m.ui_sport_run,
   cycling: m.ui_sport_ride,
   swimming: m.ui_sport_swim,
 };
-
-// ---------------------------------------------------------------------------
-// Sub-sport prefix mapping (reuses existing ui_sub_sport_* messages)
-// Entries missing here (road, generic, unknown) produce no prefix.
-// ---------------------------------------------------------------------------
 
 const SUB_SPORT_PREFIX_MAP: Record<string, () => string> = {
   trail: m.ui_sub_sport_trail,
@@ -47,10 +34,6 @@ const SUB_SPORT_PREFIX_MAP: Record<string, () => string> = {
   lap_swimming: m.ui_sub_sport_pool,
   open_water: m.ui_sub_sport_open_water,
 };
-
-// ---------------------------------------------------------------------------
-// HR zone label (Karvonen / HR-reserve method)
-// ---------------------------------------------------------------------------
 
 const ZONE_LABEL_MAP: Record<string, () => string> = {
   recovery: m.ui_zone_recovery,
@@ -78,11 +61,6 @@ const buildAutoName = (sport: Sport, subSport: string | undefined, timestampMs: 
 
   return m.ui_session_name({ timeOfDay, sport: sportNoun });
 };
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
 export interface SessionNameInput {
   sport: Sport;
   subSport?: string;

@@ -5,6 +5,7 @@ const IGNORED_PREFIXES = ['__MACOSX/', '.'];
 // Supported activity file extensions to extract from archives.
 // .tcx extraction is ready — parsing support will be added in a future PR.
 const ACTIVITY_EXTENSIONS = ['.fit', '.tcx'] as const;
+export const UPLOAD_EXTENSIONS = [...ACTIVITY_EXTENSIONS, '.zip'] as const;
 
 type ActivityExtension = (typeof ACTIVITY_EXTENSIONS)[number];
 

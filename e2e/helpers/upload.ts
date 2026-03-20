@@ -1,11 +1,12 @@
 import { type Page, expect } from '@playwright/test';
+import { UPLOAD_EXTENSIONS } from '../../src/lib/archive';
 
 /**
  * Uploads files via the hidden file input and waits for the upload
  * done message to appear as a Radix toast.
  */
 export const uploadFiles = async (page: Page, filePaths: string[]) => {
-  const fileInput = page.locator('input[type="file"][accept=".fit,.zip"]');
+  const fileInput = page.locator(`input[type="file"][accept="${UPLOAD_EXTENSIONS.join(',')}"]`);
   await fileInput.setInputFiles(filePaths);
 
   const doneBanner = page.locator('[data-testid="upload-done"]');
