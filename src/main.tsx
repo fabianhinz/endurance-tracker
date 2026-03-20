@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { TooltipProvider } from './components/ui/Tooltip.tsx';
 import { ToastViewport } from './components/ui/Toast.tsx';
 import { App } from './App.tsx';
 import { useUserStore } from './store/user.ts';
@@ -21,10 +20,8 @@ const boot = async () => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <BrowserRouter>
-        <TooltipProvider>
-          <App />
-          <ToastViewport />
-        </TooltipProvider>
+        <App />
+        <ToastViewport />
       </BrowserRouter>
     </StrictMode>,
   );

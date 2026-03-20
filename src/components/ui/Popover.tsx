@@ -10,7 +10,8 @@ export const PopoverContent = (props: PopoverPrimitive.PopoverContentProps) => {
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         className={cn(
-          'z-50 max-w-xs rounded-xl border border-white/10 bg-surface-raised/95 backdrop-blur-xl p-4',
+          'z-50 max-w-xs rounded-xl bg-white/5 border border-white/10 backdrop-blur-xl p-4',
+          'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
           className,
         )}
         sideOffset={sideOffset}
@@ -19,9 +20,4 @@ export const PopoverContent = (props: PopoverPrimitive.PopoverContentProps) => {
       />
     </PopoverPrimitive.Portal>
   );
-};
-
-export const PopoverArrow = (props: PopoverPrimitive.PopoverArrowProps) => {
-  const { className, ...rest } = props;
-  return <PopoverPrimitive.Arrow className={cn('fill-surface-elevated', className)} {...rest} />;
 };
