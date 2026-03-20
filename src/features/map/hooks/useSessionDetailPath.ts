@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { getSessionRecords } from '@/lib/indexeddb.ts';
 import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
@@ -19,16 +19,18 @@ export const useSessionDetailPath = (
   const profile = useUserStore((s) => s.profile);
 
   const [loaded, setLoaded] = useState<{ id: string; records: SessionRecord[] } | null>(null);
+  const fetchedIdRef = useRef<string | null>(null);
 
   const targetId = openedSessionId ?? hoveredSessionId;
 
   useEffect(() => {
     if (!targetId) return;
-    if (loaded?.id === targetId) return;
+    if (fetchedIdRef.current === targetId) return;
 
     const session = sessions.find((s) => s.id === targetId);
     if (!session?.hasDetailedRecords) return;
 
+    fetchedIdRef.current = targetId;
     let cancelled = false;
     getSessionRecords(targetId).then((records) => {
       if (!cancelled) {
@@ -38,8 +40,9 @@ export const useSessionDetailPath = (
 
     return () => {
       cancelled = true;
+      fetchedIdRef.current = null;
     };
-  }, [targetId, sessions, loaded?.id]);
+  }, [targetId, sessions]);
 
   return useMemo(() => {
     if (!openedSessionId || loaded?.id !== openedSessionId) return null;
