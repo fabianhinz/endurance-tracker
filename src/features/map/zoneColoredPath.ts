@@ -1,13 +1,19 @@
-import { isValidCoordinate } from '@/engine/gps.ts';
+import { extractPathFromRecords, isValidCoordinate } from '@/engine/gps.ts';
 import type { SessionRecord } from '@/engine/types.ts';
 import { HR_ZONE_DEFS, POWER_ZONE_DEFS } from '@/engine/zoneDistribution.ts';
-import { computeRunningZones, getZoneForPace } from '@/engine/zones.ts';
+import { computeRunningZones } from '@/engine/zones.ts';
+import { scaleLinear } from 'd3-scale';
+import { rgb } from 'd3-color';
+import { trackModifiers } from './trackColors.ts';
 
 export type ZoneColorMode = 'hr' | 'power' | 'pace';
 
-export interface ZoneSegment {
+type Color = [number, number, number, number];
+type ColorScale = (value: number) => Color;
+
+export interface DetailPath {
   path: [number, number][];
-  color: [number, number, number, number];
+  color: Color | Color[];
 }
 
 export interface UserThresholds {
@@ -17,103 +23,100 @@ export interface UserThresholds {
   thresholdPace?: number;
 }
 
-const hexToRgba = (hex: string, alpha: number): [number, number, number, number] => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return [r, g, b, alpha];
+const FALLBACK_COLOR: Color = [160, 160, 160, 80];
+
+const createZoneScale = (
+  defs: readonly { minPct: number; maxPct: number; color: string }[],
+  alpha: number,
+): ColorScale => {
+  const domain = defs.map((d) => {
+    let max = d.maxPct;
+    if (!Number.isFinite(max)) {
+      max = d.minPct + 0.5;
+    }
+    return (d.minPct + max) / 2;
+  });
+  const range = defs.map((d) => d.color);
+
+  const scale = scaleLinear<string>().domain(domain).range(range).clamp(true);
+
+  return (value: number): Color => {
+    const c = rgb(scale(value));
+    return [Math.round(c.r), Math.round(c.g), Math.round(c.b), alpha];
+  };
 };
 
-const FALLBACK_COLOR: [number, number, number, number] = [160, 160, 160, 80];
-const SEGMENT_ALPHA = 220;
-
-const getHrColor = (
-  hr: number,
-  thresholds: UserThresholds,
-): [number, number, number, number] | null => {
+const getHrColor = (hr: number, thresholds: UserThresholds, scale: ColorScale): Color | null => {
   const hrReserve = thresholds.maxHr - thresholds.restHr;
   if (hrReserve <= 0) return null;
   const pct = (hr - thresholds.restHr) / hrReserve;
-  const def = HR_ZONE_DEFS.find((z) => pct >= z.minPct && pct < z.maxPct);
-  if (def) return hexToRgba(def.color, SEGMENT_ALPHA);
-  if (pct >= 1.0) return hexToRgba(HR_ZONE_DEFS[HR_ZONE_DEFS.length - 1].color, SEGMENT_ALPHA);
-  if (pct < HR_ZONE_DEFS[0].minPct) return hexToRgba(HR_ZONE_DEFS[0].color, SEGMENT_ALPHA);
-  return null;
+  return scale(pct);
 };
 
-const getPowerColor = (power: number, ftp: number): [number, number, number, number] | null => {
-  const pct = power / ftp;
-  const def = POWER_ZONE_DEFS.find((z) => pct >= z.minPct && pct < z.maxPct);
-  if (def) {
-    return hexToRgba(def.color, SEGMENT_ALPHA);
-  }
-  return null;
-};
+const getPowerColor = (power: number, ftp: number, scale: ColorScale): Color => scale(power / ftp);
 
-const getPaceColor = (
-  speed: number,
-  zones: ReturnType<typeof computeRunningZones>,
-): [number, number, number, number] | null => {
-  const paceSec = 1000 / speed;
-  const zone = getZoneForPace(paceSec, zones);
-  if (zone) return hexToRgba(zone.color, SEGMENT_ALPHA);
-  if (paceSec > zones[0].minPace) return hexToRgba(zones[0].color, SEGMENT_ALPHA);
-  if (paceSec < zones[zones.length - 1].maxPace)
-    return hexToRgba(zones[zones.length - 1].color, SEGMENT_ALPHA);
-  return null;
-};
+const getPaceColor = (speed: number, scale: ColorScale): Color => scale(1000 / speed);
 
 export const buildZoneColoredPath = (
   records: SessionRecord[],
   mode: ZoneColorMode,
   thresholds: UserThresholds,
-): ZoneSegment[] => {
-  let paceZones: ReturnType<typeof computeRunningZones> | null = null;
-  if (mode === 'pace' && thresholds.thresholdPace && thresholds.thresholdPace > 0) {
-    paceZones = computeRunningZones(thresholds.thresholdPace);
+): DetailPath | null => {
+  const alpha = trackModifiers.alpha.highlighted;
+
+  let scale: ColorScale | null = null;
+  if (mode === 'hr') {
+    scale = createZoneScale(HR_ZONE_DEFS, alpha);
+  } else if (mode === 'power') {
+    scale = createZoneScale(POWER_ZONE_DEFS, alpha);
+  } else if (mode === 'pace' && thresholds.thresholdPace && thresholds.thresholdPace > 0) {
+    const zones = computeRunningZones(thresholds.thresholdPace);
+    const sorted = [...zones].sort((a, b) => {
+      const midA = (a.minPace + a.maxPace) / 2;
+      const midB = (b.minPace + b.maxPace) / 2;
+      return midA - midB;
+    });
+    scale = createZoneScale(
+      sorted.map((z) => ({ minPct: z.maxPace, maxPct: z.minPace, color: z.color })),
+      alpha,
+    );
   }
 
-  const segments: ZoneSegment[] = [];
-  const validRecords = records.filter(isValidCoordinate);
-  if (validRecords.length < 2) return segments;
-
-  const colorForRecord = (r: SessionRecord): [number, number, number, number] => {
+  const colorForRecord = (r: SessionRecord): Color => {
+    if (!scale) return FALLBACK_COLOR;
     if (mode === 'hr' && r.hr != null && r.hr > 0) {
-      return getHrColor(r.hr, thresholds) ?? FALLBACK_COLOR;
+      return getHrColor(r.hr, thresholds, scale) ?? FALLBACK_COLOR;
     }
     if (mode === 'power' && r.power != null && r.power > 0 && thresholds.ftp) {
-      return getPowerColor(r.power, thresholds.ftp) ?? FALLBACK_COLOR;
+      return getPowerColor(r.power, thresholds.ftp, scale);
     }
-    if (mode === 'pace' && r.speed != null && r.speed > 0.5 && paceZones) {
-      return getPaceColor(r.speed, paceZones) ?? FALLBACK_COLOR;
+    if (mode === 'pace' && r.speed != null && r.speed > 0.5) {
+      return getPaceColor(r.speed, scale);
     }
     return FALLBACK_COLOR;
   };
 
-  const colorsEqual = (
-    a: [number, number, number, number],
-    b: [number, number, number, number],
-  ): boolean => a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+  const path: [number, number][] = [];
+  const colors: Color[] = [];
 
-  let currentColor = colorForRecord(validRecords[0]);
-  let currentPath: [number, number][] = [[validRecords[0].lng!, validRecords[0].lat!]];
-
-  for (let i = 1; i < validRecords.length; i++) {
-    const r = validRecords[i];
-    const color = colorForRecord(r);
-    const point: [number, number] = [r.lng!, r.lat!];
-
-    if (colorsEqual(color, currentColor)) {
-      currentPath.push(point);
-    } else {
-      currentPath.push(point);
-      segments.push({ path: currentPath, color: currentColor });
-      currentColor = color;
-      currentPath = [point];
+  for (const r of records) {
+    if (isValidCoordinate(r)) {
+      path.push([r.lng!, r.lat!]);
+      colors.push(colorForRecord(r));
     }
   }
 
-  segments.push({ path: currentPath, color: currentColor });
+  if (path.length < 2) return null;
 
-  return segments;
+  return { path, color: colors };
+};
+
+export const buildSportColoredPath = (
+  records: SessionRecord[],
+  sportColor: Color,
+): DetailPath | null => {
+  const path = extractPathFromRecords(records);
+  if (path.length < 2) return null;
+
+  return { path, color: sportColor };
 };

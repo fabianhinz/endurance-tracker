@@ -3,9 +3,8 @@ import { useMatch } from 'react-router-dom';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import type { PickingInfo } from '@deck.gl/core';
 import { PathLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers';
-import { useHiresPaths } from './hooks/useHiresPaths.ts';
-import { useZoneColoredPath } from './hooks/useZoneColoredPath.ts';
-import type { ZoneSegment } from './zoneColoredPath.ts';
+import { useSessionDetailPath } from './hooks/useSessionDetailPath.ts';
+import type { DetailPath } from './zoneColoredPath.ts';
 import {
   ADDITIVE_BLEND,
   sportMarkerColor,
@@ -40,6 +39,8 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const zoneColorMode = useMapFocusStore((s) => s.zoneColorMode);
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
+
+  const detailPath = useSessionDetailPath(hoveredSessionId, openedSessionId, sessions);
 
   const match = useMatch('/sessions/:id');
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
@@ -99,45 +100,25 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     ];
   }, [openedSessionId, props.tracks, highlightedSessionId, hoveredSessionId, eventHandlers]);
 
-  const hiresPaths = useHiresPaths(hoveredSessionId, openedSessionId, sessions);
-  const zoneColoredSegments = useZoneColoredPath();
-
-  const hiresLayer = useMemo(() => {
-    if (zoneColorMode !== null || hiresPaths.size === 0 || !openedSessionId) {
-      return;
+  const detailLayer = useMemo(() => {
+    if (!detailPath) {
+      return null;
     }
 
-    const path = hiresPaths.get(openedSessionId);
-    const sport = sessions.find((session) => session.id === openedSessionId)?.sport;
-    if (!sport || !path) {
-      return;
-    }
-
-    const data = {
-      openedSessionId,
-      path,
-      sport,
-    };
-
-    return new PathLayer<typeof data>({
-      id: 'hires-tracks',
-      data: [data],
+    return new PathLayer<DetailPath>({
+      id: 'session-detail',
+      data: [detailPath],
       getPath: (d) => d.path,
-      getColor: (d) => {
-        const [r, g, b] = sportTrackColor[d.sport];
-        return [r, g, b, trackModifiers.alpha.highlighted];
-      },
+      getColor: (d) => d.color,
       getWidth: trackModifiers.width.highlighted,
       widthMinPixels: 1,
       jointRounded: true,
       capRounded: true,
       pickable: true,
-      updateTriggers: {
-        getColor: [openedSessionId],
-      },
+      updateTriggers: { getColor: [zoneColorMode, openedSessionId] },
       ...eventHandlers,
     });
-  }, [hiresPaths, openedSessionId, sessions, eventHandlers, zoneColorMode]);
+  }, [detailPath, zoneColorMode, openedSessionId, eventHandlers]);
 
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) {
@@ -227,38 +208,12 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
     });
   }, [lapMarkers, focusedSport, hoveredLapIndex]);
 
-  const zoneColoredLayer = useMemo(() => {
-    if (zoneColoredSegments.length === 0) {
-      return null;
-    }
-
-    return new PathLayer<ZoneSegment>({
-      id: 'zone-colored-track',
-      data: zoneColoredSegments,
-      getPath: (d) => d.path,
-      getColor: (d) => d.color,
-      getWidth: trackModifiers.width.highlighted,
-      widthMinPixels: 1,
-      jointRounded: true,
-      capRounded: true,
-      pickable: false,
-      updateTriggers: { getColor: [zoneColorMode] },
-    });
-  }, [zoneColoredSegments, zoneColorMode]);
-
   const overlay = useControl<MapboxOverlay>(
     () => new MapboxOverlay({ interleaved: false, pickingRadius: PICK_RADIUS }),
   );
 
   overlay.setProps({
-    layers: [
-      trackLayers,
-      hiresLayer,
-      zoneColoredLayer,
-      pickCircleLayer,
-      hoveredPointLayer,
-      lapMarkerLayers,
-    ],
+    layers: [trackLayers, detailLayer, pickCircleLayer, hoveredPointLayer, lapMarkerLayers],
     pickingRadius: PICK_RADIUS,
     _onMetrics: useDeckMetricsStore.getState().update,
   });
