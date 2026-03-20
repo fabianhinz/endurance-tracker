@@ -6,7 +6,7 @@ import { useUserStore } from '@/store/user.ts';
 import {
   buildZoneColoredPath,
   buildSportColoredPath,
-  type ZoneSegment,
+  type DetailPath,
 } from '../zoneColoredPath.ts';
 import { sportTrackColor, trackModifiers } from '../trackColors.ts';
 
@@ -17,7 +17,7 @@ export const useSessionDetailPath = (
   hoveredSessionId: string | null,
   openedSessionId: string | null,
   sessions: TrainingSession[],
-): ZoneSegment[] => {
+): DetailPath | null => {
   const zoneColorMode = useMapFocusStore((s) => s.zoneColorMode);
   const profile = useUserStore((s) => s.profile);
 
@@ -47,13 +47,13 @@ export const useSessionDetailPath = (
   }, [hoveredSessionId, openedSessionId, sessions]);
 
   return useMemo(() => {
-    if (!openedSessionId) return [];
+    if (!openedSessionId) return null;
 
     const records = snapshot.get(openedSessionId);
-    if (!records) return [];
+    if (!records) return null;
 
     if (zoneColorMode !== null) {
-      if (!profile) return [];
+      if (!profile) return null;
       return buildZoneColoredPath(records, zoneColorMode, {
         maxHr: profile.thresholds.maxHr,
         restHr: profile.thresholds.restHr,
@@ -63,7 +63,7 @@ export const useSessionDetailPath = (
     }
 
     const session = sessions.find((s) => s.id === openedSessionId);
-    if (!session) return [];
+    if (!session) return null;
 
     const [r, g, b] = sportTrackColor[session.sport];
     return buildSportColoredPath(records, [r, g, b, trackModifiers.alpha.highlighted]);

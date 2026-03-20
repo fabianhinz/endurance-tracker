@@ -4,7 +4,7 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import type { PickingInfo } from '@deck.gl/core';
 import { PathLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers';
 import { useSessionDetailPath } from './hooks/useSessionDetailPath.ts';
-import type { ZoneSegment } from './zoneColoredPath.ts';
+import type { DetailPath } from './zoneColoredPath.ts';
 import {
   ADDITIVE_BLEND,
   sportMarkerColor,
@@ -40,7 +40,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   const sessions = useSessionsStore((s) => s.sessions);
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
 
-  const detailSegments = useSessionDetailPath(hoveredSessionId, openedSessionId, sessions);
+  const detailPath = useSessionDetailPath(hoveredSessionId, openedSessionId, sessions);
 
   const match = useMatch('/sessions/:id');
   const highlightedSessionId = hoveredSessionId ?? match?.params.id ?? null;
@@ -101,13 +101,13 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   }, [openedSessionId, props.tracks, highlightedSessionId, hoveredSessionId, eventHandlers]);
 
   const detailLayer = useMemo(() => {
-    if (detailSegments.length === 0) {
+    if (!detailPath) {
       return null;
     }
 
-    return new PathLayer<ZoneSegment>({
+    return new PathLayer<DetailPath>({
       id: 'session-detail',
-      data: detailSegments,
+      data: [detailPath],
       getPath: (d) => d.path,
       getColor: (d) => d.color,
       getWidth: trackModifiers.width.highlighted,
@@ -118,7 +118,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
       updateTriggers: { getColor: [zoneColorMode, openedSessionId] },
       ...eventHandlers,
     });
-  }, [detailSegments, zoneColorMode, openedSessionId, eventHandlers]);
+  }, [detailPath, zoneColorMode, openedSessionId, eventHandlers]);
 
   const pickCircleLayer = useMemo(() => {
     if (!pickCircle) {
