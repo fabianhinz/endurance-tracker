@@ -24,9 +24,7 @@ export const useSessionDetailPath = (
   const [snapshot, setSnapshot] = useState(() => new Map(recordsCache));
 
   useEffect(() => {
-    const ids = [hoveredSessionId, openedSessionId].filter(
-      (id): id is string => id != null,
-    );
+    const ids = [hoveredSessionId, openedSessionId].filter((id): id is string => id != null);
 
     for (const id of ids) {
       if (recordsCache.has(id) || loading.has(id)) continue;
