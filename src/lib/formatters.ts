@@ -219,6 +219,8 @@ const SUB_SPORT_LABELS: Record<string, string> = {
   track: m.ui_sub_sport_track(),
   gravel_cycling: m.ui_sub_sport_gravel(),
   treadmill: m.ui_sub_sport_treadmill(),
+  lap_swimming: m.ui_sub_sport_pool(),
+  open_water: m.ui_sub_sport_open_water(),
 };
 
 export const formatSubSport = (subSport: string): string => {

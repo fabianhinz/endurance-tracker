@@ -10,6 +10,7 @@ export const makeUserProfile = (overrides?: Partial<UserProfile>): UserProfile =
       restHr: 50,
     },
     showMetricHelp: true,
+    useAutoSessionNames: false,
     createdAt: Date.now(),
     ...overrides,
   };

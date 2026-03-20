@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { formatDate, formatDuration, formatDistance } from '@/lib/formatters.ts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { SportBadge } from './SportBadge.tsx';
 import { SessionItemToolbar } from './SessionItemToolbar.tsx';
@@ -9,6 +8,7 @@ import type { TrainingSession } from '@/engine/types.ts';
 import { cn } from '@/lib/utils.ts';
 import { useSparklineStore } from '@/store/sparklineStore.ts';
 import { useSessionHover } from './hooks/useSessionHover.ts';
+import { useSessionTitle } from './hooks/useSessionTitle.ts';
 
 interface SessionItemProps {
   session: TrainingSession;
@@ -22,6 +22,7 @@ interface SessionItemProps {
 export const SessionItem = (props: SessionItemProps) => {
   const navigate = useNavigate();
   const sparklineData = useSparklineStore((s) => s.cache.get(props.session.id));
+  const sessionTitle = useSessionTitle(props.session);
 
   const handleNavigate = () => {
     navigate(`/sessions/${props.session.id}`);
@@ -51,12 +52,10 @@ export const SessionItem = (props: SessionItemProps) => {
           <SportBadge sport={props.session.sport} />
           <div className="min-w-0">
             <Typography variant="subtitle1" className="truncate">
-              {props.session.name ?? formatDate(props.session.date)}
+              {sessionTitle.title}
             </Typography>
             <Typography variant="caption" as="p">
-              {props.session.name && <>{formatDate(props.session.date)} &middot; </>}
-              {formatDistance(props.session.distance)} &middot;{' '}
-              {formatDuration(props.session.duration)}
+              {sessionTitle.subtitle}
             </Typography>
           </div>
         </div>
