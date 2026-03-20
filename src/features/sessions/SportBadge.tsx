@@ -9,7 +9,7 @@ export const SportBadge = (props: { sport: Sport; size?: 'sm' | 'md' }) => {
   return (
     <div
       className={cn(
-        'flex items-center justify-center font-bold h-10 w-10 rounded-lg',
+        'flex shrink-0 items-center justify-center font-bold h-10 w-10 rounded-lg',
         sportColorClass[props.sport],
       )}
     >

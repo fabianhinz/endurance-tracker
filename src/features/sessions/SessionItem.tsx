@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Typography } from '@/components/ui/Typography.tsx';
-import { SportBadge } from './SportBadge.tsx';
+import { SessionHeader } from './SessionHeader.tsx';
 import { SessionItemToolbar } from './SessionItemToolbar.tsx';
 import { SessionSparklines } from './SessionSparklines.tsx';
 import { Card } from '@/components/ui/Card.tsx';
@@ -8,8 +7,6 @@ import type { TrainingSession } from '@/engine/types.ts';
 import { cn } from '@/lib/utils.ts';
 import { useSparklineStore } from '@/store/sparklineStore.ts';
 import { useSessionHover } from './hooks/useSessionHover.ts';
-import { useSessionTitle } from './hooks/useSessionTitle.ts';
-
 interface SessionItemProps {
   session: TrainingSession;
   syncId: string;
@@ -22,8 +19,6 @@ interface SessionItemProps {
 export const SessionItem = (props: SessionItemProps) => {
   const navigate = useNavigate();
   const sparklineData = useSparklineStore((s) => s.cache.get(props.session.id));
-  const sessionTitle = useSessionTitle(props.session);
-
   const handleNavigate = () => {
     navigate(`/sessions/${props.session.id}`);
     props.onNavigate?.();
@@ -47,23 +42,12 @@ export const SessionItem = (props: SessionItemProps) => {
       onPointerEnter={sessionHover.onPointerEnter}
       onPointerLeave={sessionHover.onPointerLeave}
     >
-      <div className="flex justify-between gap-3">
-        <div className="flex gap-2 min-w-0">
-          <SportBadge sport={props.session.sport} />
-          <div className="min-w-0">
-            <Typography variant="subtitle1" className="truncate">
-              {sessionTitle.title}
-            </Typography>
-            <Typography variant="caption" as="p">
-              {sessionTitle.subtitle}
-            </Typography>
-          </div>
-        </div>
+      <SessionHeader session={props.session} titleVariant="subtitle1">
         <SessionItemToolbar
           isToggled={props.isToggled}
           onToggleSparkline={props.onToggleSparkline}
         />
-      </div>
+      </SessionHeader>
 
       <div
         className={cn(

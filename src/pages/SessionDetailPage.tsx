@@ -7,9 +7,7 @@ import { analyzeLaps, enrichAllLaps } from '@/lib/laps.ts';
 import { getSessionRecords, getSessionLaps } from '@/lib/indexeddb.ts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
-import { formatSubSport } from '@/lib/formatters.ts';
-import { useSessionTitle } from '@/features/sessions/hooks/useSessionTitle.ts';
-import { SportChip } from '@/features/sessions/SportChip.tsx';
+import { SessionHeader } from '@/features/sessions/SessionHeader.tsx';
 import { SessionActionsMenu } from '@/features/sessions/session/SessionActionsMenu.tsx';
 import { OverviewTab } from '@/features/sessions/session/OverviewTab.tsx';
 import { LapsTab } from '@/features/sessions/laps/LapsTab.tsx';
@@ -24,7 +22,6 @@ export const SessionDetailPage = () => {
 
   const params = useParams<{ id: string }>();
   const session = useSessionsStore((s) => s.sessions.find((session) => session.id === params.id));
-  const sessionTitle = useSessionTitle(session);
   const [records, setRecords] = useState<SessionRecord[]>([]);
   const [laps, setLaps] = useState<SessionLap[]>([]);
 
@@ -55,9 +52,6 @@ export const SessionDetailPage = () => {
     );
   }
 
-  const subSportLabel =
-    session.subSport && session.subSport !== 'generic' ? formatSubSport(session.subSport) : null;
-
   const handleTabChange = (value: string) => {
     setSearchParams({ tab: value });
   };
@@ -69,27 +63,9 @@ export const SessionDetailPage = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4 items-center">
-        <div className="flex justify-center flex-col">
-          <Typography variant="h2" as="h1">
-            {sessionTitle.title}
-          </Typography>
-          <Typography variant="caption">{sessionTitle.subtitle}</Typography>
-        </div>
-        <div className="flex flex-grow justify-end flex-wrap gap-3">
-          <SportChip sport={session.sport} />
-          {subSportLabel && (
-            <Typography
-              variant="caption"
-              color="textTertiary"
-              className="flex items-center rounded-md bg-white/10 px-2 py-0.5"
-            >
-              {subSportLabel}
-            </Typography>
-          )}
-          <SessionActionsMenu session={session} />
-        </div>
-      </div>
+      <SessionHeader session={session} titleVariant="h2" titleAs="h1">
+        <SessionActionsMenu session={session} />
+      </SessionHeader>
 
       <Tabs defaultValue="overview" value={tab} onValueChange={handleTabChange}>
         <TabsList>

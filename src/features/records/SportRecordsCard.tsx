@@ -35,7 +35,7 @@ export const SportRecordsCard = (props: {
     <Card>
       <CardHeader
         icon={<SportBadge sport={props.sport} />}
-        title={SPORT_NAMES[props.sport]()}
+        titleSlot={<Typography>{SPORT_NAMES[props.sport]()}</Typography>}
         subtitle={sportSubtitle[props.sport]()}
       />
       <div className="space-y-1">

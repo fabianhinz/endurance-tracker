@@ -43,7 +43,7 @@ export const CoachPage = () => {
             <ActionPromptCard
               title={m.ui_coach_threshold_title()}
               description={m.ui_coach_threshold_desc()}
-              className="md:col-span-2"
+              className="lg:col-span-2"
             >
               <Button asChild variant="secondary">
                 <Link to="/settings">
@@ -55,10 +55,10 @@ export const CoachPage = () => {
           </PageGrid>
         ) : (
           <PageGrid>
-            <div className="md:col-span-2">
+            <div className="lg:col-span-2">
               <CoachStatusCard />
             </div>
-            <div className="md:col-span-2">
+            <div className="lg:col-span-2">
               <Card>
                 <CardHeader
                   titleSlot={
@@ -74,7 +74,7 @@ export const CoachPage = () => {
                 <ZoneLegend zones={coach.zones} />
               </Card>
             </div>
-            <div className="md:col-span-2">
+            <div className="lg:col-span-2">
               <Card>
                 <CardHeader
                   title={m.ui_coach_weekly_plan()}
@@ -92,10 +92,10 @@ export const CoachPage = () => {
 
       <TabsContent value="tools">
         <PageGrid>
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <RacePredictor />
           </div>
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <PaceCalculator />
           </div>
         </PageGrid>

@@ -8,10 +8,10 @@ export const DashboardPage = () => {
   return (
     <PageGrid>
       <CoachStatusCard />
-      <div className="md:col-span-2">
+      <div className="lg:col-span-2">
         <WeeklyLoadChart />
       </div>
-      <div className="md:col-span-2">
+      <div className="lg:col-span-2">
         <MetricsChart />
       </div>
       <TrainingSummaryCard />

@@ -32,7 +32,7 @@ export const OverviewTab = (props: OverviewTabProps) => {
 
   return (
     <PageGrid>
-      <div className="md:col-span-2">
+      <div className="lg:col-span-2">
         <TrainingEffectCard records={props.records} session={props.session} />
       </div>
 
@@ -58,16 +58,16 @@ export const OverviewTab = (props: OverviewTabProps) => {
       </ChartPreviewCard>
 
       {sessionPBs.length > 0 && (
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2">
           <SessionRecordsCard sessionPBs={sessionPBs} />
         </div>
       )}
 
-      <div className="md:col-span-2">
+      <div className="lg:col-span-2">
         <SessionChartsExplorer records={props.records} session={props.session} />
       </div>
 
-      <div className="md:col-span-2">
+      <div className="lg:col-span-2">
         <SessionStatsGrid session={props.session} laps={props.laps} />
       </div>
     </PageGrid>

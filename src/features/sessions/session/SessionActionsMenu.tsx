@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { Button } from '@/components/ui/Button.tsx';
 import {
@@ -22,7 +22,7 @@ export const SessionActionsMenu = (props: { session: TrainingSession }) => {
       <DropdownMenuRoot>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" aria-label={m.ui_session_actions()}>
-            <Ellipsis size={18} />
+            <EllipsisVertical size={18} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
