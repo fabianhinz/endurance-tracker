@@ -4,7 +4,7 @@ import { HR_ZONE_DEFS, POWER_ZONE_DEFS } from '@/engine/zoneDistribution.ts';
 import { computeRunningZones } from '@/engine/zones.ts';
 import { scaleLinear } from 'd3-scale';
 import { rgb } from 'd3-color';
-import { trackModifiers } from './trackColors';
+import { trackModifiers } from './trackColors.ts';
 
 export type ZoneColorMode = 'hr' | 'power' | 'pace';
 
@@ -53,11 +53,9 @@ const getHrColor = (hr: number, thresholds: UserThresholds, scale: ColorScale): 
   return scale(pct);
 };
 
-const getPowerColor = (power: number, ftp: number, scale: ColorScale): Color =>
-  scale(power / ftp);
+const getPowerColor = (power: number, ftp: number, scale: ColorScale): Color => scale(power / ftp);
 
-const getPaceColor = (speed: number, scale: ColorScale): Color =>
-  scale(1000 / speed);
+const getPaceColor = (speed: number, scale: ColorScale): Color => scale(1000 / speed);
 
 export const buildZoneColoredPath = (
   records: SessionRecord[],
