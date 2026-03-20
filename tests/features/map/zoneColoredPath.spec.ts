@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import type { SessionRecord } from '@/engine/types.ts';
-import { buildZoneColoredPath, type UserThresholds } from '@/features/map/zoneColoredPath.ts';
+import {
+  buildZoneColoredPath,
+  buildSportColoredPath,
+  type UserThresholds,
+} from '@/features/map/zoneColoredPath.ts';
 
 const FALLBACK_COLOR: [number, number, number, number] = [160, 160, 160, 80];
 
@@ -160,5 +164,43 @@ describe('getPaceColor (via pace mode)', () => {
     const records = [rec(1, 2, { speed: 1000 / 240 }), rec(3, 4, { speed: 1000 / 240 })];
     const segments = buildZoneColoredPath(records, 'pace', paceThresholds);
     expect(segments[0].color).toEqual([239, 68, 68, 220]);
+  });
+});
+
+describe('buildSportColoredPath', () => {
+  const color: [number, number, number, number] = [74, 222, 128, 255];
+
+  it('returns [] for empty records', () => {
+    expect(buildSportColoredPath([], color)).toEqual([]);
+  });
+
+  it('returns [] for a single GPS record', () => {
+    expect(buildSportColoredPath([rec(1, 2)], color)).toEqual([]);
+  });
+
+  it('returns single segment with provided color for 2+ valid records', () => {
+    const records = [rec(10, 20), rec(30, 40), rec(50, 60)];
+    const segments = buildSportColoredPath(records, color);
+    expect(segments).toHaveLength(1);
+    expect(segments[0].color).toEqual(color);
+    expect(segments[0].path).toHaveLength(3);
+  });
+
+  it('uses [lng, lat] coordinate order', () => {
+    const records = [rec(10, 20), rec(30, 40)];
+    const segments = buildSportColoredPath(records, color);
+    expect(segments[0].path[0]).toEqual([20, 10]);
+    expect(segments[0].path[1]).toEqual([40, 30]);
+  });
+
+  it('filters out records with invalid coordinates', () => {
+    const records = [
+      rec(10, 20),
+      { sessionId: 's1', timestamp: 0 } as SessionRecord,
+      rec(30, 40),
+    ];
+    const segments = buildSportColoredPath(records, color);
+    expect(segments).toHaveLength(1);
+    expect(segments[0].path).toHaveLength(2);
   });
 });
