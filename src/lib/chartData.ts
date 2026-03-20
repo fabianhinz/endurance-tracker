@@ -151,7 +151,7 @@ export const prepareGAPData = (records: SessionRecord[]): GAPPoint[] => {
     }
 
     const factor = gradeAdjustedPaceFactor(gradient);
-    const gap = pace * factor;
+    const gap = pace / factor;
 
     return {
       time: toMinutes(r.timestamp),

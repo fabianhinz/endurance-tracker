@@ -5,24 +5,24 @@ Each engine file contains a short `// Sources: [KEY]` comment pointing into this
 
 ## Validation Summary
 
-| Module                | Formula / Model                                           | Source Key                                                        | Verdict                                 |
-| --------------------- | --------------------------------------------------------- | ----------------------------------------------------------------- | --------------------------------------- |
-| `metrics.ts`          | Coggan PMC (CTL / ATL / TSB via EWMA)                     | `[CogganAllen2010]`, `[TP-PMC]`                                   | Matches published model                 |
-| `stress.ts`           | Banister TRIMP (HR-based training impulse)                | `[Banister1991]`, `[Fellrnr]`                                     | Matches published coefficients          |
-| `stress.ts`           | Coggan TSS (power-based training stress)                  | `[CogganAllen2010]`                                               | Matches published formula               |
-| `normalize.ts`        | Normalized Power (30 s rolling → 4th power)               | `[CogganAllen2010]`                                               | Matches published algorithm             |
-| `normalize.ts`        | Grade Adjusted Pace (Minetti energy-cost curve)           | `[Minetti2002]`                                                   | Matches published polynomial            |
-| `vdot.ts`             | Daniels/Gilbert VDOT & race predictions                   | `[DanielsGilbert1979]`, `[Daniels2013]`                           | Matches published tables                |
-| `zoneDistribution.ts` | Karvonen HRR zones                                        | `[Karvonen1957]`                                                  | Matches published method                |
-| `zoneDistribution.ts` | Coggan power zones                                        | `[CogganAllen2010]`                                               | Matches published zones                 |
-| `coaching.ts`         | Gabbett ACWR (acute:chronic workload ratio)               | `[Gabbett2016]`                                                   | Matches published thresholds            |
-| `coaching.ts`         | Friel CTL ramp-rate guidelines                            | `[Friel2009]`, `[TP-PMC]`                                         | Matches published ranges                |
-| `zones.ts`            | Daniels pace zones (% of VDOT pace)                       | `[Daniels2013]`                                                   | Matches published zone boundaries       |
-| `trainingEffect.ts`   | Aerobic TE: Banister TRIMP → reference-anchored power-law | `[Banister1991]`, `[Karvonen1957]`, `[Swain1998]`, `[Wenger1986]` | Derived from published reference values |
-| `trainingEffect.ts`   | Anaerobic TE: time above VT2 → reference-anchored linear  | `[Billat1999]`, `[Swain1998]`, `[Stagno2007]`, `[ACSM2018]`       | Derived from published reference values |
-| `trainingEffect.ts`   | Fitness scaling: CTL-based divisor                        | `[CogganAllen2010]`, `[Friel2009]`                                | Matches published CTL ranges            |
-| `gps.ts`              | Ramer–Douglas–Peucker simplification                      | `[Ramer1972]`, `[DouglasPeucker1973]`                             | Standard algorithm                      |
-| `gps.ts`              | Liang–Barsky line clipping                                | `[LiangBarsky1984]`                                               | Standard algorithm                      |
+| Module                | Formula / Model                                           | Source Key                                                        | Verdict                                                     |
+| --------------------- | --------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| `metrics.ts`          | Coggan PMC (CTL / ATL / TSB via EWMA)                     | `[CogganAllen2010]`, `[TP-PMC]`                                   | Matches published model                                     |
+| `stress.ts`           | Banister TRIMP (HR-based training impulse)                | `[Banister1991]`, `[Fellrnr]`                                     | Matches published coefficients                              |
+| `stress.ts`           | Coggan TSS (power-based training stress)                  | `[CogganAllen2010]`                                               | Matches published formula                                   |
+| `normalize.ts`        | Normalized Power (30 s rolling → 4th power)               | `[CogganAllen2010]`                                               | Matches published algorithm                                 |
+| `normalize.ts`        | Grade Adjusted Pace (Minetti energy-cost curve)           | `[Minetti2002]`                                                   | Matches published polynomial; distance-adjusted aggregation |
+| `vdot.ts`             | Daniels/Gilbert VDOT & race predictions                   | `[DanielsGilbert1979]`, `[Daniels2013]`                           | Matches published tables                                    |
+| `zoneDistribution.ts` | Karvonen HRR zones                                        | `[Karvonen1957]`                                                  | Matches published method                                    |
+| `zoneDistribution.ts` | Coggan power zones                                        | `[CogganAllen2010]`                                               | Matches published zones                                     |
+| `coaching.ts`         | Gabbett ACWR (acute:chronic workload ratio)               | `[Gabbett2016]`                                                   | Matches published thresholds                                |
+| `coaching.ts`         | Friel CTL ramp-rate guidelines                            | `[Friel2009]`, `[TP-PMC]`                                         | Matches published ranges                                    |
+| `zones.ts`            | Daniels pace zones (% of VDOT pace)                       | `[Daniels2013]`                                                   | Matches published zone boundaries                           |
+| `trainingEffect.ts`   | Aerobic TE: Banister TRIMP → reference-anchored power-law | `[Banister1991]`, `[Karvonen1957]`, `[Swain1998]`, `[Wenger1986]` | Derived from published reference values                     |
+| `trainingEffect.ts`   | Anaerobic TE: time above VT2 → reference-anchored linear  | `[Billat1999]`, `[Swain1998]`, `[Stagno2007]`, `[ACSM2018]`       | Derived from published reference values                     |
+| `trainingEffect.ts`   | Fitness scaling: CTL-based divisor                        | `[CogganAllen2010]`, `[Friel2009]`                                | Matches published CTL ranges                                |
+| `gps.ts`              | Ramer–Douglas–Peucker simplification                      | `[Ramer1972]`, `[DouglasPeucker1973]`                             | Standard algorithm                                          |
+| `gps.ts`              | Liang–Barsky line clipping                                | `[LiangBarsky1984]`                                               | Standard algorithm                                          |
 
 ## Full Bibliography
 

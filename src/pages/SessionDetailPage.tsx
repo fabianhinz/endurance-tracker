@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Activity, Ellipsis, Pencil, Trash2 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { useSessionsStore } from '@/store/sessions.ts';
+import { useUserStore } from '@/store/user.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { analyzeLaps, enrichAllLaps } from '@/lib/laps.ts';
 import {
@@ -30,6 +31,8 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/DropdownMenu.tsx';
 import { formatDate, formatSubSport } from '@/lib/formatters.ts';
+import { useSessionTitle } from '@/features/sessions/hooks/useSessionTitle.ts';
+import { AutoSessionNamesToggle } from '@/features/sessions/AutoSessionNamesToggle.tsx';
 import { SportChip } from '@/features/sessions/SportChip.tsx';
 import { SessionStatsGrid } from '@/features/sessions/session/SessionStatsGrid.tsx';
 import { SessionChartsExplorer } from '@/features/sessions/charts/SessionChartsExplorer.tsx';
@@ -54,6 +57,8 @@ export const SessionDetailPage = () => {
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
   const session = useSessionsStore((s) => s.sessions.find((session) => session.id === params.id));
+  const sessionTitle = useSessionTitle(session);
+  const useAutoNames = useUserStore((s) => s.profile?.useAutoSessionNames ?? false);
   const personalBests = useSessionsStore((s) => s.personalBests);
   const sessionPBs = useMemo(
     () => personalBests.filter((pb) => pb.sessionId === params.id),
@@ -112,9 +117,9 @@ export const SessionDetailPage = () => {
       <div className="flex gap-4 items-center">
         <div className="flex justify-center flex-col">
           <Typography variant="h2" as="h1">
-            {session.name ?? formatDate(session.date)}
+            {sessionTitle.title}
           </Typography>
-          {session.name && <Typography variant="caption">{formatDate(session.date)}</Typography>}
+          <Typography variant="caption">{sessionTitle.subtitle}</Typography>
         </div>
         <div className="flex flex-grow justify-end flex-wrap gap-3">
           <SportChip sport={session.sport} />
@@ -218,17 +223,21 @@ export const SessionDetailPage = () => {
         <DialogContent>
           <DialogTitle>{m.ui_session_rename_title()}</DialogTitle>
           <DialogDescription>{m.ui_session_rename_desc()}</DialogDescription>
+          <div className="mt-4">
+            <AutoSessionNamesToggle />
+          </div>
           <input
             type="text"
-            value={nameInput}
+            value={useAutoNames ? sessionTitle.title : nameInput}
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && nameInput.trim()) {
+              if (e.key === 'Enter' && !useAutoNames && nameInput.trim()) {
                 useSessionsStore.getState().renameSession(session.id, nameInput.trim());
                 setShowRenameDialog(false);
               }
             }}
-            className="mt-4 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+            disabled={useAutoNames}
+            className="mt-4 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-primary outline-none focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed"
             autoFocus
           />
           <div className="mt-4 flex justify-end gap-2">
@@ -236,6 +245,7 @@ export const SessionDetailPage = () => {
               {m.ui_btn_cancel()}
             </Button>
             <Button
+              disabled={useAutoNames}
               onClick={() => {
                 if (nameInput.trim()) {
                   useSessionsStore.getState().renameSession(session.id, nameInput.trim());

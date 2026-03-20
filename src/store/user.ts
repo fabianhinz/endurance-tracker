@@ -10,6 +10,7 @@ interface UserState {
   updateProfile: (updates: Partial<UserProfile>) => void;
   updateThresholds: (thresholds: UserProfile['thresholds']) => void;
   toggleMetricHelp: () => void;
+  toggleAutoSessionNames: () => void;
   resetProfile: () => void;
 }
 
@@ -46,6 +47,13 @@ export const useUserStore = create<UserState>()(
           set((draft) => {
             if (draft.profile) {
               draft.profile.showMetricHelp = !draft.profile.showMetricHelp;
+            }
+          }),
+
+        toggleAutoSessionNames: () =>
+          set((draft) => {
+            if (draft.profile) {
+              draft.profile.useAutoSessionNames = !draft.profile.useAutoSessionNames;
             }
           }),
 

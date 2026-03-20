@@ -24,6 +24,7 @@ export interface UserProfile {
     thresholdPace?: number; // sec/km
   };
   showMetricHelp: boolean;
+  useAutoSessionNames: boolean;
   createdAt: number;
 }
 

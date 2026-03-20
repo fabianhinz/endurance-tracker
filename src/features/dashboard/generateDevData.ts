@@ -248,6 +248,7 @@ export const generateDevData = async (): Promise<number> => {
       thresholdPace: PERSONA.thresholdPace,
     },
     showMetricHelp: true,
+    useAutoSessionNames: false,
   });
 
   const now = Date.now();
