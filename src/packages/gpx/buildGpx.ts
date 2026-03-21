@@ -11,7 +11,12 @@ export interface GpxMetadata {
 }
 
 const escapeXml = (s: string): string =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 
 export const buildGpxString = (points: GpxPoint[], metadata?: GpxMetadata): string | null => {
   if (points.length < 2) return null;

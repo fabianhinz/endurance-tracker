@@ -14,7 +14,7 @@ import { computePBsForSessions } from '@/lib/records.ts';
 import { toast } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
 import { useCoachPlanStore } from '@/store/coachPlan.ts';
-import type { SessionRecord, Sport, TrainingSession } from '../../../packages/engine/types.ts';
+import type { SessionRecord, Sport, TrainingSession } from '@/packages/engine/types.ts';
 
 interface ReimportState {
   reimporting: boolean;

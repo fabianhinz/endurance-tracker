@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { buildSessionGpx, buildGpxFilename } from '@/lib/gpxExport.ts';
+import { buildSessionGpx } from '@/lib/gpxExport.ts';
+import { buildGpxFilename } from '@/packages/gpx/buildGpx.ts';
 import { makeGPSRunningRecords, makeIndoorRecords } from '../factories/gps.ts';
 import { makeSession } from '../factories/sessions.ts';
 

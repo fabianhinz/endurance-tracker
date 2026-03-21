@@ -1,9 +1,7 @@
-import { buildGpxString, buildGpxFilename } from '@/packages/gpx/buildGpx.ts';
+import { buildGpxString } from '@/packages/gpx/buildGpx.ts';
 import { isValidCoordinate } from '@/packages/engine/gps.ts';
 import type { TrainingSession, SessionRecord } from '@/packages/engine/types.ts';
 import type { GpxPoint } from '@/packages/gpx/buildGpx.ts';
-
-export { buildGpxFilename };
 
 export const buildSessionGpx = (
   session: TrainingSession,
