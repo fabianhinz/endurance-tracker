@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { computeDynamicLaps } from '@/lib/dynamicLaps.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 import { makeRunningRecords, makeCyclingRecords } from '@tests/factories/records.ts';
 
 describe('computeDynamicLaps', () => {

@@ -495,5 +495,8 @@
   "ui_btn_collapse": "Collapse",
   "ui_btn_expand": "Expand",
   "ui_map_popup_sessions_title": "{count} Sessions",
-  "toast_devdata_generated": "Generated {count} sessions"
+  "toast_devdata_generated": "Generated {count} sessions",
+  "ui_btn_export_gpx": "Export as GPX",
+  "toast_export_no_gps": "No GPS data to export",
+  "toast_export_failed": "Export failed"
 }

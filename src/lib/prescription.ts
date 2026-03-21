@@ -1,5 +1,10 @@
 import { m } from '@/paraglide/messages.js';
-import type { DailyMetrics, FormStatus, RunningZone, RunningZoneName } from '@/engine/types.ts';
+import type {
+  DailyMetrics,
+  FormStatus,
+  RunningZone,
+  RunningZoneName,
+} from '@/packages/engine/types.ts';
 import type {
   PrescribedWorkout,
   WeeklyPlan,
@@ -8,8 +13,8 @@ import type {
   PlanContext,
 } from '@/types/index.ts';
 import { toDateString } from './formatters.ts';
-import { getFormStatus, getInjuryRisk, getLoadState } from '@/engine/coaching.ts';
-import { getZoneMidPace } from '@/engine/zones.ts';
+import { getFormStatus, getInjuryRisk, getLoadState } from '@/packages/engine/coaching.ts';
+import { getZoneMidPace } from '@/packages/engine/zones.ts';
 
 // --- TSS per hour by workout type ---
 

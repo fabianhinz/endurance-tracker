@@ -1,7 +1,7 @@
 import { m } from '@/paraglide/messages.js';
-import type { DailyMetrics, FormStatus, InjuryRisk } from '@/engine/types.ts';
+import type { DailyMetrics, FormStatus, InjuryRisk } from '@/packages/engine/types.ts';
 import type { CoachingRecommendation } from '@/types/index.ts';
-import { getFormStatus, getInjuryRisk, getLoadState } from '@/engine/coaching.ts';
+import { getFormStatus, getInjuryRisk, getLoadState } from '@/packages/engine/coaching.ts';
 
 export const getFormMessage = (status: FormStatus): string => {
   switch (status) {

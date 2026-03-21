@@ -14,6 +14,7 @@ import { computePBsForSessions } from '@/lib/records.ts';
 import { toast } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
 import { useCoachPlanStore } from '@/store/coachPlan.ts';
+import type { SessionRecord, Sport, TrainingSession } from '@/packages/engine/types.ts';
 
 interface ReimportState {
   reimporting: boolean;
@@ -48,13 +49,13 @@ export const useReimport = () => {
 
     const updates: Array<{
       id: string;
-      session: Omit<import('../../../engine/types.ts').TrainingSession, 'id' | 'createdAt'>;
+      session: Omit<TrainingSession, 'id' | 'createdAt'>;
     }> = [];
     const pbSessions: Array<{
       sessionId: string;
       date: number;
-      sport: import('../../../engine/types.ts').Sport;
-      records: import('../../../engine/types.ts').SessionRecord[];
+      sport: Sport;
+      records: SessionRecord[];
       distance?: number;
       elevationGain?: number;
     }> = [];

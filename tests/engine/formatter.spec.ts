@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { defaultFormatter } from '@/engine/formatter.ts';
+import { defaultFormatter } from '@/packages/engine/formatter.ts';
 
 describe('pace formatter', () => {
   it('formats integer seconds correctly', () => {

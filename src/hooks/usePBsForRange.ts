@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useFiltersStore } from '@/store/filters.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { getRecordsForSessions } from '@/lib/indexeddb.ts';
-import { rangeToCutoff, customRangeToCutoffs } from '@/lib/timeRange.ts';
+import { rangeToCutoff, customRangeToCutoffs, type TimeRange } from '@/lib/timeRange.ts';
 import { computePBsForSessions, groupPBsBySport, PB_SLOTS } from '@/lib/records.ts';
-import type { PersonalBest, Sport } from '@/engine/types.ts';
+import type { PersonalBest, Sport } from '@/packages/engine/types.ts';
 
 const categoryOrder: Record<string, number> = {
   'peak-power': 0,
@@ -44,9 +44,7 @@ export const usePBsForRange = (): {
             (sportFilter === 'all' || s.sport === sportFilter),
         );
       } else {
-        const cutoff = rangeToCutoff(
-          timeRange as Exclude<import('../lib/timeRange.ts').TimeRange, 'custom'>,
-        );
+        const cutoff = rangeToCutoff(timeRange as Exclude<TimeRange, 'custom'>);
         eligible = sessions.filter(
           (s) =>
             !s.isPlanned &&

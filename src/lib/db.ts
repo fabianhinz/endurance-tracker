@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { SessionRecord, SessionLap, SessionGPS } from '@/engine/types.ts';
+import type { SessionRecord, SessionLap, SessionGPS } from '@/packages/engine/types.ts';
 
 export interface EnduranceTrackerDB extends DBSchema {
   'session-records': {

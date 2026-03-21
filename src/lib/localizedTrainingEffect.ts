@@ -1,5 +1,5 @@
 import { m } from '@/paraglide/messages.js';
-import type { TELabelKey, TESummaryKey } from '@/engine/trainingEffect.ts';
+import type { TELabelKey, TESummaryKey } from '@/packages/engine/trainingEffect.ts';
 
 const TE_LABEL_MAP: Record<TELabelKey, () => string> = {
   overreaching: m.engine_te_overreaching,

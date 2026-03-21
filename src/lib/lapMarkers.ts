@@ -1,4 +1,4 @@
-import type { SessionLap, SessionRecord } from '@/engine/types.ts';
+import type { SessionLap, SessionRecord } from '@/packages/engine/types.ts';
 
 export interface LapMarker {
   lapIndex: number;

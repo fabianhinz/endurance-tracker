@@ -12,9 +12,9 @@ import {
   calculateTrainingEffect,
   getTrainingEffectLabel,
   getTrainingEffectSummary,
-} from '@/engine/trainingEffect.ts';
+} from '@/packages/engine/trainingEffect.ts';
 import { localizedTELabel, localizedTESummary } from '@/lib/localizedTrainingEffect.ts';
-import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
+import type { SessionRecord, TrainingSession } from '@/packages/engine/types.ts';
 
 const TE_ZONES = [
   { from: 0, to: 1, color: tokens.statusNeutral },

@@ -1,7 +1,7 @@
 import { Typography } from '@/components/ui/Typography.tsx';
 import { sportIcon } from '@/lib/sportIcons.ts';
 import { pbLabel, formatPBValue } from '@/lib/formatters.ts';
-import type { PersonalBest } from '@/engine/types.ts';
+import type { PersonalBest } from '@/packages/engine/types.ts';
 
 export const PbChip = (props: { pb: PersonalBest }) => {
   const Icon = sportIcon[props.pb.sport];

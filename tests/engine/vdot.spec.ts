@@ -5,7 +5,7 @@ import {
   predictRaceTime,
   predictRaceTimes,
   RACE_DISTANCE_METERS,
-} from '@/engine/vdot.ts';
+} from '@/packages/engine/vdot.ts';
 
 describe('thresholdPaceFromRace', () => {
   it('5K in 20:00 → threshold pace ~4:10-4:20/km', () => {

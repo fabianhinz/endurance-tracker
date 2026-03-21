@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 import type { LapAnalysis, LapRecordEnrichment } from './laps.ts';
 import { enrichLapFromRecords } from './laps.ts';
 

@@ -1,4 +1,4 @@
-import type { TrainingSession } from '@/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

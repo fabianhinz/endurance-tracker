@@ -1,4 +1,4 @@
-import type { TrainingSession } from '@/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 import { formatDate, formatDistance, formatDuration, formatSubSport } from '@/lib/formatters.ts';
 import { formatSessionName, formatSessionZoneLabel } from '@/lib/sessionTitleFormatter.ts';
 import { useUserStore } from '@/store/user.ts';

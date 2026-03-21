@@ -4,9 +4,9 @@ import {
   estimateWorkoutTss,
   estimateWorkoutDistance,
 } from '@/lib/prescription.ts';
-import { computeRunningZones } from '@/engine/zones.ts';
-import type { DailyMetrics } from '@/engine/types.ts';
-import type { PrescribedWorkout } from '@/types/index.ts';
+import { computeRunningZones } from '@/packages/engine/zones.ts';
+import type { DailyMetrics } from '@/packages/engine/types.ts';
+import type { PrescribedWorkout, WorkoutType } from '@/types/index.ts';
 
 const zones = computeRunningZones(270); // 4:30/km threshold
 const MATURE = 42; // days — well above 28-day threshold
@@ -404,7 +404,7 @@ describe('workout structure', () => {
 });
 
 describe('all workout types produce valid TSS and distance', () => {
-  const NON_REST_TYPES: Array<Exclude<import('../../src/types/index.ts').WorkoutType, 'rest'>> = [
+  const NON_REST_TYPES: Array<Exclude<WorkoutType, 'rest'>> = [
     'recovery',
     'easy',
     'long-run',

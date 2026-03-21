@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeMetrics } from '@/engine/metrics.ts';
+import { computeMetrics } from '@/packages/engine/metrics.ts';
 import { makeSession } from '../../../factories/sessions.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;

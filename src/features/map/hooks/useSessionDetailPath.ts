@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { getSessionRecords } from '@/lib/indexeddb.ts';
-import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
+import type { SessionRecord, TrainingSession } from '@/packages/engine/types.ts';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import { useUserStore } from '@/store/user.ts';
 import {

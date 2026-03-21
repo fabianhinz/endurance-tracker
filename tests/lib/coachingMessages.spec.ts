@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getFormMessage, getFormMessageDetailed } from '@/lib/coachingMessages.ts';
-import { getLoadState, getInjuryRisk } from '@/engine/coaching.ts';
-import type { FormStatus } from '@/engine/types.ts';
+import { getLoadState, getInjuryRisk } from '@/packages/engine/coaching.ts';
+import type { FormStatus } from '@/packages/engine/types.ts';
 import type { CoachingRecommendation } from '@/types/index.ts';
 
 const ALL_STATUSES: FormStatus[] = ['detraining', 'fresh', 'neutral', 'optimal', 'overload'];

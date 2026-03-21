@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { computeMetrics } from '@/engine/metrics.ts';
+import { computeMetrics } from '@/packages/engine/metrics.ts';
 import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
-import { getFormStatus, getInjuryRisk } from '@/engine/coaching.ts';
+import { getFormStatus, getInjuryRisk } from '@/packages/engine/coaching.ts';
 import { makeSession } from '@tests/factories/sessions.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;

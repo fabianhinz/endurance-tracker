@@ -3,7 +3,7 @@ import { useMetrics } from '@/hooks/useMetrics.ts';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { cn } from '@/lib/utils.ts';
 import { acwrColorMap, acwrFill, ACWR_ZONES } from '@/lib/statusColors.ts';
-import { getACWRColor, getInjuryRisk } from '@/engine/coaching.ts';
+import { getACWRColor, getInjuryRisk } from '@/packages/engine/coaching.ts';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { GaugeDial } from '@/components/ui/GaugeDial.tsx';
 

@@ -3,7 +3,7 @@ import { CardGrid } from '@/components/ui/CardGrid.tsx';
 import { StatItem } from '@/components/ui/StatItem.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { pbLabel, formatPBValue, formatDate } from '@/lib/formatters.ts';
-import type { PersonalBest } from '@/engine/types.ts';
+import type { PersonalBest } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
 interface SessionRecordsCardProps {

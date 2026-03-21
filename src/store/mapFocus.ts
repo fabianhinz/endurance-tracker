@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { SessionLap, SessionRecord, Sport } from '@/engine/types.ts';
+import type { SessionLap, SessionRecord, Sport } from '@/packages/engine/types.ts';
 import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
 import type { LapMarker } from '@/lib/lapMarkers.ts';
 import type { ZoneColorMode } from '@/features/map/zoneColoredPath.ts';

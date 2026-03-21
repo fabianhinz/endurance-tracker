@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import type { RaceDistance } from '@/engine/types.ts';
-import { RACE_DISTANCE_METERS, calculateVdot, predictRaceTimes } from '@/engine/vdot.ts';
+import type { RaceDistance } from '@/packages/engine/types.ts';
+import { RACE_DISTANCE_METERS, calculateVdot, predictRaceTimes } from '@/packages/engine/vdot.ts';
 import { parseRaceTime } from '@/lib/raceTime.ts';
 
 export const useRacePredictor = () => {

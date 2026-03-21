@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { densestClusterBounds } from '@/engine/gps.ts';
+import { densestClusterBounds } from '@/packages/engine/gps.ts';
 import type { MapRef } from 'react-map-gl/maplibre';
 import type { MapTrack } from './useMapTracks.ts';
 

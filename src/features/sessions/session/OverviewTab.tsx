@@ -13,7 +13,7 @@ import { TrainingEffectCard } from '@/features/sessions/session/TrainingEffectCa
 import { SessionRecordsCard } from '@/features/sessions/session/SessionRecordsCard.tsx';
 import { SessionChartsExplorer } from '@/features/sessions/charts/SessionChartsExplorer.tsx';
 import { SessionStatsGrid } from '@/features/sessions/session/SessionStatsGrid.tsx';
-import type { TrainingSession, SessionRecord, SessionLap } from '@/engine/types.ts';
+import type { TrainingSession, SessionRecord, SessionLap } from '@/packages/engine/types.ts';
 
 interface OverviewTabProps {
   session: TrainingSession;

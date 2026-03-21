@@ -29,7 +29,7 @@ import {
   rangeLabelMap,
   formatCustomRangeDuration,
 } from '@/lib/timeRange.ts';
-import type { Sport } from '@/engine/types.ts';
+import type { Sport } from '@/packages/engine/types.ts';
 import { UPLOAD_EXTENSIONS } from '@/lib/archive.ts';
 
 const tabs = [

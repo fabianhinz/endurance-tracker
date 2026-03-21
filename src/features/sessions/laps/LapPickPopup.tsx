@@ -34,7 +34,7 @@ import {
 } from '@/lib/formatters.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
-import type { SessionLap, SessionRecord, Sport } from '@/engine/types.ts';
+import type { SessionLap, SessionRecord, Sport } from '@/packages/engine/types.ts';
 import type { LapAnalysis, LapRecordEnrichment } from '@/lib/laps.ts';
 import { m } from '@/paraglide/messages.js';
 

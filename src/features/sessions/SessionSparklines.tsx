@@ -4,7 +4,7 @@ import { tokens } from '@/lib/tokens.ts';
 import { formatPaceTick } from '@/lib/formatters.ts';
 import { chartTheme, formatChartTime } from '@/lib/chartTheme.ts';
 import type { SparklineData, SparklineSeries } from '@/lib/sparklineData.ts';
-import type { Sport } from '@/engine/types.ts';
+import type { Sport } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 import { Card } from '@/components/ui/Card.tsx';
 import { cn } from '@/lib/utils';

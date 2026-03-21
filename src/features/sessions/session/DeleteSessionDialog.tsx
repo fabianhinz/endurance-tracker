@@ -15,7 +15,7 @@ import {
   DialogDescription,
 } from '@/components/ui/Dialog.tsx';
 import { formatDate } from '@/lib/formatters.ts';
-import type { TrainingSession } from '@/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 
 export const DeleteSessionDialog = (props: {
   session: TrainingSession;

@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { idbStorage } from '@/lib/idbStorage.ts';
 import type { TimeRange } from '@/lib/timeRange.ts';
-import type { Sport } from '@/engine/types.ts';
+import type { Sport } from '@/packages/engine/types.ts';
 
 interface FiltersState {
   timeRange: TimeRange;

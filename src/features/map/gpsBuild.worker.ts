@@ -1,5 +1,5 @@
 import { getSessionRecords, saveSessionGPS } from '@/lib/indexeddb.ts';
-import { buildSessionGPS } from '@/engine/gps.ts';
+import { buildSessionGPS } from '@/packages/engine/gps.ts';
 
 export type WorkerMessageIn = { type: 'build'; sessionIds: string[] };
 

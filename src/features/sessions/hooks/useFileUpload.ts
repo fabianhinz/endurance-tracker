@@ -10,7 +10,7 @@ import { toast, useToastStore } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
 import { findDuplicates } from '@/lib/fingerprint.ts';
 import { isArchiveFile, extractActivityFiles } from '@/lib/archive.ts';
-import type { TrainingSession, SessionRecord, SessionLap } from '@/engine/types.ts';
+import type { TrainingSession, SessionRecord, SessionLap } from '@/packages/engine/types.ts';
 
 interface ParsedFile {
   session: Omit<TrainingSession, 'id' | 'createdAt'>;

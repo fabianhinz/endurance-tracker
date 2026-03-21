@@ -26,7 +26,7 @@ import { GradeChart } from './GradeChart.tsx';
 import { PaceChart } from './PaceChart.tsx';
 import { GradeAdjustedPaceChart } from './GradeAdjustedPaceChart.tsx';
 import { tokens } from '@/lib/tokens.ts';
-import type { SessionRecord, TrainingSession } from '@/engine/types.ts';
+import type { SessionRecord, TrainingSession } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
 interface ChartEntry {

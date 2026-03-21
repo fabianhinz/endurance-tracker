@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/Dialog.tsx';
 import { AutoSessionNamesToggle } from '@/features/sessions/AutoSessionNamesToggle.tsx';
 import { useSessionTitle } from '@/features/sessions/hooks/useSessionTitle.ts';
-import type { TrainingSession } from '@/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 
 export const RenameSessionDialog = (props: {
   session: TrainingSession;

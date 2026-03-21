@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useSessionsStore } from '@/store/sessions.ts';
-import { computeMetrics } from '@/engine/metrics.ts';
+import { computeMetrics } from '@/packages/engine/metrics.ts';
 import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
-import type { DailyMetrics } from '@/engine/types.ts';
+import type { DailyMetrics } from '@/packages/engine/types.ts';
 import type { CoachingRecommendation } from '@/types/index.ts';
 
 export const useMetrics = (): {

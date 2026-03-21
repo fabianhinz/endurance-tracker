@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 export {
   makeCyclingRecords,

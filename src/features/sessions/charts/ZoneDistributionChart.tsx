@@ -15,7 +15,7 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { Tabs, TabsContent, TabsTrigger } from '@/components/ui/Tabs.tsx';
 import { chartTheme } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
-import type { ZoneBucket } from '@/engine/zoneDistribution.ts';
+import type { ZoneBucket } from '@/packages/engine/zoneDistribution.ts';
 import { m } from '@/paraglide/messages.js';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
 import type { ZoneColorMode } from '@/features/map/zoneColoredPath.ts';

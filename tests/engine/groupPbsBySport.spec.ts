@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { groupPBsBySport } from '@/lib/records.ts';
-import type { PersonalBest } from '@/engine/types.ts';
+import type { PersonalBest } from '@/packages/engine/types.ts';
 
 const makePB = (sport: 'running' | 'cycling' | 'swimming', window: number): PersonalBest => {
   let category: PersonalBest['category'] = 'fastest-distance';

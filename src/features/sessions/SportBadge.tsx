@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils.ts';
 import { sportColorClass } from '@/lib/statusColors.ts';
 import { sportIcon } from '@/lib/sportIcons.ts';
-import type { Sport } from '@/engine/types.ts';
+import type { Sport } from '@/packages/engine/types.ts';
 
 export const SportBadge = (props: { sport: Sport; size?: 'sm' | 'md' }) => {
   const Icon = sportIcon[props.sport];

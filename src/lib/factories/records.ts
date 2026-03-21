@@ -1,4 +1,4 @@
-import type { SessionRecord, SessionLap } from '@/engine/types.ts';
+import type { SessionRecord, SessionLap } from '@/packages/engine/types.ts';
 
 // --- Random-walk helpers ---
 
