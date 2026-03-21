@@ -1,12 +1,36 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useFiltersStore } from '@/store/filters.ts';
+import { useSessionsStore } from '@/store/sessions.ts';
+import { makeSession } from '@tests/factories/sessions.ts';
+import type { PersonalBest, Sport } from '@/packages/engine/types.ts';
+
+vi.mock('@/lib/indexeddb.ts', () => ({
+  getRecordsForSessions: vi.fn(),
+}));
+
+vi.mock('@/lib/records.ts', () => ({
+  computePBsForSessions: vi.fn(),
+  groupPBsBySport: vi.fn(),
+}));
+
+import { getRecordsForSessions } from '@/lib/indexeddb.ts';
+import { computePBsForSessions, groupPBsBySport } from '@/lib/records.ts';
+
+const mockedGetRecords = vi.mocked(getRecordsForSessions);
+const mockedComputePBs = vi.mocked(computePBsForSessions);
+const mockedGroupPBs = vi.mocked(groupPBsBySport);
 
 describe('useFiltersStore', () => {
   beforeEach(() => {
     useFiltersStore.setState({
       timeRange: '90d',
+      customRange: null,
+      prevDashboardRange: null,
       sportFilter: 'all',
+      groupedPBs: { data: {}, loading: false },
     });
+    useSessionsStore.setState({ sessions: [] });
+    vi.clearAllMocks();
   });
 
   it('has correct default state', () => {
@@ -66,6 +90,114 @@ describe('useFiltersStore', () => {
       });
       useFiltersStore.getState().clearDashboardChartRange();
       expect(useFiltersStore.getState().timeRange).toBe('90d');
+    });
+  });
+
+  describe('recomputePBs', () => {
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    const stubPBPipeline = (grouped: Partial<Record<Sport, PersonalBest[]>> = {}) => {
+      mockedGetRecords.mockResolvedValue(new Map());
+      mockedComputePBs.mockReturnValue([]);
+      mockedGroupPBs.mockReturnValue(grouped);
+    };
+
+    it('populates groupedPBs on success', async () => {
+      const pb: PersonalBest = {
+        sport: 'cycling',
+        category: 'peak-power',
+        window: 5,
+        value: 300,
+        sessionId: 's-0',
+        date: Date.now(),
+      };
+      useSessionsStore.setState({ sessions: [makeSession({ id: 's-0' })] });
+      stubPBPipeline({ cycling: [pb] });
+
+      await useFiltersStore.getState().recomputePBs();
+
+      expect(useFiltersStore.getState().groupedPBs.loading).toBe(false);
+      expect(useFiltersStore.getState().groupedPBs.data).toEqual({ cycling: [pb] });
+      expect(mockedGetRecords).toHaveBeenCalledWith(['s-0']);
+    });
+
+    it('returns empty data when no sessions match the date range', async () => {
+      useSessionsStore.setState({
+        sessions: [makeSession({ id: 's-old', date: Date.now() - 365 * DAY_MS })],
+      });
+      stubPBPipeline();
+
+      await useFiltersStore.getState().recomputePBs();
+
+      expect(useFiltersStore.getState().groupedPBs.data).toEqual({});
+      expect(mockedGetRecords).not.toHaveBeenCalled();
+    });
+
+    it('filters sessions by sport', async () => {
+      useSessionsStore.setState({
+        sessions: [
+          makeSession({ id: 'cyc', sport: 'cycling' }),
+          makeSession({ id: 'run', sport: 'running' }),
+        ],
+      });
+      useFiltersStore.setState({ sportFilter: 'cycling' });
+      stubPBPipeline();
+
+      await useFiltersStore.getState().recomputePBs();
+
+      expect(mockedGetRecords).toHaveBeenCalledWith(['cyc']);
+    });
+
+    it('excludes planned sessions and sessions without records', async () => {
+      useSessionsStore.setState({
+        sessions: [
+          makeSession({ id: 'valid' }),
+          makeSession({ id: 'planned', isPlanned: true }),
+          makeSession({ id: 'no-records', hasDetailedRecords: false }),
+        ],
+      });
+      stubPBPipeline();
+
+      await useFiltersStore.getState().recomputePBs();
+
+      expect(mockedGetRecords).toHaveBeenCalledWith(['valid']);
+    });
+
+    it('respects custom date range', async () => {
+      useSessionsStore.setState({
+        sessions: [
+          makeSession({ id: 'in', date: new Date('2026-01-15').getTime() }),
+          makeSession({ id: 'out', date: new Date('2025-12-01').getTime() }),
+        ],
+      });
+      useFiltersStore.setState({
+        timeRange: 'custom',
+        customRange: { from: '2026-01-01', to: '2026-01-31' },
+      });
+      stubPBPipeline();
+
+      await useFiltersStore.getState().recomputePBs();
+
+      expect(mockedGetRecords).toHaveBeenCalledWith(['in']);
+    });
+
+    it('skips recomputation when already loading', async () => {
+      useSessionsStore.setState({ sessions: [makeSession({ id: 's-0' })] });
+      useFiltersStore.setState({ groupedPBs: { data: {}, loading: true } });
+
+      await useFiltersStore.getState().recomputePBs();
+
+      expect(mockedGetRecords).not.toHaveBeenCalled();
+    });
+
+    it('resets to empty on IndexedDB error', async () => {
+      useSessionsStore.setState({ sessions: [makeSession({ id: 's-0' })] });
+      mockedGetRecords.mockRejectedValue(new Error('DB error'));
+
+      await useFiltersStore.getState().recomputePBs();
+
+      expect(useFiltersStore.getState().groupedPBs.data).toEqual({});
+      expect(useFiltersStore.getState().groupedPBs.loading).toBe(false);
     });
   });
 });
