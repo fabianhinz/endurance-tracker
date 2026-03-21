@@ -18,7 +18,7 @@ interface FiltersState {
   setDashboardChartRange: (from: string, to: string) => void;
   clearDashboardChartRange: () => void;
   setSportFilter: (s: Sport | 'all') => void;
-  recomputePBs: () => void;
+  recomputePBs: () => Promise<void>;
 }
 
 export const useFiltersStore = create<FiltersState>()(
@@ -60,11 +60,11 @@ export const useFiltersStore = create<FiltersState>()(
           const { groupedPBs, timeRange, customRange, sportFilter } = get();
           if (groupedPBs.loading) {
             return;
-          } else {
-            set((draft) => {
-              draft.groupedPBs.loading = true;
-            });
           }
+
+          set((draft) => {
+            draft.groupedPBs.loading = true;
+          });
 
           let dateCutoff = 0;
           let dateUpperBound = Infinity;

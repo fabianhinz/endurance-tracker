@@ -9,7 +9,7 @@ import { m } from '@/paraglide/messages.js';
 import { findDuplicates } from '@/lib/fingerprint.ts';
 import { isArchiveFile, extractActivityFiles } from '@/lib/archive.ts';
 import type { SessionRecord, SessionLap } from '@/packages/engine/types.ts';
-import { useFiltersStore } from '@/store/filters';
+import { useFiltersStore } from '@/store/filters.ts';
 
 const CHUNK_SIZE = 10;
 

@@ -12,7 +12,7 @@ import { SessionRecordsCard } from '@/features/sessions/session/SessionRecordsCa
 import { SessionChartsExplorer } from '@/features/sessions/charts/SessionChartsExplorer.tsx';
 import { SessionStatsGrid } from '@/features/sessions/session/SessionStatsGrid.tsx';
 import type { TrainingSession, SessionRecord, SessionLap } from '@/packages/engine/types.ts';
-import { useFiltersStore } from '@/store/filters';
+import { useFiltersStore } from '@/store/filters.ts';
 
 interface OverviewTabProps {
   session: TrainingSession;
