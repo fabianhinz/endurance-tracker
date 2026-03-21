@@ -33,6 +33,8 @@ export interface ParsedFitResult {
   fingerprint: string;
 }
 
+export type ParsedFitResultWithMeta = ParsedFitResult & { fileName: string; rawData: ArrayBuffer };
+
 const mapFitSportToAppSport = (fitSport?: string): Sport => {
   switch (fitSport) {
     case 'running':

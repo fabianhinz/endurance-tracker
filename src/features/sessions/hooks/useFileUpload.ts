@@ -2,30 +2,19 @@ import { useCallback } from 'react';
 import { useUserStore } from '@/store/user.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useUploadProgressStore } from '@/store/uploadProgress.ts';
-import { parseFitFile } from '@/parsers/fit.ts';
+import { parseFitFile, type ParsedFitResultWithMeta } from '@/parsers/fit.ts';
 import { bulkSaveSessionData, saveFitFile } from '@/lib/indexeddb.ts';
-import { detectNewPBs, mergePBs } from '@/lib/records.ts';
-import { mapWithConcurrency } from '@/lib/concurrency.ts';
 import { toast } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
 import { findDuplicates } from '@/lib/fingerprint.ts';
 import { isArchiveFile, extractActivityFiles } from '@/lib/archive.ts';
-import type { TrainingSession, SessionRecord, SessionLap } from '@/packages/engine/types.ts';
-
-interface ParsedFile {
-  session: Omit<TrainingSession, 'id' | 'createdAt'>;
-  records: SessionRecord[];
-  laps: SessionLap[];
-  fingerprint: string;
-  rawData: ArrayBuffer;
-  fileName: string;
-}
+import type { SessionRecord, SessionLap } from '@/packages/engine/types.ts';
+import { useFiltersStore } from '@/store/filters';
 
 const CHUNK_SIZE = 10;
 
 export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>) => {
   const profile = useUserStore((s) => s.profile);
-  const personalBests = useSessionsStore((s) => s.personalBests);
   const uploading = useUploadProgressStore((s) => s.uploading);
 
   const triggerUpload = useCallback(() => {
@@ -79,29 +68,33 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
 
       useUploadProgressStore.getState().startUpload(fitEntries.length);
 
-      // Phase 1 — Parse all files in parallel (concurrency of 6)
-      const settled = await mapWithConcurrency(
-        fitEntries,
-        6,
-        async (entry) => {
-          const result = await parseFitFile(entry.data, entry.name, {
+      const parsingTasks: Promise<ParsedFitResultWithMeta | null>[] = [];
+      for (const entry of fitEntries) {
+        parsingTasks.push(
+          parseFitFile(entry.data, entry.name, {
             restHr: profile.thresholds.restHr,
             maxHr: profile.thresholds.maxHr,
             gender: profile.gender,
             ftp: profile.thresholds.ftp,
-          });
-          return { ...result, rawData: entry.data, fileName: entry.name };
-        },
-        () => useUploadProgressStore.getState().advance(),
-      );
+          })
+            .then((result) => {
+              return { ...result, rawData: entry.data, fileName: entry.name };
+            })
+            .catch((error) => {
+              console.error('Parse error: ', error);
+              failed++;
+              return null;
+            })
+            .finally(() => {
+              useUploadProgressStore.getState().advance();
+            }),
+        );
+      }
 
-      const parsed: ParsedFile[] = [];
-      for (const result of settled) {
-        if (result.status === 'fulfilled') {
-          parsed.push(result.value);
-        } else {
-          console.error('Parse error:', result.reason);
-          failed++;
+      const parsed: ParsedFitResultWithMeta[] = [];
+      for (const task of await Promise.allSettled(parsingTasks)) {
+        if (task.status === 'fulfilled' && task.value) {
+          parsed.push(task.value);
         }
       }
 
@@ -123,14 +116,9 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
         return true;
       });
 
-      // Phase 2 — Batch commit
-      let newPBCount = 0;
-
       if (unique.length > 0) {
         try {
           const sessionIds = useSessionsStore.getState().addSessions(unique.map((p) => p.session));
-
-          let accumulatedBests = [...personalBests];
 
           const idbEntries: Array<{
             records: (SessionRecord & { sessionId: string })[];
@@ -156,19 +144,6 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
                 records: recordsWithId,
                 laps: lapsWithId,
               });
-
-              const newPBs = detectNewPBs(
-                sessionId,
-                entry.session.date,
-                entry.session.sport,
-                entry.records,
-                accumulatedBests,
-                { distance: entry.session.distance, elevationGain: entry.session.elevationGain },
-              );
-              if (newPBs.length > 0) {
-                accumulatedBests = mergePBs(accumulatedBests, newPBs);
-                newPBCount += newPBs.length;
-              }
             }
           }
 
@@ -181,10 +156,6 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           for (let i = 0; i < unique.length; i++) {
             await saveFitFile(sessionIds[i], unique[i].fileName, unique[i].rawData);
           }
-
-          if (accumulatedBests.length > 0) {
-            useSessionsStore.getState().updatePersonalBests(accumulatedBests);
-          }
         } catch (err) {
           console.error('Save error:', err);
           toast(m.toast_save_failed_title(), m.toast_save_failed_desc(), 'error');
@@ -193,6 +164,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
 
       const uploaded = unique.length;
       const parts: string[] = [];
+
       if (uploaded > 0) {
         let uploadMsg = m.toast_upload_sessions_plural({ count: uploaded });
         if (uploaded === 1) {
@@ -200,6 +172,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
         }
         parts.push(uploadMsg);
       }
+
       if (duplicated > 0) {
         let dupMsg = m.toast_upload_duplicates_plural({ count: duplicated });
         if (duplicated === 1) {
@@ -207,14 +180,11 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
         }
         parts.push(dupMsg);
       }
-      if (newPBCount > 0) {
-        let pbMsg = m.toast_upload_pbs_plural({ count: newPBCount });
-        if (newPBCount === 1) {
-          pbMsg = m.toast_upload_pbs({ count: newPBCount });
-        }
-        parts.push(pbMsg);
+
+      if (failed > 0) {
+        parts.push(m.toast_upload_failed({ count: failed }));
       }
-      if (failed > 0) parts.push(m.toast_upload_failed({ count: failed }));
+
       if (parts.length > 0) {
         let variant: 'success' | 'error' | 'warning' = 'success';
         if (failed > 0) {
@@ -223,11 +193,14 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           variant = 'warning';
         }
         useUploadProgressStore.getState().finish(parts.join(', '), variant);
+        useFiltersStore.getState().recomputePBs();
       }
 
-      if (inputRef.current) inputRef.current.value = '';
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
     },
-    [profile, personalBests, inputRef],
+    [profile, inputRef],
   );
 
   return { uploading, profile, triggerUpload, handleFiles };

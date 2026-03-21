@@ -20,7 +20,7 @@ beforeEach(() => {
 
   // Reset Zustand stores (merge, not replace — keeps action methods)
   useUserStore.setState({ profile: null });
-  useSessionsStore.setState({ sessions: [], personalBests: [] });
+  useSessionsStore.setState({ sessions: [] });
   useCoachPlanStore.setState({ cachedPlan: null, cacheKey: null });
 });
 

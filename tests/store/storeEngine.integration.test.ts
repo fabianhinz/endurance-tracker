@@ -3,10 +3,8 @@ import { useUserStore } from '@/store/user.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { computeMetrics } from '@/packages/engine/metrics.ts';
 import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
-import { detectNewPBs } from '@/lib/records.ts';
 import { makeUserProfile } from '@tests/factories/profiles.ts';
 import { makeSession } from '@tests/factories/sessions.ts';
-import { makeCyclingRecords } from '@tests/factories/records.ts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -51,32 +49,6 @@ describe('store + engine integration (no React)', () => {
     expect(['low', 'moderate', 'high']).toContain(coaching.injuryRisk);
   });
 
-  it('PB pipeline: session + records → detectNewPBs → updatePersonalBests', () => {
-    const now = Date.now();
-
-    // Add a session
-    const {
-      id: _id,
-      createdAt: _ca,
-      ...sessionData
-    } = makeSession({
-      sport: 'cycling',
-      date: now,
-    });
-    const sessionId = useSessionsStore.getState().addSession(sessionData);
-
-    // Generate records and detect PBs
-    const records = makeCyclingRecords(sessionId, 3600, { basePower: 260 });
-    const existingBests = useSessionsStore.getState().personalBests;
-    const newPBs = detectNewPBs(sessionId, now, 'cycling', records, existingBests);
-
-    expect(newPBs.length).toBeGreaterThan(0);
-
-    // Store PBs
-    useSessionsStore.getState().updatePersonalBests(newPBs);
-    expect(useSessionsStore.getState().personalBests.length).toBe(newPBs.length);
-  });
-
   it('full reset: populate everything → clear all stores → verify empty', () => {
     // Populate
     const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
@@ -84,20 +56,10 @@ describe('store + engine integration (no React)', () => {
 
     const { id: _sid, createdAt: _sca, ...sessionData } = makeSession();
     useSessionsStore.getState().addSession(sessionData);
-    useSessionsStore.getState().updatePersonalBests([
-      {
-        sport: 'cycling',
-        category: 'peak-power',
-        window: 300,
-        value: 280,
-        sessionId: 's1',
-        date: Date.now(),
-      },
-    ]);
+
     // Verify populated
     expect(useUserStore.getState().profile).not.toBeNull();
     expect(useSessionsStore.getState().sessions).toHaveLength(1);
-    expect(useSessionsStore.getState().personalBests).toHaveLength(1);
 
     // Clear all
     useUserStore.getState().resetProfile();
@@ -106,6 +68,5 @@ describe('store + engine integration (no React)', () => {
     // Verify empty
     expect(useUserStore.getState().profile).toBeNull();
     expect(useSessionsStore.getState().sessions).toHaveLength(0);
-    expect(useSessionsStore.getState().personalBests).toHaveLength(0);
   });
 });

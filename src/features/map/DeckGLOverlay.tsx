@@ -209,7 +209,7 @@ export const DeckGLOverlay: React.FC<DeckGLOverlayProps> = (props) => {
   }, [lapMarkers, focusedSport, hoveredLapIndex]);
 
   const overlay = useControl<MapboxOverlay>(
-    () => new MapboxOverlay({ interleaved: false, pickingRadius: PICK_RADIUS }),
+    () => new MapboxOverlay({ pickingRadius: PICK_RADIUS }),
   );
 
   overlay.setProps({

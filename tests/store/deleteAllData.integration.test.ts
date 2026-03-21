@@ -21,16 +21,6 @@ describe('delete all data', () => {
     // Populate sessions store
     const { id: _id, createdAt: _ca, ...sessionData } = makeSession();
     const sessionId = useSessionsStore.getState().addSession(sessionData);
-    useSessionsStore.getState().updatePersonalBests([
-      {
-        sport: 'cycling',
-        category: 'peak-power',
-        window: 300,
-        value: 280,
-        sessionId,
-        date: Date.now(),
-      },
-    ]);
 
     // Populate user store
     const { id: _pid, createdAt: _pca, ...profileData } = makeUserProfile();
@@ -65,7 +55,6 @@ describe('delete all data', () => {
     expect(useFiltersStore.getState().timeRange).toBe('90d');
     expect(useCoachPlanStore.getState().cachedPlan).not.toBeNull();
     expect(useSessionsStore.getState().sessions).toHaveLength(1);
-    expect(useSessionsStore.getState().personalBests).toHaveLength(1);
     expect(useUserStore.getState().profile).not.toBeNull();
     expect(useLayoutStore.getState().onboardingComplete).toBe(true);
     expect(await getSessionRecords(sessionId)).toHaveLength(60);
@@ -89,7 +78,6 @@ describe('delete all data', () => {
     expect(useCoachPlanStore.getState().cachedPlan).toBeNull();
     expect(useCoachPlanStore.getState().cacheKey).toBeNull();
     expect(useSessionsStore.getState().sessions).toHaveLength(0);
-    expect(useSessionsStore.getState().personalBests).toHaveLength(0);
     expect(await getSessionRecords(sessionId)).toHaveLength(0);
     expect(await getSessionLaps(sessionId)).toHaveLength(0);
     expect(await idbStorage.getItem('store-user')).toBeNull();

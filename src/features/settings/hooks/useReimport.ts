@@ -10,7 +10,6 @@ import {
   saveSessionLaps,
 } from '@/lib/indexeddb.ts';
 import { parseFitFile } from '@/parsers/fit.ts';
-import { computePBsForSessions } from '@/lib/records.ts';
 import { toast } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
 import { useCoachPlanStore } from '@/store/coachPlan.ts';
@@ -112,10 +111,6 @@ export const useReimport = () => {
       useSessionsStore.getState().replaceSessions(updates);
       useCoachPlanStore.getState().clearPlan();
     }
-
-    // Recompute PBs from scratch across all sessions
-    const freshPBs = computePBsForSessions(pbSessions);
-    useSessionsStore.setState({ personalBests: freshPBs });
 
     setState({ reimporting: false, processed: 0, total: 0 });
 

@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { makeSession } from '@tests/factories/sessions.ts';
-import type { PersonalBest } from '@/packages/engine/types.ts';
 import { getDB } from '@/lib/db';
 
 describe('sessions store', () => {
@@ -25,57 +24,6 @@ describe('sessions store', () => {
 
     useSessionsStore.getState().deleteSession(id);
     expect(useSessionsStore.getState().sessions).toHaveLength(0);
-  });
-
-  it('updatePersonalBests upserts (no duplicates by sport+category+window)', () => {
-    const firstBatch: PersonalBest[] = [
-      {
-        sport: 'cycling',
-        category: 'peak-power',
-        window: 300,
-        value: 280,
-        sessionId: 's1',
-        date: Date.now(),
-      },
-      {
-        sport: 'cycling',
-        category: 'peak-power',
-        window: 1200,
-        value: 250,
-        sessionId: 's1',
-        date: Date.now(),
-      },
-    ];
-    useSessionsStore.getState().updatePersonalBests(firstBatch);
-    expect(useSessionsStore.getState().personalBests).toHaveLength(2);
-
-    // Update with better value for 300s and new 3600s
-    const secondBatch: PersonalBest[] = [
-      {
-        sport: 'cycling',
-        category: 'peak-power',
-        window: 300,
-        value: 295,
-        sessionId: 's2',
-        date: Date.now(),
-      },
-      {
-        sport: 'cycling',
-        category: 'peak-power',
-        window: 3600,
-        value: 220,
-        sessionId: 's2',
-        date: Date.now(),
-      },
-    ];
-    useSessionsStore.getState().updatePersonalBests(secondBatch);
-
-    const pbs = useSessionsStore.getState().personalBests;
-    expect(pbs).toHaveLength(3); // 300, 1200, 3600
-
-    const pb300 = pbs.find((p) => p.window === 300);
-    expect(pb300!.value).toBe(295); // upserted to new value
-    expect(pb300!.sessionId).toBe('s2');
   });
 
   it('addSessions batch-adds multiple sessions and returns IDs', () => {
@@ -133,26 +81,14 @@ describe('sessions store', () => {
     expect(after).toEqual(before);
   });
 
-  it('clearAll resets both arrays', () => {
+  it('clearAll resets', () => {
     const { id: _id, createdAt: _ca, ...data } = makeSession();
     useSessionsStore.getState().addSession(data);
-    useSessionsStore.getState().updatePersonalBests([
-      {
-        sport: 'cycling',
-        category: 'peak-power',
-        window: 300,
-        value: 280,
-        sessionId: 's1',
-        date: Date.now(),
-      },
-    ]);
 
     expect(useSessionsStore.getState().sessions).toHaveLength(1);
-    expect(useSessionsStore.getState().personalBests).toHaveLength(1);
 
     useSessionsStore.getState().clearAll();
     expect(useSessionsStore.getState().sessions).toHaveLength(0);
-    expect(useSessionsStore.getState().personalBests).toHaveLength(0);
   });
 
   it('persistence to IndexedDB', async () => {
