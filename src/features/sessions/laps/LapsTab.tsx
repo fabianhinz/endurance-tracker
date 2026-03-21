@@ -15,7 +15,7 @@ import { LapHrChart } from './LapHrChart.tsx';
 import { LapPowerChart } from './LapPowerChart.tsx';
 import { LapDetailTable } from './LapDetailTable.tsx';
 import { SplitDistanceCard } from './SplitDistanceCard.tsx';
-import type { SessionLap, SessionRecord, TrainingSession } from '@/engine/types.ts';
+import type { SessionLap, SessionRecord, TrainingSession } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
 interface LapsTabProps {

@@ -1,7 +1,7 @@
-import { extractPathFromRecords, isValidCoordinate } from '@/engine/gps.ts';
-import type { SessionRecord } from '@/engine/types.ts';
-import { HR_ZONE_DEFS, POWER_ZONE_DEFS } from '@/engine/zoneDistribution.ts';
-import { computeRunningZones } from '@/engine/zones.ts';
+import { extractPathFromRecords, isValidCoordinate } from '@/packages/engine/gps.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
+import { HR_ZONE_DEFS, POWER_ZONE_DEFS } from '@/packages/engine/zoneDistribution.ts';
+import { computeRunningZones } from '@/packages/engine/zones.ts';
 import { scaleLinear } from 'd3-scale';
 import { rgb } from 'd3-color';
 import { trackModifiers } from './trackColors.ts';

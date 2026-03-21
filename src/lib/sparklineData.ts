@@ -6,7 +6,7 @@ import {
   prepareSpeedData,
 } from '@/lib/chartData.ts';
 import type { TimeSeriesPoint } from '@/lib/chartData.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 export interface SparklineSeries {
   points: TimeSeriesPoint[];

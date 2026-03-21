@@ -6,7 +6,7 @@ import { ValueSkeleton } from '@/components/ui/ValueSkeleton.tsx';
 import { SportBadge } from '@/features/sessions/SportBadge.tsx';
 import { pbLabel, formatPBValue, formatDate } from '@/lib/formatters.ts';
 import { PB_SLOTS } from '@/lib/records.ts';
-import type { PersonalBest, Sport } from '@/engine/types.ts';
+import type { PersonalBest, Sport } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
 const SPORT_NAMES: Record<Sport, () => string> = {

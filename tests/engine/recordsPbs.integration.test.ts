@@ -5,7 +5,7 @@ import {
   makeRunningRecords,
   makeSwimmingRecords,
 } from '@tests/factories/records.ts';
-import type { PersonalBest } from '@/engine/types';
+import type { PersonalBest } from '@/packages/engine/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

@@ -4,8 +4,8 @@ import {
   computeHrZoneDistribution,
   computePowerZoneDistribution,
   computePaceZoneDistribution,
-} from '@/engine/zoneDistribution.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+} from '@/packages/engine/zoneDistribution.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 import type { ZoneColorMode } from '@/features/map/zoneColoredPath.ts';
 
 export const useZoneData = (records: SessionRecord[], isRunning: boolean) => {

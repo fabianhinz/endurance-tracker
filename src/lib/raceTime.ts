@@ -1,5 +1,5 @@
 import { m } from '@/paraglide/messages.js';
-import type { RaceDistance } from '@/engine/types.ts';
+import type { RaceDistance } from '@/packages/engine/types.ts';
 
 export const DISTANCE_OPTIONS: Array<{ value: RaceDistance; label: string }> = [
   { value: '5k', label: m.ui_pace_est_5k() },

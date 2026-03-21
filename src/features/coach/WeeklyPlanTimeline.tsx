@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { WorkoutCard } from './WorkoutCard.tsx';
 import { WorkoutExpansionPanel } from './WorkoutExpansionPanel.tsx';
-import type { RunningZone } from '@/engine/types.ts';
+import type { RunningZone } from '@/packages/engine/types.ts';
 import type { WeeklyPlan } from '@/types/index.ts';
 
 interface WeeklyPlanTimelineProps {

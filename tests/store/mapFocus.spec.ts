@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useMapFocusStore } from '@/store/mapFocus.ts';
-import type { SessionLap } from '@/engine/types.ts';
+import type { SessionLap } from '@/packages/engine/types.ts';
 
 const makeLap = (overrides: Partial<SessionLap> = {}): SessionLap => ({
   sessionId: 's1',

@@ -9,7 +9,7 @@ import {
   findLapIndexAtCoordinate,
   findDynamicLapIndexAtCoordinate,
 } from '@/lib/laps.ts';
-import type { SessionLap, SessionRecord } from '@/engine/types.ts';
+import type { SessionLap, SessionRecord } from '@/packages/engine/types.ts';
 import { makeLaps, makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
 
 function makeLap(overrides: Partial<SessionLap> = {}): SessionLap {

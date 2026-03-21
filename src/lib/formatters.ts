@@ -1,6 +1,6 @@
 import { getLocale } from '@/paraglide/runtime.js';
 import { m } from '@/paraglide/messages.js';
-import type { PersonalBest } from '@/engine/types.ts';
+import type { PersonalBest } from '@/packages/engine/types.ts';
 import type { LapAnalysis } from '@/lib/laps.ts';
 
 // ---------------------------------------------------------------------------

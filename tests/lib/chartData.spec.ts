@@ -11,7 +11,7 @@ import {
   filterTimeSeries,
 } from '@/lib/chartData.ts';
 import { makeCyclingRecords, makeRunningRecords } from '@tests/factories/records.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 describe('filterTimeSeries', () => {
   const data = [

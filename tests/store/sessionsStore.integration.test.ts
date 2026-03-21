@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { makeSession } from '@tests/factories/sessions.ts';
-import type { PersonalBest } from '@/engine/types.ts';
+import type { PersonalBest } from '@/packages/engine/types.ts';
+import { getDB } from '@/lib/db';
 
 describe('sessions store', () => {
   it('addSession returns UUID, session in state', () => {
@@ -161,7 +162,6 @@ describe('sessions store', () => {
     // Allow async IDB write to complete
     await new Promise((r) => setTimeout(r, 50));
 
-    const { getDB } = await import('../../src/lib/db.ts');
     const db = await getDB();
     const stored = await db.get('kv', 'store-sessions');
     expect(stored).toBeDefined();

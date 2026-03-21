@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { useUserStore } from '@/store/user.ts';
 import { makeUserProfile } from '@tests/factories/profiles.ts';
 import { createDefaultProfile } from '@/lib/defaults.ts';
+import { getDB } from '@/lib/db';
 
 describe('user store', () => {
   it('setProfile auto-generates id and createdAt', () => {
@@ -60,7 +61,6 @@ describe('user store', () => {
     // Allow async IDB write to complete
     await new Promise((r) => setTimeout(r, 50));
 
-    const { getDB } = await import('../../src/lib/db.ts');
     const db = await getDB();
     const stored = await db.get('kv', 'store-user');
     expect(stored).toBeDefined();

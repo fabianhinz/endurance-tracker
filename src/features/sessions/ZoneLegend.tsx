@@ -1,5 +1,5 @@
 import { PaceRange } from '@/components/ui/PaceRange.tsx';
-import type { RunningZone, RunningZoneName } from '@/engine/types.ts';
+import type { RunningZone, RunningZoneName } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
 const ZONE_LABELS: Record<RunningZoneName, () => string> = {

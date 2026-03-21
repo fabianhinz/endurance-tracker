@@ -4,7 +4,7 @@ import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { Slider } from '@/components/ui/Slider.tsx';
 import { Switch } from '@/components/ui/Switch.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
-import type { Sport } from '@/engine/types.ts';
+import type { Sport } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
 const formatDistanceKm = (metres: number): string => {

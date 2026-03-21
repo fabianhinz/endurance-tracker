@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { m } from '@/paraglide/messages.js';
-import type { RaceDistance } from '@/engine/types.ts';
-import { RACE_DISTANCE_METERS, thresholdPaceFromRace } from '@/engine/vdot.ts';
+import type { RaceDistance } from '@/packages/engine/types.ts';
+import { RACE_DISTANCE_METERS, thresholdPaceFromRace } from '@/packages/engine/vdot.ts';
 import { DISTANCE_OPTIONS, usesLongFormat, parseRaceTime } from '@/lib/raceTime.ts';
 import {
   DialogRoot,

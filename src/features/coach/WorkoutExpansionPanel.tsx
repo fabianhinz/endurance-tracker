@@ -4,7 +4,7 @@ import { PaceRange } from '@/components/ui/PaceRange.tsx';
 import { formatDuration } from '@/lib/formatters.ts';
 import { groupSteps } from '@/lib/groupSteps.ts';
 import { STEP_LABELS } from './workoutDisplay.ts';
-import type { RunningZone } from '@/engine/types.ts';
+import type { RunningZone } from '@/packages/engine/types.ts';
 import type { PrescribedWorkout, WorkoutStep } from '@/types/index.ts';
 import { X } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';

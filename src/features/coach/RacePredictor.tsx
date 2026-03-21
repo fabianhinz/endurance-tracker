@@ -1,6 +1,6 @@
 import { m } from '@/paraglide/messages.js';
-import type { RaceDistance } from '@/engine/types.ts';
-import { RACE_DISTANCE_METERS } from '@/engine/vdot.ts';
+import type { RaceDistance } from '@/packages/engine/types.ts';
+import { RACE_DISTANCE_METERS } from '@/packages/engine/vdot.ts';
 import { DISTANCE_OPTIONS, usesLongFormat } from '@/lib/raceTime.ts';
 import { formatPaceInput, formatRaceTime } from '@/lib/formatters.ts';
 import { useRacePredictor } from '@/features/coach/hooks/useRacePredictor.ts';

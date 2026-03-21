@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { segmentIntersectsBounds } from '@/engine/gps.ts';
-import type { GPSBounds } from '@/engine/types.ts';
+import { segmentIntersectsBounds } from '@/packages/engine/gps.ts';
+import type { GPSBounds } from '@/packages/engine/types.ts';
 
 const bounds: GPSBounds = {
   minLng: 10,

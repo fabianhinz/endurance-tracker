@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { useUserStore } from '@/store/user.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
-import { computeMetrics } from '@/engine/metrics.ts';
+import { computeMetrics } from '@/packages/engine/metrics.ts';
 import { getCoachingRecommendation } from '@/lib/coachingMessages.ts';
 import { detectNewPBs } from '@/lib/records.ts';
 import { makeUserProfile } from '@tests/factories/profiles.ts';

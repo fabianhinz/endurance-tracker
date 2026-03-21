@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { calculateGAP } from '@/engine/normalize.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+import { calculateGAP } from '@/packages/engine/normalize.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 function makeRecord(overrides: Partial<SessionRecord>): SessionRecord {
   return { sessionId: 'test', timestamp: 0, ...overrides };

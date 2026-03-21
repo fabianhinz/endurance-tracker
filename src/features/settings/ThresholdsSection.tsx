@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { m } from '@/paraglide/messages.js';
-import type { Gender } from '@/engine/types.ts';
+import type { Gender } from '@/packages/engine/types.ts';
 import { useUserStore } from '@/store/user.ts';
 import { Input } from '@/components/ui/Input.tsx';
 import { Label } from '@/components/ui/Label.tsx';

@@ -1,6 +1,6 @@
 import { m } from '@/paraglide/messages.js';
-import type { Sport } from '@/engine/types.ts';
-import { HR_ZONE_DEFS } from '@/engine/zoneDistribution.ts';
+import type { Sport } from '@/packages/engine/types.ts';
+import { HR_ZONE_DEFS } from '@/packages/engine/zoneDistribution.ts';
 import { formatDate } from '@/lib/formatters.ts';
 
 const getTimeOfDayLabel = (hour: number): string => {

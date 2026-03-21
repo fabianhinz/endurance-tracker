@@ -3,7 +3,7 @@ import { SessionHeader } from './SessionHeader.tsx';
 import { SessionItemToolbar } from './SessionItemToolbar.tsx';
 import { SessionSparklines } from './SessionSparklines.tsx';
 import { Card } from '@/components/ui/Card.tsx';
-import type { TrainingSession } from '@/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 import { cn } from '@/lib/utils.ts';
 import { useSparklineStore } from '@/store/sparklineStore.ts';
 import { useSessionHover } from './hooks/useSessionHover.ts';

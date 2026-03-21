@@ -11,7 +11,7 @@ import { SessionHeader } from '@/features/sessions/SessionHeader.tsx';
 import { SessionActionsMenu } from '@/features/sessions/session/SessionActionsMenu.tsx';
 import { OverviewTab } from '@/features/sessions/session/OverviewTab.tsx';
 import { LapsTab } from '@/features/sessions/laps/LapsTab.tsx';
-import type { SessionRecord, SessionLap } from '@/engine/types.ts';
+import type { SessionRecord, SessionLap } from '@/packages/engine/types.ts';
 
 const validTabs = new Set(['overview', 'laps']);
 

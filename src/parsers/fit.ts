@@ -1,8 +1,14 @@
 import FitParser from 'fit-file-parser';
-import type { TrainingSession, SessionRecord, SessionLap, Sport, Gender } from '@/engine/types.ts';
+import type {
+  TrainingSession,
+  SessionRecord,
+  SessionLap,
+  Sport,
+  Gender,
+} from '@/packages/engine/types.ts';
 import { validateRecords } from '@/lib/validation.ts';
-import { calculateSessionStress } from '@/engine/stress.ts';
-import { calculateGAP } from '@/engine/normalize.ts';
+import { calculateSessionStress } from '@/packages/engine/stress.ts';
+import { calculateGAP } from '@/packages/engine/normalize.ts';
 import { extractSessionName } from '@/lib/filename.ts';
 import { generateFingerprint } from '@/lib/fingerprint.ts';
 import {

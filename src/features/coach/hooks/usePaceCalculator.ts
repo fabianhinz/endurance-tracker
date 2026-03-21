@@ -4,7 +4,7 @@ import {
   timeFromPaceAndDistance,
   paceFromDistanceAndTime,
   distanceFromPaceAndTime,
-} from '@/engine/paceCalculator.ts';
+} from '@/packages/engine/paceCalculator.ts';
 
 type Field = 'pace' | 'distance' | 'time';
 

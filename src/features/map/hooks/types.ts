@@ -1,4 +1,4 @@
-import { decodeTrackForRendering } from '@/engine/gps';
+import { decodeTrackForRendering } from '@/packages/engine/gps';
 import type { MapTrack } from './useMapTracks';
 
 export const PICK_RADIUS = 25;

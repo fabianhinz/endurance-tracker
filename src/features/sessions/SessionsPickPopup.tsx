@@ -10,7 +10,7 @@ import { useLocalSparklines } from './hooks/useLocalSparklines.ts';
 import { usePopupPosition } from '../map/hooks/usePopupPosition.ts';
 import { useDismiss } from '../map/hooks/useDismiss.ts';
 import { cn } from '@/lib/utils.ts';
-import type { TrainingSession } from '@/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
 export interface PopupInfo {

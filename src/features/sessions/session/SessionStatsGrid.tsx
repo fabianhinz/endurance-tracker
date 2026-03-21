@@ -6,9 +6,9 @@ import { StatItem } from '@/components/ui/StatItem.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { cn } from '@/lib/utils.ts';
 import { formatDuration, formatDistance, formatPace, formatSpeed } from '@/lib/formatters.ts';
-import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
+import { METRIC_EXPLANATIONS, type MetricId } from '@/lib/explanations.ts';
 import { detectIntervals, detectProgressiveOverload } from '@/lib/laps.ts';
-import type { TrainingSession, SessionLap } from '@/engine/types.ts';
+import type { TrainingSession, SessionLap } from '@/packages/engine/types.ts';
 
 interface SessionStatsGridProps {
   session: TrainingSession;
@@ -54,7 +54,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     label: string;
     value: React.ReactNode;
     unit?: string;
-    metricId?: import('@/lib/explanations.ts').MetricId;
+    metricId?: MetricId;
     subDetail?: React.ReactNode;
   }> = [];
 

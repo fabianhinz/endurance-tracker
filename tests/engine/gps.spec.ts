@@ -4,7 +4,7 @@ import {
   buildSessionGPS,
   boundsOverlap,
   densestClusterBounds,
-} from '@/engine/gps.ts';
+} from '@/packages/engine/gps.ts';
 import { makeGPSRunningRecords, makeIndoorRecords } from '@tests/factories/gps.ts';
 
 describe('extractPathFromRecords', () => {

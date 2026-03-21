@@ -1,7 +1,7 @@
 import type { ElementType, ReactNode } from 'react';
 import { Typography } from '@/components/ui/Typography.tsx';
 import type { TypographyVariants } from '@/components/ui/Typography.tsx';
-import type { TrainingSession } from '@/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 import { cn } from '@/lib/utils.ts';
 import { SportBadge } from './SportBadge.tsx';
 import { useSessionTitle } from './hooks/useSessionTitle.ts';

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeRunningZones, getZoneForPace, getZoneMidPace } from '@/engine/zones.ts';
+import { computeRunningZones, getZoneForPace, getZoneMidPace } from '@/packages/engine/zones.ts';
 
 describe('computeRunningZones', () => {
   // 4:30/km = 270 sec/km — typical threshold for a recreational runner

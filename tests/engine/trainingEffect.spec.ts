@@ -4,8 +4,8 @@ import {
   getTrainingEffectLabel,
   getTrainingEffectSummary,
   LT_HRR,
-} from '@/engine/trainingEffect.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+} from '@/packages/engine/trainingEffect.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 import { makeRunningRecords, makeCyclingRecords } from '@tests/factories/records.ts';
 
 describe('calculateTrainingEffect', () => {

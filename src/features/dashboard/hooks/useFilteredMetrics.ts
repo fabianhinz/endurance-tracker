@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useFiltersStore } from '@/store/filters.ts';
-import { computeMetrics } from '@/engine/metrics.ts';
-import type { DailyMetrics } from '@/engine/types.ts';
+import { computeMetrics } from '@/packages/engine/metrics.ts';
+import type { DailyMetrics } from '@/packages/engine/types.ts';
 
 export const useFilteredMetrics = (): {
   history: DailyMetrics[];

@@ -1,4 +1,4 @@
-import type { Sport } from '@/engine/types.ts';
+import type { Sport } from '@/packages/engine/types.ts';
 
 export const ADDITIVE_BLEND = {
   blendColorSrcFactor: 'src-alpha',

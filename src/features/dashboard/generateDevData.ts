@@ -1,7 +1,7 @@
 import { decode } from '@googlemaps/polyline-codec';
-import type { Sport, SessionRecord, SessionLap, TrainingSession } from '@/engine/types.ts';
-import { buildSessionGPS } from '@/engine/gps.ts';
-import { calculateSessionStress } from '@/engine/stress.ts';
+import type { Sport, SessionRecord, SessionLap, TrainingSession } from '@/packages/engine/types.ts';
+import { buildSessionGPS } from '@/packages/engine/gps.ts';
+import { calculateSessionStress } from '@/packages/engine/stress.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useUserStore } from '@/store/user.ts';
 import { bulkSaveSessionData, saveSessionGPS } from '@/lib/indexeddb.ts';

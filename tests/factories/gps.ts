@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 /**
  * Generate running records with GPS coordinates following a realistic path.

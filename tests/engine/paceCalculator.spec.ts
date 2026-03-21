@@ -3,7 +3,7 @@ import {
   timeFromPaceAndDistance,
   paceFromDistanceAndTime,
   distanceFromPaceAndTime,
-} from '@/engine/paceCalculator.ts';
+} from '@/packages/engine/paceCalculator.ts';
 
 describe('timeFromPaceAndDistance', () => {
   it('5:00/km for 10km → 3000s (50:00)', () => {

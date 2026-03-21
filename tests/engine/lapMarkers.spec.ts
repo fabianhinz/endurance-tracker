@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { computeLapMarkers } from '@/lib/lapMarkers.ts';
 import type { LapMarkerMode } from '@/lib/lapMarkers.ts';
-import type { SessionLap, SessionRecord } from '@/engine/types.ts';
+import type { SessionLap, SessionRecord } from '@/packages/engine/types.ts';
 
 const makeRecord = (overrides: Partial<SessionRecord> = {}, index = 0): SessionRecord => ({
   sessionId: 's1',

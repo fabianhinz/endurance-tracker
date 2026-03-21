@@ -3,9 +3,9 @@ import {
   calculateNormalizedPower,
   gradeAdjustedPaceFactor,
   calculateGAP,
-} from '@/engine/normalize.ts';
+} from '@/packages/engine/normalize.ts';
 import { makeCyclingRecords } from '@tests/factories/records.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 function makeRecord(overrides: Partial<SessionRecord>): SessionRecord {
   return { sessionId: 'test', timestamp: 0, ...overrides };

@@ -4,7 +4,7 @@ import {
   deriveAvgFromRecords,
   deriveMaxFromRecords,
 } from '@/parsers/fit.ts';
-import type { SessionRecord } from '@/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 function makeRecord(overrides: Partial<SessionRecord> = {}): SessionRecord {
   return { sessionId: 'test', timestamp: 0, ...overrides };

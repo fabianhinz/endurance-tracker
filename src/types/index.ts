@@ -4,7 +4,7 @@ import type {
   InjuryRisk,
   RunningZoneName,
   RaceDistance,
-} from '@/engine/types.ts';
+} from '@/packages/engine/types.ts';
 
 export type {
   Gender,
@@ -12,7 +12,7 @@ export type {
   InjuryRisk,
   RunningZoneName,
   RaceDistance,
-} from '@/engine/types.ts';
+} from '@/packages/engine/types.ts';
 
 export interface UserProfile {
   id: string;
