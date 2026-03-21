@@ -2,19 +2,14 @@ import { useSearchParams } from 'react-router-dom';
 import { m } from '@/paraglide/messages.js';
 import { SessionList } from '@/features/sessions/SessionList.tsx';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs.tsx';
-import { usePBsForRange } from '@/hooks/usePBsForRange.ts';
-import { SportRecordsCard } from '@/features/records/SportRecordsCard.tsx';
-import { PageGrid } from '@/components/ui/PageGrid.tsx';
-import type { Sport } from '@/packages/engine/types.ts';
+import { SportsRecords } from '@/features/records/SportsRecords';
 
-const sports: Sport[] = ['running', 'cycling', 'swimming'];
 const validTabs = new Set(['log', 'records']);
 
 export const SessionsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const rawTab = searchParams.get('tab');
   const tab = rawTab && validTabs.has(rawTab) ? rawTab : 'log';
-  const pbsResult = usePBsForRange();
 
   const handleTabChange = (value: string) => {
     setSearchParams({ tab: value });
@@ -32,16 +27,7 @@ export const SessionsPage = () => {
       </TabsContent>
 
       <TabsContent value="records">
-        <PageGrid>
-          {sports.map((sport) => (
-            <SportRecordsCard
-              key={sport}
-              sport={sport}
-              pbs={pbsResult.grouped[sport] ?? []}
-              loading={pbsResult.loading}
-            />
-          ))}
-        </PageGrid>
+        <SportsRecords />
       </TabsContent>
     </Tabs>
   );

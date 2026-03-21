@@ -1,13 +1,11 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { TrainingSession, PersonalBest } from '@/packages/engine/types.ts';
+import type { TrainingSession } from '@/packages/engine/types.ts';
 import { idbStorage } from '@/lib/idbStorage.ts';
-import { mergePBs } from '@/lib/records.ts';
 
 interface SessionsState {
   sessions: TrainingSession[];
-  personalBests: PersonalBest[];
   addSession: (session: Omit<TrainingSession, 'id' | 'createdAt'>) => string;
   addSessions: (sessions: Omit<TrainingSession, 'id' | 'createdAt'>[]) => string[];
   deleteSession: (id: string) => void;
@@ -15,7 +13,6 @@ interface SessionsState {
   replaceSessions: (
     updates: Array<{ id: string; session: Omit<TrainingSession, 'id' | 'createdAt'> }>,
   ) => void;
-  updatePersonalBests: (newBests: PersonalBest[]) => void;
   clearAll: () => void;
 }
 
@@ -24,8 +21,6 @@ export const useSessionsStore = create<SessionsState>()(
     persist(
       (set) => ({
         sessions: [],
-        personalBests: [],
-
         addSession: (sessionData) => {
           const id = crypto.randomUUID();
           const session: TrainingSession = {
@@ -38,7 +33,6 @@ export const useSessionsStore = create<SessionsState>()(
           });
           return id;
         },
-
         addSessions: (sessionsData) => {
           const newSessions = sessionsData.map((s) => ({
             ...s,
@@ -50,12 +44,10 @@ export const useSessionsStore = create<SessionsState>()(
           });
           return newSessions.map((s) => s.id);
         },
-
         deleteSession: (id) =>
           set((draft) => {
             draft.sessions = draft.sessions.filter((s) => s.id !== id);
           }),
-
         renameSession: (id, name) =>
           set((draft) => {
             const session = draft.sessions.find((s) => s.id === id);
@@ -63,7 +55,6 @@ export const useSessionsStore = create<SessionsState>()(
               session.name = name;
             }
           }),
-
         replaceSessions: (updates) =>
           set((draft) => {
             const updateMap = new Map(updates.map((u) => [u.id, u.session]));
@@ -74,13 +65,7 @@ export const useSessionsStore = create<SessionsState>()(
               }
             }
           }),
-
-        updatePersonalBests: (newBests) =>
-          set((draft) => {
-            draft.personalBests = mergePBs(draft.personalBests, newBests);
-          }),
-
-        clearAll: () => set({ sessions: [], personalBests: [] }),
+        clearAll: () => set({ sessions: [] }),
       }),
       {
         name: 'store-sessions',
