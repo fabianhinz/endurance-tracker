@@ -3,27 +3,20 @@ import { useFiltersStore } from '@/store/filters.ts';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { getRecordsForSessions } from '@/lib/indexeddb.ts';
 import { rangeToCutoff, customRangeToCutoffs, type TimeRange } from '@/lib/timeRange.ts';
-import { computePBsForSessions, groupPBsBySport, PB_SLOTS } from '@/lib/records.ts';
+import { computePBsForSessions, groupPBsBySport } from '@/lib/records.ts';
 import type { PersonalBest, Sport } from '@/packages/engine/types.ts';
-
-const categoryOrder: Record<string, number> = {
-  'peak-power': 0,
-  'fastest-distance': 1,
-  longest: 2,
-  'most-elevation': 3,
-};
 
 export const usePBsForRange = (): {
   grouped: Partial<Record<Sport, PersonalBest[]>>;
-  flat: PersonalBest[];
   loading: boolean;
 } => {
+  const [grouped, setGrouped] = useState<Partial<Record<Sport, PersonalBest[]>>>({});
+  const [loading, setLoading] = useState(true);
+
   const timeRange = useFiltersStore((s) => s.timeRange);
   const customRange = useFiltersStore((s) => s.customRange);
   const sportFilter = useFiltersStore((s) => s.sportFilter);
   const sessions = useSessionsStore((s) => s.sessions);
-  const [grouped, setGrouped] = useState<Partial<Record<Sport, PersonalBest[]>>>({});
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -91,21 +84,5 @@ export const usePBsForRange = (): {
     };
   }, [timeRange, customRange, sessions, sportFilter]);
 
-  const sportOrder: Record<Sport, number> = { running: 0, cycling: 1, swimming: 2 };
-
-  const slotIndex = (pb: PersonalBest): number => {
-    const slots = PB_SLOTS[pb.sport];
-    return slots.findIndex((s) => s.category === pb.category && s.window === pb.window);
-  };
-
-  const flat = Object.values(grouped)
-    .flat()
-    .sort(
-      (a, b) =>
-        sportOrder[a.sport] - sportOrder[b.sport] ||
-        categoryOrder[a.category] - categoryOrder[b.category] ||
-        slotIndex(a) - slotIndex(b),
-    );
-
-  return { grouped, flat, loading };
+  return { grouped, loading };
 };

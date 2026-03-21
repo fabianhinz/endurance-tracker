@@ -23,13 +23,10 @@ const sportSubtitle: Record<Sport, () => string> = {
 
 export const SportRecordsCard = (props: {
   sport: Sport;
-  pbs: PersonalBest[];
+  pbs: PersonalBest[] | undefined;
   loading?: boolean;
 }) => {
   const slots = PB_SLOTS[props.sport];
-
-  const findPB = (category: string, window: number) =>
-    props.pbs.find((pb) => pb.category === category && pb.window === window);
 
   return (
     <Card>
@@ -40,7 +37,9 @@ export const SportRecordsCard = (props: {
       />
       <div className="space-y-1">
         {slots.map((slot) => {
-          const pb = findPB(slot.category, slot.window);
+          const pb = props.pbs?.find(
+            (pb) => pb.category === slot.category && pb.window === slot.window,
+          );
           const tempPB = {
             sport: props.sport,
             category: slot.category,
