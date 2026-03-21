@@ -22,7 +22,7 @@ interface ProgressToastItem {
 
 type ToastItem = MessageToastItem | ProgressToastItem;
 
-const PROGRESS_TOAST_ID = 'upload-progress';
+export const PROGRESS_TOAST_ID = 'upload-progress';
 
 interface ToastState {
   toasts: ToastItem[];
@@ -77,8 +77,9 @@ export const toast = (
   title: string,
   description?: string,
   variant?: MessageToastItem['variant'],
+  id?: string,
 ) => {
-  useToastStore.getState().addToast({ title, description, variant });
+  useToastStore.getState().addToast({ title, description, variant, id });
 };
 
 export type { ToastItem, MessageToastItem, ProgressToastItem };

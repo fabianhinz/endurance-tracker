@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useToastStore } from '@/components/ui/toastStore.ts';
+import { useToastStore, toast, PROGRESS_TOAST_ID } from '@/components/ui/toastStore.ts';
 
 describe('toastStore', () => {
   beforeEach(() => {
@@ -83,6 +83,29 @@ describe('toastStore', () => {
       expect(toasts[0].variant).toBe('success');
       expect(toasts[0].testId).toBe('upload-done');
     }
+  });
+
+  it('removeToast with PROGRESS_TOAST_ID removes the progress toast', () => {
+    useToastStore.getState().upsertProgress({
+      label: 'Processing',
+      processed: 0,
+      total: 10,
+      saving: false,
+    });
+    useToastStore.getState().removeToast(PROGRESS_TOAST_ID);
+    expect(useToastStore.getState().toasts).toHaveLength(0);
+  });
+
+  it('removeToast with PROGRESS_TOAST_ID is a no-op when no progress toast exists', () => {
+    useToastStore.getState().addToast({ title: 'Other toast' });
+    useToastStore.getState().removeToast(PROGRESS_TOAST_ID);
+    expect(useToastStore.getState().toasts).toHaveLength(1);
+  });
+
+  it('toast helper with id deduplicates', () => {
+    toast('A', undefined, undefined, 'same-id');
+    toast('B', undefined, undefined, 'same-id');
+    expect(useToastStore.getState().toasts).toHaveLength(1);
   });
 
   it('mixed toast types coexist', () => {
