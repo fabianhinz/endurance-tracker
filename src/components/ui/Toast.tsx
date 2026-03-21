@@ -58,7 +58,11 @@ export const ToastViewport = () => {
           return (
             <ToastPrimitive.Root
               key={t.id}
-              className="rounded-lg border border-white/10 p-4 bg-white/5 backdrop-blur-xl flex items-center gap-2"
+              className={cn(
+                'rounded-lg border border-white/10 p-4 bg-white/5 backdrop-blur-xl flex items-center gap-2',
+                'data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:slide-in-from-bottom-4',
+                'data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-bottom-4',
+              )}
               duration={Infinity}
               onSwipeStart={(e) => e.preventDefault()}
             >
@@ -75,6 +79,8 @@ export const ToastViewport = () => {
             key={t.id}
             className={cn(
               'rounded-lg border p-4 bg-white/5 backdrop-blur-xl',
+              'data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:slide-in-from-bottom-4',
+              'data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-bottom-4',
               variantClasses[t.variant ?? 'default'],
             )}
             onOpenChange={(open) => {
