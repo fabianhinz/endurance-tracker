@@ -6,7 +6,7 @@ import { parseFitFile } from '@/parsers/fit.ts';
 import { bulkSaveSessionData, saveFitFile } from '@/lib/indexeddb.ts';
 import { detectNewPBs, mergePBs } from '@/lib/records.ts';
 import { mapWithConcurrency } from '@/lib/concurrency.ts';
-import { toast, useToastStore } from '@/components/ui/toastStore.ts';
+import { toast } from '@/components/ui/toastStore.ts';
 import { m } from '@/paraglide/messages.js';
 import { findDuplicates } from '@/lib/fingerprint.ts';
 import { isArchiveFile, extractActivityFiles } from '@/lib/archive.ts';
@@ -39,35 +39,22 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
       const fileArray = Array.from(files);
       if (fileArray.length === 0) return;
 
+      useUploadProgressStore.getState().beginProcessing();
+
       const fitEntries: Array<{ name: string; data: ArrayBuffer }> = [];
       let failed = 0;
-      let extractingShown = false;
 
       for (const file of fileArray) {
         const lower = file.name.toLowerCase();
         if (lower.endsWith('.fit')) {
           fitEntries.push({ name: file.name, data: await file.arrayBuffer() });
         } else if (isArchiveFile(file.name)) {
-          if (!extractingShown) {
-            extractingShown = true;
-            useToastStore.getState().upsertProgress({
-              label: m.toast_archive_extracting(),
-              processed: 0,
-              total: 0,
-              saving: true,
-            });
-          }
           try {
             const raw = await file.arrayBuffer();
             const extracted = await extractActivityFiles(raw);
             const fitOnly = extracted.filter((e) => e.extension === '.fit');
             // TODO: handle .tcx files once a TCX parser is added
             if (fitOnly.length === 0) {
-              toast(
-                m.toast_archive_no_fit_title(),
-                m.toast_archive_no_fit_desc({ fileName: file.name }),
-                'error',
-              );
               failed++;
             } else {
               for (const entry of fitOnly) {
@@ -75,24 +62,15 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
               }
             }
           } catch {
-            toast(
-              m.toast_archive_extract_failed_title(),
-              m.toast_archive_extract_failed_desc({ fileName: file.name }),
-              'error',
-            );
             failed++;
           }
         } else {
-          toast(
-            m.toast_invalid_file_title(),
-            m.toast_invalid_file_desc({ fileName: file.name }),
-            'error',
-          );
           failed++;
         }
       }
 
       if (fitEntries.length === 0) {
+        useUploadProgressStore.getState().cancel();
         if (failed > 0) {
           toast(m.toast_files_failed_title({ count: failed }), undefined, 'error');
         }
@@ -123,7 +101,6 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           parsed.push(result.value);
         } else {
           console.error('Parse error:', result.reason);
-          toast(m.toast_parse_failed_title(), m.toast_parse_failed_desc(), 'error');
           failed++;
         }
       }

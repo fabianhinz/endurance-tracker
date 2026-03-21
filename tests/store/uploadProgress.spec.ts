@@ -47,6 +47,33 @@ describe('upload-progress store', () => {
     }
   });
 
+  it('beginProcessing sets uploading and shows indeterminate progress toast', () => {
+    useUploadProgressStore.getState().beginProcessing();
+    const state = useUploadProgressStore.getState();
+    expect(state.uploading).toBe(true);
+    expect(state.fileCount).toBe(0);
+
+    const toasts = useToastStore.getState().toasts;
+    expect(toasts).toHaveLength(1);
+    expect(toasts[0].kind).toBe('progress');
+    if (toasts[0].kind === 'progress') {
+      expect(toasts[0].saving).toBe(true);
+      expect(toasts[0].total).toBe(0);
+    }
+  });
+
+  it('cancel resets state and removes progress toast', () => {
+    useUploadProgressStore.getState().startUpload(10);
+    useUploadProgressStore.getState().advance();
+    useUploadProgressStore.getState().cancel();
+
+    const state = useUploadProgressStore.getState();
+    expect(state.uploading).toBe(false);
+    expect(state.processed).toBe(0);
+    expect(state.total).toBe(0);
+    expect(useToastStore.getState().toasts).toHaveLength(0);
+  });
+
   it('finish sets uploading to false and replaces progress with message toast', () => {
     useUploadProgressStore.getState().startUpload(5);
     useUploadProgressStore.getState().finish('5 sessions uploaded', 'success');
