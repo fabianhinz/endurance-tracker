@@ -4,8 +4,8 @@ import { toast } from '@/components/ui/toastStore.ts';
 import { getSessionRecords } from '@/lib/indexeddb.ts';
 import { buildSessionGpx } from '@/lib/gpxExport.ts';
 import { buildGpxFilename } from '@/packages/gpx/buildGpx.ts';
-import { shareOrDownload } from '@/lib/fileShare.ts';
 import type { TrainingSession } from '@/packages/engine/types.ts';
+import { downloadFile } from '@/lib/fileShare';
 
 export const useSessionExport = (session: TrainingSession) => {
   const [exporting, setExporting] = useState(false);
@@ -24,7 +24,7 @@ export const useSessionExport = (session: TrainingSession) => {
       const filename = buildGpxFilename(session.sport, session.date);
       const file = new File([gpxString], filename, { type: 'application/gpx+xml' });
 
-      await shareOrDownload(file);
+      downloadFile(file);
     } catch {
       toast(m.toast_export_failed(), undefined, 'error');
     } finally {

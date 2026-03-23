@@ -21,15 +21,3 @@ export const downloadFile = (file: File) => {
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 0);
 };
-
-export const shareOrDownload = async (file: File): Promise<void> => {
-  if (canShareFiles()) {
-    try {
-      await navigator.share({ files: [file] });
-      return;
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-    }
-  }
-  downloadFile(file);
-};
