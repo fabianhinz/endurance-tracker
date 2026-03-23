@@ -144,7 +144,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
 
   // Row 5: Elevation (absorbs altitude range) & Cadence
   if (props.session.elevationGain !== undefined && props.session.elevationGain > 0) {
-    const elevationSubParts: React.ReactNode[] = [];
+    const elevationSubParts: string[] = [];
     if (props.session.elevationLoss !== undefined && props.session.elevationLoss > 0) {
       elevationSubParts.push(`-${props.session.elevationLoss}m`);
     }

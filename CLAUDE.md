@@ -5,20 +5,22 @@
 
 ## 1. Tech Stack
 
-| Layer           | Choice                                                                                                                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Build & PWA     | Vite 7 + `@tailwindcss/vite` + `vite-plugin-pwa`                                                                                                                                            |
-| Framework       | React 19, TypeScript 5.9 strict                                                                                                                                                             |
-| Routing         | React Router v7 (`<Routes>`, `<Route>`, `<BrowserRouter>`)                                                                                                                                  |
-| UI              | `@radix-ui/*` primitives wrapped in `src/components/ui/`, styled with Tailwind v4. Dark mode only. Use `clsx` + `tailwind-merge` via `cn()`. No component libraries (no MUI, AntD, Shadcn). |
-| Mapping / GIS   | `deck.gl` (core, layers, mapbox), `maplibre-gl`, `react-map-gl`, `@googlemaps/polyline-codec`                                                                                               |
-| State           | Zustand (`persist` middleware) for global state                                                                                                                                             |
-| Data Vis        | Recharts                                                                                                                                                                                    |
-| Icons           | `lucide-react`                                                                                                                                                                              |
-| i18n            | Paraglide.js (`src/paraglide/`) — import messages from `@/paraglide/messages.js`                                                                                                            |
-| File parsing    | `fit-file-parser` for .FIT binaries                                                                                                                                                         |
-| Storage         | IndexedDB via `idb` — `kv` store for Zustand persist, `session-records` store for time-series (`src/lib/db.ts`)                                                                             |
-| Package manager | **pnpm** (`pnpm add`, `pnpm dev`, `pnpm build`, etc.)                                                                                                                                       |
+| Layer         | Choice                                                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build & PWA   | Vite 8 (via Vite+) + `@tailwindcss/vite` + `vite-plugin-pwa`                                                                                                                                |
+| Framework     | React 19, TypeScript 5.9 strict                                                                                                                                                             |
+| Routing       | React Router v7 (`<Routes>`, `<Route>`, `<BrowserRouter>`)                                                                                                                                  |
+| UI            | `@radix-ui/*` primitives wrapped in `src/components/ui/`, styled with Tailwind v4. Dark mode only. Use `clsx` + `tailwind-merge` via `cn()`. No component libraries (no MUI, AntD, Shadcn). |
+| Mapping / GIS | `deck.gl` (core, layers, mapbox), `maplibre-gl`, `react-map-gl`, `@googlemaps/polyline-codec`                                                                                               |
+| State         | Zustand (`persist` middleware) for global state                                                                                                                                             |
+| Data Vis      | Recharts                                                                                                                                                                                    |
+| Icons         | `lucide-react`                                                                                                                                                                              |
+| i18n          | Paraglide.js (`src/paraglide/`) — import messages from `@/paraglide/messages.js`                                                                                                            |
+| File parsing  | `fit-file-parser` for .FIT binaries                                                                                                                                                         |
+| Storage       | IndexedDB via `idb` — `kv` store for Zustand persist, `session-records` store for time-series (`src/lib/db.ts`)                                                                             |
+| Toolchain     | **Vite+** (`vp dev`, `vp build`, `vp lint`, `vp fmt`, `vp test`, `vp check`) wrapping pnpm                                                                                                  |
+| Linting       | Oxlint (via Vite+) — configured in `.oxlintrc.json`                                                                                                                                         |
+| Formatting    | Oxfmt (via Vite+) — configured in `.oxfmtrc.jsonc`                                                                                                                                          |
 
 ## 2. Core Architecture Rules
 
@@ -32,8 +34,8 @@
 - **Delete dead code**: Exported but never-imported code should be removed immediately, not left around.
 - **No `as any` for external data**: Use Zod schemas with `safeParse` + `z.infer` to validate and type data from untyped sources (file parsers, IndexedDB, etc.). Schemas live next to the parser/consumer (e.g. `fitSchemas.ts`). On failure: return a safe fallback (`undefined`, `[]`), never throw.
 - **Store actions via getState()**: Call Zustand actions with `useStore.getState().action()` at the call site. Do not extract actions via selectors (`const action = useStore(s => s.action)`). Keep selectors only for state values that trigger re-renders.
-- **No ternary operators in `.ts` files**: Use `if/else` instead of `condition ? a : b` in all `.ts` files (engine, lib, stores, hooks). Single-level ternaries are allowed in `.tsx` (JSX). Nested ternaries are banned everywhere.
-- **Syntax & Formatting**: Defer to ESLint and Prettier. Do not waste time manually formatting code or enforcing linting rules; focus on logic.
+- **No ternary operators in `.ts` files** (convention, not linter-enforced): Prefer `if/else` over `condition ? a : b` in `.ts` files (engine, lib, stores, hooks). Single-level ternaries are allowed in `.tsx` (JSX). Nested ternaries are banned everywhere.
+- **Syntax & Formatting**: Defer to Oxlint and Oxfmt (via Vite+). Do not waste time manually formatting code or enforcing linting rules; focus on logic.
 
 ## 3. File Naming Conventions
 
@@ -71,9 +73,8 @@ Specific guidelines for features, testing, and state management are located in t
 3. **Verify**: Run the following suite:
 
    ```bash
-   pnpm test          # vitest run
-   pnpm test:e2e      # playwright
-   pnpm lint --fix    # eslint
-   pnpm typecheck     # tsc --noEmit
-   pnpm format        # prettier
+   vp check           # fmt + lint + typecheck (one command)
+   vp test -- --run   # vitest
+   vp exec playwright test  # playwright e2e
+   vp build           # production build
    ```

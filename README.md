@@ -10,17 +10,19 @@ PaceVault is installable as a Progressive Web App. It works fully offline — on
 
 ## Getting Started
 
+> requires vite+ - see: <https://viteplus.dev/guide/>, <https://viteplus.dev/guide/ide-integration#ide-integration>
+
 1. Fork and clone the repo
-2. `pnpm install && pnpm dev`
+2. `vp install && vp dev`
 3. Create a branch: `git checkout -b feat/my-thing`
 4. Read `CLAUDE.md` for architecture rules before writing code
 5. Run the full verification suite before opening a PR:
 
    ```bash
-   pnpm test
-   pnpm test:e2e
-   pnpm typecheck
-   pnpm lint --fix
+   vp check                # fmt + lint + typecheck
+   vp test -- --run        # unit & integration tests
+   vp exec playwright test # e2e tests
+   vp build                # production build
    ```
 
 6. Open a PR against `main`

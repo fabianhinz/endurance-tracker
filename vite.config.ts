@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
-import path from 'node:path';
-import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite-plus';
 
 let commitSha = 'dev';
 try {
@@ -17,9 +17,61 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { SURFACE_BASE } from './src/lib/colors.ts';
 
 export default defineConfig({
+  fmt: {
+    semi: true,
+    singleQuote: true,
+    trailingComma: 'all',
+    printWidth: 100,
+    tabWidth: 2,
+    arrowParens: 'always',
+    endOfLine: 'lf',
+  },
+  lint: {
+    plugins: ['oxc', 'typescript', 'unicorn', 'react'],
+    categories: {
+      correctness: 'warn',
+    },
+    rules: {
+      'typescript/no-floating-promises': 'off',
+    },
+    ignorePatterns: ['dist', '**/paraglide', 'project.inlang', 'e2e'],
+    overrides: [
+      {
+        files: ['**/*.{ts,tsx}'],
+        rules: {
+          'no-unused-vars': [
+            'error',
+            {
+              argsIgnorePattern: '^_',
+              varsIgnorePattern: '^_',
+              destructuredArrayIgnorePattern: '^_',
+              caughtErrorsIgnorePattern: '^_',
+            },
+          ],
+          'react-hooks/rules-of-hooks': 'error',
+          'react-hooks/exhaustive-deps': 'warn',
+          'react/only-export-components': [
+            'error',
+            {
+              allowConstantExport: true,
+            },
+          ],
+          '@typescript-eslint/no-explicit-any': 'error',
+        },
+        env: {
+          es2022: true,
+          browser: true,
+        },
+      },
+    ],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+  },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': resolve(import.meta.dirname, 'src'),
     },
   },
   plugins: [
