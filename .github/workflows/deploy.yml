@@ -17,18 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: voidzero-dev/setup-vp@v1
         with:
-          version: 10
+          node-version: '22'
+          cache: true
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm paraglide:compile
-      - run: pnpm build
+      - run: vp run paraglide:compile
+      - run: vp build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:

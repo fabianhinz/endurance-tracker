@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["oxc", "typescript", "unicorn", "react"],
+  "categories": {
+    "correctness": "warn",
+  },
+  "ignorePatterns": ["dist", "**/paraglide", "project.inlang", "e2e"],
+  "overrides": [
+    {
+      "files": ["**/*.{ts,tsx}"],
+      "rules": {
+        "no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "destructuredArrayIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_",
+          },
+        ],
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "react/only-export-components": [
+          "error",
+          {
+            "allowConstantExport": true,
+          },
+        ],
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-floating-promises": "off",
+      },
+      "env": {
+        "es2022": true,
+        "browser": true,
+      },
+    },
+  ],
+}

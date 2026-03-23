@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
-import path from 'node:path';
-import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite-plus';
 
 let commitSha = 'dev';
 try {
@@ -17,9 +17,15 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { SURFACE_BASE } from './src/lib/colors.ts';
 
 export default defineConfig({
+  lint: {
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+  },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': resolve(import.meta.dirname, 'src'),
     },
   },
   plugins: [
