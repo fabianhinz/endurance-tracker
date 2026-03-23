@@ -10,7 +10,7 @@ PaceVault is installable as a Progressive Web App. It works fully offline — on
 
 ## Getting Started
 
-> requires vite+ <https://viteplus.dev/guide/>
+> requires vite+ - see: <https://viteplus.dev/guide/>, <https://viteplus.dev/guide/ide-integration#ide-integration>
 
 1. Fork and clone the repo
 2. `vp install && vp dev`
