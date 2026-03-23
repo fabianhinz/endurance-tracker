@@ -5,7 +5,7 @@ import { getSessionRecords } from '@/lib/indexeddb.ts';
 import { buildSessionGpx } from '@/lib/gpxExport.ts';
 import { buildGpxFilename } from '@/packages/gpx/buildGpx.ts';
 import type { TrainingSession } from '@/packages/engine/types.ts';
-import { downloadFile } from '@/lib/fileShare';
+import { downloadFile } from '@/lib/downloadFile';
 
 export const useSessionExport = (session: TrainingSession) => {
   const [exporting, setExporting] = useState(false);
