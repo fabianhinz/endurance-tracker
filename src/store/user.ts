@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -24,7 +25,7 @@ export const useUserStore = create<UserState>()(
           set({
             profile: {
               ...data,
-              id: crypto.randomUUID(),
+              id: v4(),
               createdAt: Date.now(),
             },
           }),

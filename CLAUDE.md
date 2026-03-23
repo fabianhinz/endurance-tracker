@@ -22,7 +22,7 @@
 
 ## 2. Core Architecture Rules
 
-- **Local-first absolute rule**: IDs are generated via `crypto.randomUUID()`. Never attempt to call an external API.
+- **Local-first absolute rule**: IDs are generated via `v4()` from the `uuid` package. Never attempt to call an external API.
 - **Pure engine**: All business logic lives in `src/packages/engine/` as pure functions — absolutely no React or state imports in this directory.
 - **Headless UI**: Import Radix primitive → wrap in `src/components/ui/` → style with Tailwind.
 - **Reuse UI components**: Before inlining layout or UI patterns in feature code, check `src/components/ui/` for existing components (`CardHeader`, `StatItem`, `ValueSkeleton`, etc.). Extract new shared components when a pattern appears in 2+ places.

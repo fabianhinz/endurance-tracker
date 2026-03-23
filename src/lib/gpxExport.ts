@@ -1,4 +1,5 @@
 import { buildGpxString } from '@/packages/gpx/buildGpx.ts';
+import { simplifyGpxPoints } from '@/packages/gpx/simplifyGpxPoints.ts';
 import { isValidCoordinate } from '@/packages/engine/gps.ts';
 import type { TrainingSession, SessionRecord } from '@/packages/engine/types.ts';
 import type { GpxPoint } from '@/packages/gpx/buildGpx.ts';
@@ -19,7 +20,9 @@ export const buildSessionGpx = (
     return acc;
   }, []);
 
-  return buildGpxString(points, {
+  const simplified = simplifyGpxPoints(points);
+
+  return buildGpxString(simplified, {
     name: session.name,
     time: new Date(session.date),
   });

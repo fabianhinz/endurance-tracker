@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import FitParser from 'fit-file-parser';
 import type {
   TrainingSession,
@@ -153,7 +154,7 @@ export const parseFitFile = async (
   const fitSession = data.sessions?.[0];
   const fitRecords = data.records ?? [];
 
-  const sessionId = crypto.randomUUID();
+  const sessionId = v4();
   const sport = mapFitSportToAppSport(fitSession?.sport);
 
   // Extract user profile from FIT file (if available)

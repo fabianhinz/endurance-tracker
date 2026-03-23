@@ -7,7 +7,7 @@ export interface GpxPoint {
 
 export interface GpxMetadata {
   name?: string;
-  time?: Date;
+  time: Date;
 }
 
 const escapeXml = (s: string): string =>
@@ -18,30 +18,44 @@ const escapeXml = (s: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 
-export const buildGpxString = (points: GpxPoint[], metadata?: GpxMetadata): string | null => {
+export const buildGpxString = (points: GpxPoint[], metadata: GpxMetadata): string | null => {
   if (points.length < 2) return null;
 
   const parts: string[] = [];
   parts.push('<?xml version="1.0" encoding="UTF-8"?>');
-  parts.push('<gpx version="1.1" creator="PaceVault" xmlns="http://www.topografix.com/GPX/1/1">');
+  parts.push(
+    '<gpx version="1.1" creator="PaceVault"' +
+      ' xmlns="http://www.topografix.com/GPX/1/1"' +
+      ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
+      ' xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">',
+  );
 
-  if (metadata) {
-    parts.push('<metadata>');
-    if (metadata.name) {
-      parts.push(`<name>${escapeXml(metadata.name)}</name>`);
-    }
-    if (metadata.time) {
-      parts.push(`<time>${metadata.time.toISOString()}</time>`);
-    }
-    parts.push('</metadata>');
+  let escapedName: string | undefined;
+  if (metadata?.name) {
+    escapedName = escapeXml(metadata.name);
   }
 
-  parts.push('<trk><trkseg>');
+  parts.push('<metadata>');
+  if (escapedName) {
+    parts.push(`<name>${escapedName}</name>`);
+  }
+  if (metadata.time) {
+    parts.push(`<time>${metadata.time.toISOString()}</time>`);
+  }
+  parts.push('</metadata>');
+
+  parts.push('<trk>');
+  if (escapedName) {
+    parts.push(`<name>${escapedName}</name>`);
+  }
+  parts.push('<trkseg>');
 
   for (const p of points) {
-    parts.push(`<trkpt lat="${p.lat}" lon="${p.lon}">`);
+    const lat = p.lat.toFixed(6);
+    const lon = p.lon.toFixed(6);
+    parts.push(`<trkpt lat="${lat}" lon="${lon}">`);
     if (p.ele != null) {
-      parts.push(`<ele>${p.ele}</ele>`);
+      parts.push(`<ele>${p.ele.toFixed(1)}</ele>`);
     }
     if (p.time) {
       parts.push(`<time>${p.time.toISOString()}</time>`);
@@ -49,10 +63,11 @@ export const buildGpxString = (points: GpxPoint[], metadata?: GpxMetadata): stri
     parts.push('</trkpt>');
   }
 
-  parts.push('</trkseg></trk>');
+  parts.push('</trkseg>');
+  parts.push('</trk>');
   parts.push('</gpx>');
 
-  return parts.join('');
+  return parts.join('\n');
 };
 
 export const buildGpxFilename = (sport: string, dateMs: number): string => {

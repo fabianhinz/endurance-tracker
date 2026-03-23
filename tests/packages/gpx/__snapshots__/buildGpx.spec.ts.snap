@@ -1,0 +1,24 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildGpxString > generates a structurally complete GPX string 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="PaceVault" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<metadata>
+<name>Test Run</name>
+<time>2024-01-15T06:00:00.000Z</time>
+</metadata>
+<trk>
+<name>Test Run</name>
+<trkseg>
+<trkpt lat="48.137000" lon="11.575000">
+<ele>520.0</ele>
+<time>2024-01-15T08:00:00.000Z</time>
+</trkpt>
+<trkpt lat="48.138000" lon="11.576000">
+<ele>521.0</ele>
+<time>2024-01-15T08:00:01.000Z</time>
+</trkpt>
+</trkseg>
+</trk>
+</gpx>"
+`;
