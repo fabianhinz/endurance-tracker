@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { describe, it, expect } from 'vitest';
 import { groupPBsBySport } from '@/lib/records.ts';
 import type { PersonalBest } from '@/packages/engine/types.ts';
@@ -16,7 +17,7 @@ const makePB = (sport: 'running' | 'cycling' | 'swimming', window: number): Pers
     category,
     window,
     value,
-    sessionId: crypto.randomUUID(),
+    sessionId: v4(),
     date: Date.now(),
   };
 };

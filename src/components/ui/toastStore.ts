@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
@@ -37,7 +38,7 @@ export const useToastStore = create<ToastState>()(
     toasts: [],
     addToast: (toast) =>
       set((draft) => {
-        const id = toast.id ?? crypto.randomUUID();
+        const id = toast.id ?? v4();
         if (toast.id && draft.toasts.some((t) => t.id === id)) return;
         draft.toasts.push({ ...toast, id, kind: 'message' as const });
         draft.toasts = draft.toasts.slice(-5);
@@ -60,7 +61,7 @@ export const useToastStore = create<ToastState>()(
     replaceProgressWithMessage: (title, variant) =>
       set((draft) => {
         const messageToast: MessageToastItem = {
-          id: crypto.randomUUID(),
+          id: v4(),
           kind: 'message',
           title,
           variant,

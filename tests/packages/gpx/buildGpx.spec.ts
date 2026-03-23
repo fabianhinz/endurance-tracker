@@ -18,10 +18,11 @@ describe('buildGpxString', () => {
     expect(gpx).toContain('<?xml version="1.0" encoding="UTF-8"?>');
     expect(gpx).toContain('<gpx version="1.1"');
     expect(gpx).toContain('<name>Test Run</name>');
-    expect(gpx).toContain('<trkpt lat="48.137" lon="11.575">');
-    expect(gpx).toContain('<ele>520</ele>');
+    expect(gpx).toContain('<trkpt lat="48.137000" lon="11.575000">');
+    expect(gpx).toContain('<ele>520.0</ele>');
     expect(gpx).toContain('<time>2024-01-15T08:00:00.000Z</time>');
-    expect(gpx).toContain('</trkseg></trk>');
+    expect(gpx).toContain('</trkseg>');
+    expect(gpx).toContain('</trk>');
     expect(gpx).toContain('</gpx>');
   });
 
@@ -59,6 +60,52 @@ describe('buildGpxString', () => {
     expect(gpx).toContain('<name>Morning Run</name>');
     expect(gpx).toContain('<time>2024-01-15T06:00:00.000Z</time>');
     expect(gpx).toContain('</metadata>');
+  });
+
+  it('includes schema attributes on gpx element', () => {
+    const gpx = buildGpxString(makePoints(2))!;
+
+    expect(gpx).toContain('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
+    expect(gpx).toContain(
+      'xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"',
+    );
+  });
+
+  it('adds track name inside trk when metadata name is provided', () => {
+    const gpx = buildGpxString(makePoints(2), { name: 'Trail Run' })!;
+    const trkIdx = gpx.indexOf('<trk>');
+    const trksegIdx = gpx.indexOf('<trkseg>');
+
+    expect(gpx.slice(trkIdx, trksegIdx)).toContain('<name>Trail Run</name>');
+  });
+
+  it('rounds coordinates to 6 decimal places', () => {
+    const points: GpxPoint[] = [
+      { lat: 48.13712345678, lon: 11.57512345678 },
+      { lat: 48.13812345678, lon: 11.57612345678 },
+    ];
+    const gpx = buildGpxString(points)!;
+
+    expect(gpx).toContain('lat="48.137123"');
+    expect(gpx).toContain('lon="11.575123"');
+  });
+
+  it('rounds elevation to 1 decimal place', () => {
+    const points: GpxPoint[] = [
+      { lat: 48.137, lon: 11.575, ele: 222.60000000000002 },
+      { lat: 48.138, lon: 11.576, ele: 520.456 },
+    ];
+    const gpx = buildGpxString(points)!;
+
+    expect(gpx).toContain('<ele>222.6</ele>');
+    expect(gpx).toContain('<ele>520.5</ele>');
+  });
+
+  it('separates XML elements with newlines', () => {
+    const gpx = buildGpxString(makePoints(2))!;
+
+    expect(gpx).toContain('\n');
+    expect(gpx.split('\n').length).toBeGreaterThan(1);
   });
 });
 

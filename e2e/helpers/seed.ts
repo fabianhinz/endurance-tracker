@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { type Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,8 +15,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const seedOnboardingComplete = async (page: Page) => {
   await page.goto('/');
 
-  await page.evaluate(async () => {
-    const profileId = crypto.randomUUID();
+  const profileId = v4();
+  await page.evaluate(async (profileId: string) => {
     const now = Date.now();
 
     const layoutState = JSON.stringify({
@@ -86,7 +87,7 @@ export const seedOnboardingComplete = async (page: Page) => {
       };
       openReq.onerror = () => reject(openReq.error);
     });
-  });
+  }, profileId);
 
   // Reload so the app rehydrates from the seeded IDB state
   await page.reload();
@@ -112,100 +113,112 @@ interface SeedSession {
 export const seedWithSessions = async (page: Page, sessions: SeedSession[]) => {
   await page.goto('/');
 
-  await page.evaluate(async (sessions: SeedSession[]) => {
-    const profileId = crypto.randomUUID();
-    const now = Date.now();
+  const profileId = v4();
+  const sessionIds = sessions.map(() => v4());
+  await page.evaluate(
+    async ({
+      sessions,
+      profileId,
+      sessionIds,
+    }: {
+      sessions: SeedSession[];
+      profileId: string;
+      sessionIds: string[];
+    }) => {
+      const now = Date.now();
 
-    const layoutState = JSON.stringify({
-      state: {
-        dockExpanded: true,
-        compactLayout: true,
-        onboardingComplete: true,
-      },
-      version: 1,
-    });
-
-    const userState = JSON.stringify({
-      state: {
-        profile: {
-          id: profileId,
-          gender: 'male',
-          thresholds: { restHr: 50, maxHr: 185 },
-          showMetricHelp: true,
-          useAutoSessionNames: false,
-          createdAt: now,
+      const layoutState = JSON.stringify({
+        state: {
+          dockExpanded: true,
+          compactLayout: true,
+          onboardingComplete: true,
         },
-      },
-      version: 1,
-    });
+        version: 1,
+      });
 
-    const builtSessions = sessions.map((s) => ({
-      id: crypto.randomUUID(),
-      sport: s.sport,
-      date: s.date,
-      name: s.name,
-      duration: s.duration ?? 3600,
-      distance: s.distance ?? 10000,
-      elevationGain: s.elevationGain ?? 0,
-      tss: 80,
-      stressMethod: 'trimp',
-      sensorWarnings: [],
-      isPlanned: false,
-      hasDetailedRecords: false,
-      createdAt: now,
-    }));
+      const userState = JSON.stringify({
+        state: {
+          profile: {
+            id: profileId,
+            gender: 'male',
+            thresholds: { restHr: 50, maxHr: 185 },
+            showMetricHelp: true,
+            useAutoSessionNames: false,
+            createdAt: now,
+          },
+        },
+        version: 1,
+      });
 
-    const sessionsState = JSON.stringify({
-      state: {
-        sessions: builtSessions,
-        personalBests: [],
-      },
-      version: 1,
-    });
+      const builtSessions = sessions.map((s, i) => ({
+        id: sessionIds[i],
+        sport: s.sport,
+        date: s.date,
+        name: s.name,
+        duration: s.duration ?? 3600,
+        distance: s.distance ?? 10000,
+        elevationGain: s.elevationGain ?? 0,
+        tss: 80,
+        stressMethod: 'trimp',
+        sensorWarnings: [],
+        isPlanned: false,
+        hasDetailedRecords: false,
+        createdAt: now,
+      }));
 
-    const filtersState = JSON.stringify({
-      state: {
-        timeRange: 'all',
-        customRange: null,
-        prevDashboardRange: null,
-        sportFilter: 'all',
-      },
-      version: 1,
-    });
+      const sessionsState = JSON.stringify({
+        state: {
+          sessions: builtSessions,
+          personalBests: [],
+        },
+        version: 1,
+      });
 
-    const openReq = indexedDB.open('endurance-tracker', 2);
-    await new Promise<void>((resolve, reject) => {
-      openReq.onupgradeneeded = () => {
-        const db = openReq.result;
-        if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
-        if (!db.objectStoreNames.contains('session-records'))
-          db.createObjectStore('session-records', { keyPath: 'sessionId' });
-        if (!db.objectStoreNames.contains('session-laps'))
-          db.createObjectStore('session-laps', { keyPath: 'sessionId' });
-        if (!db.objectStoreNames.contains('session-gps')) {
-          const gps = db.createObjectStore('session-gps', { autoIncrement: true });
-          gps.createIndex('sessionId', 'sessionId', { unique: false });
-        }
-        if (!db.objectStoreNames.contains('fit-files'))
-          db.createObjectStore('fit-files', { keyPath: 'sessionId' });
-      };
-      openReq.onsuccess = () => {
-        const db = openReq.result;
-        const tx = db.transaction('kv', 'readwrite');
-        const store = tx.objectStore('kv');
-        store.put(layoutState, 'store-layout');
-        store.put(userState, 'store-user');
-        store.put(sessionsState, 'store-sessions');
-        store.put(filtersState, 'store-filters');
-        tx.oncomplete = () => {
-          db.close();
-          resolve();
+      const filtersState = JSON.stringify({
+        state: {
+          timeRange: 'all',
+          customRange: null,
+          prevDashboardRange: null,
+          sportFilter: 'all',
+        },
+        version: 1,
+      });
+
+      const openReq = indexedDB.open('endurance-tracker', 2);
+      await new Promise<void>((resolve, reject) => {
+        openReq.onupgradeneeded = () => {
+          const db = openReq.result;
+          if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+          if (!db.objectStoreNames.contains('session-records'))
+            db.createObjectStore('session-records', { keyPath: 'sessionId' });
+          if (!db.objectStoreNames.contains('session-laps'))
+            db.createObjectStore('session-laps', { keyPath: 'sessionId' });
+          if (!db.objectStoreNames.contains('session-gps')) {
+            const gps = db.createObjectStore('session-gps', { autoIncrement: true });
+            gps.createIndex('sessionId', 'sessionId', { unique: false });
+          }
+          if (!db.objectStoreNames.contains('fit-files'))
+            db.createObjectStore('fit-files', { keyPath: 'sessionId' });
         };
-        tx.onerror = () => reject(tx.error);
-      };
-      openReq.onerror = () => reject(openReq.error);
-    });
-  }, sessions);
+        openReq.onsuccess = () => {
+          const db = openReq.result;
+          const tx = db.transaction('kv', 'readwrite');
+          const store = tx.objectStore('kv');
+          store.put(layoutState, 'store-layout');
+          store.put(userState, 'store-user');
+          store.put(sessionsState, 'store-sessions');
+          store.put(filtersState, 'store-filters');
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        };
+        openReq.onerror = () => reject(openReq.error);
+      });
+    },
+    { sessions, profileId, sessionIds },
+  );
 
   await page.reload();
 };
@@ -229,15 +242,20 @@ export const seedCoachWithThresholdPace = async (
 ) => {
   await page.goto('/');
 
+  const coachProfileId = v4();
+  const coachSessionIds = sessions.map(() => v4());
   await page.evaluate(
     async ({
       thresholdPace,
       sessions,
+      profileId,
+      sessionIds,
     }: {
       thresholdPace: number;
       sessions: SeedCoachSession[];
+      profileId: string;
+      sessionIds: string[];
     }) => {
-      const profileId = crypto.randomUUID();
       const now = Date.now();
 
       const layoutState = JSON.stringify({
@@ -259,8 +277,8 @@ export const seedCoachWithThresholdPace = async (
         version: 1,
       });
 
-      const builtSessions = sessions.map((s) => ({
-        id: crypto.randomUUID(),
+      const builtSessions = sessions.map((s, i) => ({
+        id: sessionIds[i],
         sport: s.sport,
         date: s.date,
         duration: 3600,
@@ -316,7 +334,7 @@ export const seedCoachWithThresholdPace = async (
         openReq.onerror = () => reject(openReq.error);
       });
     },
-    { thresholdPace, sessions },
+    { thresholdPace, sessions, profileId: coachProfileId, sessionIds: coachSessionIds },
   );
 
   await page.reload();

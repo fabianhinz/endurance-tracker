@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -22,7 +23,7 @@ export const useSessionsStore = create<SessionsState>()(
       (set) => ({
         sessions: [],
         addSession: (sessionData) => {
-          const id = crypto.randomUUID();
+          const id = v4();
           const session: TrainingSession = {
             ...sessionData,
             id,
@@ -36,7 +37,7 @@ export const useSessionsStore = create<SessionsState>()(
         addSessions: (sessionsData) => {
           const newSessions = sessionsData.map((s) => ({
             ...s,
-            id: crypto.randomUUID(),
+            id: v4(),
             createdAt: Date.now(),
           }));
           set((draft) => {

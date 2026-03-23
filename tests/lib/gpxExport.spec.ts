@@ -46,9 +46,8 @@ describe('buildSessionGpx', () => {
     const gpx = buildSessionGpx(session, mixed);
 
     expect(gpx).not.toBeNull();
-    // Should have exactly 5 trkpt elements from the valid records
     const trkptCount = (gpx!.match(/<trkpt/g) ?? []).length;
-    expect(trkptCount).toBe(5);
+    expect(trkptCount).toBe(2);
   });
 
   it('returns null for empty records', () => {

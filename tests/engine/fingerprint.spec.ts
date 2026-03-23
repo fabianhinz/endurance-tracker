@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { describe, it, expect } from 'vitest';
 import { generateFingerprint, findDuplicates } from '@/lib/fingerprint.ts';
 import type { TrainingSession } from '@/packages/engine/types.ts';
@@ -55,7 +56,7 @@ describe('generateFingerprint', () => {
 // ---------------------------------------------------------------------------
 
 const makeSession = (overrides: Partial<TrainingSession> = {}): TrainingSession => ({
-  id: crypto.randomUUID(),
+  id: v4(),
   sport: 'running',
   date: Date.now(),
   duration: 3600,
