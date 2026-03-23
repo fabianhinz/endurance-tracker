@@ -7,7 +7,7 @@ export interface GpxPoint {
 
 export interface GpxMetadata {
   name?: string;
-  time?: Date;
+  time: Date;
 }
 
 const escapeXml = (s: string): string =>
@@ -18,7 +18,7 @@ const escapeXml = (s: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 
-export const buildGpxString = (points: GpxPoint[], metadata?: GpxMetadata): string | null => {
+export const buildGpxString = (points: GpxPoint[], metadata: GpxMetadata): string | null => {
   if (points.length < 2) return null;
 
   const parts: string[] = [];
@@ -35,16 +35,14 @@ export const buildGpxString = (points: GpxPoint[], metadata?: GpxMetadata): stri
     escapedName = escapeXml(metadata.name);
   }
 
-  if (metadata) {
-    parts.push('<metadata>');
-    if (escapedName) {
-      parts.push(`<name>${escapedName}</name>`);
-    }
-    if (metadata.time) {
-      parts.push(`<time>${metadata.time.toISOString()}</time>`);
-    }
-    parts.push('</metadata>');
+  parts.push('<metadata>');
+  if (escapedName) {
+    parts.push(`<name>${escapedName}</name>`);
   }
+  if (metadata.time) {
+    parts.push(`<time>${metadata.time.toISOString()}</time>`);
+  }
+  parts.push('</metadata>');
 
   parts.push('<trk>');
   if (escapedName) {
