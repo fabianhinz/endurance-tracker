@@ -87,6 +87,38 @@ describe('mapFitLaps', () => {
     expect(laps[0].distance).toBe(0);
   });
 
+  it('falls back to enhanced_avg_speed and enhanced_max_speed (native Garmin)', () => {
+    const laps = mapFitLaps(
+      [
+        makeFitLap({
+          avg_speed: undefined,
+          max_speed: undefined,
+          enhanced_avg_speed: 3.26,
+          enhanced_max_speed: 4.1,
+        }),
+      ],
+      'session-1',
+    );
+    expect(laps[0].avgSpeed).toBe(3.26);
+    expect(laps[0].maxSpeed).toBe(4.1);
+  });
+
+  it('prefers legacy speed over enhanced speed', () => {
+    const laps = mapFitLaps(
+      [
+        makeFitLap({
+          avg_speed: 6.0,
+          enhanced_avg_speed: 3.26,
+          max_speed: 8.0,
+          enhanced_max_speed: 4.1,
+        }),
+      ],
+      'session-1',
+    );
+    expect(laps[0].avgSpeed).toBe(6.0);
+    expect(laps[0].maxSpeed).toBe(8.0);
+  });
+
   it('maps multiple laps preserving order', () => {
     const fitLaps = [
       makeFitLap({ message_index: { value: 0 }, repetition_num: 1 }),

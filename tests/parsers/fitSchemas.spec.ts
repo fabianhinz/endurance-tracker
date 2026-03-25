@@ -64,6 +64,21 @@ describe('fitRecordSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('accepts enhanced_speed and enhanced_altitude (native Garmin)', () => {
+    const result = fitRecordSchema.safeParse({
+      elapsed_time: 10,
+      heart_rate: 145,
+      enhanced_speed: 3.21,
+      enhanced_altitude: 402.4,
+      distance: 1200,
+    });
+    expect(result.success).toBe(true);
+    expect(result.data?.enhanced_speed).toBe(3.21);
+    expect(result.data?.enhanced_altitude).toBe(402.4);
+    expect(result.data?.speed).toBeUndefined();
+    expect(result.data?.altitude).toBeUndefined();
+  });
+
   it('accepts empty object (all fields optional)', () => {
     const result = fitRecordSchema.safeParse({});
     expect(result.success).toBe(true);
@@ -134,6 +149,18 @@ describe('fitLapSchema', () => {
       timestamp: new Date('2025-08-16T16:26:44.000Z'),
     });
     expect(result.success).toBe(true);
+  });
+
+  it('accepts enhanced speed fields (native Garmin)', () => {
+    const result = fitLapSchema.safeParse({
+      enhanced_avg_speed: 3.26,
+      enhanced_max_speed: 4.1,
+    });
+    expect(result.success).toBe(true);
+    expect(result.data?.enhanced_avg_speed).toBe(3.26);
+    expect(result.data?.enhanced_max_speed).toBe(4.1);
+    expect(result.data?.avg_speed).toBeUndefined();
+    expect(result.data?.max_speed).toBeUndefined();
   });
 
   it('accepts empty object (all fields optional)', () => {

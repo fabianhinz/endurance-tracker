@@ -107,8 +107,8 @@ export const mapFitLaps = (fitLaps: FitLapInput[], sessionId: string): SessionLa
       totalTimerTime: lap.total_timer_time ?? 0,
       totalMovingTime: lap.total_moving_time,
       distance: lap.total_distance ?? 0,
-      avgSpeed: lap.avg_speed ?? 0,
-      maxSpeed: lap.max_speed,
+      avgSpeed: lap.avg_speed ?? lap.enhanced_avg_speed ?? 0,
+      maxSpeed: lap.max_speed ?? lap.enhanced_max_speed,
       totalAscent: lap.total_ascent,
       minAltitude: lap.min_altitude,
       maxAltitude: lap.max_altitude,
@@ -194,10 +194,10 @@ export const parseFitFile = async (
       hr: r.heart_rate,
       power: r.power,
       cadence: r.cadence,
-      speed: r.speed,
+      speed: r.speed ?? r.enhanced_speed,
       lat: r.position_lat,
       lng: r.position_long,
-      elevation: r.altitude,
+      elevation: r.altitude ?? r.enhanced_altitude,
       distance: r.distance,
       grade: r.grade,
       timerTime: r.timer_time,
@@ -247,7 +247,7 @@ export const parseFitFile = async (
     sessionDate = new Date(fitSession.start_time).getTime();
   }
 
-  const avgSpeed = fitSession?.avg_speed;
+  const avgSpeed = fitSession?.avg_speed ?? fitSession?.enhanced_avg_speed;
   const name = extractSessionName(fileName);
 
   const fileIdResult = fitFileIdSchema.safeParse(data.file_ids?.[0]);
@@ -292,7 +292,10 @@ export const parseFitFile = async (
     deviceTss: fitSession?.training_stress_score,
     deviceIf: fitSession?.intensity_factor,
     deviceFtp: fitSession?.threshold_power,
-    maxSpeed: fitSession?.max_speed ?? deriveMaxFromRecords(records, 'speed'),
+    maxSpeed:
+      fitSession?.max_speed ??
+      fitSession?.enhanced_max_speed ??
+      deriveMaxFromRecords(records, 'speed'),
     minAltitude: fitSession?.min_altitude,
     maxAltitude: fitSession?.max_altitude,
     avgAltitude: fitSession?.avg_altitude,
