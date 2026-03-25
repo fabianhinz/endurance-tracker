@@ -68,11 +68,12 @@ describe('buildSessionGPS', () => {
     const records = makeGPSRunningRecords('s1', 200);
     const result = buildSessionGPS('s1', records);
     expect(result).not.toBeNull();
-    expect(result?.sessionId).toBe('s1');
-    expect(result?.encodedPolyline.length).toBeGreaterThan(0);
-    expect(result?.pointCount).toBeGreaterThan(0);
-    expect(result?.bounds.minLat).toBeLessThanOrEqual(result?.bounds.maxLat ?? Infinity);
-    expect(result?.bounds.minLng).toBeLessThanOrEqual(result?.bounds.maxLng ?? Infinity);
+    if (!result) return;
+    expect(result.sessionId).toBe('s1');
+    expect(result.encodedPolyline.length).toBeGreaterThan(0);
+    expect(result.pointCount).toBeGreaterThan(0);
+    expect(result.bounds.minLat).toBeLessThanOrEqual(result.bounds.maxLat);
+    expect(result.bounds.minLng).toBeLessThanOrEqual(result.bounds.maxLng);
   });
 });
 

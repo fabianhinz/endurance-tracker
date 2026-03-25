@@ -87,9 +87,8 @@ describe('getZoneMidPace', () => {
   const zones = computeRunningZones(270);
 
   it('returns midpoint of zone pace range', () => {
-    // zones[3] is 'threshold' — verified by the zone order test above
-    const threshold = zones[3];
-    expect(threshold.name).toBe('threshold');
+    const threshold = zones.find((z) => z.name === 'threshold');
+    if (!threshold) return expect(threshold).toBeDefined();
     const mid = getZoneMidPace(threshold);
     expect(mid).toBe(Math.round((threshold.minPace + threshold.maxPace) / 2));
   });

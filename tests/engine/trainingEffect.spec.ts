@@ -95,7 +95,8 @@ describe('calculateTrainingEffect', () => {
 
     expect(lowFitness).toBeDefined();
     expect(highFitness).toBeDefined();
-    expect(lowFitness?.aerobic).toBeGreaterThan(highFitness?.aerobic ?? Infinity);
+    if (!lowFitness || !highFitness) return;
+    expect(lowFitness.aerobic).toBeGreaterThan(highFitness.aerobic);
   });
 
   it('gender affects the result due to different Banister b-coefficients', () => {
@@ -113,7 +114,8 @@ describe('calculateTrainingEffect', () => {
 
     expect(male).toBeDefined();
     expect(female).toBeDefined();
-    expect(female?.aerobic).toBeGreaterThan(male?.aerobic ?? Infinity);
+    if (!male || !female) return;
+    expect(female.aerobic).toBeGreaterThan(male.aerobic);
   });
 
   it('works with cycling records that have HR data', () => {
@@ -133,7 +135,8 @@ describe('calculateTrainingEffect', () => {
 
     expect(shortTE).toBeDefined();
     expect(longTE).toBeDefined();
-    expect(shortTE?.aerobic).toBeLessThan(longTE?.aerobic ?? 0);
+    if (!shortTE || !longTE) return;
+    expect(shortTE.aerobic).toBeLessThan(longTE.aerobic);
   });
 
   it('results are rounded to 1 decimal place', () => {
@@ -188,8 +191,9 @@ describe('calculateTrainingEffect', () => {
       const ctl100 = calculateTrainingEffect(records, maxHr, restHr, 'male', 100);
       expect(ctl0).toBeDefined();
       expect(ctl100).toBeDefined();
+      if (!ctl0 || !ctl100) return;
       // CTL=100 should reduce TE but by less than 33%
-      const reduction = 1 - (ctl100?.aerobic ?? 0) / (ctl0?.aerobic ?? 1);
+      const reduction = 1 - ctl100.aerobic / ctl0.aerobic;
       expect(reduction).toBeGreaterThan(0);
       expect(reduction).toBeLessThan(0.33);
     });

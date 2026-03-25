@@ -362,8 +362,8 @@ describe('estimateWorkoutDistance', () => {
   it('easy workout returns reasonable distance', () => {
     const plan = generateWeeklyPlan(makeMetrics(), zones, '2026-02-20', MATURE);
     const easy = plan.workouts.find((w) => w.type === 'easy');
-    expect(easy).toBeDefined();
-    const dist = estimateWorkoutDistance(easy ?? plan.workouts[0], zones);
+    if (!easy) return expect(easy).toBeDefined();
+    const dist = estimateWorkoutDistance(easy, zones);
     // 45min at ~5:30/km pace ≈ 8.2km
     expect(dist).toBeGreaterThan(5000);
     expect(dist).toBeLessThan(15000);

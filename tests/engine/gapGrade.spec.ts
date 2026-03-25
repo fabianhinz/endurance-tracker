@@ -94,8 +94,9 @@ describe('calculateGAP with native grade', () => {
 
     expect(gapFromGrade).toBeDefined();
     expect(gapFromElevation).toBeDefined();
+    if (gapFromGrade === undefined || gapFromElevation === undefined) return;
     // Both should produce similar results (within 5% tolerance)
-    const ratio = (gapFromGrade ?? 0) / (gapFromElevation ?? 1);
+    const ratio = gapFromGrade / gapFromElevation;
     expect(ratio).toBeGreaterThan(0.95);
     expect(ratio).toBeLessThan(1.05);
   });
@@ -161,8 +162,11 @@ describe('calculateGAP with native grade', () => {
     };
 
     const flatPace = (1 / 3.0) * 1000;
-    const uphillGap = calculateGAP(makeRecordsWithGrade(8)) ?? 0;
-    const downhillGap = calculateGAP(makeRecordsWithGrade(-8)) ?? 0;
+    const uphillGap = calculateGAP(makeRecordsWithGrade(8));
+    const downhillGap = calculateGAP(makeRecordsWithGrade(-8));
+    expect(uphillGap).toBeDefined();
+    expect(downhillGap).toBeDefined();
+    if (uphillGap === undefined || downhillGap === undefined) return;
 
     expect(uphillGap).toBeLessThan(flatPace);
     expect(downhillGap).toBeGreaterThan(flatPace);
