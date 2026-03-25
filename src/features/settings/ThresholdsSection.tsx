@@ -134,12 +134,13 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
     };
 
     const c = constraints[field];
+    if (!c) return;
 
     if (field === 'ftp') {
       if (!value) {
         c.setError('');
-        if (profile) {
-          const current = { ...thresholds! };
+        if (profile && thresholds) {
+          const current = { ...thresholds };
           current[field] = undefined;
           startTransition(() => useUserStore.getState().updateThresholds(current));
         }
@@ -178,7 +179,8 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
       return;
     }
 
-    const current = { ...thresholds! };
+    if (!thresholds) return;
+    const current = { ...thresholds };
     if (field === 'ftp') {
       current[field] = num;
     } else {
@@ -191,8 +193,8 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
   const saveThresholdPace = (value: string) => {
     if (!value) {
       setThresholdPaceError('');
-      if (profile) {
-        const current = { ...thresholds! };
+      if (profile && thresholds) {
+        const current = { ...thresholds };
         current.thresholdPace = undefined;
         startTransition(() => useUserStore.getState().updateThresholds(current));
       }
@@ -212,7 +214,8 @@ export const ThresholdsSection = (props: { variant?: 'standalone' | 'embedded' }
       return;
     }
 
-    const current = { ...thresholds! };
+    if (!thresholds) return;
+    const current = { ...thresholds };
     current.thresholdPace = parsed;
     startTransition(() => useUserStore.getState().updateThresholds(current));
   };

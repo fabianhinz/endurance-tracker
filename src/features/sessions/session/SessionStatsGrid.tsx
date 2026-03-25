@@ -37,7 +37,8 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
   const intervalPairsWithHr = intervals.filter((p) => p.hrRecovery !== undefined);
   const avgRecovery =
     intervalPairsWithHr.length > 0
-      ? intervalPairsWithHr.reduce((sum, p) => sum + p.hrRecovery!, 0) / intervalPairsWithHr.length
+      ? intervalPairsWithHr.reduce((sum, p) => sum + (p.hrRecovery ?? 0), 0) /
+        intervalPairsWithHr.length
       : 0;
 
   let recoveryMeta;
@@ -150,7 +151,7 @@ export const SessionStatsGrid = (props: SessionStatsGridProps) => {
     }
     if (props.session.minAltitude !== undefined) {
       elevationSubParts.push(
-        `${Math.round(props.session.minAltitude)} — ${Math.round(props.session.maxAltitude!)}m`,
+        `${Math.round(props.session.minAltitude)} — ${Math.round(props.session.maxAltitude ?? 0)}m`,
       );
     }
     stats.push({

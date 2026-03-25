@@ -38,11 +38,9 @@ export const WeeklyLoadChart = () => {
 
   const chartData = useMemo(() => {
     if (dashboardZoom.range === 'custom' && dashboardZoom.customRange) {
+      const range = dashboardZoom.customRange;
       return metrics.history
-        .filter(
-          (d) =>
-            d.date >= dashboardZoom.customRange!.from && d.date <= dashboardZoom.customRange!.to,
-        )
+        .filter((d) => d.date >= range.from && d.date <= range.to)
         .map((d) => ({ date: d.date, tss: d.tss }));
     }
     const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, 'custom'>];
@@ -63,7 +61,8 @@ export const WeeklyLoadChart = () => {
   const tickFormatter = (v: string) => {
     const d = new Date(v);
     if (dashboardZoom.range === '7d') {
-      return dayLabels[(d.getDay() + 6) % 7]();
+      const label = dayLabels[(d.getDay() + 6) % 7];
+      if (label) return label();
     }
     return `${d.getMonth() + 1}/${d.getDate()}`;
   };
@@ -98,10 +97,10 @@ export const WeeklyLoadChart = () => {
                 dataKey="date"
                 ticks={
                   compact
-                    ? ([
+                    ? [
                         zoom.zoomedData[0]?.date,
                         zoom.zoomedData[zoom.zoomedData.length - 1]?.date,
-                      ].filter(Boolean) as string[])
+                      ].filter((v): v is string => v != null)
                     : undefined
                 }
                 tick={chartTheme.tick}

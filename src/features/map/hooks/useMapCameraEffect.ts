@@ -21,7 +21,9 @@ export const useMapCameraEffect = (
     }
 
     if (openedSessionId) {
-      const b = tracks[0].gps.bounds;
+      const firstTrack = tracks[0];
+      if (!firstTrack) return;
+      const b = firstTrack.gps.bounds;
       mapRef.current.fitBounds(
         [
           [b.minLng, b.minLat],

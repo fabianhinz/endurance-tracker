@@ -25,6 +25,8 @@ interface LapsTabProps {
 }
 
 const SYNC_ID = 'laps-detail';
+const EMPTY_ANALYSIS: LapAnalysis[] = [];
+const EMPTY_ENRICHMENTS: LapRecordEnrichment[] = [];
 
 export const LapsTab = (props: LapsTabProps) => {
   const isRunning = props.session.sport === 'running';
@@ -44,10 +46,14 @@ export const LapsTab = (props: LapsTabProps) => {
     [props.records, splitDistance, isDevice],
   );
 
-  const analysis: LapAnalysis[] = isDevice ? deviceAnalysis : dynamicResult!.analysis;
-  const enrichments: LapRecordEnrichment[] = isDevice
-    ? deviceEnrichments
-    : dynamicResult!.enrichments;
+  const analysis = useMemo(
+    () => (isDevice ? deviceAnalysis : (dynamicResult?.analysis ?? EMPTY_ANALYSIS)),
+    [isDevice, deviceAnalysis, dynamicResult],
+  );
+  const enrichments = useMemo(
+    () => (isDevice ? deviceEnrichments : (dynamicResult?.enrichments ?? EMPTY_ENRICHMENTS)),
+    [isDevice, deviceEnrichments, dynamicResult],
+  );
 
   const enrichmentMap = useMemo(
     () => new Map<number, LapRecordEnrichment>(enrichments.map((e) => [e.lapIndex, e])),
@@ -76,10 +82,12 @@ export const LapsTab = (props: LapsTabProps) => {
 
   const markerMode = useMemo((): LapMarkerMode | undefined => {
     if (isDevice) {
+      const firstLap = props.laps[0];
+      if (!firstLap) return undefined;
       return {
         kind: 'device',
         laps: props.laps,
-        sessionStartMs: props.laps[0].startTime,
+        sessionStartMs: firstLap.startTime,
       };
     }
     return {

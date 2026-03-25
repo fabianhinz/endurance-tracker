@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useSessionsStore } from '@/store/sessions.ts';
 import { useFiltersStore } from '@/store/filters.ts';
@@ -51,6 +51,10 @@ export const SessionList = () => {
     <div ref={listRef} style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
       {virtualizer.getVirtualItems().map((virtualRow) => {
         const session = filtered[virtualRow.index];
+        if (!session) {
+          return <Fragment key={virtualRow.index} />;
+        }
+
         return (
           <div
             key={session.id}

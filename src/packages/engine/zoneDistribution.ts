@@ -52,20 +52,22 @@ export const computeHrZoneDistribution = (
   const hrReserve = maxHr - restHr;
   if (hrReserve <= 0) return [];
 
-  const validRecords = records.filter((r) => r.hr !== undefined && r.hr > 0);
-  if (validRecords.length === 0) return [];
+  const hrRecords = records.map((r) => r.hr).filter((v): v is number => v !== undefined && v > 0);
+  if (hrRecords.length === 0) return [];
 
   const counts = HR_ZONE_DEFS.map(() => 0);
+  const firstZone = HR_ZONE_DEFS[0];
 
-  for (const r of validRecords) {
-    const pct = (r.hr! - restHr) / hrReserve;
+  for (const hr of hrRecords) {
+    const pct = (hr - restHr) / hrReserve;
     const idx = HR_ZONE_DEFS.findIndex((z) => pct >= z.minPct && pct < z.maxPct);
     if (idx >= 0) {
-      counts[idx]++;
+      counts[idx] = (counts[idx] ?? 0) + 1;
     } else if (pct >= 1.0) {
-      counts[counts.length - 1]++; // cap at Z5
-    } else if (pct < HR_ZONE_DEFS[0].minPct) {
-      counts[0]++; // bin sub-Z1 into Z1
+      const lastIdx = counts.length - 1;
+      counts[lastIdx] = (counts[lastIdx] ?? 0) + 1; // cap at Z5
+    } else if (firstZone && pct < firstZone.minPct) {
+      counts[0] = (counts[0] ?? 0) + 1; // bin sub-Z1 into Z1
     }
   }
 
@@ -76,8 +78,8 @@ export const computeHrZoneDistribution = (
     zone: def.zone,
     name: def.name,
     label: `${def.zone} ${def.label}`,
-    seconds: counts[i],
-    percentage: Math.round((counts[i] / total) * 1000) / 10,
+    seconds: counts[i] ?? 0,
+    percentage: Math.round(((counts[i] ?? 0) / total) * 1000) / 10,
     color: def.color,
     rangeLabel: `${Math.round(restHr + hrReserve * def.minPct)}–${Math.round(restHr + hrReserve * def.maxPct)} bpm`,
   }));
@@ -136,16 +138,18 @@ export const computePowerZoneDistribution = (
 ): ZoneBucket[] => {
   if (ftp <= 0) return [];
 
-  const validRecords = records.filter((r) => r.power !== undefined && r.power > 0);
-  if (validRecords.length === 0) return [];
+  const powerValues = records
+    .map((r) => r.power)
+    .filter((v): v is number => v !== undefined && v > 0);
+  if (powerValues.length === 0) return [];
 
   const counts = POWER_ZONE_DEFS.map(() => 0);
 
-  for (const r of validRecords) {
-    const pct = r.power! / ftp;
+  for (const power of powerValues) {
+    const pct = power / ftp;
     const idx = POWER_ZONE_DEFS.findIndex((z) => pct >= z.minPct && pct < z.maxPct);
     if (idx >= 0) {
-      counts[idx]++;
+      counts[idx] = (counts[idx] ?? 0) + 1;
     }
   }
 
@@ -161,8 +165,8 @@ export const computePowerZoneDistribution = (
       zone: def.zone,
       name: def.name,
       label: `${def.zone} ${def.label}`,
-      seconds: counts[i],
-      percentage: Math.round((counts[i] / total) * 1000) / 10,
+      seconds: counts[i] ?? 0,
+      percentage: Math.round(((counts[i] ?? 0) / total) * 1000) / 10,
       color: def.color,
       rangeLabel,
     };
@@ -186,17 +190,19 @@ export const computePaceZoneDistribution = (
   if (thresholdPace <= 0) return [];
 
   const zones = computeRunningZones(thresholdPace);
-  const validRecords = records.filter((r) => r.speed !== undefined && r.speed > 0.5);
-  if (validRecords.length === 0) return [];
+  const speedValues = records
+    .map((r) => r.speed)
+    .filter((v): v is number => v !== undefined && v > 0.5);
+  if (speedValues.length === 0) return [];
 
   const counts = zones.map(() => 0);
 
-  for (const r of validRecords) {
-    const paceSec = 1000 / r.speed!; // sec/km
+  for (const speed of speedValues) {
+    const paceSec = 1000 / speed; // sec/km
     const zone = getZoneForPace(paceSec, zones);
     if (zone) {
       const idx = zones.indexOf(zone);
-      counts[idx]++;
+      counts[idx] = (counts[idx] ?? 0) + 1;
     }
   }
 
@@ -207,8 +213,8 @@ export const computePaceZoneDistribution = (
     zone: z.name,
     name: z.name,
     label: z.label,
-    seconds: counts[i],
-    percentage: Math.round((counts[i] / total) * 1000) / 10,
+    seconds: counts[i] ?? 0,
+    percentage: Math.round(((counts[i] ?? 0) / total) * 1000) / 10,
     color: z.color,
     rangeLabel: `${formatter.pace(z.maxPace)}–${formatter.pace(z.minPace)}`,
   }));

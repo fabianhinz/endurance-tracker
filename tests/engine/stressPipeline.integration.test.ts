@@ -23,7 +23,7 @@ describe('stress pipeline: records → validate → filter → NP → TSS/TRIMP'
     // NP — random-walk power around 250W, NP ≈ average (low variability keeps NP close)
     const np = calculateNormalizedPower(validPower);
     expect(np).toBeDefined();
-    expect(np!).toBeGreaterThan(230);
+    expect(np ?? 0).toBeGreaterThan(230);
 
     // Full stress pipeline with FTP=250 and IF close to 1.0
     const result = calculateSessionStress(validPower, 3600, 150, 50, 190, 'male', 250);
@@ -65,7 +65,7 @@ describe('stress pipeline: records → validate → filter → NP → TSS/TRIMP'
     // After filtering, bad records removed
     const filtered = filterValidPower(combined);
     expect(filtered.length).toBe(goodRecords.length);
-    expect(filtered.every((r) => r.power! <= 2500)).toBe(true);
+    expect(filtered.every((r) => (r.power ?? 0) <= 2500)).toBe(true);
 
     // NP still works on filtered data
     const np = calculateNormalizedPower(filtered);

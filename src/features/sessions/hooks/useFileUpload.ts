@@ -128,6 +128,7 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           for (let i = 0; i < unique.length; i++) {
             const entry = unique[i];
             const sessionId = sessionIds[i];
+            if (!entry || !sessionId) continue;
 
             if (entry.records.length > 0) {
               const recordsWithId = entry.records.map((r) => ({
@@ -154,7 +155,10 @@ export const useFileUpload = (inputRef: React.RefObject<HTMLInputElement | null>
           }
 
           for (let i = 0; i < unique.length; i++) {
-            await saveFitFile(sessionIds[i], unique[i].fileName, unique[i].rawData);
+            const sid = sessionIds[i];
+            const u = unique[i];
+            if (!sid || !u) continue;
+            await saveFitFile(sid, u.fileName, u.rawData);
           }
         } catch (err) {
           console.error('Save error:', err);

@@ -44,7 +44,7 @@ export const PowerChart = (props: PowerChartProps) => {
         }}
         onMouseUp={zoom.onMouseUp}
         onMouseLeave={
-          compact && props.onActiveTimeChange ? () => props.onActiveTimeChange!(null) : undefined
+          compact && props.onActiveTimeChange ? () => props.onActiveTimeChange?.(null) : undefined
         }
       >
         {!compact && <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid.stroke} />}

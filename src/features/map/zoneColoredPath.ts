@@ -100,8 +100,8 @@ export const buildZoneColoredPath = (
   const colors: Color[] = [];
 
   for (const r of records) {
-    if (isValidCoordinate(r)) {
-      path.push([r.lng!, r.lat!]);
+    if (isValidCoordinate(r) && r.lng != null && r.lat != null) {
+      path.push([r.lng, r.lat]);
       colors.push(colorForRecord(r));
     }
   }

@@ -9,12 +9,15 @@ export const groupSteps = (steps: WorkoutStep[]): GroupedStep[] => {
   let i = 0;
   while (i < steps.length) {
     const current = steps[i];
+    if (!current) break;
     const next = steps[i + 1];
     if (next && current.repeat && current.repeat > 1 && current.repeat === next.repeat) {
       const group: WorkoutStep[] = [current];
       let j = i + 1;
-      while (j < steps.length && steps[j].repeat === current.repeat) {
-        group.push(steps[j]);
+      while (j < steps.length) {
+        const s = steps[j];
+        if (!s || s.repeat !== current.repeat) break;
+        group.push(s);
         j++;
       }
       result.push({ kind: 'interval', repeat: current.repeat, steps: group });

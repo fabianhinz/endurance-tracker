@@ -75,8 +75,8 @@ describe('computeDynamicLaps', () => {
     // Random-walk speed with terrain can produce slower laps on uphills.
     result.analysis.forEach((lap) => {
       expect(lap.paceSecPerKm).toBeDefined();
-      expect(lap.paceSecPerKm!).toBeGreaterThan(180);
-      expect(lap.paceSecPerKm!).toBeLessThan(500);
+      expect(lap.paceSecPerKm ?? 0).toBeGreaterThan(180);
+      expect(lap.paceSecPerKm ?? Infinity).toBeLessThan(500);
     });
   });
 
@@ -85,9 +85,9 @@ describe('computeDynamicLaps', () => {
     const result = computeDynamicLaps(records, 1000);
     result.analysis.forEach((lap) => {
       expect(lap.avgHr).toBeDefined();
-      expect(lap.avgHr!).toBeGreaterThan(100);
+      expect(lap.avgHr ?? 0).toBeGreaterThan(100);
       expect(lap.maxHr).toBeDefined();
-      expect(lap.maxHr!).toBeGreaterThanOrEqual(lap.avgHr!);
+      expect(lap.maxHr ?? 0).toBeGreaterThanOrEqual(lap.avgHr ?? 0);
     });
   });
 
@@ -122,7 +122,7 @@ describe('computeDynamicLaps', () => {
     const result = computeDynamicLaps(records, 1000);
     result.enrichments.forEach((e) => {
       expect(e.minHr).toBeDefined();
-      expect(e.minHr!).toBeGreaterThan(0);
+      expect(e.minHr ?? 0).toBeGreaterThan(0);
     });
   });
 
@@ -131,7 +131,7 @@ describe('computeDynamicLaps', () => {
     const result = computeDynamicLaps(records, 1000);
     result.analysis.forEach((lap) => {
       expect(lap.maxSpeed).toBeDefined();
-      expect(lap.maxSpeed!).toBeGreaterThan(0);
+      expect(lap.maxSpeed ?? 0).toBeGreaterThan(0);
     });
   });
 
@@ -140,7 +140,7 @@ describe('computeDynamicLaps', () => {
     const result = computeDynamicLaps(records, 5000);
     result.analysis.forEach((lap) => {
       expect(lap.avgCadence).toBeDefined();
-      expect(lap.avgCadence!).toBeGreaterThan(0);
+      expect(lap.avgCadence ?? 0).toBeGreaterThan(0);
     });
   });
 });

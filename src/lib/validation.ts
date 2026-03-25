@@ -34,9 +34,9 @@ interface SensorWarning {
 export const validateRecords = (records: SessionRecord[], sport: Sport): SensorWarning[] => {
   const warnings: SensorWarning[] = [];
 
-  const hrValues = records.filter((r) => r.hr !== undefined).map((r) => r.hr!);
-  const powerValues = records.filter((r) => r.power !== undefined).map((r) => r.power!);
-  const speedValues = records.filter((r) => r.speed !== undefined).map((r) => r.speed!);
+  const hrValues = records.map((r) => r.hr).filter((v): v is number => v !== undefined);
+  const powerValues = records.map((r) => r.power).filter((v): v is number => v !== undefined);
+  const speedValues = records.map((r) => r.speed).filter((v): v is number => v !== undefined);
 
   if (hrValues.length > 0) {
     const sustainedHighHr = hrValues.filter((hr) => hr > MAX_VALID_HR).length;

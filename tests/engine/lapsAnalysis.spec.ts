@@ -163,7 +163,7 @@ describe('detectProgressiveOverload', () => {
     expect(result.trend).toBe('fading');
     expect(result.lapCount).toBe(3);
     expect(result.paceDriftPercent).toBeDefined();
-    expect(result.paceDriftPercent!).toBeGreaterThan(3);
+    expect(result.paceDriftPercent ?? 0).toBeGreaterThan(3);
   });
 
   it('detects stable: minimal drift', () => {
@@ -216,7 +216,7 @@ describe('detectProgressiveOverload', () => {
     ];
     const result = detectProgressiveOverload(laps);
     expect(result.trend).toBe('building');
-    expect(result.paceDriftPercent!).toBeLessThan(-3);
+    expect(result.paceDriftPercent ?? 0).toBeLessThan(-3);
   });
 
   it('uses all laps when no intervals detected (steady state)', () => {
@@ -298,15 +298,15 @@ describe('enrichLapFromRecords', () => {
     expect(result.avgPower).toBeDefined();
     expect(result.minPower).toBeDefined();
     expect(result.maxPower).toBeDefined();
-    expect(result.minPower!).toBeLessThanOrEqual(result.avgPower!);
-    expect(result.maxPower!).toBeGreaterThanOrEqual(result.avgPower!);
+    expect(result.minPower ?? 0).toBeLessThanOrEqual(result.avgPower ?? 0);
+    expect(result.maxPower ?? 0).toBeGreaterThanOrEqual(result.avgPower ?? 0);
   });
 
   it('computes minSpeed from running records', () => {
     const records = makeRunningRecords('test', 100);
     const result = enrichLapFromRecords(0, records);
     expect(result.minSpeed).toBeDefined();
-    expect(result.minSpeed!).toBeGreaterThan(0);
+    expect(result.minSpeed ?? 0).toBeGreaterThan(0);
     // running records don't have power
     expect(result.avgPower).toBeUndefined();
   });

@@ -86,15 +86,15 @@ describe('prepareLapSplitsData', () => {
     expect(withMin.length).toBeGreaterThan(0);
     withMin.forEach((r) => {
       expect(r.minPace).toBeDefined();
-      expect(r.minSpeed!).toBeGreaterThan(0);
-      expect(r.minPace!).toBeGreaterThan(0);
+      expect(r.minSpeed ?? 0).toBeGreaterThan(0);
+      expect(r.minPace ?? 0).toBeGreaterThan(0);
       // Range fields populated when min data exists
       expect(r.paceRange).toBeDefined();
-      expect(r.paceRange![0]).toBe(r.maxPace);
-      expect(r.paceRange![1]).toBe(r.minPace);
+      expect(r.paceRange?.[0]).toBe(r.maxPace);
+      expect(r.paceRange?.[1]).toBe(r.minPace);
       expect(r.speedRange).toBeDefined();
-      expect(r.speedRange![0]).toBe(r.minSpeed);
-      expect(r.speedRange![1]).toBe(r.maxSpeed);
+      expect(r.speedRange?.[0]).toBe(r.minSpeed);
+      expect(r.speedRange?.[1]).toBe(r.maxSpeed);
     });
   });
 

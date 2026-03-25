@@ -37,43 +37,43 @@ describe('buildZoneColoredPath — structural', () => {
     const records = [rec(1, 2, { hr: 150 }), rec(3, 4, { hr: 150 })];
     const result = buildZoneColoredPath(records, 'hr', hrThresholds);
     expect(result).not.toBeNull();
-    expect(result!.path).toHaveLength(2);
-    expect(result!.color).toHaveLength(2);
+    expect(result?.path).toHaveLength(2);
+    expect(result?.color).toHaveLength(2);
   });
 
   it('uses [lng, lat] coordinate order', () => {
     const records = [rec(10, 20, { hr: 150 }), rec(30, 40, { hr: 150 })];
     const result = buildZoneColoredPath(records, 'hr', hrThresholds);
-    expect(result!.path[0]).toEqual([20, 10]);
-    expect(result!.path[1]).toEqual([40, 30]);
+    expect(result?.path[0]).toEqual([20, 10]);
+    expect(result?.path[1]).toEqual([40, 30]);
   });
 
   it('returns FALLBACK_COLOR when hrReserve <= 0', () => {
     const thresholds: UserThresholds = { maxHr: 60, restHr: 60 };
     const records = [rec(1, 2, { hr: 60 }), rec(3, 4, { hr: 60 })];
     const result = buildZoneColoredPath(records, 'hr', thresholds);
-    const colors = result!.color as [number, number, number, number][];
+    const colors = result?.color as [number, number, number, number][];
     expect(colors[0]).toEqual(FALLBACK_COLOR);
   });
 
   it('returns FALLBACK_COLOR when hr is 0', () => {
     const records = [rec(1, 2, { hr: 0 }), rec(3, 4, { hr: 0 })];
     const result = buildZoneColoredPath(records, 'hr', hrThresholds);
-    const colors = result!.color as [number, number, number, number][];
+    const colors = result?.color as [number, number, number, number][];
     expect(colors[0]).toEqual(FALLBACK_COLOR);
   });
 
   it('returns FALLBACK_COLOR when hr is undefined', () => {
     const records = [rec(1, 2), rec(3, 4)];
     const result = buildZoneColoredPath(records, 'hr', hrThresholds);
-    const colors = result!.color as [number, number, number, number][];
+    const colors = result?.color as [number, number, number, number][];
     expect(colors[0]).toEqual(FALLBACK_COLOR);
   });
 
   it('returns FALLBACK_COLOR when ftp is missing', () => {
     const records = [rec(1, 2, { power: 150 }), rec(3, 4, { power: 150 })];
     const result = buildZoneColoredPath(records, 'power', hrThresholds);
-    const colors = result!.color as [number, number, number, number][];
+    const colors = result?.color as [number, number, number, number][];
     expect(colors[0]).toEqual(FALLBACK_COLOR);
   });
 
@@ -81,7 +81,7 @@ describe('buildZoneColoredPath — structural', () => {
     const thresholds: UserThresholds = { maxHr: 200, restHr: 60, thresholdPace: 0 };
     const records = [rec(1, 2, { speed: 3 }), rec(3, 4, { speed: 3 })];
     const result = buildZoneColoredPath(records, 'pace', thresholds);
-    const colors = result!.color as [number, number, number, number][];
+    const colors = result?.color as [number, number, number, number][];
     expect(colors[0]).toEqual(FALLBACK_COLOR);
   });
 });
@@ -101,21 +101,21 @@ describe('buildSportColoredPath', () => {
     const records = [rec(10, 20), rec(30, 40), rec(50, 60)];
     const result = buildSportColoredPath(records, color);
     expect(result).not.toBeNull();
-    expect(result!.color).toEqual(color);
-    expect(result!.path).toHaveLength(3);
+    expect(result?.color).toEqual(color);
+    expect(result?.path).toHaveLength(3);
   });
 
   it('uses [lng, lat] coordinate order', () => {
     const records = [rec(10, 20), rec(30, 40)];
     const result = buildSportColoredPath(records, color);
-    expect(result!.path[0]).toEqual([20, 10]);
-    expect(result!.path[1]).toEqual([40, 30]);
+    expect(result?.path[0]).toEqual([20, 10]);
+    expect(result?.path[1]).toEqual([40, 30]);
   });
 
   it('filters out records with invalid coordinates', () => {
     const records = [rec(10, 20), { sessionId: 's1', timestamp: 0 } as SessionRecord, rec(30, 40)];
     const result = buildSportColoredPath(records, color);
     expect(result).not.toBeNull();
-    expect(result!.path).toHaveLength(2);
+    expect(result?.path).toHaveLength(2);
   });
 });

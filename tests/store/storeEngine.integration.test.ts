@@ -38,8 +38,8 @@ describe('store + engine integration (no React)', () => {
 
     const current = computeMetrics(sessions).at(-1);
     expect(current).toBeDefined();
-    expect(current!.ctl).toBeGreaterThan(0);
-    expect(current!.atl).toBeGreaterThan(0);
+    expect(current?.ctl).toBeGreaterThan(0);
+    expect(current?.atl).toBeGreaterThan(0);
 
     // Get coaching recommendation
     const coaching = getCoachingRecommendation(current, metrics.length);

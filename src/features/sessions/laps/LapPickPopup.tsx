@@ -63,9 +63,12 @@ const buildLapChartData = (lapRecords: SessionRecord[], isRunning: boolean): Lap
   if (lapRecords.length === 0) return [];
 
   const byTime = new Map<number, LapChartPoint>();
-  const ensure = (t: number) => {
-    if (!byTime.has(t)) byTime.set(t, { time: t });
-    return byTime.get(t)!;
+  const ensure = (t: number): LapChartPoint => {
+    const existing = byTime.get(t);
+    if (existing) return existing;
+    const point: LapChartPoint = { time: t };
+    byTime.set(t, point);
+    return point;
   };
 
   for (const p of prepareHrData(lapRecords)) ensure(p.time).hr = p.hr;
@@ -94,15 +97,19 @@ const getLapRecords = (
   if (splitDistance != null) {
     const withDistance = records.filter((r) => r.distance !== undefined);
     if (withDistance.length < 2) return [];
-    const firstDist = withDistance[0].distance ?? 0;
+    const firstRecord = withDistance[0];
+    if (!firstRecord) return [];
+    const firstDist = firstRecord.distance ?? 0;
     const lapStart = firstDist + clickedLapIndex * splitDistance;
     const lapEnd = lapStart + splitDistance;
-    return withDistance.filter((r) => r.distance! >= lapStart && r.distance! < lapEnd);
+    return withDistance.filter((r) => (r.distance ?? 0) >= lapStart && (r.distance ?? 0) < lapEnd);
   }
 
   const lap = laps[clickedLapIndex];
   if (!lap) return [];
-  const sessionStartMs = laps[0].startTime;
+  const firstLap = laps[0];
+  if (!firstLap) return [];
+  const sessionStartMs = firstLap.startTime;
   return filterRecordsByLap(records, lap, sessionStartMs);
 };
 

@@ -73,12 +73,12 @@ const findPeakAverage = (values: number[], windowSize: number): number => {
   let windowSum = 0;
 
   for (let i = 0; i < windowSize; i++) {
-    windowSum += values[i];
+    windowSum += values[i] ?? 0;
   }
   maxAvg = windowSum / windowSize;
 
   for (let i = windowSize; i < values.length; i++) {
-    windowSum += values[i] - values[i - windowSize];
+    windowSum += (values[i] ?? 0) - (values[i - windowSize] ?? 0);
     const avg = windowSum / windowSize;
     if (avg > maxAvg) maxAvg = avg;
   }
@@ -93,8 +93,8 @@ const findPeakAverage = (values: number[], windowSize: number): number => {
  */
 const extractPeakPower = (records: SessionRecord[]): Map<number, number> => {
   const powerData = records
-    .filter((r) => r.power !== undefined && r.power > 0)
-    .map((r) => r.power!);
+    .map((r) => r.power)
+    .filter((p): p is number => p !== undefined && p > 0);
 
   const peaks = new Map<number, number>();
   for (const w of POWER_WINDOWS) {
@@ -128,11 +128,13 @@ const extractFastestDistances = (
     let left = 0;
 
     for (let right = 1; right < withDistance.length; right++) {
-      while (
-        left < right &&
-        withDistance[right].distance! - withDistance[left].distance! >= target.meters
-      ) {
-        const time = withDistance[right].timestamp - withDistance[left].timestamp;
+      const rightRec = withDistance[right];
+      if (!rightRec) continue;
+      while (left < right) {
+        const leftRec = withDistance[left];
+        if (!leftRec) break;
+        if ((rightRec.distance ?? 0) - (leftRec.distance ?? 0) < target.meters) break;
+        const time = rightRec.timestamp - leftRec.timestamp;
         if (time > 0 && time < bestTime) {
           bestTime = time;
         }
@@ -295,10 +297,12 @@ export const mergePBs = (existing: PersonalBest[], incoming: PersonalBest[]): Pe
 export const groupPBsBySport = (pbs: PersonalBest[]): Partial<Record<Sport, PersonalBest[]>> => {
   const grouped: Partial<Record<Sport, PersonalBest[]>> = {};
   for (const pb of pbs) {
-    if (!grouped[pb.sport]) {
-      grouped[pb.sport] = [];
+    const existing = grouped[pb.sport];
+    if (existing) {
+      existing.push(pb);
+    } else {
+      grouped[pb.sport] = [pb];
     }
-    grouped[pb.sport]!.push(pb);
   }
   return grouped;
 };

@@ -13,7 +13,9 @@ export const ZoneColorListItem = (props: ZoneColorListItemProps) => {
   const isActive = zoneColorMode !== null;
 
   const handleToggle = (checked: boolean) => {
-    useMapFocusStore.getState().setZoneColorMode(checked ? props.availableModes[0] : null);
+    useMapFocusStore
+      .getState()
+      .setZoneColorMode(checked ? (props.availableModes[0] ?? null) : null);
   };
 
   return (

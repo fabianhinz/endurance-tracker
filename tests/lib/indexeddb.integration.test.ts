@@ -154,9 +154,9 @@ describe('IndexedDB session GPS', () => {
 
     const retrieved = await getSessionGPS('session-a');
     expect(retrieved).toBeDefined();
-    expect(retrieved!.sessionId).toBe('session-a');
-    expect(retrieved!.encodedPolyline).toBe(gps.encodedPolyline);
-    expect(retrieved!.pointCount).toBe(3);
+    expect(retrieved?.sessionId).toBe('session-a');
+    expect(retrieved?.encodedPolyline).toBe(gps.encodedPolyline);
+    expect(retrieved?.pointCount).toBe(3);
   });
 
   it('returns undefined for unknown sessionId', async () => {

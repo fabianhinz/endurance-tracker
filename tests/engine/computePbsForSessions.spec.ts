@@ -172,9 +172,9 @@ describe('computePBsForSessions', () => {
     const elevation = result.find((pb) => pb.category === 'most-elevation');
 
     expect(longest).toBeDefined();
-    expect(longest!.value).toBe(80000);
+    expect(longest?.value).toBe(80000);
     expect(elevation).toBeDefined();
-    expect(elevation!.value).toBe(1200);
+    expect(elevation?.value).toBe(1200);
   });
 
   it('picks best session-level records across multiple sessions', () => {
@@ -199,7 +199,7 @@ describe('computePBsForSessions', () => {
 
     const longest = result.find((pb) => pb.category === 'longest' && pb.sport === 'running');
     expect(longest).toBeDefined();
-    expect(longest!.sessionId).toBe('long');
-    expect(longest!.value).toBe(21000);
+    expect(longest?.sessionId).toBe('long');
+    expect(longest?.value).toBe(21000);
   });
 });

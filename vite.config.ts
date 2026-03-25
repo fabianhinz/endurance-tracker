@@ -33,6 +33,7 @@ export default defineConfig({
     },
     rules: {
       'typescript/no-floating-promises': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'error',
     },
     ignorePatterns: ['dist', '**/paraglide', 'project.inlang', 'e2e'],
     overrides: [

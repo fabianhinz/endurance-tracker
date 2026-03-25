@@ -11,21 +11,21 @@ describe('user store', () => {
 
     const profile = useUserStore.getState().profile;
     expect(profile).not.toBeNull();
-    expect(profile!.id).toBeTruthy();
-    expect(profile!.createdAt).toBeGreaterThan(0);
-    expect(profile!.gender).toBe('male');
+    expect(profile?.id).toBeTruthy();
+    expect(profile?.createdAt).toBeGreaterThan(0);
+    expect(profile?.gender).toBe('male');
   });
 
   it('updateProfile partial merge', () => {
     const { id: _id, createdAt: _ca, ...profileData } = makeUserProfile();
     useUserStore.getState().setProfile(profileData);
-    const originalId = useUserStore.getState().profile!.id;
+    const originalId = useUserStore.getState().profile?.id;
 
     useUserStore.getState().updateProfile({ gender: 'female' });
 
     const profile = useUserStore.getState().profile;
-    expect(profile!.gender).toBe('female');
-    expect(profile!.id).toBe(originalId);
+    expect(profile?.gender).toBe('female');
+    expect(profile?.id).toBe(originalId);
   });
 
   it('updateThresholds only changes thresholds', () => {
@@ -39,10 +39,10 @@ describe('user store', () => {
     });
 
     const profile = useUserStore.getState().profile;
-    expect(profile!.thresholds.ftp).toBe(280);
-    expect(profile!.thresholds.maxHr).toBe(195);
-    expect(profile!.thresholds.restHr).toBe(48);
-    expect(profile!.gender).toBe('male');
+    expect(profile?.thresholds.ftp).toBe(280);
+    expect(profile?.thresholds.maxHr).toBe(195);
+    expect(profile?.thresholds.restHr).toBe(48);
+    expect(profile?.gender).toBe('male');
   });
 
   it('resetProfile → null', () => {
@@ -64,7 +64,7 @@ describe('user store', () => {
     const db = await getDB();
     const stored = await db.get('kv', 'store-user');
     expect(stored).toBeDefined();
-    const parsed = JSON.parse(stored!);
+    const parsed = JSON.parse(stored ?? '{}');
     expect(parsed.state.profile.gender).toBe('male');
   });
 
