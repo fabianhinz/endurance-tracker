@@ -24,7 +24,6 @@ export type { Field, DataTableProps };
 
 export const DataTable = <T,>(props: DataTableProps<T>) => {
   const visibleFields = props.fields.filter((f) => f.visible !== false);
-  const {} = props;
 
   return (
     <div className={cn('@container', props.className)}>

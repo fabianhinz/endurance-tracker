@@ -89,7 +89,9 @@ test.describe('ZIP archive upload', () => {
         document.dispatchEvent(new MockDragEvent('dragenter'));
       });
 
-      const hint = page.getByText(/drop files to import/i);
+      const hint = page
+        .getByRole('region', { name: /notifications/i })
+        .getByText(/drop files to import/i);
       await expect(hint).toBeVisible({ timeout: 5_000 });
 
       await page.evaluate(() => {
