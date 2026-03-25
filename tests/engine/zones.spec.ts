@@ -31,9 +31,9 @@ describe('computeRunningZones', () => {
   });
 
   it('threshold zone brackets the input pace', () => {
-    const threshold = zones.find((z) => z.name === 'threshold')!;
-    expect(threshold.minPace).toBeGreaterThanOrEqual(270);
-    expect(threshold.maxPace).toBeLessThanOrEqual(270);
+    const threshold = zones.find((z) => z.name === 'threshold');
+    expect(threshold?.minPace).toBeGreaterThanOrEqual(270);
+    expect(threshold?.maxPace).toBeLessThanOrEqual(270);
   });
 
   it('each zone has a color', () => {
@@ -87,7 +87,8 @@ describe('getZoneMidPace', () => {
   const zones = computeRunningZones(270);
 
   it('returns midpoint of zone pace range', () => {
-    const threshold = zones.find((z) => z.name === 'threshold')!;
+    const threshold = zones.find((z) => z.name === 'threshold');
+    if (!threshold) return expect(threshold).toBeDefined();
     const mid = getZoneMidPace(threshold);
     expect(mid).toBe(Math.round((threshold.minPace + threshold.maxPace) / 2));
   });

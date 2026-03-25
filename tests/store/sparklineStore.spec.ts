@@ -64,10 +64,10 @@ describe('useSparklineStore', () => {
 
     await useSparklineStore.getState().loadSparklineData('s1');
 
-    const data = useSparklineStore.getState().cache.get('s1')!;
-    expect(data.hr).toBeNull();
-    expect(data.power).toBeNull();
-    expect(data.pace).toBeNull();
-    expect(data.speed).toBeNull();
+    const data = useSparklineStore.getState().cache.get('s1');
+    expect(data?.hr).toBeNull();
+    expect(data?.power).toBeNull();
+    expect(data?.pace).toBeNull();
+    expect(data?.speed).toBeNull();
   });
 });

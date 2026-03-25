@@ -132,7 +132,7 @@ export const calculateTrainingEffect = (
 
   for (let i = 0; i < records.length; i++) {
     const record = records[i];
-    if (record.hr === undefined) continue;
+    if (!record || record.hr === undefined) continue;
 
     hasHr = true;
     const hrr = Math.max(0, Math.min(1, (record.hr - restHr) / hrRange));

@@ -35,68 +35,75 @@ export const prepareLapSplitsData = (
 ): LapSplitPoint[] => {
   const enrichmentMap = new Map(enrichments?.map((e) => [e.lapIndex, e]));
 
-  return laps
-    .filter((l) => l.paceSecPerKm !== undefined && l.intensity === 'active')
-    .map((l) => {
-      const speed = Math.round((3600 / l.paceSecPerKm!) * 10) / 10;
+  const result: LapSplitPoint[] = [];
+  for (const l of laps) {
+    if (l.paceSecPerKm === undefined || l.intensity !== 'active') continue;
 
-      let maxSpeedKmh = speed;
-      if (l.maxSpeed !== undefined) {
-        maxSpeedKmh = Math.round(l.maxSpeed * 3.6 * 10) / 10;
-      }
+    const pace = l.paceSecPerKm;
+    const speed = Math.round((3600 / pace) * 10) / 10;
 
-      let maxPace = l.paceSecPerKm!;
-      if (l.maxSpeed !== undefined && l.maxSpeed > 0) {
-        maxPace = 1000 / l.maxSpeed;
-      }
+    let maxSpeedKmh = speed;
+    if (l.maxSpeed !== undefined) {
+      maxSpeedKmh = Math.round(l.maxSpeed * 3.6 * 10) / 10;
+    }
 
-      const enrichment = enrichmentMap.get(l.lapIndex);
-      const minSpeedMs = enrichment?.minSpeed;
+    let maxPace = pace;
+    if (l.maxSpeed !== undefined && l.maxSpeed > 0) {
+      maxPace = 1000 / l.maxSpeed;
+    }
 
-      let minSpeedKmh: number | undefined = undefined;
-      if (minSpeedMs !== undefined) {
-        minSpeedKmh = Math.round(minSpeedMs * 3.6 * 10) / 10;
-      }
+    const enrichment = enrichmentMap.get(l.lapIndex);
+    const minSpeedMs = enrichment?.minSpeed;
 
-      let minPace: number | undefined = undefined;
-      if (minSpeedMs !== undefined && minSpeedMs > 0) {
-        minPace = 1000 / minSpeedMs;
-      }
+    let minSpeedKmh: number | undefined = undefined;
+    if (minSpeedMs !== undefined) {
+      minSpeedKmh = Math.round(minSpeedMs * 3.6 * 10) / 10;
+    }
 
-      let paceRange: [number, number] | undefined = undefined;
-      if (minPace !== undefined) {
-        paceRange = [maxPace, minPace];
-      }
+    let minPace: number | undefined = undefined;
+    if (minSpeedMs !== undefined && minSpeedMs > 0) {
+      minPace = 1000 / minSpeedMs;
+    }
 
-      let speedRange: [number, number] | undefined = undefined;
-      if (minSpeedKmh !== undefined) {
-        speedRange = [minSpeedKmh, maxSpeedKmh];
-      }
+    let paceRange: [number, number] | undefined = undefined;
+    if (minPace !== undefined) {
+      paceRange = [maxPace, minPace];
+    }
 
-      return {
-        lap: m.ui_lap_label({ number: String(l.lapIndex + 1) }),
-        pace: l.paceSecPerKm!,
-        speed,
-        maxPace,
-        maxSpeed: maxSpeedKmh,
-        minPace,
-        minSpeed: minSpeedKmh,
-        paceRange,
-        speedRange,
-      };
+    let speedRange: [number, number] | undefined = undefined;
+    if (minSpeedKmh !== undefined) {
+      speedRange = [minSpeedKmh, maxSpeedKmh];
+    }
+
+    result.push({
+      lap: m.ui_lap_label({ number: String(l.lapIndex + 1) }),
+      pace,
+      speed,
+      maxPace,
+      maxSpeed: maxSpeedKmh,
+      minPace,
+      minSpeed: minSpeedKmh,
+      paceRange,
+      speedRange,
     });
+  }
+  return result;
 };
 
-export const prepareLapPowerData = (enrichments: LapRecordEnrichment[]): LapPowerPoint[] =>
-  enrichments
-    .filter((e) => e.avgPower !== undefined && e.minPower !== undefined && e.maxPower !== undefined)
-    .map((e) => ({
+export const prepareLapPowerData = (enrichments: LapRecordEnrichment[]): LapPowerPoint[] => {
+  const result: LapPowerPoint[] = [];
+  for (const e of enrichments) {
+    if (e.avgPower === undefined || e.minPower === undefined || e.maxPower === undefined) continue;
+    result.push({
       lap: m.ui_lap_label({ number: String(e.lapIndex + 1) }),
-      avgPower: e.avgPower!,
-      minPower: e.minPower!,
-      maxPower: e.maxPower!,
-      powerRange: [e.minPower!, e.maxPower!] as [number, number],
-    }));
+      avgPower: e.avgPower,
+      minPower: e.minPower,
+      maxPower: e.maxPower,
+      powerRange: [e.minPower, e.maxPower],
+    });
+  }
+  return result;
+};
 
 export const prepareLapHrData = (
   laps: LapAnalysis[],
@@ -104,18 +111,20 @@ export const prepareLapHrData = (
 ): LapHrPoint[] => {
   const enrichmentMap = new Map(enrichments?.map((e) => [e.lapIndex, e]));
 
-  return laps
-    .filter((l) => l.avgHr !== undefined)
-    .map((l) => {
-      const enrichment = enrichmentMap.get(l.lapIndex);
-      const minHr = enrichment?.minHr ?? l.minHr ?? l.avgHr!;
-      const maxHr = l.maxHr ?? l.avgHr!;
-      return {
-        lap: m.ui_lap_label({ number: String(l.lapIndex + 1) }),
-        avgHr: l.avgHr!,
-        minHr,
-        maxHr,
-        hrRange: [minHr, maxHr] as [number, number],
-      };
+  const result: LapHrPoint[] = [];
+  for (const l of laps) {
+    if (l.avgHr === undefined) continue;
+    const avgHr = l.avgHr;
+    const enrichment = enrichmentMap.get(l.lapIndex);
+    const minHr = enrichment?.minHr ?? l.minHr ?? avgHr;
+    const maxHr = l.maxHr ?? avgHr;
+    result.push({
+      lap: m.ui_lap_label({ number: String(l.lapIndex + 1) }),
+      avgHr,
+      minHr,
+      maxHr,
+      hrRange: [minHr, maxHr],
     });
+  }
+  return result;
 };

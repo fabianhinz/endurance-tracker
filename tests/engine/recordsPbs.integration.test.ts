@@ -141,9 +141,9 @@ describe('detectNewPBs — session-level records', () => {
     const elevation = newPBs.find((pb) => pb.category === 'most-elevation');
 
     expect(longest).toBeDefined();
-    expect(longest!.value).toBe(50000);
+    expect(longest?.value).toBe(50000);
     expect(elevation).toBeDefined();
-    expect(elevation!.value).toBe(800);
+    expect(elevation?.value).toBe(800);
   });
 
   it('detects longest run', () => {
@@ -154,7 +154,7 @@ describe('detectNewPBs — session-level records', () => {
     const longest = newPBs.find((pb) => pb.category === 'longest');
 
     expect(longest).toBeDefined();
-    expect(longest!.value).toBe(21000);
+    expect(longest?.value).toBe(21000);
   });
 
   it('does not produce elevation PB for non-cycling sports', () => {

@@ -88,7 +88,7 @@ describe('metrics → coaching pipeline', () => {
 
     const current = computeMetrics(sessions).at(-1);
     expect(current).toBeDefined();
-    expect(current!.tsb).toBeLessThan(-30);
+    expect(current?.tsb ?? 0).toBeLessThan(-30);
 
     const coaching = getCoachingRecommendation(current, 8);
     expect(coaching.status).toBe('overload');
@@ -110,7 +110,7 @@ describe('metrics → coaching pipeline', () => {
 
     const current = computeMetrics(sessions).at(-1);
     expect(current).toBeDefined();
-    expect(current!.tsb).toBeGreaterThan(25);
+    expect(current?.tsb ?? 0).toBeGreaterThan(25);
 
     const coaching = getCoachingRecommendation(current, 74);
     expect(coaching.status).toBe('detraining');

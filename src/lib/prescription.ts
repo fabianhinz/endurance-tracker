@@ -43,7 +43,8 @@ const zoneRange = (
   zoneName: RunningZoneName,
   zones: RunningZone[],
 ): { min: number; max: number } => {
-  const zone = zones.find((z) => z.name === zoneName)!;
+  const zone = zones.find((z) => z.name === zoneName);
+  if (!zone) return { min: 0, max: 0 };
   return { min: zone.minPace, max: zone.maxPace };
 };
 
@@ -282,7 +283,9 @@ const INTENSITY_TYPES = new Set<WorkoutType>([
 const fixBackToBackIntensity = (template: WeekTemplate): WeekTemplate => {
   const result = [...template];
   for (let i = 1; i < result.length; i++) {
-    if (INTENSITY_TYPES.has(result[i]) && INTENSITY_TYPES.has(result[i - 1])) {
+    const current = result[i];
+    const previous = result[i - 1];
+    if (current && previous && INTENSITY_TYPES.has(current) && INTENSITY_TYPES.has(previous)) {
       result[i] = 'easy';
     }
   }
@@ -352,7 +355,7 @@ export const generateWeeklyPlan = (
     return {
       id: `plan-${date}`,
       date,
-      dayLabel: DAY_NAMES[i](),
+      dayLabel: (DAY_NAMES[i] ?? m.coach_day_monday)(),
       type,
       title: built.title,
       steps: built.steps,

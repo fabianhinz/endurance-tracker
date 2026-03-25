@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
+  enumStr,
   fitUserProfileSchema,
   fitRecordSchema,
   fitRecordsSchema,
   fitLapSchema,
   fitLapsSchema,
+  fitSessionEnumsSchema,
 } from '@/parsers/fitSchemas.ts';
 
 describe('fitUserProfileSchema', () => {
@@ -167,5 +169,80 @@ describe('fitLapsSchema', () => {
   it('rejects array with invalid element', () => {
     const result = fitLapsSchema.safeParse([{ total_elapsed_time: 300 }, { avg_speed: 'fast' }]);
     expect(result.success).toBe(false);
+  });
+});
+
+describe('enumStr', () => {
+  it('keeps string values', () => {
+    const result = enumStr.safeParse('active');
+    expect(result.success).toBe(true);
+    expect(result.data).toBe('active');
+  });
+
+  it('coerces number to undefined', () => {
+    const result = enumStr.safeParse(255);
+    expect(result.success).toBe(true);
+    expect(result.data).toBeUndefined();
+  });
+
+  it('passes through undefined', () => {
+    const result = enumStr.safeParse(undefined);
+    expect(result.success).toBe(true);
+    expect(result.data).toBeUndefined();
+  });
+
+  it('rejects non-string non-number types', () => {
+    expect(enumStr.safeParse(true).success).toBe(false);
+    expect(enumStr.safeParse({ foo: 1 }).success).toBe(false);
+  });
+});
+
+describe('fitSessionEnumsSchema', () => {
+  it('accepts string sport and sub_sport', () => {
+    const result = fitSessionEnumsSchema.safeParse({ sport: 'running', sub_sport: 'trail' });
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual({ sport: 'running', sub_sport: 'trail' });
+  });
+
+  it('coerces numeric sport/sub_sport to undefined', () => {
+    const result = fitSessionEnumsSchema.safeParse({ sport: 99, sub_sport: 255 });
+    expect(result.success).toBe(true);
+    expect(result.data?.sport).toBeUndefined();
+    expect(result.data?.sub_sport).toBeUndefined();
+  });
+
+  it('accepts empty object', () => {
+    const result = fitSessionEnumsSchema.safeParse({});
+    expect(result.success).toBe(true);
+    expect(result.data?.sport).toBeUndefined();
+    expect(result.data?.sub_sport).toBeUndefined();
+  });
+});
+
+describe('fitLapSchema enumStr fields', () => {
+  it('coerces numeric intensity to undefined', () => {
+    const result = fitLapSchema.safeParse({ intensity: 255 });
+    expect(result.success).toBe(true);
+    expect(result.data?.intensity).toBeUndefined();
+  });
+
+  it('keeps string intensity', () => {
+    const result = fitLapSchema.safeParse({ intensity: 'rest' });
+    expect(result.success).toBe(true);
+    expect(result.data?.intensity).toBe('rest');
+  });
+});
+
+describe('fitUserProfileSchema enumStr fields', () => {
+  it('coerces numeric gender to undefined', () => {
+    const result = fitUserProfileSchema.safeParse({ gender: 0 });
+    expect(result.success).toBe(true);
+    expect(result.data?.gender).toBeUndefined();
+  });
+
+  it('keeps string gender', () => {
+    const result = fitUserProfileSchema.safeParse({ gender: 'female' });
+    expect(result.success).toBe(true);
+    expect(result.data?.gender).toBe('female');
   });
 });

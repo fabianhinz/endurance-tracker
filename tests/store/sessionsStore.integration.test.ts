@@ -67,7 +67,7 @@ describe('sessions store', () => {
     useSessionsStore.getState().renameSession(id, 'Morning Ride');
 
     const session = useSessionsStore.getState().sessions.find((s) => s.id === id);
-    expect(session!.name).toBe('Morning Ride');
+    expect(session?.name).toBe('Morning Ride');
   });
 
   it('renameSession with unknown id is a no-op', () => {
@@ -101,7 +101,7 @@ describe('sessions store', () => {
     const db = await getDB();
     const stored = await db.get('kv', 'store-sessions');
     expect(stored).toBeDefined();
-    const parsed = JSON.parse(stored!);
+    const parsed = JSON.parse(stored ?? '{}');
     expect(parsed.state.sessions).toHaveLength(1);
   });
 });

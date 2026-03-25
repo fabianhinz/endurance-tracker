@@ -57,7 +57,7 @@ describe('validateRecords', () => {
     const records = makeInvalidRecords('s1', 'highPower');
     const warnings = validateRecords(records, 'cycling');
     expect(warnings.some((w) => w.field === 'power')).toBe(true);
-    expect(warnings.find((w) => w.field === 'power')!.message).toContain('2500W');
+    expect(warnings.find((w) => w.field === 'power')?.message).toContain('2500W');
   });
 
   it('warns when cycling speed exceeds 80 km/h in more than 10 records', () => {
@@ -68,7 +68,7 @@ describe('validateRecords', () => {
     }
     const warnings = validateRecords(records, 'cycling');
     expect(warnings.some((w) => w.field === 'speed')).toBe(true);
-    expect(warnings.find((w) => w.field === 'speed')!.message).toContain('80 km/h');
+    expect(warnings.find((w) => w.field === 'speed')?.message).toContain('80 km/h');
   });
 
   it('warns when running speed exceeds 25 km/h in more than 10 records', () => {
@@ -79,7 +79,7 @@ describe('validateRecords', () => {
     }
     const warnings = validateRecords(records, 'running');
     expect(warnings.some((w) => w.field === 'speed')).toBe(true);
-    expect(warnings.find((w) => w.field === 'speed')!.message).toContain('25 km/h');
+    expect(warnings.find((w) => w.field === 'speed')?.message).toContain('25 km/h');
   });
 
   it('warns when swimming speed exceeds 15 km/h in more than 10 records', () => {
@@ -90,7 +90,7 @@ describe('validateRecords', () => {
     }
     const warnings = validateRecords(records, 'swimming');
     expect(warnings.some((w) => w.field === 'speed')).toBe(true);
-    expect(warnings.find((w) => w.field === 'speed')!.message).toContain('15 km/h');
+    expect(warnings.find((w) => w.field === 'speed')?.message).toContain('15 km/h');
   });
 
   it('returns multiple warnings when multiple sensor issues exist', () => {

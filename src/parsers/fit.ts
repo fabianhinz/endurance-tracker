@@ -17,6 +17,7 @@ import {
   fitUserProfileSchema,
   fitRecordsSchema,
   fitLapsSchema,
+  fitSessionEnumsSchema,
   type FitLapInput,
 } from './fitSchemas.ts';
 
@@ -58,8 +59,10 @@ const mapFitSportToAppSport = (fitSport?: string): Sport => {
 
 export const deriveDistanceFromRecords = (records: SessionRecord[]): number => {
   for (let i = records.length - 1; i >= 0; i--) {
-    if (records[i].distance !== undefined && records[i].distance! > 0) {
-      return records[i].distance!;
+    const r = records[i];
+    if (!r) continue;
+    if (r.distance !== undefined && r.distance > 0) {
+      return r.distance;
     }
   }
   return 0;
@@ -153,9 +156,16 @@ export const parseFitFile = async (
 
   const fitSession = data.sessions?.[0];
   const fitRecords = data.records ?? [];
+  const sessionEnums = fitSessionEnumsSchema.safeParse(fitSession);
+  let validatedSport: string | undefined;
+  let validatedSubSport: string | undefined;
+  if (sessionEnums.success) {
+    validatedSport = sessionEnums.data.sport;
+    validatedSubSport = sessionEnums.data.sub_sport;
+  }
 
   const sessionId = v4();
-  const sport = mapFitSportToAppSport(fitSession?.sport);
+  const sport = mapFitSportToAppSport(validatedSport);
 
   // Extract user profile from FIT file (if available)
   const profileResult = fitUserProfileSchema.safeParse(data.user_profile);
@@ -278,7 +288,7 @@ export const parseFitFile = async (
     elevationGain: fitSession?.total_ascent,
     elevationLoss: fitSession?.total_descent,
     movingTime,
-    subSport: fitSession?.sub_sport,
+    subSport: validatedSubSport,
     deviceTss: fitSession?.training_stress_score,
     deviceIf: fitSession?.intensity_factor,
     deviceFtp: fitSession?.threshold_power,

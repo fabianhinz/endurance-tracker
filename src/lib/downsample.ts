@@ -9,7 +9,9 @@ export const downsample = <T>(records: T[], target = 1500): T[] => {
   const result: T[] = [];
 
   for (let i = 0; i < records.length; i += step) {
-    result.push(records[i]);
+    const item = records[i];
+    if (!item) continue;
+    result.push(item);
   }
 
   return result;

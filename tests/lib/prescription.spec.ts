@@ -361,7 +361,8 @@ describe('estimateWorkoutDistance', () => {
 
   it('easy workout returns reasonable distance', () => {
     const plan = generateWeeklyPlan(makeMetrics(), zones, '2026-02-20', MATURE);
-    const easy = plan.workouts.find((w) => w.type === 'easy')!;
+    const easy = plan.workouts.find((w) => w.type === 'easy');
+    if (!easy) return expect(easy).toBeDefined();
     const dist = estimateWorkoutDistance(easy, zones);
     // 45min at ~5:30/km pace ≈ 8.2km
     expect(dist).toBeGreaterThan(5000);
@@ -377,15 +378,15 @@ describe('workout structure', () => {
       '2026-02-16',
       MATURE,
     );
-    const threshold = plan.workouts.find((w) => w.type === 'threshold-intervals')!;
+    const threshold = plan.workouts.find((w) => w.type === 'threshold-intervals');
     expect(threshold).toBeDefined();
-    expect(threshold.steps[0].type).toBe('warmup');
-    expect(threshold.steps[1].type).toBe('work');
-    expect(threshold.steps[1].repeat).toBe(5);
-    expect(threshold.steps[1].zone).toBe('threshold');
-    expect(threshold.steps[2].type).toBe('recovery');
-    expect(threshold.steps[2].repeat).toBe(5);
-    expect(threshold.steps[3].type).toBe('cooldown');
+    expect(threshold?.steps[0].type).toBe('warmup');
+    expect(threshold?.steps[1].type).toBe('work');
+    expect(threshold?.steps[1].repeat).toBe(5);
+    expect(threshold?.steps[1].zone).toBe('threshold');
+    expect(threshold?.steps[2].type).toBe('recovery');
+    expect(threshold?.steps[2].repeat).toBe(5);
+    expect(threshold?.steps[3].type).toBe('cooldown');
   });
 
   it('long-run has easy portion followed by tempo portion', () => {
@@ -395,11 +396,11 @@ describe('workout structure', () => {
       '2026-02-16',
       MATURE,
     );
-    const longRun = plan.workouts.find((w) => w.type === 'long-run')!;
+    const longRun = plan.workouts.find((w) => w.type === 'long-run');
     expect(longRun).toBeDefined();
-    expect(longRun.steps).toHaveLength(2);
-    expect(longRun.steps[0].zone).toBe('easy');
-    expect(longRun.steps[1].zone).toBe('tempo');
+    expect(longRun?.steps).toHaveLength(2);
+    expect(longRun?.steps[0].zone).toBe('easy');
+    expect(longRun?.steps[1].zone).toBe('tempo');
   });
 });
 

@@ -1,8 +1,16 @@
 import { z } from 'zod';
 
 const optNum = z.number().optional();
-const optStr = z.string().optional();
 const optDateTime = z.union([z.string(), z.date()]).optional();
+// fit-file-parser returns raw integers for unknown/invalid FIT enum values.
+// This helper accepts both string and number, keeping strings and dropping numbers to undefined.
+export const enumStr = z
+  .union([z.string(), z.number()])
+  .optional()
+  .transform((v) => {
+    if (typeof v === 'string') return v;
+    return undefined;
+  });
 
 // ---------------------------------------------------------------------------
 // File ID
@@ -19,7 +27,7 @@ export const fitFileIdSchema = z.object({
 
 export const fitUserProfileSchema = z.object({
   weight: optNum,
-  gender: optStr,
+  gender: enumStr,
   resting_heart_rate: optNum,
 });
 
@@ -66,10 +74,19 @@ export const fitLapSchema = z.object({
   max_heart_rate: optNum,
   avg_cadence: optNum,
   max_cadence: optNum,
-  intensity: optStr,
+  intensity: enumStr,
   repetition_num: optNum,
 });
 
 export const fitLapsSchema = z.array(fitLapSchema);
 
 export type FitLapInput = z.infer<typeof fitLapSchema>;
+
+// ---------------------------------------------------------------------------
+// Session enums (sport/sub_sport bypass the session schema — validate here)
+// ---------------------------------------------------------------------------
+
+export const fitSessionEnumsSchema = z.object({
+  sport: enumStr,
+  sub_sport: enumStr,
+});

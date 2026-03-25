@@ -76,14 +76,18 @@ export const CoachPage = () => {
             </div>
             <div className="lg:col-span-2">
               <Card>
-                <CardHeader
-                  title={m.ui_coach_weekly_plan()}
-                  subtitle={m.ui_coach_weekly_plan_subtitle({
-                    weekOf: coach.plan!.weekOf,
-                    tss: String(coach.plan!.totalEstimatedTss),
-                  })}
-                />
-                <WeeklyPlanTimeline plan={coach.plan!} zones={coach.zones} />
+                {coach.plan && (
+                  <>
+                    <CardHeader
+                      title={m.ui_coach_weekly_plan()}
+                      subtitle={m.ui_coach_weekly_plan_subtitle({
+                        weekOf: coach.plan.weekOf,
+                        tss: String(coach.plan.totalEstimatedTss),
+                      })}
+                    />
+                    <WeeklyPlanTimeline plan={coach.plan} zones={coach.zones} />
+                  </>
+                )}
               </Card>
             </div>
           </PageGrid>

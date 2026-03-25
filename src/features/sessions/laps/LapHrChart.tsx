@@ -38,7 +38,9 @@ export const LapHrChart = (props: LapHrChartProps) => {
           dataKey="lap"
           ticks={
             compact
-              ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(Boolean)
+              ? [props.data[0]?.lap, props.data[props.data.length - 1]?.lap].filter(
+                  (v): v is string => v != null,
+                )
               : undefined
           }
           tick={chartTheme.tick}

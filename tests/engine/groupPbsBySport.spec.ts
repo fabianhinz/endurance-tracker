@@ -50,6 +50,6 @@ describe('groupPBsBySport', () => {
   it('preserves PB data within groups', () => {
     const pb = makePB('cycling', 300);
     const result = groupPBsBySport([pb]);
-    expect(result.cycling![0]).toBe(pb);
+    expect(result.cycling?.[0]).toBe(pb);
   });
 });

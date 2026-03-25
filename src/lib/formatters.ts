@@ -44,9 +44,9 @@ export const formatDate = (timestamp: number, options?: FormatDateOptions): stri
 
 export const toDateString = (timestamp: number): string => {
   const parts = localDateFmt.formatToParts(timestamp);
-  const y = parts.find((p) => p.type === 'year')!.value;
-  const mo = parts.find((p) => p.type === 'month')!.value;
-  const d = parts.find((p) => p.type === 'day')!.value;
+  const y = parts.find((p) => p.type === 'year')?.value ?? '0000';
+  const mo = parts.find((p) => p.type === 'month')?.value ?? '01';
+  const d = parts.find((p) => p.type === 'day')?.value ?? '01';
   return `${y}-${mo}-${d}`;
 };
 
@@ -133,7 +133,7 @@ export const formatPaceInput = (seconds: number): string => {
 
 export const parsePaceInput = (input: string): number | undefined => {
   const match = input.match(/^(\d{1,2}):(\d{2})$/);
-  if (!match) return undefined;
+  if (!match || !match[1] || !match[2]) return undefined;
   const min = Number(match[1]);
   const sec = Number(match[2]);
   if (sec >= 60) return undefined;
@@ -145,7 +145,7 @@ export const parsePaceInput = (input: string): number | undefined => {
 /** Parses `H:MM:SS` string → total seconds. */
 export const parseTimeHMS = (input: string): number | undefined => {
   const match = input.match(/^(\d{1,2}):(\d{2}):(\d{2})$/);
-  if (!match) return undefined;
+  if (!match || !match[1] || !match[2] || !match[3]) return undefined;
   const h = Number(match[1]);
   const mins = Number(match[2]);
   const s = Number(match[3]);

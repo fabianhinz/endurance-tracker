@@ -13,8 +13,8 @@ const NP_ROLLING_WINDOW_SEC = 30;
  */
 export const calculateNormalizedPower = (records: SessionRecord[]): number | undefined => {
   const powerData = records
-    .filter((r) => r.power !== undefined && r.power > 0)
-    .map((r) => r.power!);
+    .map((r) => r.power)
+    .filter((v): v is number => v !== undefined && v > 0);
 
   if (powerData.length < NP_ROLLING_WINDOW_SEC) return undefined;
 
@@ -23,7 +23,7 @@ export const calculateNormalizedPower = (records: SessionRecord[]): number | und
   for (let i = NP_ROLLING_WINDOW_SEC - 1; i < powerData.length; i++) {
     let sum = 0;
     for (let j = i - (NP_ROLLING_WINDOW_SEC - 1); j <= i; j++) {
-      sum += powerData[j];
+      sum += powerData[j] ?? 0;
     }
     rollingAvg.push(sum / NP_ROLLING_WINDOW_SEC);
   }
@@ -81,6 +81,7 @@ export const calculateGAP = (records: SessionRecord[]): number | undefined => {
   for (let i = 1; i < validRecords.length; i++) {
     const prev = validRecords[i - 1];
     const curr = validRecords[i];
+    if (!prev || !curr) continue;
     const dx = (curr.distance ?? 0) - (prev.distance ?? 0);
 
     if (dx <= 0) continue;

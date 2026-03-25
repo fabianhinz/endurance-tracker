@@ -111,9 +111,9 @@ export const detectIntervals = (laps: SessionLap[]): IntervalPair[] => {
   const pairs: IntervalPair[] = [];
 
   for (let i = 0; i < analyzed.length; i++) {
-    if (!analyzed[i].isInterval) continue;
-
     const active = analyzed[i];
+    if (!active || !active.isInterval) continue;
+
     let nextLap: LapAnalysis | undefined = undefined;
     if (i + 1 < analyzed.length) {
       nextLap = analyzed[i + 1];
@@ -130,7 +130,7 @@ export const detectIntervals = (laps: SessionLap[]): IntervalPair[] => {
       recoveryLap = laps[i + 1];
     }
     let hrRecovery: number | undefined = undefined;
-    if (activeLap.maxHr !== undefined && recoveryLap?.minHr !== undefined) {
+    if (activeLap && activeLap.maxHr !== undefined && recoveryLap?.minHr !== undefined) {
       hrRecovery = activeLap.maxHr - recoveryLap.minHr;
     }
 
@@ -167,6 +167,14 @@ export const detectProgressiveOverload = (laps: SessionLap[]): ProgressiveOverlo
 
   const first = targetLaps[0];
   const last = targetLaps[targetLaps.length - 1];
+  if (!first || !last) {
+    return {
+      paceDriftPercent: undefined,
+      hrDriftPercent: undefined,
+      lapCount: targetLaps.length,
+      trend: 'stable',
+    };
+  }
 
   let paceDriftPercent: number | undefined = undefined;
   if (
@@ -262,7 +270,9 @@ export const findLapIndexAtCoordinate = (
   const closestRecord = findClosestRecord(coordinate, records);
   if (!closestRecord) return undefined;
 
-  const sessionStartMs = laps[0].startTime;
+  const firstLap = laps[0];
+  if (!firstLap) return undefined;
+  const sessionStartMs = firstLap.startTime;
   for (const lap of laps) {
     const lapStartSec = (lap.startTime - sessionStartMs) / 1000;
     const lapEndSec = (lap.endTime - sessionStartMs) / 1000;
@@ -272,7 +282,8 @@ export const findLapIndexAtCoordinate = (
   }
 
   // Fallback: if record falls beyond last lap end (rounding), return last lap
-  return laps[laps.length - 1].lapIndex;
+  const lastLap = laps[laps.length - 1];
+  return lastLap?.lapIndex;
 };
 
 /**
@@ -406,9 +417,10 @@ export const enrichAllLaps = (
   laps: SessionLap[],
   records: SessionRecord[],
 ): LapRecordEnrichment[] => {
-  if (laps.length === 0 || records.length === 0) return [];
+  const firstLap = laps[0];
+  if (laps.length === 0 || records.length === 0 || !firstLap) return [];
 
-  const sessionStartMs = laps[0].startTime;
+  const sessionStartMs = firstLap.startTime;
   return laps.map((lap) => {
     const lapRecords = filterRecordsByLap(records, lap, sessionStartMs);
     return enrichLapFromRecords(lap.lapIndex, lapRecords);

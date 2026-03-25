@@ -27,6 +27,7 @@ export const SplitDistanceCard = (props: SplitDistanceCardProps) => {
 
   const handleSliderChange = (value: number[]) => {
     const km = value[0];
+    if (km == null) return;
     setLocalSliderKm(km);
     startTransition(() => {
       props.onSplitDistanceChange(Math.round(km * 1000));

@@ -27,9 +27,8 @@ export const MetricsChart = () => {
 
   const filtered = useMemo(() => {
     if (dashboardZoom.range === 'custom' && dashboardZoom.customRange) {
-      return metrics.history.filter(
-        (d) => d.date >= dashboardZoom.customRange!.from && d.date <= dashboardZoom.customRange!.to,
-      );
+      const range = dashboardZoom.customRange;
+      return metrics.history.filter((d) => d.date >= range.from && d.date <= range.to);
     }
     const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, 'custom'>];
     if (days === Infinity) return metrics.history;
@@ -81,10 +80,10 @@ export const MetricsChart = () => {
                 dataKey="date"
                 ticks={
                   compact
-                    ? ([
+                    ? [
                         zoom.zoomedData[0]?.date,
                         zoom.zoomedData[zoom.zoomedData.length - 1]?.date,
-                      ].filter(Boolean) as string[])
+                      ].filter((v): v is string => v != null)
                     : undefined
                 }
                 tick={chartTheme.tick}

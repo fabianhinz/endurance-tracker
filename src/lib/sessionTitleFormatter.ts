@@ -115,8 +115,10 @@ export const formatSessionZoneLabel = (
   const pct = (avgHr - restHr) / hrReserve;
 
   for (let i = HR_ZONE_DEFS.length - 1; i >= 0; i--) {
-    if (pct >= HR_ZONE_DEFS[i].minPct) {
-      const labelFn = ZONE_LABEL_MAP[HR_ZONE_DEFS[i].name];
+    const zoneDef = HR_ZONE_DEFS[i];
+    if (!zoneDef) continue;
+    if (pct >= zoneDef.minPct) {
+      const labelFn = ZONE_LABEL_MAP[zoneDef.name];
       if (labelFn) {
         return labelFn();
       }

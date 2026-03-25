@@ -33,7 +33,9 @@ const getDateRange = (
   if (sessions.length === 0) return [];
 
   const sorted = [...sessions].sort((a, b) => a.date - b.date);
-  const start = new Date(sorted[0].date);
+  const first = sorted[0];
+  if (!first) return [];
+  const start = new Date(first.date);
   start.setHours(0, 0, 0, 0);
 
   let end = new Date();

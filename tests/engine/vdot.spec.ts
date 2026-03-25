@@ -73,15 +73,15 @@ describe('predictRaceTime', () => {
     const time = predictRaceTime(vdot, 10000);
     expect(time).toBeDefined();
     // With VDOT ~49.8, 10K should be roughly 41-42 minutes
-    expect(time!).toBeGreaterThanOrEqual(41 * 60);
-    expect(time!).toBeLessThanOrEqual(42 * 60 + 30);
+    expect(time ?? 0).toBeGreaterThanOrEqual(41 * 60);
+    expect(time ?? Infinity).toBeLessThanOrEqual(42 * 60 + 30);
   });
 
   it('round-trips: predicting the input distance recovers the input time', () => {
     const vdot = calculateVdot(5000, 20);
     const time = predictRaceTime(vdot, 5000);
     expect(time).toBeDefined();
-    expect(time! / 60).toBeCloseTo(20, 1);
+    expect((time ?? 0) / 60).toBeCloseTo(20, 1);
   });
 
   it('returns undefined for invalid inputs', () => {
@@ -92,10 +92,13 @@ describe('predictRaceTime', () => {
 
   it('longer distances produce longer times', () => {
     const vdot = calculateVdot(5000, 20);
-    const t5k = predictRaceTime(vdot, 5000)!;
-    const t10k = predictRaceTime(vdot, 10000)!;
-    const tHalf = predictRaceTime(vdot, 21097.5)!;
-    const tMarathon = predictRaceTime(vdot, 42195)!;
+    const t5k = predictRaceTime(vdot, 5000);
+    const t10k = predictRaceTime(vdot, 10000);
+    const tHalf = predictRaceTime(vdot, 21097.5);
+    const tMarathon = predictRaceTime(vdot, 42195);
+    if (t5k == null || t10k == null || tHalf == null || tMarathon == null) {
+      return expect(t5k && t10k && tHalf && tMarathon).toBeDefined();
+    }
     expect(t10k).toBeGreaterThan(t5k);
     expect(tHalf).toBeGreaterThan(t10k);
     expect(tMarathon).toBeGreaterThan(tHalf);
@@ -106,21 +109,21 @@ describe('predictRaceTimes', () => {
   it('returns predictions for all 4 standard distances', () => {
     const result = predictRaceTimes(5000, 20 * 60);
     expect(result).toBeDefined();
-    expect(result!['5k']).toBeDefined();
-    expect(result!['10k']).toBeDefined();
-    expect(result!['half-marathon']).toBeDefined();
-    expect(result!['marathon']).toBeDefined();
+    expect(result?.['5k']).toBeDefined();
+    expect(result?.['10k']).toBeDefined();
+    expect(result?.['half-marathon']).toBeDefined();
+    expect(result?.['marathon']).toBeDefined();
   });
 
   it('5K input time matches the 5K prediction', () => {
     const result = predictRaceTimes(5000, 20 * 60);
-    expect(result!['5k'].timeSeconds).toBeCloseTo(20 * 60, 0);
+    expect(result?.['5k'].timeSeconds).toBeCloseTo(20 * 60, 0);
   });
 
   it('each prediction includes pace in sec/km', () => {
     const result = predictRaceTimes(5000, 20 * 60);
     // 5K pace: 1200s / 5km = 240 sec/km
-    expect(result!['5k'].paceSecPerKm).toBeCloseTo(240, 0);
+    expect(result?.['5k'].paceSecPerKm).toBeCloseTo(240, 0);
   });
 
   it('returns undefined for degenerate input', () => {

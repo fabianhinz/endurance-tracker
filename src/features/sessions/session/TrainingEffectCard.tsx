@@ -88,12 +88,12 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
                 max={5}
                 value={te.aerobic}
                 zones={TE_ZONES}
-                valueFill={TE_FILL[aerobicLabel.color]}
+                valueFill={TE_FILL[aerobicLabel.color] ?? ''}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-end">
                 <Typography
                   variant="h1"
-                  className={`leading-none pb-1 ${TE_TEXT[aerobicLabel.color]}`}
+                  className={`leading-none pb-1 ${TE_TEXT[aerobicLabel.color] ?? ''}`}
                 >
                   {te.aerobic.toFixed(1)}
                 </Typography>
@@ -102,7 +102,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
             <Typography
               variant="overline"
               as="p"
-              className={`whitespace-nowrap ${TE_TEXT[aerobicLabel.color]}`}
+              className={`whitespace-nowrap ${TE_TEXT[aerobicLabel.color] ?? ''}`}
             >
               {localizedTELabel(aerobicLabel.label)}
             </Typography>
@@ -118,12 +118,12 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
                 max={5}
                 value={te.anaerobic}
                 zones={TE_ZONES}
-                valueFill={TE_FILL[anaerobicLabel.color]}
+                valueFill={TE_FILL[anaerobicLabel.color] ?? ''}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-end">
                 <Typography
                   variant="h1"
-                  className={`leading-none pb-1 ${TE_TEXT[anaerobicLabel.color]}`}
+                  className={`leading-none pb-1 ${TE_TEXT[anaerobicLabel.color] ?? ''}`}
                 >
                   {te.anaerobic.toFixed(1)}
                 </Typography>
@@ -132,7 +132,7 @@ export const TrainingEffectCard = (props: TrainingEffectCardProps) => {
             <Typography
               variant="overline"
               as="p"
-              className={`whitespace-nowrap ${TE_TEXT[anaerobicLabel.color]}`}
+              className={`whitespace-nowrap ${TE_TEXT[anaerobicLabel.color] ?? ''}`}
             >
               {localizedTELabel(anaerobicLabel.label)}
             </Typography>

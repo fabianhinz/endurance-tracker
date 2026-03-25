@@ -9,10 +9,10 @@ export const buildSessionGpx = (
   records: SessionRecord[],
 ): string | null => {
   const points = records.reduce<GpxPoint[]>((acc, r) => {
-    if (isValidCoordinate(r)) {
+    if (isValidCoordinate(r) && r.lat != null && r.lng != null) {
       acc.push({
-        lat: r.lat!,
-        lon: r.lng!,
+        lat: r.lat,
+        lon: r.lng,
         ele: r.elevation,
         time: new Date(session.date + r.timestamp * 1000),
       });

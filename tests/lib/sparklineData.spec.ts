@@ -15,18 +15,18 @@ describe('toSeries', () => {
     ];
     const result = toSeries(points, 'hr');
     expect(result).not.toBeNull();
-    expect(result!.min).toBe(100);
-    expect(result!.max).toBe(140);
-    expect(result!.avg).toBeCloseTo(120);
-    expect(result!.points).toBe(points);
+    expect(result?.min).toBe(100);
+    expect(result?.max).toBe(140);
+    expect(result?.avg).toBeCloseTo(120);
+    expect(result?.points).toBe(points);
   });
 
   it('handles single point', () => {
     const points = [{ time: 0, hr: 150 }];
     const result = toSeries(points, 'hr');
-    expect(result!.min).toBe(150);
-    expect(result!.max).toBe(150);
-    expect(result!.avg).toBe(150);
+    expect(result?.min).toBe(150);
+    expect(result?.max).toBe(150);
+    expect(result?.avg).toBe(150);
   });
 });
 

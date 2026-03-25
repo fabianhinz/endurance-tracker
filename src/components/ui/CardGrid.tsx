@@ -13,9 +13,9 @@ interface CardGridProps {
 export const CardGrid = (props: CardGridProps) => {
   const [expanded, setExpanded] = useState(false);
   const totalCount = Children.count(props.children);
-  const collapsible = props.collapsedRows !== undefined;
-  const maxVisible = collapsible ? props.collapsedRows! * 2 : totalCount;
-  const needsToggle = collapsible && totalCount > maxVisible;
+
+  const maxVisible = props.collapsedRows !== undefined ? props.collapsedRows * 2 : totalCount;
+  const needsToggle = props.collapsedRows !== undefined && totalCount > maxVisible;
   const visibleChildren =
     needsToggle && !expanded
       ? Children.toArray(props.children).slice(0, maxVisible)

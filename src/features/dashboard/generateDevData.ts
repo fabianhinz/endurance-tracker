@@ -85,9 +85,13 @@ const pickRoute = (routeData: RouteData, sport: 'running' | 'cycling', intent: S
     // Pick one of the shorter routes
     const sorted = [...routes].sort((a, b) => a.distanceM - b.distanceM);
     const shortRoutes = sorted.slice(0, Math.max(2, Math.ceil(sorted.length / 2)));
-    return shortRoutes[Math.floor(Math.random() * shortRoutes.length)];
+    const picked = shortRoutes[Math.floor(Math.random() * shortRoutes.length)];
+    if (!picked) return routes[0] ?? { name: '', polyline: '', distanceM: 0 };
+    return picked;
   }
-  return routes[Math.floor(Math.random() * routes.length)];
+  const picked = routes[Math.floor(Math.random() * routes.length)];
+  if (!picked) return routes[0] ?? { name: '', polyline: '', distanceM: 0 };
+  return picked;
 };
 
 const decodeAndFitGPS = (
@@ -101,7 +105,8 @@ const decodeAndFitGPS = (
   for (let i = 0; i < recordCount; i++) {
     const t = (i / recordCount) * decoded.length;
     const idx = Math.min(Math.floor(t), decoded.length - 1);
-    result.push(decoded[idx]);
+    const point = decoded[idx];
+    if (point) result.push(point);
   }
   return result;
 };
@@ -139,10 +144,11 @@ const generateRecordsWithGPS = (
   if (sport === 'running' || sport === 'cycling') {
     const route = pickRoute(routeData, sport, intent);
     const gpsPoints = decodeAndFitGPS(route.polyline, durationSec);
-    for (let i = 0; i < records.length; i++) {
-      const gps = gpsPoints[i];
-      if (gps) {
-        records[i] = { ...records[i], lat: gps.lat, lng: gps.lng };
+    for (let ri = 0; ri < records.length; ri++) {
+      const gps = gpsPoints[ri];
+      const rec = records[ri];
+      if (gps && rec) {
+        records[ri] = { ...rec, lat: gps.lat, lng: gps.lng };
       }
     }
   }
@@ -198,12 +204,14 @@ const WEEKLY_TEMPLATES: Array<DaySlot[]> = [
 
 const buildWeeklySchedule = (weekStartDayOffset: number): ScheduledSession[] => {
   const template = WEEKLY_TEMPLATES[Math.floor(Math.random() * WEEKLY_TEMPLATES.length)];
+  if (!template) return [];
   const sessions: ScheduledSession[] = [];
 
   for (let day = 0; day < 7; day++) {
     const dayOffset = weekStartDayOffset + day;
     if (dayOffset < 0) continue; // skip days before our window
     const slots = template[day];
+    if (!slots) continue;
     for (const slot of slots) {
       sessions.push({ dayOffset, sport: slot.sport, intent: slot.intent });
     }
@@ -296,8 +304,12 @@ export const generateDevData = async (): Promise<number> => {
 
   for (let i = 0; i < sessionIds.length; i++) {
     const sessionId = sessionIds[i];
-    const { sport, durationSec, intent } = sessionMeta[i];
+    const meta = sessionMeta[i];
     const original = sessionsToAdd[i];
+    if (!sessionId || !meta || !original) continue;
+    const sport = meta.sport;
+    const durationSec = meta.durationSec;
+    const intent = meta.intent;
 
     const records = generateRecordsWithGPS(routeData, sessionId, sport, durationSec, intent);
 
@@ -305,7 +317,7 @@ export const generateDevData = async (): Promise<number> => {
     const distance = lastRecord?.distance ?? 0;
     const hrRecords = records.filter((r) => r.hr != null);
     const avgHr = hrRecords.reduce((sum, r) => sum + (r.hr ?? 0), 0) / hrRecords.length;
-    const maxHrVal = Math.max(...hrRecords.map((r) => r.hr!));
+    const maxHrVal = Math.max(...hrRecords.map((r) => r.hr ?? 0));
     const speedRecords = records.filter((r) => r.speed != null);
     const avgSpeed = speedRecords.reduce((sum, r) => sum + (r.speed ?? 0), 0) / speedRecords.length;
     let avgPace: number | undefined = undefined;
@@ -321,7 +333,7 @@ export const generateDevData = async (): Promise<number> => {
       avgPower = Math.round(
         records.reduce((sum, r) => sum + (r.power ?? 0), 0) / powerRecords.length,
       );
-      maxPower = Math.round(Math.max(...powerRecords.map((r) => r.power!)));
+      maxPower = Math.round(Math.max(...powerRecords.map((r) => r.power ?? 0)));
       const cadenceRecords = records.filter((r) => r.cadence != null);
       avgCadence = Math.round(
         records.reduce((sum, r) => sum + (r.cadence ?? 0), 0) / cadenceRecords.length,
@@ -332,8 +344,10 @@ export const generateDevData = async (): Promise<number> => {
     if (sport !== 'swimming') {
       elevationGain = Math.round(
         records.reduce((sum, r, idx) => {
-          if (idx === 0 || r.elevation == null || records[idx - 1].elevation == null) return sum;
-          const diff = r.elevation - records[idx - 1].elevation!;
+          if (idx === 0 || r.elevation == null) return sum;
+          const prevElev = records[idx - 1]?.elevation;
+          if (prevElev == null) return sum;
+          const diff = r.elevation - prevElev;
           if (diff > 0) {
             return sum + diff;
           }

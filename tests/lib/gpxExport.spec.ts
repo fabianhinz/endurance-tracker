@@ -46,7 +46,7 @@ describe('buildSessionGpx', () => {
     const gpx = buildSessionGpx(session, mixed);
 
     expect(gpx).not.toBeNull();
-    const trkptCount = (gpx!.match(/<trkpt/g) ?? []).length;
+    const trkptCount = (gpx?.match(/<trkpt/g) ?? []).length;
     expect(trkptCount).toBe(2);
   });
 

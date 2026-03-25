@@ -31,7 +31,7 @@ export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks:
 
       if (openedSessionId && focusedLaps.length > 0) {
         useMapFocusStore.getState().setPickCircle([center.lng, center.lat]);
-        if (info.coordinate) {
+        if (info.coordinate && info.coordinate[0] != null && info.coordinate[1] != null) {
           const state = useMapFocusStore.getState();
           const coord: [number, number] = [info.coordinate[0], info.coordinate[1]];
           let lapIndex: number | undefined;
@@ -92,7 +92,12 @@ export const useMapPopupState = (mapRef: React.RefObject<MapRef | null>, tracks:
       const stopPropagation = false;
       setHoveringTrack(!!info.object);
       if (!popup && !lapPopup) {
-        if (info.object && info.coordinate) {
+        if (
+          info.object &&
+          info.coordinate &&
+          info.coordinate[0] != null &&
+          info.coordinate[1] != null
+        ) {
           useMapFocusStore.getState().setPickCircle([info.coordinate[0], info.coordinate[1]]);
         } else {
           useMapFocusStore.getState().clearPickCircle();

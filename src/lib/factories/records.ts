@@ -122,7 +122,7 @@ const buildSpeedArray = (count: number, baseSpeed: number, elevations: number[])
 
       // Terrain influence: uphill = slower, downhill = faster
       if (hasTerrain && i > 0) {
-        const elevDiff = elevations[i] - elevations[i - 1];
+        const elevDiff = (elevations[i] ?? 0) - (elevations[i - 1] ?? 0);
         currentSpeed -= elevDiff * 0.15;
       }
 
@@ -152,8 +152,8 @@ const buildCadenceArray = (count: number, base: number, min: number, max: number
 const buildGradeArray = (elevations: number[], speeds: number[]): number[] =>
   elevations.map((elev, i) => {
     if (i === 0) return 0;
-    const elevDiff = elev - elevations[i - 1];
-    const distance = Math.max(speeds[i], 0.5); // meters traveled in 1s
+    const elevDiff = elev - (elevations[i - 1] ?? elev);
+    const distance = Math.max(speeds[i] ?? 0.5, 0.5); // meters traveled in 1s
     return Math.round((elevDiff / distance) * 100 * 10) / 10;
   });
 
@@ -176,10 +176,10 @@ const buildPowerArray = (
       currentPower = randomWalk(currentPower, 0.7, 5, 0.2, 30);
 
       // Grade influence: uphill = more power, downhill = slightly less
-      currentPower += grades[i];
+      currentPower += grades[i] ?? 0;
 
       // Speed influence
-      currentPower += (speeds[i] - baseSpeed) * 2;
+      currentPower += ((speeds[i] ?? baseSpeed) - baseSpeed) * 2;
 
       // Mean reversion
       currentPower += (basePower - currentPower) * 0.02;
@@ -206,12 +206,13 @@ const assembleRecords = (
   let cumulativeDistance = 0;
 
   for (let i = 0; i < speeds.length; i++) {
-    cumulativeDistance += speeds[i];
+    const speed = speeds[i] ?? 0;
+    cumulativeDistance += speed;
     const record: SessionRecord = {
       sessionId,
       timestamp: i,
       timerTime: i,
-      speed: speeds[i],
+      speed,
       hr: hrs[i],
       distance: cumulativeDistance,
     };
@@ -325,6 +326,7 @@ export const makeLapsFromRecords = (
 
     const first = slice[0];
     const last = slice[slice.length - 1];
+    if (!first || !last) return;
     const duration = last.timestamp - first.timestamp;
     const distance = (last.distance ?? 0) - (first.distance ?? 0);
 
@@ -339,8 +341,11 @@ export const makeLapsFromRecords = (
 
     let elevationGain = 0;
     for (let i = 1; i < slice.length; i++) {
-      const prev = slice[i - 1].elevation;
-      const curr = slice[i].elevation;
+      const prevRecord = slice[i - 1];
+      const currRecord = slice[i];
+      if (!prevRecord || !currRecord) continue;
+      const prev = prevRecord.elevation;
+      const curr = currRecord.elevation;
       if (prev !== undefined && curr !== undefined && curr > prev) {
         elevationGain += curr - prev;
       }
@@ -397,7 +402,10 @@ export const makeLapsFromRecords = (
   };
 
   for (let i = 0; i < records.length; i++) {
-    if (records[i].timestamp - records[lapStart].timestamp >= lapDurationSec) {
+    const rec = records[i];
+    const lapStartRec = records[lapStart];
+    if (!rec || !lapStartRec) continue;
+    if (rec.timestamp - lapStartRec.timestamp >= lapDurationSec) {
       closeLap(lapStart, i, laps.length);
       lapStart = i;
     }

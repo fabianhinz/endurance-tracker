@@ -49,8 +49,8 @@ export const DataTable = <T,>(props: DataTableProps<T>) => {
                 'border-b border-white/5 transition-colors last:border-b-0',
                 props.rowClassName?.(row),
               )}
-              onPointerEnter={props.onRowHover ? () => props.onRowHover!(row) : undefined}
-              onPointerLeave={props.onRowHover ? () => props.onRowHover!(null) : undefined}
+              onPointerEnter={() => props.onRowHover?.(row)}
+              onPointerLeave={() => props.onRowHover?.(null)}
             >
               {props.rowLabel && (
                 <td className="px-3 py-2 text-sm font-medium">{props.rowLabel(row)}</td>
@@ -74,8 +74,8 @@ export const DataTable = <T,>(props: DataTableProps<T>) => {
               'rounded-xl bg-white/5 p-3 tabular-nums transition-colors',
               props.rowClassName?.(row),
             )}
-            onPointerEnter={props.onRowHover ? () => props.onRowHover!(row) : undefined}
-            onPointerLeave={props.onRowHover ? () => props.onRowHover!(null) : undefined}
+            onPointerEnter={() => props.onRowHover?.(row)}
+            onPointerLeave={() => props.onRowHover?.(null)}
           >
             {props.rowLabel && (
               <Typography variant="title" className="mb-2">

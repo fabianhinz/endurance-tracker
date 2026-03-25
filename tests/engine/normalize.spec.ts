@@ -55,7 +55,7 @@ describe('calculateNormalizedPower', () => {
     const avgPower = totalPower / 300;
     const np = calculateNormalizedPower(records);
     expect(np).toBeDefined();
-    expect(np!).toBeGreaterThan(avgPower);
+    expect(np ?? 0).toBeGreaterThan(avgPower);
   });
 
   it('returns a rounded integer', () => {
@@ -150,6 +150,6 @@ describe('calculateGAP', () => {
     const gap = calculateGAP(records);
     const actualPace = (1 / 3.0) * 1000; // sec/km
     expect(gap).toBeDefined();
-    expect(Math.abs(gap! - actualPace)).toBeLessThan(1);
+    expect(Math.abs((gap ?? 0) - actualPace)).toBeLessThan(1);
   });
 });

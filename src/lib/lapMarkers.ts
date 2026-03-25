@@ -23,10 +23,10 @@ const computeDeviceMarkers = (
   for (const lap of laps) {
     const lapStartSec = (lap.startTime - sessionStartMs) / 1000;
     const first = records.find((r) => r.timestamp >= lapStartSec && hasValidGPS(r));
-    if (first) {
+    if (first && first.lng != null && first.lat != null) {
       markers.push({
         lapIndex: lap.lapIndex,
-        position: [first.lng!, first.lat!],
+        position: [first.lng, first.lat],
         label: String(lap.lapIndex + 1),
       });
     }
@@ -47,26 +47,30 @@ const computeDynamicMarkers = (
 
   // Marker at the start of split 0
   const first = withDistance.find((r) => hasValidGPS(r));
-  if (first) {
+  if (first && first.lng != null && first.lat != null) {
     markers.push({
       lapIndex,
-      position: [first.lng!, first.lat!],
+      position: [first.lng, first.lat],
       label: String(lapIndex + 1),
     });
   }
 
-  let nextBoundary = (withDistance[0].distance ?? 0) + splitDistanceMetres;
+  const firstWithDist = withDistance[0];
+  if (!firstWithDist) return markers;
+  let nextBoundary = (firstWithDist.distance ?? 0) + splitDistanceMetres;
 
   for (let i = 0; i < withDistance.length; i++) {
-    const d = withDistance[i].distance!;
+    const rec = withDistance[i];
+    if (!rec) continue;
+    const d = rec.distance ?? 0;
     if (d >= nextBoundary) {
       lapIndex++;
       // Find first record at or after this index with valid GPS
       const gpsRecord = withDistance.slice(i).find((r) => hasValidGPS(r));
-      if (gpsRecord) {
+      if (gpsRecord && gpsRecord.lng != null && gpsRecord.lat != null) {
         markers.push({
           lapIndex,
-          position: [gpsRecord.lng!, gpsRecord.lat!],
+          position: [gpsRecord.lng, gpsRecord.lat],
           label: String(lapIndex + 1),
         });
       }

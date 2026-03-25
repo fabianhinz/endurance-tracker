@@ -141,7 +141,9 @@ export const getRecordsForSessions = async (
 
   const map = new Map<string, SessionRecord[]>();
   for (let i = 0; i < sessionIds.length; i++) {
-    map.set(sessionIds[i], results[i]?.records ?? []);
+    const id = sessionIds[i];
+    if (!id) continue;
+    map.set(id, results[i]?.records ?? []);
   }
   return map;
 };

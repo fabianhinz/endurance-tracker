@@ -24,7 +24,9 @@ export const computeDynamicLaps = (
   const enrichments: LapRecordEnrichment[] = [];
 
   let lapStart = 0;
-  let nextBoundary = (withDistance[0].distance ?? 0) + splitDistanceMetres;
+  const firstRecord = withDistance[0];
+  if (!firstRecord) return { analysis: [], enrichments: [] };
+  let nextBoundary = (firstRecord.distance ?? 0) + splitDistanceMetres;
   let lapIndex = 0;
 
   const closeLap = (startIdx: number, endIdx: number) => {
@@ -33,6 +35,7 @@ export const computeDynamicLaps = (
 
     const first = slice[0];
     const last = slice[slice.length - 1];
+    if (!first || !last) return;
 
     const distance = (last.distance ?? 0) - (first.distance ?? 0);
     const duration = last.timestamp - first.timestamp;
@@ -69,8 +72,11 @@ export const computeDynamicLaps = (
 
     let elevationGain = 0;
     for (let i = 1; i < slice.length; i++) {
-      const prev = slice[i - 1].elevation;
-      const curr = slice[i].elevation;
+      const prevRecord = slice[i - 1];
+      const currRecord = slice[i];
+      if (!prevRecord || !currRecord) continue;
+      const prev = prevRecord.elevation;
+      const curr = currRecord.elevation;
       if (prev !== undefined && curr !== undefined && curr > prev) {
         elevationGain += curr - prev;
       }
@@ -97,7 +103,9 @@ export const computeDynamicLaps = (
   };
 
   for (let i = 0; i < withDistance.length; i++) {
-    const d = withDistance[i].distance!;
+    const rec = withDistance[i];
+    if (!rec) continue;
+    const d = rec.distance ?? 0;
     if (d >= nextBoundary) {
       closeLap(lapStart, i);
       lapStart = i;

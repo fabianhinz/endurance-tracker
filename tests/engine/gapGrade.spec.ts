@@ -26,7 +26,7 @@ describe('calculateGAP with native grade', () => {
     // Uphill grade should make GAP faster (lower sec/km) than actual pace
     // because metabolic cost is higher uphill
     const flatPace = (1 / 3.0) * 1000; // ~333 sec/km
-    expect(gap!).toBeLessThan(flatPace);
+    expect(gap ?? Infinity).toBeLessThan(flatPace);
   });
 
   it('falls back to elevation delta when grade is missing', () => {
@@ -45,7 +45,7 @@ describe('calculateGAP with native grade', () => {
 
     const gap = calculateGAP(records);
     expect(gap).toBeDefined();
-    expect(gap!).toBeGreaterThan(0);
+    expect(gap ?? 0).toBeGreaterThan(0);
   });
 
   it('records with grade but no elevation still produce valid GAP', () => {
@@ -94,8 +94,9 @@ describe('calculateGAP with native grade', () => {
 
     expect(gapFromGrade).toBeDefined();
     expect(gapFromElevation).toBeDefined();
+    if (gapFromGrade === undefined || gapFromElevation === undefined) return;
     // Both should produce similar results (within 5% tolerance)
-    const ratio = gapFromGrade! / gapFromElevation!;
+    const ratio = gapFromGrade / gapFromElevation;
     expect(ratio).toBeGreaterThan(0.95);
     expect(ratio).toBeLessThan(1.05);
   });
@@ -117,7 +118,7 @@ describe('calculateGAP with native grade', () => {
     const actualPace = (1 / 3.0) * 1000;
     expect(gap).toBeDefined();
     // Should be very close to actual pace on flat terrain
-    expect(Math.abs(gap! - actualPace)).toBeLessThan(1);
+    expect(Math.abs((gap ?? 0) - actualPace)).toBeLessThan(1);
   });
 
   it('returns undefined for fewer than 2 records', () => {
@@ -141,7 +142,7 @@ describe('calculateGAP with native grade', () => {
     const gap = calculateGAP(records);
     expect(gap).toBeDefined();
     const flatPace = (1 / 3.0) * 1000;
-    expect(gap!).toBeGreaterThan(flatPace);
+    expect(gap ?? 0).toBeGreaterThan(flatPace);
   });
 
   it('uphill GAP is faster than flat, downhill GAP is slower than flat', () => {
@@ -161,8 +162,11 @@ describe('calculateGAP with native grade', () => {
     };
 
     const flatPace = (1 / 3.0) * 1000;
-    const uphillGap = calculateGAP(makeRecordsWithGrade(8))!;
-    const downhillGap = calculateGAP(makeRecordsWithGrade(-8))!;
+    const uphillGap = calculateGAP(makeRecordsWithGrade(8));
+    const downhillGap = calculateGAP(makeRecordsWithGrade(-8));
+    expect(uphillGap).toBeDefined();
+    expect(downhillGap).toBeDefined();
+    if (uphillGap === undefined || downhillGap === undefined) return;
 
     expect(uphillGap).toBeLessThan(flatPace);
     expect(downhillGap).toBeGreaterThan(flatPace);
@@ -195,6 +199,6 @@ describe('calculateGAP with native grade', () => {
     expect(gap).toBeDefined();
     // Distance-adjusted: ~11% deviation (Minetti asymmetry)
     // Old dt/factor would be ~27% — this threshold catches regressions
-    expect(Math.abs(gap! - flatPace) / flatPace).toBeLessThan(0.15);
+    expect(Math.abs((gap ?? 0) - flatPace) / flatPace).toBeLessThan(0.15);
   });
 });

@@ -27,9 +27,12 @@ export const filterTracksByPickBounds = (
   for (const t of tracks) {
     if (seen.has(t.sessionId)) continue;
     if (!boundsOverlap(t.bounds, pickBounds)) continue;
-    const hit = t.path.some(
-      (p, i) => i > 0 && segmentIntersectsBounds(t.path[i - 1], p, pickBounds),
-    );
+    const hit = t.path.some((p, i) => {
+      if (i === 0) return false;
+      const prev = t.path[i - 1];
+      if (!prev) return false;
+      return segmentIntersectsBounds(prev, p, pickBounds);
+    });
     if (hit) seen.add(t.sessionId);
   }
   return [...seen];

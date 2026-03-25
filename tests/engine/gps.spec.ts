@@ -68,11 +68,12 @@ describe('buildSessionGPS', () => {
     const records = makeGPSRunningRecords('s1', 200);
     const result = buildSessionGPS('s1', records);
     expect(result).not.toBeNull();
-    expect(result!.sessionId).toBe('s1');
-    expect(result!.encodedPolyline.length).toBeGreaterThan(0);
-    expect(result!.pointCount).toBeGreaterThan(0);
-    expect(result!.bounds.minLat).toBeLessThanOrEqual(result!.bounds.maxLat);
-    expect(result!.bounds.minLng).toBeLessThanOrEqual(result!.bounds.maxLng);
+    if (!result) return;
+    expect(result.sessionId).toBe('s1');
+    expect(result.encodedPolyline.length).toBeGreaterThan(0);
+    expect(result.pointCount).toBeGreaterThan(0);
+    expect(result.bounds.minLat).toBeLessThanOrEqual(result.bounds.maxLat);
+    expect(result.bounds.minLng).toBeLessThanOrEqual(result.bounds.maxLng);
   });
 });
 
@@ -117,8 +118,8 @@ describe('densestClusterBounds', () => {
     const result = densestClusterBounds([munich1, munich2, munich3, berlin]);
     expect(result).not.toBeNull();
     // Result should cover Munich, not Berlin
-    expect(result!.maxLat).toBeLessThan(49);
-    expect(result!.minLng).toBeGreaterThan(11);
+    expect(result?.maxLat).toBeLessThan(49);
+    expect(result?.minLng).toBeGreaterThan(11);
   });
 
   it('returns union of all when everything overlaps', () => {
@@ -149,9 +150,9 @@ describe('densestClusterBounds', () => {
 
     expect(result).not.toBeNull();
     // Viewport should cover Munich, not stretch to the Alps
-    expect(result!.minLat).toBeGreaterThan(48.0);
-    expect(result!.maxLat).toBeLessThan(48.5);
-    expect(result!.minLng).toBeGreaterThan(11.4);
-    expect(result!.maxLng).toBeLessThan(11.7);
+    expect(result?.minLat).toBeGreaterThan(48.0);
+    expect(result?.maxLat).toBeLessThan(48.5);
+    expect(result?.minLng).toBeGreaterThan(11.4);
+    expect(result?.maxLng).toBeLessThan(11.7);
   });
 });

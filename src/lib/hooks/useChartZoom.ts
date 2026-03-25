@@ -105,7 +105,11 @@ export const useChartZoom = <T>(options: UseChartZoomOptions<T>): UseChartZoomRe
     setRefAreaLeft(null);
     setRefAreaRight(null);
 
-    onZoomComplete?.(String(data[leftIdx][xKey]), String(data[rightIdx][xKey]));
+    const leftItem = data[leftIdx];
+    const rightItem = data[rightIdx];
+    if (leftItem && rightItem) {
+      onZoomComplete?.(String(leftItem[xKey]), String(rightItem[xKey]));
+    }
   }, [data, xKey, refAreaLeft, refAreaRight, startIndex, onZoomComplete, onZoomReset]);
 
   const resetZoom = useCallback(() => {
@@ -115,8 +119,8 @@ export const useChartZoom = <T>(options: UseChartZoomOptions<T>): UseChartZoomRe
 
   const isZoomed = startIndex !== null;
   let zoomedData = data;
-  if (isZoomed) {
-    zoomedData = data.slice(startIndex, endIndex! + 1);
+  if (isZoomed && endIndex !== null) {
+    zoomedData = data.slice(startIndex, endIndex + 1);
   }
 
   return {

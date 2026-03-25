@@ -18,8 +18,8 @@ export const isValidCoordinate = (r: { lat?: number | null; lng?: number | null 
  */
 const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
   records.reduce<GPSPoint[]>((acc, r) => {
-    if (isValidCoordinate(r)) {
-      acc.push({ lat: r.lat!, lng: r.lng! });
+    if (isValidCoordinate(r) && r.lat != null && r.lng != null) {
+      acc.push({ lat: r.lat, lng: r.lng });
     }
     return acc;
   }, []);
@@ -31,8 +31,8 @@ const extractGPSPoints = (records: SessionRecord[]): GPSPoint[] =>
  */
 export const extractPathFromRecords = (records: SessionRecord[]): [number, number][] =>
   records.reduce<[number, number][]>((acc, r) => {
-    if (isValidCoordinate(r)) {
-      acc.push([r.lng!, r.lat!]);
+    if (isValidCoordinate(r) && r.lng != null && r.lat != null) {
+      acc.push([r.lng, r.lat]);
     }
     return acc;
   }, []);
@@ -158,12 +158,14 @@ export const segmentIntersectsBounds = (
   let tMax = 1;
 
   for (let i = 0; i < 4; i++) {
-    if (p[i] === 0) {
+    const pi = p[i] ?? 0;
+    const qi = q[i] ?? 0;
+    if (pi === 0) {
       // Segment is parallel to this edge — reject if outside
-      if (q[i] < 0) return false;
+      if (qi < 0) return false;
     } else {
-      const t = q[i] / p[i];
-      if (p[i] < 0) {
+      const t = qi / pi;
+      if (pi < 0) {
         if (t > tMax) return false;
         if (t > tMin) tMin = t;
       } else {
@@ -212,7 +214,8 @@ export const densestClusterBounds = (
   radiusDeg = 0.25,
 ): GPSBounds | null => {
   if (boundsArray.length === 0) return null;
-  if (boundsArray.length === 1) return boundsArray[0];
+  const first = boundsArray[0];
+  if (boundsArray.length === 1 && first) return first;
 
   const centers = boundsArray.map((b) => boundsCenter(b));
 
@@ -220,9 +223,13 @@ export const densestClusterBounds = (
   let bestCount = 0;
 
   for (let i = 0; i < centers.length; i++) {
+    const ci = centers[i];
+    if (!ci) continue;
     let count = 0;
     for (let j = 0; j < centers.length; j++) {
-      if (i !== j && scaledDistDeg(centers[i], centers[j]) <= radiusDeg) count++;
+      const cj = centers[j];
+      if (!cj) continue;
+      if (i !== j && scaledDistDeg(ci, cj) <= radiusDeg) count++;
     }
     if (count > bestCount) {
       bestCount = count;
@@ -231,6 +238,11 @@ export const densestClusterBounds = (
   }
 
   const seed = centers[bestIdx];
-  const cluster = boundsArray.filter((_, idx) => scaledDistDeg(seed, centers[idx]) <= radiusDeg);
+  if (!seed) return null;
+  const cluster = boundsArray.filter((_, idx) => {
+    const c = centers[idx];
+    if (!c) return false;
+    return scaledDistDeg(seed, c) <= radiusDeg;
+  });
   return unionBounds(cluster);
 };
