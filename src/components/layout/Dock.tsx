@@ -4,13 +4,12 @@ import {
   LayoutDashboard,
   Zap,
   Settings,
-  Ellipsis,
+  EllipsisVertical,
   Upload,
   X,
   Activity,
   Clock,
   HeartPulse,
-  Map,
 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
@@ -21,8 +20,7 @@ import { useSlideIndicator } from '@/components/ui/SlideIndicator.tsx';
 import { useDockExpanded } from '@/lib/hooks/useDockExpanded.ts';
 import { useFiltersStore } from '@/store/filters.ts';
 import { Button } from '@/components/ui/Button.tsx';
-import { ToggleButton } from '@/components/ui/ToggleButton.tsx';
-import { useLayoutStore } from '@/store/layout.ts';
+import { MobileMapFab } from './MobileMapFab.tsx';
 import { DockRevealPanel } from './DockRevealPanel.tsx';
 import { DockFilterOptions } from './DockFilterOptions.tsx';
 import { sportIcon } from '@/lib/sportIcons.ts';
@@ -101,8 +99,6 @@ export const Dock = () => {
     );
   }, []);
 
-  const mobileMapActive = useLayoutStore((s) => s.mobileMapActive);
-
   // Filter state
   const sportFilter = useFiltersStore((s) => s.sportFilter);
   const timeRange = useFiltersStore((s) => s.timeRange);
@@ -141,16 +137,24 @@ export const Dock = () => {
 
   return (
     <>
-      <nav
-        data-layout="dock"
+      <div
         className={cn(
-          cardClass,
-          'fixed z-50 lg:flex-row lg:items-center',
-          'border-0 border-t rounded-none bottom-0 inset-x-0',
-          'lg:border lg:rounded-2xl lg:inset-x-auto lg:bottom-auto lg:left-3 lg:top-1/2 lg:-translate-y-1/2',
+          'fixed z-50',
+          'bottom-0 inset-x-0',
+          'lg:inset-x-auto lg:bottom-auto lg:left-3 lg:top-1/2 lg:-translate-y-1/2',
           'transition-all duration-300',
         )}
       >
+        <MobileMapFab />
+        <nav
+          data-layout="dock"
+          className={cn(
+            cardClass,
+            'lg:flex-row lg:items-center',
+            'border-0 border-t rounded-none',
+            'lg:border lg:rounded-2xl',
+          )}
+        >
         {/* Filter options panels (Level C) — top on mobile, rightmost on desktop */}
         <DockRevealPanel open={isOpen('sport-filter')} className="lg:order-3">
           <DockFilterOptions
@@ -224,20 +228,6 @@ export const Dock = () => {
           className="relative flex flex-row lg:flex-col items-center justify-center p-2 lg:order-1"
         >
           {indicatorElement}
-
-          <ToggleButton
-            pressed={mobileMapActive}
-            onPressedChange={() => useLayoutStore.getState().toggleMobileMap()}
-            aria-label={mobileMapActive ? m.ui_dock_hide_map() : m.ui_dock_show_map()}
-            className={cn('lg:hidden', dockExpanded ? dockItemMaxiClass : dockItemMiniClass)}
-          >
-            <Map size={20} strokeWidth={1.5} />
-            {dockExpanded && (
-              <span className="text-[10px] leading-none">
-                {mobileMapActive ? m.ui_dock_hide_map() : m.ui_dock_show_map()}
-              </span>
-            )}
-          </ToggleButton>
 
           {tabs.map((tab, i) => (
             <NavLink
@@ -334,7 +324,7 @@ export const Dock = () => {
               {isOpen('menu') ? (
                 <X size={20} strokeWidth={1.5} />
               ) : (
-                <Ellipsis size={20} strokeWidth={1.5} />
+                <EllipsisVertical size={20} strokeWidth={1.5} />
               )}
             </Button>
           )}
@@ -349,7 +339,8 @@ export const Dock = () => {
           onChange={(e) => e.target.files && upload.handleFiles(e.target.files)}
           disabled={upload.uploading}
         />
-      </nav>
+        </nav>
+      </div>
 
       {/* Backdrop — closes reveals on click, purely in React's event system */}
       {revealStack.length > 0 && (

@@ -1,5 +1,6 @@
 import * as Toggle from '@radix-ui/react-toggle';
 import { cn } from '@/lib/utils.ts';
+import { glassClass } from './Card';
 
 interface ToggleButtonProps {
   pressed: boolean;
@@ -16,10 +17,11 @@ export const ToggleButton = (props: ToggleButtonProps) => {
       onPressedChange={props.onPressedChange}
       aria-label={props['aria-label']}
       className={cn(
-        'inline-flex items-center justify-center rounded-lg transition-colors cursor-pointer',
+        glassClass,
+        'inline-flex items-center justify-center rounded-lg transition-[color,background-color] cursor-pointer',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface-sunken',
         'text-text-tertiary hover:bg-white/10 hover:text-text-primary',
-        'data-[state=on]:bg-white/10 data-[state=on]:text-text-primary',
+        'data-[state=on]:bg-white/80 data-[state=on]:text-black rounded-full size-12',
         props.className,
       )}
     >
