@@ -93,6 +93,7 @@ export interface SessionLap {
   totalAscent?: number;
   minAltitude?: number;
   maxAltitude?: number;
+  avgAltitude?: number;
   avgGrade?: number;
   avgHr?: number;
   minHr?: number;

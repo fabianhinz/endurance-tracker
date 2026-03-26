@@ -107,11 +107,12 @@ export const mapFitLaps = (fitLaps: FitLapInput[], sessionId: string): SessionLa
       totalTimerTime: lap.total_timer_time ?? 0,
       totalMovingTime: lap.total_moving_time,
       distance: lap.total_distance ?? 0,
-      avgSpeed: lap.avg_speed ?? lap.enhanced_avg_speed ?? 0,
-      maxSpeed: lap.max_speed ?? lap.enhanced_max_speed,
+      avgSpeed: lap.enhanced_avg_speed ?? lap.avg_speed ?? 0,
+      maxSpeed: lap.enhanced_max_speed ?? lap.max_speed,
       totalAscent: lap.total_ascent,
-      minAltitude: lap.min_altitude,
-      maxAltitude: lap.max_altitude,
+      minAltitude: lap.enhanced_min_altitude ?? lap.min_altitude,
+      maxAltitude: lap.enhanced_max_altitude ?? lap.max_altitude,
+      avgAltitude: lap.enhanced_avg_altitude ?? lap.avg_altitude,
       avgGrade: lap.avg_grade,
       avgHr: lap.avg_heart_rate,
       minHr: lap.min_heart_rate,
@@ -194,10 +195,10 @@ export const parseFitFile = async (
       hr: r.heart_rate,
       power: r.power,
       cadence: r.cadence,
-      speed: r.speed ?? r.enhanced_speed,
+      speed: r.enhanced_speed ?? r.speed,
       lat: r.position_lat,
       lng: r.position_long,
-      elevation: r.altitude ?? r.enhanced_altitude,
+      elevation: r.enhanced_altitude ?? r.altitude,
       distance: r.distance,
       grade: r.grade,
       timerTime: r.timer_time,
@@ -247,7 +248,7 @@ export const parseFitFile = async (
     sessionDate = new Date(fitSession.start_time).getTime();
   }
 
-  const avgSpeed = fitSession?.avg_speed ?? fitSession?.enhanced_avg_speed;
+  const avgSpeed = fitSession?.enhanced_avg_speed ?? fitSession?.avg_speed;
   const name = extractSessionName(fileName);
 
   const fileIdResult = fitFileIdSchema.safeParse(data.file_ids?.[0]);
@@ -293,12 +294,12 @@ export const parseFitFile = async (
     deviceIf: fitSession?.intensity_factor,
     deviceFtp: fitSession?.threshold_power,
     maxSpeed:
-      fitSession?.max_speed ??
       fitSession?.enhanced_max_speed ??
+      fitSession?.max_speed ??
       deriveMaxFromRecords(records, 'speed'),
-    minAltitude: fitSession?.min_altitude,
-    maxAltitude: fitSession?.max_altitude,
-    avgAltitude: fitSession?.avg_altitude,
+    minAltitude: fitSession?.enhanced_min_altitude ?? fitSession?.min_altitude,
+    maxAltitude: fitSession?.enhanced_max_altitude ?? fitSession?.max_altitude,
+    avgAltitude: fitSession?.enhanced_avg_altitude ?? fitSession?.avg_altitude,
     ...(gap !== undefined && { gap }),
     tss: stressResult.tss,
     stressMethod: stressResult.stressMethod,
