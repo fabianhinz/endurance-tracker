@@ -138,6 +138,7 @@ export const Dock = () => {
   return (
     <>
       <div
+        data-layout="dock"
         className={cn(
           'fixed z-50',
           'bottom-0 inset-x-0',
@@ -147,7 +148,6 @@ export const Dock = () => {
       >
         <MobileMapFab />
         <nav
-          data-layout="dock"
           className={cn(
             cardClass,
             'lg:flex-row lg:items-center',

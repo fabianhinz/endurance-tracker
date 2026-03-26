@@ -6,6 +6,13 @@ import { acwrColorMap, acwrFill, ACWR_ZONES } from '@/lib/statusColors.ts';
 import { getACWRColor, getInjuryRisk } from '@/packages/engine/coaching.ts';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { GaugeDial } from '@/components/ui/GaugeDial.tsx';
+import type { InjuryRisk } from '@/packages/engine/types.ts';
+
+const acwrRiskLabel: Record<InjuryRisk, () => string> = {
+  low: m.ui_acwr_risk_low,
+  moderate: m.ui_acwr_risk_moderate,
+  high: m.ui_acwr_risk_high,
+};
 
 export const ACWRGauge = () => {
   const metrics = useMetrics();
@@ -14,7 +21,7 @@ export const ACWRGauge = () => {
   const risk = getInjuryRisk(acwr);
 
   return (
-    <div className="flex gap-1 flex-1 h-full flex-col items-center justify-end">
+    <div className="w-28 flex gap-1 flex-1 h-full flex-col items-center justify-end">
       <div className="relative w-full max-w-[160px]">
         <GaugeDial min={0} max={2} value={acwr} zones={ACWR_ZONES} valueFill={acwrFill[color]} />
         <div className="absolute inset-0 flex flex-col items-center justify-end">
@@ -23,8 +30,12 @@ export const ACWRGauge = () => {
           </Typography>
         </div>
       </div>
-      <Typography variant="overline" as="p" className={acwrColorMap[color].text}>
-        {m.ui_acwr_risk({ risk })}
+      <Typography
+        variant="overline"
+        as="p"
+        className={cn('whitespace-nowrap', acwrColorMap[color].text)}
+      >
+        {acwrRiskLabel[risk]()}
       </Typography>
       <MetricLabel metricId="acwr" size="sm" contextLabel="asd" />
     </div>

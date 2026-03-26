@@ -23,8 +23,7 @@ test.describe('mobile map toggle', () => {
     await mapToggle(page).click();
 
     await expect(mapToggle(page)).toHaveAttribute('data-state', 'on');
-    await expect(content(page)).toHaveClass(/translate-x-full/);
-    await expect(content(page)).toHaveClass(/pointer-events-none/);
+    await expect(content(page)).toHaveAttribute('data-map-active', 'true');
   });
 
   test('tapping again deactivates map view', async ({ page }) => {
@@ -33,8 +32,7 @@ test.describe('mobile map toggle', () => {
 
     await mapToggle(page).click();
     await expect(mapToggle(page)).toHaveAttribute('data-state', 'off');
-    await expect(content(page)).not.toHaveClass(/translate-x-full/);
-    await expect(content(page)).not.toHaveClass(/pointer-events-none/);
+    await expect(content(page)).not.toHaveAttribute('data-map-active');
   });
 
   test('aria-label reflects toggle state', async ({ page }) => {

@@ -4,8 +4,8 @@ import { Card } from '@/components/ui/Card.tsx';
 import { CardHeader } from '@/components/ui/CardHeader.tsx';
 import { Typography } from '@/components/ui/Typography.tsx';
 import { getFormMessageDetailed } from '@/lib/coachingMessages.ts';
-import { ReadinessGauge } from '@/features/dashboard/ReadinessDial.tsx';
-import { ACWRGauge } from '@/features/dashboard/ACWRIndicator.tsx';
+import { ReadinessGauge } from '@/features/dashboard/ReadinessGauge';
+import { ACWRGauge } from '@/features/dashboard/ACWRGauge';
 
 export const CoachStatusCard = () => {
   const metrics = useMetrics();

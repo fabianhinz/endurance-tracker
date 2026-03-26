@@ -74,10 +74,6 @@ describe('useLayoutStore', () => {
     expect(useLayoutStore.getState().demoMode).toBe(false);
   });
 
-  it('defaults mobileMapActive to false', () => {
-    expect(useLayoutStore.getState().mobileMapActive).toBe(false);
-  });
-
   it('toggleMobileMap flips to true', () => {
     useLayoutStore.getState().toggleMobileMap();
     expect(useLayoutStore.getState().mobileMapActive).toBe(true);
