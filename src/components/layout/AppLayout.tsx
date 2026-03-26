@@ -15,15 +15,19 @@ export const AppLayout = () => {
   const onboardingComplete = useLayoutStore((s) => s.onboardingComplete);
   const isDesktop = useIsDesktop();
 
-  const mapClassName = cn(
-    'transition-all duration-300 ease-in-out',
-    !isDesktop && !mobileMapActive && 'opacity-0 scale-95 pointer-events-none',
+  const background = (
+    <MapBackground
+      className={cn(
+        'transition-all duration-300 ease-in-out',
+        !isDesktop && !mobileMapActive && 'opacity-0 scale-95 pointer-events-none',
+      )}
+    />
   );
 
   if (!onboardingComplete) {
     return (
       <div className="min-h-screen">
-        <MapBackground className={mapClassName} />
+        {background}
         <main data-layout="main" className="relative z-10 p-6 pt-24 w-full mx-auto max-w-2xl">
           <OnboardingPage />
         </main>
@@ -33,7 +37,7 @@ export const AppLayout = () => {
 
   return (
     <div className="min-h-screen overflow-hidden">
-      <MapBackground className={mapClassName} />
+      {background}
       <Dock />
       <main
         data-layout="main"
