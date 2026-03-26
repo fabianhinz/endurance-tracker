@@ -233,7 +233,9 @@ export const Dock = () => {
           >
             <Map size={20} strokeWidth={1.5} />
             {dockExpanded && (
-              <span className="text-[10px] leading-none">{m.ui_dock_show_map()}</span>
+              <span className="text-[10px] leading-none">
+                {mobileMapActive ? m.ui_dock_hide_map() : m.ui_dock_show_map()}
+              </span>
             )}
           </ToggleButton>
 
