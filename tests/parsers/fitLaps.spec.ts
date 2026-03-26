@@ -87,6 +87,51 @@ describe('mapFitLaps', () => {
     expect(laps[0].distance).toBe(0);
   });
 
+  it('prefers enhanced fields over legacy when both are present', () => {
+    const laps = mapFitLaps(
+      [
+        makeFitLap({
+          avg_speed: 6.0,
+          enhanced_avg_speed: 6.267,
+          max_speed: 8.0,
+          enhanced_max_speed: 8.35,
+          min_altitude: 100,
+          enhanced_min_altitude: 100.4,
+          max_altitude: 120,
+          enhanced_max_altitude: 120.8,
+          avg_altitude: 110,
+          enhanced_avg_altitude: 110.6,
+        }),
+      ],
+      'session-1',
+    );
+    expect(laps[0].avgSpeed).toBe(6.267);
+    expect(laps[0].maxSpeed).toBe(8.35);
+    expect(laps[0].minAltitude).toBe(100.4);
+    expect(laps[0].maxAltitude).toBe(120.8);
+    expect(laps[0].avgAltitude).toBe(110.6);
+  });
+
+  it('falls back to legacy fields when enhanced are missing', () => {
+    const laps = mapFitLaps(
+      [
+        makeFitLap({
+          avg_speed: 6.0,
+          max_speed: 8.0,
+          min_altitude: 100,
+          max_altitude: 120,
+          avg_altitude: 110,
+        }),
+      ],
+      'session-1',
+    );
+    expect(laps[0].avgSpeed).toBe(6.0);
+    expect(laps[0].maxSpeed).toBe(8.0);
+    expect(laps[0].minAltitude).toBe(100);
+    expect(laps[0].maxAltitude).toBe(120);
+    expect(laps[0].avgAltitude).toBe(110);
+  });
+
   it('maps multiple laps preserving order', () => {
     const fitLaps = [
       makeFitLap({ message_index: { value: 0 }, repetition_num: 1 }),
