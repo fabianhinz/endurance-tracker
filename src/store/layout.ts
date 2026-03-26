@@ -14,6 +14,8 @@ interface LayoutState {
   setMapPitch: (pitch: 0 | 30 | 60) => void;
   demoMode: boolean;
   setDemoMode: (v: boolean) => void;
+  mobileMapActive: boolean;
+  toggleMobileMap: () => void;
 }
 
 export const useLayoutStore = create<LayoutState>()(
@@ -36,17 +38,26 @@ export const useLayoutStore = create<LayoutState>()(
         setMapPitch: (pitch) => set({ mapPitch: pitch }),
         demoMode: false,
         setDemoMode: (v) => set({ demoMode: v }),
+        mobileMapActive: false,
+        toggleMobileMap: () =>
+          set((draft) => {
+            draft.mobileMapActive = !draft.mobileMapActive;
+          }),
       }),
       {
         name: 'store-layout',
         storage: createJSONStorage(() => idbStorage),
         skipHydration: true,
-        version: 2,
+        version: 3,
         migrate: (persisted, version) => {
+          const state = persisted as Record<string, unknown>;
           if (version < 2) {
-            return { ...(persisted as object), demoMode: false };
+            state.demoMode = false;
           }
-          return persisted as LayoutState;
+          if (version < 3) {
+            state.mobileMapActive = false;
+          }
+          return state as unknown as LayoutState;
         },
       },
     ),

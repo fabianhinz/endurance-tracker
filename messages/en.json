@@ -171,6 +171,8 @@
   "ui_dock_sport_run": "Run",
   "ui_dock_sport_cycle": "Cycle",
   "ui_dock_sport_swim": "Swim",
+  "ui_dock_show_map": "Show map",
+  "ui_dock_hide_map": "Hide map",
   "ui_pb_longest": "Longest",
   "ui_pb_elevation_gain": "Elevation Gain",
   "ui_sub_sport_road": "Road",

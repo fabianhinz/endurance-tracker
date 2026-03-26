@@ -10,6 +10,7 @@ import {
   Activity,
   Clock,
   HeartPulse,
+  Map,
 } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import { useFileUpload } from '@/features/sessions/hooks/useFileUpload.ts';
@@ -20,6 +21,8 @@ import { useSlideIndicator } from '@/components/ui/SlideIndicator.tsx';
 import { useDockExpanded } from '@/lib/hooks/useDockExpanded.ts';
 import { useFiltersStore } from '@/store/filters.ts';
 import { Button } from '@/components/ui/Button.tsx';
+import { ToggleButton } from '@/components/ui/ToggleButton.tsx';
+import { useLayoutStore } from '@/store/layout.ts';
 import { DockRevealPanel } from './DockRevealPanel.tsx';
 import { DockFilterOptions } from './DockFilterOptions.tsx';
 import { sportIcon } from '@/lib/sportIcons.ts';
@@ -97,6 +100,8 @@ export const Dock = () => {
       prev.includes(layer) ? prev.filter((l) => l !== layer) : ['menu' as const, layer],
     );
   }, []);
+
+  const mobileMapActive = useLayoutStore((s) => s.mobileMapActive);
 
   // Filter state
   const sportFilter = useFiltersStore((s) => s.sportFilter);
@@ -219,6 +224,18 @@ export const Dock = () => {
           className="relative flex flex-row lg:flex-col items-center justify-center p-2 lg:order-1"
         >
           {indicatorElement}
+
+          <ToggleButton
+            pressed={mobileMapActive}
+            onPressedChange={() => useLayoutStore.getState().toggleMobileMap()}
+            aria-label={mobileMapActive ? m.ui_dock_hide_map() : m.ui_dock_show_map()}
+            className={cn('lg:hidden', dockExpanded ? dockItemMaxiClass : dockItemMiniClass)}
+          >
+            <Map size={20} strokeWidth={1.5} />
+            {dockExpanded && (
+              <span className="text-[10px] leading-none">{m.ui_dock_show_map()}</span>
+            )}
+          </ToggleButton>
 
           {tabs.map((tab, i) => (
             <NavLink
