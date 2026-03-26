@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+import { cn } from '@/lib/utils.ts';
 import { useMatch } from 'react-router-dom';
 import MapGL from 'react-map-gl/maplibre';
 import { darkMatterStyle } from './mapStyle.ts';
@@ -21,7 +22,11 @@ const PROGRESS_STROKE = 2.5;
 const PROGRESS_RADIUS = (PROGRESS_SIZE - PROGRESS_STROKE) / 2;
 const PROGRESS_CIRCUMFERENCE = 2 * Math.PI * PROGRESS_RADIUS;
 
-export const MapBackground = () => {
+interface MapBackgroundProps {
+  className?: string;
+}
+
+export const MapBackground = (props: MapBackgroundProps) => {
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const mapRef = useRef<MapRef>(null);
@@ -34,6 +39,7 @@ export const MapBackground = () => {
   const focusedRecords = useMapFocusStore((s) => s.focusedRecords);
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
+  const mobileMapActive = useLayoutStore((s) => s.mobileMapActive);
   const mapPitch = useLayoutStore((s) => s.mapPitch);
 
   const match = useMatch('/sessions/:id');
@@ -48,7 +54,10 @@ export const MapBackground = () => {
   const backfillOffset = PROGRESS_CIRCUMFERENCE * (1 - backfillPct);
 
   return (
-    <div className="fixed inset-0 z-0" onPointerLeave={popupState.onPointerLeave}>
+    <div
+      className={cn('fixed inset-0 z-0', props.className)}
+      onPointerLeave={popupState.onPointerLeave}
+    >
       <MapGL
         ref={mapRef}
         onLoad={() => setMapLoaded(true)}
@@ -63,7 +72,7 @@ export const MapBackground = () => {
         dragPan={popupState.interactive}
         doubleClickZoom={popupState.interactive}
         keyboard={popupState.interactive}
-        touchZoomRotate={false}
+        touchZoomRotate={mobileMapActive && popupState.interactive}
         dragRotate={false}
         pitchWithRotate={false}
         touchPitch={false}

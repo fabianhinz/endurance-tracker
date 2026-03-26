@@ -10,6 +10,7 @@ import { useLocalSparklines } from './hooks/useLocalSparklines.ts';
 import { usePopupPosition } from '../map/hooks/usePopupPosition.ts';
 import { useDismiss } from '../map/hooks/useDismiss.ts';
 import { cn } from '@/lib/utils.ts';
+import { useLayoutStore } from '@/store/layout.ts';
 import type { TrainingSession } from '@/packages/engine/types.ts';
 import { m } from '@/paraglide/messages.js';
 
@@ -79,7 +80,12 @@ export const SessionsPickPopup = (props: SessionsPickPopupProps) => {
               syncId={`${session.id}-source:pickPopup`}
               isToggled={sparklines.toggledIds.has(session.id)}
               onToggleSparkline={() => sparklines.toggle(session.id)}
-              onNavigate={props.onClose}
+              onNavigate={() => {
+                props.onClose();
+                if (useLayoutStore.getState().mobileMapActive) {
+                  useLayoutStore.getState().toggleMobileMap();
+                }
+              }}
             />
           ))}
         </div>

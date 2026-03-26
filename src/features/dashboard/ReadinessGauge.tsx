@@ -6,6 +6,15 @@ import { tokens } from '@/lib/tokens.ts';
 import { statusTextClass, statusFill } from '@/lib/statusColors.ts';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { GaugeDial } from '@/components/ui/GaugeDial.tsx';
+import type { FormStatus } from '@/packages/engine/types.ts';
+
+const readinessLabel: Record<FormStatus, () => string> = {
+  detraining: m.ui_readiness_detraining,
+  fresh: m.ui_readiness_fresh,
+  neutral: m.ui_readiness_neutral,
+  optimal: m.ui_readiness_optimal,
+  overload: m.ui_readiness_overload,
+};
 
 const TSB_ZONES = [
   { from: -40, to: -30, color: tokens.statusDangerStrong },
@@ -19,17 +28,10 @@ export const ReadinessGauge = () => {
   const metrics = useMetrics();
   const tsb = metrics.current?.tsb ?? 0;
 
-  let coachingLabel: string;
-  if (metrics.coaching.status === 'fresh') {
-    coachingLabel = m.ui_readiness_go();
-  } else if (metrics.coaching.status === 'overload') {
-    coachingLabel = m.ui_readiness_no_go();
-  } else {
-    coachingLabel = metrics.coaching.status;
-  }
+  const coachingLabel = readinessLabel[metrics.coaching.status]();
 
   return (
-    <div className="flex gap-1 flex-1 h-full flex-col items-center justify-end">
+    <div className="w-28 flex gap-1 flex-1 h-full flex-col items-center justify-end">
       <div className="relative w-full max-w-[160px]">
         <GaugeDial
           min={-40}
@@ -48,7 +50,11 @@ export const ReadinessGauge = () => {
           </Typography>
         </div>
       </div>
-      <Typography variant="overline" as="p" className={statusTextClass[metrics.coaching.status]}>
+      <Typography
+        variant="overline"
+        as="p"
+        className={cn('whitespace-nowrap', statusTextClass[metrics.coaching.status])}
+      >
         {coachingLabel}
       </Typography>
       <MetricLabel metricId="tsb" size="sm" />

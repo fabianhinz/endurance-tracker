@@ -4,7 +4,7 @@ import {
   LayoutDashboard,
   Zap,
   Settings,
-  Ellipsis,
+  EllipsisVertical,
   Upload,
   X,
   Activity,
@@ -20,6 +20,7 @@ import { useSlideIndicator } from '@/components/ui/SlideIndicator.tsx';
 import { useDockExpanded } from '@/lib/hooks/useDockExpanded.ts';
 import { useFiltersStore } from '@/store/filters.ts';
 import { Button } from '@/components/ui/Button.tsx';
+import { MobileMapFab } from './MobileMapFab.tsx';
 import { DockRevealPanel } from './DockRevealPanel.tsx';
 import { DockFilterOptions } from './DockFilterOptions.tsx';
 import { sportIcon } from '@/lib/sportIcons.ts';
@@ -136,201 +137,210 @@ export const Dock = () => {
 
   return (
     <>
-      <nav
+      <div
         data-layout="dock"
         className={cn(
-          cardClass,
-          'fixed z-50 lg:flex-row lg:items-center',
-          'border-0 border-t rounded-none bottom-0 inset-x-0',
-          'lg:border lg:rounded-2xl lg:inset-x-auto lg:bottom-auto lg:left-3 lg:top-1/2 lg:-translate-y-1/2',
+          'fixed z-50',
+          'bottom-0 inset-x-0',
+          'lg:inset-x-auto lg:bottom-auto lg:left-3 lg:top-1/2 lg:-translate-y-1/2',
           'transition-all duration-300',
         )}
       >
-        {/* Filter options panels (Level C) — top on mobile, rightmost on desktop */}
-        <DockRevealPanel open={isOpen('sport-filter')} className="lg:order-3">
-          <DockFilterOptions
-            options={sportOptions}
-            value={sportFilter}
-            onValueChange={(v) => {
-              useFiltersStore.getState().setSportFilter(v as Sport | 'all');
-              closeFrom('sport-filter');
-            }}
-          />
-        </DockRevealPanel>
-
-        <DockRevealPanel open={isOpen('time-filter')} className="lg:order-3">
-          <DockFilterOptions
-            options={timeFilterOptions}
-            value={timeRange}
-            onValueChange={(v) => {
-              useFiltersStore.getState().setTimeRange(v as TimeRange);
-              closeFrom('time-filter');
-            }}
-          />
-        </DockRevealPanel>
-
-        {/* Mini dock menu panel (Level B) — between dock bar and filters on desktop */}
-        <DockRevealPanel open={isOpen('menu') && !dockExpanded} className="lg:order-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={revealItemClass}
-            disabled={upload.uploading || !upload.profile}
-            onClick={() => {
-              upload.triggerUpload();
-              closeFrom('menu');
-            }}
-            aria-label={m.ui_dock_upload_fit()}
-          >
-            <Upload size={20} strokeWidth={1.5} />
-            <span className="text-[10px] leading-none">{m.ui_btn_upload()}</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              revealItemClass,
-              isOpen('sport-filter') && 'bg-white/10 text-text-primary',
-            )}
-            onClick={() => toggleMiniFilter('sport-filter')}
-            aria-label={m.ui_dock_sport_filter()}
-          >
-            <SportIcon size={20} strokeWidth={1.5} />
-            <span className="text-[10px] leading-none">{m.ui_dock_sport()}</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              revealItemClass,
-              isOpen('time-filter') && 'bg-white/10 text-text-primary',
-            )}
-            onClick={() => toggleMiniFilter('time-filter')}
-            aria-label={m.ui_dock_time_filter()}
-          >
-            <Clock size={20} strokeWidth={1.5} />
-            <span className="text-[10px] leading-none">{m.ui_dock_range()}</span>
-          </Button>
-        </DockRevealPanel>
-
-        {/* Main dock bar */}
-        <div
-          ref={dockBarRef}
-          className="relative flex flex-row lg:flex-col items-center justify-center p-2 lg:order-1"
+        <MobileMapFab />
+        <nav
+          className={cn(
+            cardClass,
+            'lg:flex-row lg:items-center',
+            'border-0 border-t rounded-none',
+            'lg:border lg:rounded-2xl',
+          )}
         >
-          {indicatorElement}
-
-          {tabs.map((tab, i) => (
-            <NavLink
-              key={tab.to}
-              ref={(el) => {
-                tabRefs.current[i] = el;
+          {/* Filter options panels (Level C) — top on mobile, rightmost on desktop */}
+          <DockRevealPanel open={isOpen('sport-filter')} className="lg:order-3">
+            <DockFilterOptions
+              options={sportOptions}
+              value={sportFilter}
+              onValueChange={(v) => {
+                useFiltersStore.getState().setSportFilter(v as Sport | 'all');
+                closeFrom('sport-filter');
               }}
-              to={tab.to}
-              end={tab.to === '/'}
-              onClick={closeAll}
-              aria-label={tab.label()}
-              className={({ isActive }) =>
-                cn(
-                  'relative flex items-center justify-center rounded-lg transition-all duration-300 overflow-hidden',
-                  dockExpanded ? dockItemMaxiClass : 'w-12 lg:w-10 h-10',
-                  isActive
-                    ? 'text-text-primary'
-                    : 'text-text-tertiary hover:bg-white/10 hover:text-text-primary',
-                )
-              }
-            >
-              <tab.icon size={20} strokeWidth={1.5} />
-              {dockExpanded && <span className="text-[10px] leading-none">{tab.label()}</span>}
-            </NavLink>
-          ))}
+            />
+          </DockRevealPanel>
 
-          {/* Separator */}
-          <div
-            className={cn(
-              'bg-white/10 shrink-0 transition-all duration-300',
-              'w-px h-6 mx-1 lg:w-6 lg:h-px lg:my-1 lg:mx-0',
-            )}
-          />
+          <DockRevealPanel open={isOpen('time-filter')} className="lg:order-3">
+            <DockFilterOptions
+              options={timeFilterOptions}
+              value={timeRange}
+              onValueChange={(v) => {
+                useFiltersStore.getState().setTimeRange(v as TimeRange);
+                closeFrom('time-filter');
+              }}
+            />
+          </DockRevealPanel>
 
-          {dockExpanded ? (
-            <>
-              {/* Filter buttons in maxi dock */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  dockItemMaxiClass,
-                  isOpen('sport-filter') && 'bg-white/10 text-text-primary',
-                )}
-                onClick={() => toggleMaxiFilter('sport-filter')}
-                aria-label={m.ui_dock_sport_filter()}
-              >
-                <SportIcon size={20} strokeWidth={1.5} />
-                <span className="text-[10px] leading-none truncate max-w-14">{sportLabel}</span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  dockItemMaxiClass,
-                  isOpen('time-filter') && 'bg-white/10 text-text-primary',
-                )}
-                onClick={() => toggleMaxiFilter('time-filter')}
-                aria-label={m.ui_dock_time_filter()}
-              >
-                <Clock size={20} strokeWidth={1.5} />
-                <span className="text-[10px] leading-none truncate max-w-14">{timeLabel}</span>
-              </Button>
-
-              {/* Separator */}
-              <div
-                className={cn(
-                  'bg-white/10 shrink-0 transition-all duration-300',
-                  'w-px h-6 mx-1 lg:w-6 lg:h-px lg:my-1 lg:mx-0',
-                )}
-              />
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className={dockItemMaxiClass}
-                disabled={upload.uploading || !upload.profile}
-                onClick={upload.triggerUpload}
-                aria-label={m.ui_dock_upload_fit()}
-              >
-                <Upload size={20} strokeWidth={1.5} />
-                <span className="text-[10px] leading-none">{m.ui_btn_upload()}</span>
-              </Button>
-            </>
-          ) : (
+          {/* Mini dock menu panel (Level B) — between dock bar and filters on desktop */}
+          <DockRevealPanel open={isOpen('menu') && !dockExpanded} className="lg:order-2">
             <Button
               variant="ghost"
               size="icon"
-              className={dockItemMiniClass}
-              onClick={() => setRevealStack((prev) => (prev.includes('menu') ? [] : ['menu']))}
-              aria-label={isOpen('menu') ? m.ui_dock_close_menu() : m.ui_dock_more_actions()}
+              className={revealItemClass}
+              disabled={upload.uploading || !upload.profile}
+              onClick={() => {
+                upload.triggerUpload();
+                closeFrom('menu');
+              }}
+              aria-label={m.ui_dock_upload_fit()}
             >
-              {isOpen('menu') ? (
-                <X size={20} strokeWidth={1.5} />
-              ) : (
-                <Ellipsis size={20} strokeWidth={1.5} />
-              )}
+              <Upload size={20} strokeWidth={1.5} />
+              <span className="text-[10px] leading-none">{m.ui_btn_upload()}</span>
             </Button>
-          )}
-        </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                revealItemClass,
+                isOpen('sport-filter') && 'bg-white/10 text-text-primary',
+              )}
+              onClick={() => toggleMiniFilter('sport-filter')}
+              aria-label={m.ui_dock_sport_filter()}
+            >
+              <SportIcon size={20} strokeWidth={1.5} />
+              <span className="text-[10px] leading-none">{m.ui_dock_sport()}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                revealItemClass,
+                isOpen('time-filter') && 'bg-white/10 text-text-primary',
+              )}
+              onClick={() => toggleMiniFilter('time-filter')}
+              aria-label={m.ui_dock_time_filter()}
+            >
+              <Clock size={20} strokeWidth={1.5} />
+              <span className="text-[10px] leading-none">{m.ui_dock_range()}</span>
+            </Button>
+          </DockRevealPanel>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={UPLOAD_EXTENSIONS.join(',')}
-          multiple
-          className="hidden"
-          onChange={(e) => e.target.files && upload.handleFiles(e.target.files)}
-          disabled={upload.uploading}
-        />
-      </nav>
+          {/* Main dock bar */}
+          <div
+            ref={dockBarRef}
+            className="relative flex flex-row lg:flex-col items-center justify-center p-2 lg:order-1"
+          >
+            {indicatorElement}
+
+            {tabs.map((tab, i) => (
+              <NavLink
+                key={tab.to}
+                ref={(el) => {
+                  tabRefs.current[i] = el;
+                }}
+                to={tab.to}
+                end={tab.to === '/'}
+                onClick={closeAll}
+                aria-label={tab.label()}
+                className={({ isActive }) =>
+                  cn(
+                    'relative flex items-center justify-center rounded-lg transition-all duration-300 overflow-hidden',
+                    dockExpanded ? dockItemMaxiClass : 'w-12 lg:w-10 h-10',
+                    isActive
+                      ? 'text-text-primary'
+                      : 'text-text-tertiary hover:bg-white/10 hover:text-text-primary',
+                  )
+                }
+              >
+                <tab.icon size={20} strokeWidth={1.5} />
+                {dockExpanded && <span className="text-[10px] leading-none">{tab.label()}</span>}
+              </NavLink>
+            ))}
+
+            {/* Separator */}
+            <div
+              className={cn(
+                'bg-white/10 shrink-0 transition-all duration-300',
+                'w-px h-6 mx-1 lg:w-6 lg:h-px lg:my-1 lg:mx-0',
+              )}
+            />
+
+            {dockExpanded ? (
+              <>
+                {/* Filter buttons in maxi dock */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    dockItemMaxiClass,
+                    isOpen('sport-filter') && 'bg-white/10 text-text-primary',
+                  )}
+                  onClick={() => toggleMaxiFilter('sport-filter')}
+                  aria-label={m.ui_dock_sport_filter()}
+                >
+                  <SportIcon size={20} strokeWidth={1.5} />
+                  <span className="text-[10px] leading-none truncate max-w-14">{sportLabel}</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    dockItemMaxiClass,
+                    isOpen('time-filter') && 'bg-white/10 text-text-primary',
+                  )}
+                  onClick={() => toggleMaxiFilter('time-filter')}
+                  aria-label={m.ui_dock_time_filter()}
+                >
+                  <Clock size={20} strokeWidth={1.5} />
+                  <span className="text-[10px] leading-none truncate max-w-14">{timeLabel}</span>
+                </Button>
+
+                {/* Separator */}
+                <div
+                  className={cn(
+                    'bg-white/10 shrink-0 transition-all duration-300',
+                    'w-px h-6 mx-1 lg:w-6 lg:h-px lg:my-1 lg:mx-0',
+                  )}
+                />
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={dockItemMaxiClass}
+                  disabled={upload.uploading || !upload.profile}
+                  onClick={upload.triggerUpload}
+                  aria-label={m.ui_dock_upload_fit()}
+                >
+                  <Upload size={20} strokeWidth={1.5} />
+                  <span className="text-[10px] leading-none">{m.ui_btn_upload()}</span>
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={dockItemMiniClass}
+                onClick={() => setRevealStack((prev) => (prev.includes('menu') ? [] : ['menu']))}
+                aria-label={isOpen('menu') ? m.ui_dock_close_menu() : m.ui_dock_more_actions()}
+              >
+                {isOpen('menu') ? (
+                  <X size={20} strokeWidth={1.5} />
+                ) : (
+                  <EllipsisVertical size={20} strokeWidth={1.5} />
+                )}
+              </Button>
+            )}
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={UPLOAD_EXTENSIONS.join(',')}
+            multiple
+            className="hidden"
+            onChange={(e) => e.target.files && upload.handleFiles(e.target.files)}
+            disabled={upload.uploading}
+          />
+        </nav>
+      </div>
 
       {/* Backdrop — closes reveals on click, purely in React's event system */}
       {revealStack.length > 0 && (

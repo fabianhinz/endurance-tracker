@@ -8,6 +8,7 @@ describe('useLayoutStore', () => {
       compactLayout: false,
       onboardingComplete: false,
       demoMode: false,
+      mobileMapActive: false,
     });
   });
 
@@ -71,5 +72,16 @@ describe('useLayoutStore', () => {
     useLayoutStore.getState().setDemoMode(true);
     useLayoutStore.getState().setDemoMode(false);
     expect(useLayoutStore.getState().demoMode).toBe(false);
+  });
+
+  it('toggleMobileMap flips to true', () => {
+    useLayoutStore.getState().toggleMobileMap();
+    expect(useLayoutStore.getState().mobileMapActive).toBe(true);
+  });
+
+  it('double toggleMobileMap returns to false', () => {
+    useLayoutStore.getState().toggleMobileMap();
+    useLayoutStore.getState().toggleMobileMap();
+    expect(useLayoutStore.getState().mobileMapActive).toBe(false);
   });
 });
