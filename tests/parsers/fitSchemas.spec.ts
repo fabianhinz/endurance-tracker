@@ -1,50 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   enumStr,
-  fitUserProfileSchema,
   fitRecordSchema,
   fitRecordsSchema,
   fitLapSchema,
   fitLapsSchema,
-  fitSessionEnumsSchema,
 } from '@/parsers/fitSchemas.ts';
-
-describe('fitUserProfileSchema', () => {
-  it('accepts a full profile', () => {
-    const result = fitUserProfileSchema.safeParse({
-      weight: 75,
-      gender: 'male',
-      resting_heart_rate: 52,
-    });
-    expect(result.success).toBe(true);
-    expect(result.data).toEqual({
-      weight: 75,
-      gender: 'male',
-      resting_heart_rate: 52,
-    });
-  });
-
-  it('accepts empty object (all fields optional)', () => {
-    const result = fitUserProfileSchema.safeParse({});
-    expect(result.success).toBe(true);
-    expect(result.data?.weight).toBeUndefined();
-    expect(result.data?.gender).toBeUndefined();
-    expect(result.data?.resting_heart_rate).toBeUndefined();
-  });
-
-  it('rejects non-object input', () => {
-    expect(fitUserProfileSchema.safeParse(null).success).toBe(false);
-    expect(fitUserProfileSchema.safeParse('hello').success).toBe(false);
-  });
-
-  it('rejects wrong field types', () => {
-    const result = fitUserProfileSchema.safeParse({
-      weight: 'heavy',
-      resting_heart_rate: true,
-    });
-    expect(result.success).toBe(false);
-  });
-});
 
 describe('fitRecordSchema', () => {
   it('accepts a full record', () => {
@@ -233,28 +194,6 @@ describe('enumStr', () => {
   });
 });
 
-describe('fitSessionEnumsSchema', () => {
-  it('accepts string sport and sub_sport', () => {
-    const result = fitSessionEnumsSchema.safeParse({ sport: 'running', sub_sport: 'trail' });
-    expect(result.success).toBe(true);
-    expect(result.data).toEqual({ sport: 'running', sub_sport: 'trail' });
-  });
-
-  it('coerces numeric sport/sub_sport to undefined', () => {
-    const result = fitSessionEnumsSchema.safeParse({ sport: 99, sub_sport: 255 });
-    expect(result.success).toBe(true);
-    expect(result.data?.sport).toBeUndefined();
-    expect(result.data?.sub_sport).toBeUndefined();
-  });
-
-  it('accepts empty object', () => {
-    const result = fitSessionEnumsSchema.safeParse({});
-    expect(result.success).toBe(true);
-    expect(result.data?.sport).toBeUndefined();
-    expect(result.data?.sub_sport).toBeUndefined();
-  });
-});
-
 describe('fitLapSchema enumStr fields', () => {
   it('coerces numeric intensity to undefined', () => {
     const result = fitLapSchema.safeParse({ intensity: 255 });
@@ -266,19 +205,5 @@ describe('fitLapSchema enumStr fields', () => {
     const result = fitLapSchema.safeParse({ intensity: 'rest' });
     expect(result.success).toBe(true);
     expect(result.data?.intensity).toBe('rest');
-  });
-});
-
-describe('fitUserProfileSchema enumStr fields', () => {
-  it('coerces numeric gender to undefined', () => {
-    const result = fitUserProfileSchema.safeParse({ gender: 0 });
-    expect(result.success).toBe(true);
-    expect(result.data?.gender).toBeUndefined();
-  });
-
-  it('keeps string gender', () => {
-    const result = fitUserProfileSchema.safeParse({ gender: 'female' });
-    expect(result.success).toBe(true);
-    expect(result.data?.gender).toBe('female');
   });
 });

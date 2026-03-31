@@ -39,7 +39,6 @@ export const MapBackground = (props: MapBackgroundProps) => {
   const focusedRecords = useMapFocusStore((s) => s.focusedRecords);
   const openedSessionId = useMapFocusStore((s) => s.openedSessionId);
   const compactLayout = useLayoutStore((s) => s.compactLayout);
-  const mobileMapActive = useLayoutStore((s) => s.mobileMapActive);
   const mapPitch = useLayoutStore((s) => s.mapPitch);
 
   const match = useMatch('/sessions/:id');
@@ -72,7 +71,7 @@ export const MapBackground = (props: MapBackgroundProps) => {
         dragPan={popupState.interactive}
         doubleClickZoom={popupState.interactive}
         keyboard={popupState.interactive}
-        touchZoomRotate={mobileMapActive && popupState.interactive}
+        touchZoomRotate={popupState.interactive}
         dragRotate={false}
         pitchWithRotate={false}
         touchPitch={false}

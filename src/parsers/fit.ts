@@ -14,10 +14,8 @@ import { extractSessionName } from '@/lib/filename.ts';
 import { generateFingerprint } from '@/lib/fingerprint.ts';
 import {
   fitFileIdSchema,
-  fitUserProfileSchema,
   fitRecordsSchema,
   fitLapsSchema,
-  fitSessionEnumsSchema,
   type FitLapInput,
 } from './fitSchemas.ts';
 
@@ -37,7 +35,7 @@ export interface ParsedFitResult {
 
 export type ParsedFitResultWithMeta = ParsedFitResult & { fileName: string; rawData: ArrayBuffer };
 
-const mapFitSportToAppSport = (fitSport?: string): Sport => {
+const mapFitSportToAppSport = (fitSport?: string): Sport | undefined => {
   switch (fitSport) {
     case 'running':
       return 'running';
@@ -48,7 +46,7 @@ const mapFitSportToAppSport = (fitSport?: string): Sport => {
     case 'open_water':
       return 'swimming';
     default:
-      return 'cycling'; // default fallback
+      return;
   }
 };
 
@@ -157,32 +155,19 @@ export const parseFitFile = async (
 
   const fitSession = data.sessions?.[0];
   const fitRecords = data.records ?? [];
-  const sessionEnums = fitSessionEnumsSchema.safeParse(fitSession);
-  let validatedSport: string | undefined;
-  let validatedSubSport: string | undefined;
-  if (sessionEnums.success) {
-    validatedSport = sessionEnums.data.sport;
-    validatedSubSport = sessionEnums.data.sub_sport;
+  const sessionId = v4();
+
+  const sport = mapFitSportToAppSport(fitSession?.sport);
+  if (!sport) {
+    throw new Error(`Failed to parse FIT file "${fileName}": sport is not supported`);
   }
 
-  const sessionId = v4();
-  const sport = mapFitSportToAppSport(validatedSport);
-
-  // Extract user profile from FIT file (if available)
-  const profileResult = fitUserProfileSchema.safeParse(data.user_profile);
-  let fitUserProfile: FitUserProfile | undefined = undefined;
-  if (profileResult.success) {
-    let gender: 'male' | 'female' | undefined = undefined;
-    if (profileResult.data.gender === 'female') {
-      gender = 'female';
-    } else if (profileResult.data.gender === 'male') {
-      gender = 'male';
-    }
-    fitUserProfile = {
-      weight: profileResult.data.weight,
-      gender,
-      restingHeartRate: profileResult.data.resting_heart_rate,
-    };
+  let sessionDate: number | undefined = undefined;
+  if (fitSession?.start_time) {
+    sessionDate = new Date(fitSession.start_time).getTime();
+  }
+  if (sessionDate === undefined) {
+    throw new Error(`Failed to parse FIT file "${fileName}": start_time is missing`);
   }
 
   // Transform FIT records to app records
@@ -243,10 +228,6 @@ export const parseFitFile = async (
   if (sport === 'running') {
     gap = calculateGAP(records);
   }
-  let sessionDate = Date.now();
-  if (fitSession?.start_time) {
-    sessionDate = new Date(fitSession.start_time).getTime();
-  }
 
   const avgSpeed = fitSession?.enhanced_avg_speed ?? fitSession?.avg_speed;
   const name = extractSessionName(fileName);
@@ -289,7 +270,7 @@ export const parseFitFile = async (
     elevationGain: fitSession?.total_ascent,
     elevationLoss: fitSession?.total_descent,
     movingTime,
-    subSport: validatedSubSport,
+    subSport: fitSession?.sub_sport,
     deviceTss: fitSession?.training_stress_score,
     deviceIf: fitSession?.intensity_factor,
     deviceFtp: fitSession?.threshold_power,
@@ -309,5 +290,5 @@ export const parseFitFile = async (
     fingerprint,
   };
 
-  return { session, records, laps, fitUserProfile, fingerprint };
+  return { session, records, laps, fingerprint };
 };
