@@ -12,28 +12,10 @@ export const enumStr = z
     return undefined;
   });
 
-// ---------------------------------------------------------------------------
-// File ID
-// ---------------------------------------------------------------------------
-
 export const fitFileIdSchema = z.object({
   serial_number: optNum,
   time_created: z.union([z.string(), z.date()]),
 });
-
-// ---------------------------------------------------------------------------
-// User Profile
-// ---------------------------------------------------------------------------
-
-export const fitUserProfileSchema = z.object({
-  weight: optNum,
-  gender: enumStr,
-  resting_heart_rate: optNum,
-});
-
-// ---------------------------------------------------------------------------
-// Record (single data point)
-// ---------------------------------------------------------------------------
 
 export const fitRecordSchema = z.object({
   elapsed_time: optNum,
@@ -52,10 +34,6 @@ export const fitRecordSchema = z.object({
 });
 
 export const fitRecordsSchema = z.array(fitRecordSchema);
-
-// ---------------------------------------------------------------------------
-// Lap
-// ---------------------------------------------------------------------------
 
 export const fitLapSchema = z.object({
   start_time: optDateTime,
@@ -89,12 +67,3 @@ export const fitLapSchema = z.object({
 export const fitLapsSchema = z.array(fitLapSchema);
 
 export type FitLapInput = z.infer<typeof fitLapSchema>;
-
-// ---------------------------------------------------------------------------
-// Session enums (sport/sub_sport bypass the session schema — validate here)
-// ---------------------------------------------------------------------------
-
-export const fitSessionEnumsSchema = z.object({
-  sport: enumStr,
-  sub_sport: enumStr,
-});
