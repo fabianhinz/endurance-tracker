@@ -22,7 +22,7 @@ import { useFiltersStore } from '@/store/filters.ts';
 import { Button } from '@/components/ui/Button.tsx';
 import { MobileMapFab } from './MobileMapFab.tsx';
 import { DockRevealPanel } from './DockRevealPanel.tsx';
-import { DockFilterOptions } from './DockFilterOptions.tsx';
+import { DockFilterOptions, type FilterOption } from './DockFilterOptions.tsx';
 import { sportIcon } from '@/lib/sportIcons.ts';
 import {
   type TimeRange,
@@ -30,8 +30,8 @@ import {
   rangeLabelMap,
   formatCustomRangeDuration,
 } from '@/lib/timeRange.ts';
-import type { Sport } from '@/packages/engine/types.ts';
 import { UPLOAD_EXTENSIONS } from '@/lib/archive.ts';
+import type { Sport } from '@/packages/engine/types.ts';
 
 const tabs = [
   { to: '/', label: m.ui_nav_dashboard, icon: LayoutDashboard },
@@ -40,7 +40,7 @@ const tabs = [
   { to: '/settings', label: m.ui_nav_settings, icon: Settings },
 ];
 
-const sportOptions = [
+const sportOptions: FilterOption<Sport | 'all'>[] = [
   { value: 'all', label: m.ui_dock_sport_all() },
   { value: 'running', label: m.ui_dock_sport_run() },
   { value: 'cycling', label: m.ui_dock_sport_cycle() },
@@ -112,7 +112,7 @@ export const Dock = () => {
       ? formatCustomRangeDuration(customRange)
       : rangeLabelMap[timeRange];
 
-  const timeFilterOptions =
+  const timeFilterOptions: FilterOption<TimeRange>[] =
     timeRange === 'custom' && customRange
       ? [
           ...timeRangeOptions,
@@ -160,8 +160,8 @@ export const Dock = () => {
             <DockFilterOptions
               options={sportOptions}
               value={sportFilter}
-              onValueChange={(v) => {
-                useFiltersStore.getState().setSportFilter(v as Sport | 'all');
+              onValueChange={(newSportFilter) => {
+                useFiltersStore.getState().setSportFilter(newSportFilter);
                 closeFrom('sport-filter');
               }}
             />
@@ -171,8 +171,8 @@ export const Dock = () => {
             <DockFilterOptions
               options={timeFilterOptions}
               value={timeRange}
-              onValueChange={(v) => {
-                useFiltersStore.getState().setTimeRange(v as TimeRange);
+              onValueChange={(newTimeRange) => {
+                useFiltersStore.getState().setTimeRange(newTimeRange);
                 closeFrom('time-filter');
               }}
             />

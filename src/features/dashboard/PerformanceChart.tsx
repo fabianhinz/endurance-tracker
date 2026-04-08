@@ -1,92 +1,74 @@
 import { useMemo } from 'react';
 import {
   ComposedChart,
+  Line,
   Area,
   XAxis,
   YAxis,
-  ResponsiveContainer,
   Tooltip as RechartsTooltip,
+  ResponsiveContainer,
   CartesianGrid,
   ReferenceArea,
 } from 'recharts';
 import { useFilteredMetrics } from './hooks/useFilteredMetrics.ts';
 import { ChartPreviewCard } from '@/components/ui/ChartPreviewCard.tsx';
-import { Typography } from '@/components/ui/Typography.tsx';
 import { MetricLabel } from '@/components/ui/MetricLabel.tsx';
 import { useChartZoom } from '@/lib/hooks/useChartZoom.ts';
 import { chartTheme, formatChartDate } from '@/lib/chartTheme.ts';
 import { tokens } from '@/lib/tokens.ts';
-import { METRIC_EXPLANATIONS } from '@/lib/explanations.ts';
 import { rangeMap } from '@/lib/timeRange.ts';
 import type { TimeRange } from '@/lib/timeRange.ts';
 import { useDashboardChartZoom } from './hooks/useDashboardChartZoom.ts';
 import { m } from '@/paraglide/messages.js';
 
-const dayLabels = [
-  m.ui_day_mon,
-  m.ui_day_tue,
-  m.ui_day_wed,
-  m.ui_day_thu,
-  m.ui_day_fri,
-  m.ui_day_sat,
-  m.ui_day_sun,
-];
-
-export const WeeklyLoadChart = () => {
+export const PerformanceChart = () => {
   const metrics = useFilteredMetrics();
   const dashboardZoom = useDashboardChartZoom();
 
-  const chartData = useMemo(() => {
+  const filtered = useMemo(() => {
     if (dashboardZoom.range === 'custom' && dashboardZoom.customRange) {
       const range = dashboardZoom.customRange;
-      return metrics.history
-        .filter((d) => d.date >= range.from && d.date <= range.to)
-        .map((d) => ({ date: d.date, tss: d.tss }));
+      return metrics.history.filter((d) => d.date >= range.from && d.date <= range.to);
     }
     const days = rangeMap[dashboardZoom.range as Exclude<TimeRange, 'custom'>];
-    const sliced = days === Infinity ? metrics.history : metrics.history.slice(-days);
-    return sliced.map((d) => ({
-      date: d.date,
-      tss: d.tss,
-    }));
+    if (days === Infinity) return metrics.history;
+    return metrics.history.slice(-days);
   }, [metrics.history, dashboardZoom.range, dashboardZoom.customRange]);
 
   const zoom = useChartZoom({
-    data: chartData,
+    data: filtered,
     xKey: 'date',
     onZoomComplete: dashboardZoom.onZoomComplete,
     onZoomReset: dashboardZoom.onZoomReset,
   });
 
-  const tickFormatter = (v: string) => {
-    const d = new Date(v);
-    if (dashboardZoom.range === '7d') {
-      const label = dayLabels[(d.getDay() + 6) % 7];
-      if (label) return label();
-    }
-    return `${d.getMonth() + 1}/${d.getDate()}`;
-  };
-
   return (
     <ChartPreviewCard
-      title=""
-      titleSlot={
-        <div className="flex items-center gap-1 flex-1">
-          <Typography variant="title" as="h3">
-            {METRIC_EXPLANATIONS.tss.friendlyName}
-          </Typography>
-          <MetricLabel metricId="tss" size="sm" />
+      title={m.ui_metrics_chart_title()}
+      subtitle={m.ui_metrics_chart_subtitle()}
+      compactHeight="h-64"
+      footer={
+        <div className="flex items-center justify-center gap-6">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-4 rounded-sm bg-chart-fitness" />
+            <MetricLabel metricId="ctl" size="sm" />
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-4 rounded-sm bg-chart-fatigue" />
+            <MetricLabel metricId="atl" size="sm" />
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-4 rounded-sm bg-chart-form" />
+            <MetricLabel metricId="tsb" size="sm" />
+          </span>
         </div>
       }
-      subtitle={METRIC_EXPLANATIONS.tss.oneLiner}
-      compactHeight="h-64"
     >
       {(mode) => {
         const compact = mode === 'compact';
-        return chartData.length > 0 ? (
+        return filtered.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
-              syncId={compact ? 'dashboard' : undefined}
               data={zoom.zoomedData}
               onMouseDown={zoom.onMouseDown}
               onMouseMove={zoom.onMouseMove}
@@ -106,7 +88,10 @@ export const WeeklyLoadChart = () => {
                 tick={chartTheme.tick}
                 tickLine={false}
                 axisLine={chartTheme.axisLine}
-                tickFormatter={tickFormatter}
+                tickFormatter={(v: string) => {
+                  const d = new Date(v);
+                  return `${d.getMonth() + 1}/${d.getDate()}`;
+                }}
               />
               <YAxis
                 tick={chartTheme.tick}
@@ -123,13 +108,37 @@ export const WeeklyLoadChart = () => {
                 labelFormatter={(v) => formatChartDate(String(v))}
               />
               <Area
-                type="step"
-                dataKey="tss"
-                fill={tokens.chartLoad}
-                fillOpacity={1}
+                type="monotone"
+                dataKey="tsb"
+                fill={tokens.chartForm}
+                fillOpacity={0.1}
                 stroke="none"
+                tooltipType="none"
+              />
+              <Line
+                type="monotone"
+                dataKey="ctl"
+                stroke={tokens.chartFitness}
+                strokeWidth={2}
                 dot={false}
-                name={m.ui_chart_series_tss()}
+                name={m.ui_chart_series_fitness()}
+              />
+              <Line
+                type="monotone"
+                dataKey="atl"
+                stroke={tokens.chartFatigue}
+                strokeWidth={2}
+                dot={false}
+                name={m.ui_chart_series_fatigue()}
+              />
+              <Line
+                type="monotone"
+                dataKey="tsb"
+                stroke={tokens.chartForm}
+                strokeWidth={1.5}
+                strokeDasharray="4 4"
+                dot={false}
+                name={m.ui_chart_series_form()}
               />
               {zoom.refAreaLeft && zoom.refAreaRight && (
                 <ReferenceArea

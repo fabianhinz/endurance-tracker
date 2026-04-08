@@ -26,8 +26,8 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
   const isFullyExpanded = expandCard.isExpanded && !expandCard.isAnimating;
 
   return (
-    <div ref={cardRef} className={cn(glassClass, 'flex flex-col rounded-2xl overflow-hidden')}>
-      <div className="flex items-center px-4 py-2">
+    <div ref={cardRef} className={cn(glassClass, 'flex flex-col rounded-2xl overflow-hidden p-4')}>
+      <div className="flex items-center">
         {Icon && <Icon size={16} style={{ color: props.color }} />}
         {props.titleSlot ?? (
           <Typography variant="title" className={cn('flex-1 text-left', Icon && 'ml-2')}>
@@ -46,22 +46,20 @@ export const ChartPreviewCard = (props: ChartPreviewCardProps) => {
       </div>
 
       {props.subtitle && (
-        <Typography variant="caption" as="p" className="px-4 -mt-1 mb-1">
+        <Typography variant="caption" as="p" className="mb-2">
           {props.subtitle}
         </Typography>
       )}
 
       <div
         className={cn(
-          expandCard.isExpanded
-            ? 'flex-1 min-h-0 px-4 pb-4'
-            : `${props.compactHeight ?? 'h-[140px]'} px-2 pb-2`,
+          expandCard.isExpanded ? 'flex-1 min-h-0' : `${props.compactHeight ?? 'h-[140px]'}`,
         )}
       >
         {(ready || isFullyExpanded) && props.children(isFullyExpanded ? 'expanded' : 'compact')}
       </div>
 
-      {props.footer && <div className="px-4 pb-3">{props.footer}</div>}
+      {props.footer}
     </div>
   );
 };
