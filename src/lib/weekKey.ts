@@ -10,6 +10,15 @@ export const getMondayOfWeek = (dateStr: string): string => {
   return toDateString(d.getTime());
 };
 
+/**
+ * Returns the month key (YYYY-MM) for a given date string.
+ */
+export const getMonthKey = (dateStr: string): string => {
+  const d = new Date(dateStr + 'T00:00:00');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  return `${d.getFullYear()}-${month}`;
+};
+
 export const buildPlanCacheKey = (
   weekOf: string,
   sessionCount: number,

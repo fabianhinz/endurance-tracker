@@ -31,7 +31,7 @@ export const formatTick = (v: number, unit?: string): string => {
 
 export const formatChartDate = (isoDate: string): string => {
   const d = new Date(isoDate);
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' });
 };
 
 export const chartTheme = {

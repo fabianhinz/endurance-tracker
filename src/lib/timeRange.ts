@@ -1,3 +1,4 @@
+import type { FilterOption } from '@/components/layout/DockFilterOptions';
 import { m } from '@/paraglide/messages.js';
 
 export type TimeRange = '7d' | '30d' | '90d' | 'all' | 'custom';
@@ -47,7 +48,7 @@ export const formatCustomRangeDuration = (range: { from: string; to: string }): 
   return `~${days}d`;
 };
 
-export const timeRangeOptions = [
+export const timeRangeOptions: FilterOption<TimeRange>[] = [
   { value: 'all', label: m.ui_range_all_short() },
   { value: '7d', label: m.ui_range_7d_short() },
   { value: '30d', label: m.ui_range_30d_short() },
