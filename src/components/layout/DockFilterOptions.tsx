@@ -21,7 +21,6 @@ export const DockFilterOptions = <T extends string>(props: DockFilterOptionsProp
     <ToggleGroupPrimitive.Root
       type="single"
       value={props.value}
-      onValueChange={(v) => v && props.onValueChange(v as T)}
       className="flex flex-row lg:flex-col gap-1"
     >
       {props.options.map((opt) => (
@@ -29,6 +28,8 @@ export const DockFilterOptions = <T extends string>(props: DockFilterOptionsProp
           key={opt.value}
           value={opt.value}
           data-variant={opt.variant}
+          // we cannot use onValueChange of the ToggleGroupPrimitive. "Custom" trigger the RangePickerDialog
+          onClick={() => props.onValueChange(opt.value as T)}
           className={cn(itemClass)}
         >
           <span className="text-[10px] leading-none truncate w-full text-center">{opt.label}</span>

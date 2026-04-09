@@ -114,21 +114,16 @@ export const Dock = () => {
       ? formatCustomRangeShort(customRange)
       : rangeLabelMap[timeRange];
 
-  const customLabel =
-    timeRange === 'custom' && customRange
-      ? formatCustomRangeShort(customRange)
-      : m.ui_range_custom();
-
   const timeFilterOptions = useMemo<FilterOption<TimeRange>[]>(
     () => [
       ...timeRangeOptions,
       {
         value: 'custom',
-        label: customLabel,
+        label: m.ui_range_custom(),
         variant: timeRange === 'custom' ? ('accent' as const) : undefined,
       },
     ],
-    [customLabel, timeRange],
+    [timeRange],
   );
 
   // Escape key handler — pop top layer
@@ -182,10 +177,10 @@ export const Dock = () => {
                 if (newTimeRange === 'custom') {
                   setDatePickerOpen(true);
                   closeAll();
-                  return;
+                } else {
+                  useFiltersStore.getState().setTimeRange(newTimeRange);
+                  closeFrom('time-filter');
                 }
-                useFiltersStore.getState().setTimeRange(newTimeRange);
-                closeFrom('time-filter');
               }}
             />
           </DockRevealPanel>
@@ -262,7 +257,11 @@ export const Dock = () => {
                 }
               >
                 <tab.icon size={20} strokeWidth={1.5} />
-                {dockExpanded && <span className="text-[10px] leading-none truncate w-full text-center">{tab.label()}</span>}
+                {dockExpanded && (
+                  <span className="text-[10px] leading-none truncate w-full text-center">
+                    {tab.label()}
+                  </span>
+                )}
               </NavLink>
             ))}
 
