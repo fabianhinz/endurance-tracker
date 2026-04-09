@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -28,9 +28,10 @@ import {
   type TimeRange,
   timeRangeOptions,
   rangeLabelMap,
-  formatCustomRangeDuration,
+  formatCustomRangeShort,
 } from '@/lib/timeRange.ts';
 import { UPLOAD_EXTENSIONS } from '@/lib/archive.ts';
+import { DateRangePickerDialog } from './DateRangePickerDialog.tsx';
 import type { Sport } from '@/packages/engine/types.ts';
 
 const tabs = [
@@ -72,6 +73,7 @@ export const Dock = () => {
   useFileDropEffect(upload.handleFiles, !upload.uploading);
 
   const [revealStack, setRevealStack] = useState<DockRevealLayer[]>([]);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   const isOpen = useCallback(
     (layer: DockRevealLayer) => revealStack.includes(layer),
@@ -109,20 +111,25 @@ export const Dock = () => {
 
   const timeLabel =
     timeRange === 'custom' && customRange
-      ? formatCustomRangeDuration(customRange)
+      ? formatCustomRangeShort(customRange)
       : rangeLabelMap[timeRange];
 
-  const timeFilterOptions: FilterOption<TimeRange>[] =
+  const customLabel =
     timeRange === 'custom' && customRange
-      ? [
-          ...timeRangeOptions,
-          {
-            value: 'custom',
-            label: formatCustomRangeDuration(customRange),
-            variant: 'accent' as const,
-          },
-        ]
-      : timeRangeOptions;
+      ? formatCustomRangeShort(customRange)
+      : m.ui_range_custom();
+
+  const timeFilterOptions = useMemo<FilterOption<TimeRange>[]>(
+    () => [
+      ...timeRangeOptions,
+      {
+        value: 'custom',
+        label: customLabel,
+        variant: timeRange === 'custom' ? ('accent' as const) : undefined,
+      },
+    ],
+    [customLabel, timeRange],
+  );
 
   // Escape key handler — pop top layer
   useEffect(() => {
@@ -172,6 +179,11 @@ export const Dock = () => {
               options={timeFilterOptions}
               value={timeRange}
               onValueChange={(newTimeRange) => {
+                if (newTimeRange === 'custom') {
+                  setDatePickerOpen(true);
+                  closeAll();
+                  return;
+                }
                 useFiltersStore.getState().setTimeRange(newTimeRange);
                 closeFrom('time-filter');
               }}
@@ -250,7 +262,7 @@ export const Dock = () => {
                 }
               >
                 <tab.icon size={20} strokeWidth={1.5} />
-                {dockExpanded && <span className="text-[10px] leading-none">{tab.label()}</span>}
+                {dockExpanded && <span className="text-[10px] leading-none truncate w-full text-center">{tab.label()}</span>}
               </NavLink>
             ))}
 
@@ -341,6 +353,8 @@ export const Dock = () => {
           />
         </nav>
       </div>
+
+      <DateRangePickerDialog open={datePickerOpen} onOpenChange={setDatePickerOpen} />
 
       {/* Backdrop — closes reveals on click, purely in React's event system */}
       {revealStack.length > 0 && (

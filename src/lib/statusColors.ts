@@ -59,6 +59,13 @@ export const sportColorClass: Record<string, string> = {
   swimming: 'bg-sport-swimming-muted text-sport-swimming',
 };
 
+/** Saturated sport background — used for activity-dot indicators */
+export const sportDotBgClass: Record<string, string> = {
+  running: 'bg-sport-running',
+  cycling: 'bg-sport-cycling',
+  swimming: 'bg-sport-swimming',
+};
+
 /** Sport icon watermark classes — very subtle tinted icon */
 export const sportIconWatermarkClass: Record<string, string> = {
   running: 'text-sport-running/10',

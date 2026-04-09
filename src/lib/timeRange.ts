@@ -37,15 +37,27 @@ export const customRangeToCutoffs = (range: {
   to: new Date(range.to).setHours(23, 59, 59, 999),
 });
 
-export const formatCustomRangeDuration = (range: { from: string; to: string }): string => {
-  const days =
-    Math.round(
-      (new Date(range.to).getTime() - new Date(range.from).getTime()) / (24 * 60 * 60 * 1000),
-    ) + 1;
-  if (days > 99) {
-    return `~${Math.round(days / 30)}m`;
+const rangeDays = (range: { from: string; to: string }): number =>
+  Math.round(
+    (new Date(range.to).getTime() - new Date(range.from).getTime()) / (24 * 60 * 60 * 1000),
+  ) + 1;
+
+export const formatCustomRangeShort = (range: { from: string; to: string }): string => {
+  const days = rangeDays(range);
+
+  if (days >= 335) {
+    return m.ui_range_years_short({ value: String(Math.round(days / 365)) });
   }
-  return `~${days}d`;
+
+  if (days >= 28) {
+    return m.ui_range_months_short({ value: String(Math.round(days / 30)) });
+  }
+
+  if (days >= 7) {
+    return m.ui_range_weeks_short({ value: String(Math.round(days / 7)) });
+  }
+
+  return m.ui_range_days_short({ value: String(days) });
 };
 
 export const timeRangeOptions: FilterOption<TimeRange>[] = [

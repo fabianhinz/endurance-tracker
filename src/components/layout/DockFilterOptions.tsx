@@ -31,7 +31,7 @@ export const DockFilterOptions = <T extends string>(props: DockFilterOptionsProp
           data-variant={opt.variant}
           className={cn(itemClass)}
         >
-          <span className="text-[10px] leading-none">{opt.label}</span>
+          <span className="text-[10px] leading-none truncate w-full text-center">{opt.label}</span>
         </ToggleGroupPrimitive.Item>
       ))}
     </ToggleGroupPrimitive.Root>

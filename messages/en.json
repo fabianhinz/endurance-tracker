@@ -502,5 +502,12 @@
   "toast_devdata_generated": "Generated {count} sessions",
   "ui_btn_export_gpx": "Export as GPX",
   "toast_export_no_gps": "No GPS data to export",
-  "toast_export_failed": "Export failed"
+  "toast_export_failed": "Export failed",
+  "ui_date_range_title": "Pick a date range",
+  "ui_btn_apply": "Apply",
+  "ui_dock_custom_range": "Custom range",
+  "ui_range_days_short": "{value}d",
+  "ui_range_weeks_short": "{value}w",
+  "ui_range_months_short": "{value}m",
+  "ui_range_years_short": "{value}y"
 }

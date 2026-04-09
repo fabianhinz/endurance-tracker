@@ -15,6 +15,7 @@ interface FiltersState {
   sportFilter: Sport | 'all';
   groupedPBs: { data: Partial<Record<Sport, PersonalBest[]>>; loading: boolean };
   setTimeRange: (r: TimeRange) => void;
+  setCustomDateRange: (from: string, to: string) => void;
   setDashboardChartRange: (from: string, to: string) => void;
   clearDashboardChartRange: () => void;
   setSportFilter: (s: Sport | 'all') => void;
@@ -32,6 +33,10 @@ export const useFiltersStore = create<FiltersState>()(
         groupedPBs: { data: {}, loading: false },
         setTimeRange: (r) => {
           set({ timeRange: r, customRange: null, prevDashboardRange: null });
+          get().recomputePBs();
+        },
+        setCustomDateRange: (from, to) => {
+          set({ timeRange: 'custom', customRange: { from, to }, prevDashboardRange: null });
           get().recomputePBs();
         },
         setDashboardChartRange: (from, to) => {
