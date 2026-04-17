@@ -17,7 +17,6 @@ import type { LucideIcon } from 'lucide-react';
 import { m } from '@/paraglide/messages.js';
 import type { SessionWeather, WeatherCondition } from '@/lib/weather.ts';
 import { formatWindDirection } from '@/lib/weather.ts';
-import { useIsDesktop } from '@/lib/hooks/useIsDesktop';
 
 const conditionIcons: Record<WeatherCondition, LucideIcon> = {
   clear: Sun,
@@ -53,6 +52,8 @@ const formatRange = (values: number[], unit: string): string => {
   return `${min}\u2013${max}${unit}`;
 };
 
+const DEFAULT_VISIBLE_CHIPS = 3;
+
 interface ChipData {
   icon: LucideIcon;
   label: string;
@@ -73,7 +74,6 @@ const buildChips = (weather: SessionWeather): ChipData[] => {
   const gusts = snapshots.map((s) => s.windGusts);
 
   return [
-    { icon: ConditionIcon, label: conditionLabel },
     { icon: Thermometer, label: formatRange(temps, '\u00B0C') },
     {
       icon: Wind,
@@ -83,6 +83,7 @@ const buildChips = (weather: SessionWeather): ChipData[] => {
       icon: Wind,
       label: `${m.ui_weather_gusts()} ${formatRange(gusts, ' km/h')}`,
     },
+    { icon: ConditionIcon, label: conditionLabel },
     { icon: Droplets, label: formatRange(humidities, '%') },
   ];
 };
@@ -93,7 +94,6 @@ interface WeatherChipsProps {
 
 export const WeatherChips = (props: WeatherChipsProps) => {
   const [expanded, setExpanded] = useState(false);
-  const isDesktop = useIsDesktop();
 
   if (props.query.isLoading) {
     return (
@@ -109,10 +109,9 @@ export const WeatherChips = (props: WeatherChipsProps) => {
   const chips = buildChips(props.query.data);
   if (chips.length === 0) return null;
 
-  const visibleCount = isDesktop ? 4 : 2;
-  const hiddenCount = chips.length - visibleCount;
+  const hiddenCount = chips.length - DEFAULT_VISIBLE_CHIPS;
   const showToggle = hiddenCount > 0 && !expanded;
-  const visibleChips = expanded ? chips : chips.slice(0, visibleCount);
+  const visibleChips = expanded ? chips : chips.slice(0, DEFAULT_VISIBLE_CHIPS);
 
   return (
     <div className="inline-flex flex-wrap gap-1">
