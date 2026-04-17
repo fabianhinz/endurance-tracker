@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { SessionRecord, GPSBounds } from '@/packages/engine/types.ts';
+import type { SessionRecord } from '@/packages/engine/types.ts';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -66,12 +66,6 @@ export const formatWindDirection = (degrees: number): string => {
 // ---------------------------------------------------------------------------
 // GPS helpers
 // ---------------------------------------------------------------------------
-
-export const boundsToCenter = (bounds: GPSBounds): { lat: number; lng: number } => ({
-  lat: (bounds.minLat + bounds.maxLat) / 2,
-  lng: (bounds.minLng + bounds.maxLng) / 2,
-});
-
 const EARTH_RADIUS_KM = 6371;
 
 const haversineKm = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
